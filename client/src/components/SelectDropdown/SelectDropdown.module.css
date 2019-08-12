@@ -1,0 +1,11 @@
+.selectDropdown label {
+  color: white;
+  font-size: 12px;
+}
+
+.selectDropdown select {
+  background-color: #707070;
+  color: white;
+  border-radius: 0;
+  border: 1px solid grey;
+}

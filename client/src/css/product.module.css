@@ -1,0 +1,59 @@
+@import "root.css";
+body {
+  background-color: var(--primaryColor);
+  min-width: 600px;
+  min-height: 750px;
+}
+
+.myContainer {
+  display: flex;
+  border: 2px solid var(--accentColor);
+  background-color: var(--secondaryColor);
+  justify-content: center;
+  align-items: center;
+}
+
+.myRow {
+  /* border: 3px solid red; */
+  margin: 5px;
+  height: 100px;
+  align-items: center;
+}
+
+/* input[type='radio']:after {
+  background: #ebff43;
+}
+
+input[type='radio']:checked:after {
+  background: #ebff43;
+} */
+
+.myTextButton {
+  color: var(--accentColor);
+  font-size: calc(0.5em + 0.5vw);
+}
+
+.myTextButton:focus,
+.myTextButton:hover {
+  background-color: unset !important;
+  text-decoration: none;
+  color: #41e87a;
+}
+
+.myTextField {
+  color: white;
+  font-size: 20px;
+}
+
+.myButton {
+  border-radius: 0;
+  border: none;
+  width: 100px;
+  background-color: var(--primaryColor);
+}
+
+.myErrorMessage {
+  color: red;
+  text-align: center;
+  font-size: calc(0.5em + 0.5vw);
+}

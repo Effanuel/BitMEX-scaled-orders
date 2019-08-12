@@ -1,0 +1,27 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "server side of the application(express)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "client": "(cd ../client && npm run start)",
+    "server": "nodemon index.js",
+    "dev": "SET NODE_ENV=development && concurrently \"npm run server\" \"npm run client\"",
+    "dev:server": "SET NODE_ENV=production && cd ../client && npm run build && cd ../api && npm run start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Juozas Rimantas",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.1",
+    "nodemon": "^1.19.1"
+  }
+}
