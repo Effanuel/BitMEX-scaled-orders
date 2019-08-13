@@ -172,8 +172,9 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  preview: state.preview
+const mapStateToProps = ({ preview }) => ({
+  // preview: state.preview
+  preview
 });
 export default connect(
   mapStateToProps,
