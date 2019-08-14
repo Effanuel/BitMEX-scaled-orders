@@ -18,16 +18,18 @@ const startEndPutOrders = (obj, start, end, amount, side) => {
     text: "order"
   });
 };
-
+const roundHalf = num => {
+  return Math.round(num * 2) / 2;
+};
 const Uniform = (amount, n_tp, start, end, side) => {
   let orders = { orders: [] };
-  const increment = Math.round((end - start) / (n_tp - 1));
+
+  const increment = roundHalf((end - start) / (n_tp - 1));
   console.log(increment, "INCREMENTS");
   const q = Math.floor(amount / n_tp);
-  startEndPutOrders(orders.orders, start, end, q, side);
-  for (let i = 1; i < n_tp - 1; i++) {
+  //startEndPutOrders(orders.orders, start, end, q, side);
+  for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
-    //i = 0 places at the start of the range
     orders.orders.push({
       symbol: "XBTUSD",
       side: side,
@@ -55,8 +57,29 @@ const Negative = (amount, n_tp, start, end, side) => {
 };
 const Normal = (amount, n_tp, start, end, side) => {
   let orders = { orders: [] };
-  const increment = Math.round((end - start) / n_tp);
-  startEndPutOrders(orders.orders, start, end, amount, side);
+  // const q = Math.floor(amount / 4);
+  // const increment_price = Math.round((end - start) / (n_tp - 1));
+  // const increment_size = Math.round(q / n_tp - 2);
+  // console.log(increment, "INCREMENTS");
+  // if (n_tp == 2) {
+  //   const q = Math.floor(amount / 4);
+  //   startEndPutOrders(orders.orders, start, end, q, side);
+  // }
+
+  // for (let i = 1; i < n_tp - 1; i++) {
+  //   //ROUND TO NEAREST 0.5
+  //   //i = 0 places at the start of the range
+  //   orders.orders.push({
+  //     symbol: "XBTUSD",
+  //     side: side,
+  //     orderQty: q,
+  //     price: start + i * increment_price,
+  //     ordType: "Limit",
+  //     execInst: "ParticipateDoNotInitiate",
+  //     text: "order"
+  //   });
+  // }
+
   return orders;
 };
 
