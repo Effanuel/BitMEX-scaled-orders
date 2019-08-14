@@ -20,12 +20,12 @@ export const postOrder = pay => async dispatch => {
   }
 };
 
-export const postOrderSuccess = ({ success }) => dispatch => {
+export const postOrderSuccess = ({ success }) => {
   //console.log("ORDER SUBMIT SUCCESS");
-  dispatch({
+  return {
     type: POST_ORDER_SUCCESS,
     payload: success
-  });
+  };
 };
 
 export const previewPrice = payload => async dispatch => {
@@ -38,19 +38,17 @@ export const previewPrice = payload => async dispatch => {
   console.log("GO GO PRICE PREVIEW");
 };
 
-export const previewPriceSuccess = ({ currentPrice }) => dispatch => {
-  console.log("ORDER PREVIEW SUCCESS");
-  dispatch({
+export const previewPriceSuccess = ({ currentPrice }) => {
+  return {
     type: PREVIEW_PRICE_SUCCESS,
     payload: currentPrice
-  });
+  };
 };
 
-export const previewOrders = pay => dispatch => {
+export const previewOrders = pay => {
   const payload = orderBulk(pay);
-
-  dispatch({
+  return {
     type: PREVIEW_ORDERS_SUCCESS,
     payload
-  });
+  };
 };
