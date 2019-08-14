@@ -20,7 +20,7 @@ class OrderPreviewTable extends Component {
               <tr key={String(i)}>
                 <td key={x * i + "a"}>{x.orderQty}</td>
                 <td key={x * i + "b"}>{x.side}</td>
-                <td key={x * i + "c"}>{parseInt(x.price, 10)}</td>
+                <td key={x * i + "c"}>{x.price}</td>
               </tr>
             );
           })}

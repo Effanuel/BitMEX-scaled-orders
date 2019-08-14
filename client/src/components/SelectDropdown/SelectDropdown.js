@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import styles from "./SelectDropdown.module.css";
 
 const currencies = [
@@ -24,6 +25,10 @@ const SelectDropdown = ({ label }) => {
       </select>
     </div>
   );
+};
+
+SelectDropdown.propTypes = {
+  label: PropTypes.string
 };
 
 export default SelectDropdown;
