@@ -13,7 +13,8 @@ const initialState = {
   side: "",
   error: "",
   showPreview: false,
-  currentPrice: null
+  currentPrice: null,
+  instrument: "XBTUSD"
 };
 
 export default (state = initialState, { type, payload }) => {

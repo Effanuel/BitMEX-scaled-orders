@@ -9,7 +9,13 @@ const InputField = ({ id, label, value, onChange }) => {
     <div>
       <label htmlFor={label}>{label}</label>
       <InputGroup>
-        <FormControl type="number" id={id} value={value} onChange={onChange} />
+        <FormControl
+          pattern="[0-9]*"
+          type="number"
+          id={id}
+          value={value}
+          onChange={onChange}
+        />
       </InputGroup>
     </div>
   );

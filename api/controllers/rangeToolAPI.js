@@ -51,9 +51,9 @@ function putResponse(data, path, method) {
   };
 }
 
-function getCurrentPrice() {
+function getCurrentPrice(symbol) {
   let send = {
-    symbol: "XBTUSD",
+    symbol: symbol,
     endTime: calculateGMT(),
     reverse: true,
     count: 1
@@ -66,7 +66,7 @@ function orderBulk(orders) {
 }
 
 exports.displayPrice = (req, res, next) => {
-  let requestOptions = getCurrentPrice();
+  let requestOptions = getCurrentPrice(Object.keys(req.body)[0]);
   request(requestOptions, function(error, response, body) {
     if (error) {
       return res.send({ errorMessage: error });
@@ -82,7 +82,7 @@ exports.displayPrice = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  //console.log(req.body, "API post order");
+  console.log(req.body, "API post order");
   //  performance.mark('Beginning sanity check') //initial mark for the current URL
   let requestOptions = orderBulk(req.body);
   request(requestOptions, (error, response, body) => {
@@ -93,5 +93,22 @@ exports.postOrder = (req, res, next) => {
       return res.send({ errorMessage: JSON.parse(body).error.message });
     }
     return res.send({ success: response.statusCode });
+  });
+};
+
+exports.getInstruments = (req, res, next) => {
+  const requestOptions = putResponse({}, "/api/v1/instrument/active", "GET");
+  request(requestOptions, (error, response, body) => {
+    if (error) {
+      return res.send({ errorMessage: error });
+    }
+    if (JSON.parse(body).error) {
+      return res.send({ errorMessage: JSON.parse(body).error.message });
+    }
+    const instrumentsArray = JSON.parse(body).map(obj => {
+      return obj.symbol;
+    });
+    // console.log(JSON.parse(body), "body");
+    return res.send({ instruments: instrumentsArray });
   });
 };

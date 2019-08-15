@@ -21,7 +21,7 @@ const startEndPutOrders = (obj, start, end, amount, side) => {
 const roundHalf = num => {
   return Math.round(num * 2) / 2;
 };
-const Uniform = (amount, n_tp, start, end, side) => {
+const Uniform = (amount, n_tp, start, end, side, symbol) => {
   let orders = { orders: [] };
 
   const increment = roundHalf((end - start) / (n_tp - 1));
@@ -31,7 +31,7 @@ const Uniform = (amount, n_tp, start, end, side) => {
   for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
     orders.orders.push({
-      symbol: "XBTUSD",
+      symbol: symbol,
       side: side,
       orderQty: q,
       price: start + i * increment,
@@ -89,17 +89,18 @@ export const orderBulk = ({
   start,
   end,
   side,
-  distribution
+  distribution,
+  instrument // : XBTUSD, ETHUSD...
 }) => {
   switch (distribution) {
     case "Positive":
-      return Positive(quantity, n_tp, start, end, side);
+      return Positive(quantity, n_tp, start, end, side, instrument);
     case "Negative":
-      return Negative(quantity, n_tp, start, end, side);
+      return Negative(quantity, n_tp, start, end, side, instrument);
     case "Normal":
-      return Normal(quantity, n_tp, start, end, side);
+      return Normal(quantity, n_tp, start, end, side, instrument);
     case "Uniform":
     default:
-      return Uniform(quantity, n_tp, start, end, side);
+      return Uniform(quantity, n_tp, start, end, side, instrument);
   }
 };

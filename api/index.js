@@ -12,13 +12,12 @@ require("dotenv").config();
 app.use(cors());
 app.disable("etag").disable("x-powered-by");
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/admin", adminRoutes);
 
 //require('./routes')(app);
-console.log(process.env.NODE_ENV, "ENV PROCESS");
-console.log(process.env.API_KEY, "sec key");
+
 if (process.env.NODE_ENV != "development ") {
   // Serve any static files
   app.use(express.static(path.join(__dirname, "../client/build")));

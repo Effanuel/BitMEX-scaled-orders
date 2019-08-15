@@ -1,10 +1,10 @@
 import axios from "axios";
 import {
-  POST_ORDER,
+  // POST_ORDER, //IGNORING LOADERS FOR NOW
   POST_ORDER_SUCCESS,
-  PREVIEW_PRICE,
+  // PREVIEW_PRICE, //IGNORING LOADERS FOR NOW
   PREVIEW_PRICE_SUCCESS,
-  PREVIEW_ORDERS,
+  // PREVIEW_ORDERS, //IGNORING LOADERS FOR NOW
   PREVIEW_ORDERS_SUCCESS
 } from "./actionTypes";
 import { orderBulk } from "../../util";
@@ -30,7 +30,8 @@ export const postOrderSuccess = ({ success }) => {
 
 export const previewPrice = payload => async dispatch => {
   try {
-    const response = await axios.get("/admin/getPrice");
+    console.log(payload, "POAYLOAD PRICE");
+    const response = await axios.post("/admin/getPrice", payload);
     dispatch(previewPriceSuccess(response.data));
   } catch (err) {
     console.log(err, "error");

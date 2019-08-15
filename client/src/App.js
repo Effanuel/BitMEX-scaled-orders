@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { connect } from "react-redux";
+import axios from "axios";
 
 import {
   previewPrice,
@@ -22,12 +23,29 @@ class App extends Component {
     start: 12000,
     end: 12500,
     distribution: "Uniform",
-    side: "Sell"
+    side: "Sell",
+    instrument: "XBTUSD",
+    instruments: []
   };
+
+  async componentDidMount() {
+    try {
+      const response = await axios.get("/admin/getInstruments");
+      this.setState({ instruments: response.data.instruments });
+    } catch (err) {
+      console.log(err, "error");
+    }
+  }
 
   handleOnChange = event => {
     this.setState({
       [event.target.id]: event.target.value
+    });
+  };
+
+  handleOnChangeNumber = event => {
+    this.setState({
+      [event.target.id]: parseInt(event.target.value)
     });
   };
 
@@ -41,21 +59,28 @@ class App extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
   onPreviewPrice = event => {
-    this.props.previewPrice();
+    console.log(typeof this.state.quantity);
+    this.props.previewPrice(this.state.instrument);
   };
   onPreviewOrders = () => {
     this.props.previewOrders(this.state);
   };
+
   //testdev123
   render() {
-    const emptyStr = "";
+    const emptyStr = undefined;
     return (
       <div>
         <Container className={styles.myContainer}>
           <form id="orderForm">
             <Row className={styles.myRow}>
               <Col>
-                <SelectDropdown label="Instrument" />
+                <SelectDropdown
+                  instruments={this.state.instruments}
+                  id="instrument"
+                  onChange={this.handleOnChange}
+                  label="Instrument"
+                />
               </Col>
               <Col onChange={this.onRadioChange}>
                 <CustomRadioButton label="Sell" type="radio" name="side" />
@@ -80,7 +105,7 @@ class App extends Component {
             <Row className={styles.myRow}>
               <Col>
                 <InputField
-                  onChange={this.handleOnChange}
+                  onChange={this.handleOnChangeNumber}
                   value={this.state.quantity || emptyStr}
                   label="Quantity"
                   id="quantity"
@@ -88,7 +113,7 @@ class App extends Component {
               </Col>
               <Col>
                 <InputField
-                  onChange={this.handleOnChange}
+                  onChange={this.handleOnChangeNumber}
                   value={this.state.n_tp || emptyStr}
                   label="Order count"
                   id="n_tp"
@@ -96,7 +121,7 @@ class App extends Component {
               </Col>
               <Col>
                 <InputField
-                  onChange={this.handleOnChange}
+                  onChange={this.handleOnChangeNumber}
                   value={this.state.start || emptyStr}
                   label="Range start USD"
                   id="start"
@@ -104,7 +129,7 @@ class App extends Component {
               </Col>
               <Col>
                 <InputField
-                  onChange={this.handleOnChange}
+                  onChange={this.handleOnChangeNumber}
                   value={this.state.end || emptyStr}
                   label="Range end USD"
                   id="end"
