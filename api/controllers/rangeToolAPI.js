@@ -82,7 +82,7 @@ exports.displayPrice = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  console.log(req.body, "API post order");
+  // console.log(req.body, "API post order");
   //  performance.mark('Beginning sanity check') //initial mark for the current URL
   let requestOptions = orderBulk(req.body);
   request(requestOptions, (error, response, body) => {

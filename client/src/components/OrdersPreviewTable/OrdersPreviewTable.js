@@ -3,8 +3,9 @@ import { Table } from "react-bootstrap";
 import { connect } from "react-redux";
 import { previewPrice, postOrder } from "../../redux/actions/previewActions";
 
-class OrderPreviewTable extends Component {
+class OrdersPreviewTable extends Component {
   render() {
+    const { orders } = this.props.preview;
     return (
       <Table striped bordered hover variant="dark" size="sm">
         <thead>
@@ -15,7 +16,7 @@ class OrderPreviewTable extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.props.preview.map((x, i) => {
+          {orders.map((x, i) => {
             return (
               <tr key={String(i)}>
                 <td key={x * i + "a"}>{x.orderQty}</td>
@@ -31,9 +32,9 @@ class OrderPreviewTable extends Component {
 }
 
 const mapStateToProps = state => ({
-  preview: state.preview.orders
+  preview: state.preview
 });
 export default connect(
   mapStateToProps,
   { previewPrice, postOrder }
-)(OrderPreviewTable);
+)(OrdersPreviewTable);

@@ -41,7 +41,8 @@ describe("actions", () => {
       start: 12000,
       end: 12500,
       side: "Sell",
-      distribution: "Uniform"
+      distribution: "Uniform",
+      symbol: "XBTUSD"
     };
     const expectedPayload = {
       orders: [

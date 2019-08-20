@@ -30,7 +30,7 @@ export const postOrderSuccess = ({ success }) => {
 
 export const previewPrice = payload => async dispatch => {
   try {
-    console.log(payload, "POAYLOAD PRICE");
+    // console.log(payload, "POAYLOAD PRICE");
     const response = await axios.post("/admin/getPrice", payload);
     dispatch(previewPriceSuccess(response.data));
   } catch (err) {

@@ -90,17 +90,17 @@ export const orderBulk = ({
   end,
   side,
   distribution,
-  instrument // : XBTUSD, ETHUSD...
+  symbol // : XBTUSD, ETHUSD...
 }) => {
   switch (distribution) {
     case "Positive":
-      return Positive(quantity, n_tp, start, end, side, instrument);
+      return Positive(quantity, n_tp, start, end, side, symbol);
     case "Negative":
-      return Negative(quantity, n_tp, start, end, side, instrument);
+      return Negative(quantity, n_tp, start, end, side, symbol);
     case "Normal":
-      return Normal(quantity, n_tp, start, end, side, instrument);
+      return Normal(quantity, n_tp, start, end, side, symbol);
     case "Uniform":
     default:
-      return Uniform(quantity, n_tp, start, end, side, instrument);
+      return Uniform(quantity, n_tp, start, end, side, symbol);
   }
 };

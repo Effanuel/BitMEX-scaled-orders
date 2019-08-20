@@ -4,19 +4,23 @@
   "private": true,
   "dependencies": {
     "axios": "^0.19.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.11",
     "react-dom": "^16.9.0",
     "react-redux": "^7.1.0",
     "react-scripts": "3.1.0",
+    "react-test-renderer": "^16.9.0",
     "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "reselect": "^4.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test -env=jsdom",
+    "test": "react-scripts test",
     "test:watch": "npm test -- --watch",
     "eject": "react-scripts eject"
   },
@@ -37,6 +41,6 @@
     ]
   },
   "devDependencies": {
-    "jest": "^24.8.0"
+    "redux-mock-store": "^1.5.3"
   }
 }

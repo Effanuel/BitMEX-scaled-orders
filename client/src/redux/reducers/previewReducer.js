@@ -9,8 +9,6 @@ import {
 
 const initialState = {
   orders: [],
-  distribution: "Uniform",
-  side: "",
   error: "",
   showPreview: false,
   currentPrice: null,

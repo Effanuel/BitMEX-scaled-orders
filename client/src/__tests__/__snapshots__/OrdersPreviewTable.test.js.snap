@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OrderPreviewTable component renders without crashing given redux store 1`] = `ShallowWrapper {}`;
