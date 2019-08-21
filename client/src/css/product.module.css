@@ -1,4 +1,4 @@
-@import "root.css";
+@import 'root.css';
 body {
   background-color: var(--primaryColor);
   min-width: 600px;
@@ -50,6 +50,19 @@ input[type='radio']:checked:after {
   border: none;
   width: 100px;
   background-color: var(--primaryColor);
+}
+
+.myButton:focus:enabled {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.myButton:hover:enabled {
+  background-color: var(--accentColor);
+}
+
+.myButton:disabled {
+  background-color: grey;
 }
 
 .myErrorMessage {

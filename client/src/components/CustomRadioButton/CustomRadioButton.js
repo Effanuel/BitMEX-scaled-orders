@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { FormCheck } from "react-bootstrap";
-import styles from "./CustomRadioButton.module.css";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { FormCheck } from 'react-bootstrap';
+import styles from './CustomRadioButton.module.css';
 
 const CustomRadioButton = ({ label, type, name, defaultChecked }) => {
   return (
@@ -14,6 +14,7 @@ const CustomRadioButton = ({ label, type, name, defaultChecked }) => {
         id={label}
         value={label}
         defaultChecked={defaultChecked}
+        className={styles.noselect}
       />
     </div>
   );
@@ -22,7 +23,7 @@ const CustomRadioButton = ({ label, type, name, defaultChecked }) => {
 CustomRadioButton.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
-  type: PropTypes.oneOf(["radio", "checkbox"]),
+  type: PropTypes.oneOf(['radio', 'checkbox']),
   value: PropTypes.string,
   defaultChecked: PropTypes.bool
 };
