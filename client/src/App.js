@@ -1,20 +1,20 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import { Container, Row, Col, Button } from "react-bootstrap";
-import { connect } from "react-redux";
-import axios from "axios";
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import axios from 'axios';
 
 import {
   previewPrice,
   postOrder,
   previewOrders
-} from "./redux/actions/previewActions";
+} from './redux/actions/previewActions';
 
-import InputField from "./components/InputField/InputField";
-import SelectDropdown from "./components/SelectDropdown/SelectDropdown";
-import CustomRadioButton from "./components/CustomRadioButton/CustomRadioButton";
-import OrdersPreviewTable from "./components/OrdersPreviewTable/OrdersPreviewTable";
-import styles from "./css/product.module.css";
+import InputField from './components/InputField/InputField';
+import SelectDropdown from './components/SelectDropdown/SelectDropdown';
+import CustomRadioButton from './components/CustomRadioButton/CustomRadioButton';
+import OrdersPreviewTable from './components/OrdersPreviewTable/OrdersPreviewTable';
+import styles from './css/product.module.css';
 
 class App extends Component {
   state = {
@@ -22,18 +22,18 @@ class App extends Component {
     n_tp: 2,
     start: 12000,
     end: 12500,
-    distribution: "Uniform",
-    side: "Sell",
-    symbol: "XBTUSD",
+    distribution: 'Uniform',
+    side: 'Sell',
+    symbol: 'XBTUSD',
     instruments: []
   };
 
   async componentDidMount() {
     try {
-      const response = await axios.get("/admin/getInstruments");
+      const response = await axios.get('/admin/getInstruments');
       this.setState({ instruments: response.data.instruments });
     } catch (err) {
-      console.log(err, "error");
+      console.log(err, 'error');
     }
   }
 
@@ -45,6 +45,7 @@ class App extends Component {
 
   handleOnChangeNumber = event => {
     this.setState({
+      [event.target.id]: { ...this.state[event.target.id] },
       [event.target.id]: parseInt(event.target.value)
     });
   };
@@ -66,8 +67,10 @@ class App extends Component {
 
   //testdev123
   render() {
-    const emptyStr = undefined;
+    const emptyStr = '';
     const { showPreview, currentPrice } = this.props;
+    const { quantity, n_tp, start, end } = this.state;
+
     return (
       <div>
         <Container className={styles.myContainer}>
@@ -180,6 +183,9 @@ class App extends Component {
                 <Button
                   onClick={this.onOrderSubmit}
                   className={styles.myButton}
+                  disabled={
+                    !(quantity && n_tp && start && end) || quantity < n_tp
+                  }
                 >
                   Submit
                 </Button>

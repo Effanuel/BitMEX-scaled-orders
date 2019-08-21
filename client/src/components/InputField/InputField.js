@@ -1,8 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import "./InputField.module.css";
+import React from 'react';
+import PropTypes from 'prop-types';
+import './InputField.module.css';
 
-import { InputGroup, FormControl } from "react-bootstrap";
+import { InputGroup, FormControl } from 'react-bootstrap';
 
 const InputField = ({ id, label, value, onChange }) => {
   return (
@@ -15,6 +15,7 @@ const InputField = ({ id, label, value, onChange }) => {
           id={id}
           value={value}
           onChange={onChange}
+          autoComplete="off"
         />
       </InputGroup>
     </div>
@@ -23,7 +24,7 @@ const InputField = ({ id, label, value, onChange }) => {
 
 InputField.propTypes = {
   label: PropTypes.string,
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func
 };
 
