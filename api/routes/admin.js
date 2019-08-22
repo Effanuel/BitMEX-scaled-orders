@@ -10,6 +10,6 @@ const Router = express.Router();
 // Router.post("/postOrder", apiController.postOrder);
 Router.post('/getPrice', apiController.displayPrice);
 Router.post('/postOrder', apiController.postOrder);
-Router.get('/getInstruments', apiController.getInstruments);
+// Router.get('/getInstruments', apiController.getInstruments);
 
 module.exports = Router;
