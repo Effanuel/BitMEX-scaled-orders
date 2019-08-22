@@ -1,21 +1,21 @@
 const startEndPutOrders = (obj, start, end, amount, side) => {
   obj.push({
-    symbol: "XBTUSD",
+    symbol: 'XBTUSD',
     side: side,
     orderQty: amount,
     price: start,
-    ordType: "Limit",
-    execInst: "ParticipateDoNotInitiate",
-    text: "order"
+    ordType: 'Limit',
+    execInst: 'ParticipateDoNotInitiate',
+    text: 'order'
   });
   obj.push({
-    symbol: "XBTUSD",
+    symbol: 'XBTUSD',
     side: side,
     orderQty: amount,
     price: end,
-    ordType: "Limit",
-    execInst: "ParticipateDoNotInitiate",
-    text: "order"
+    ordType: 'Limit',
+    execInst: 'ParticipateDoNotInitiate',
+    text: 'order'
   });
 };
 const roundHalf = num => {
@@ -25,19 +25,19 @@ const Uniform = (amount, n_tp, start, end, side, symbol) => {
   let orders = { orders: [] };
 
   const increment = roundHalf((end - start) / (n_tp - 1));
-  console.log(increment, "INCREMENTS");
-  const q = Math.floor(amount / n_tp);
-  //startEndPutOrders(orders.orders, start, end, q, side);
+  console.log(increment, 'INCREMENTS');
+  const mean = Math.floor(amount / n_tp);
+  //startEndPutOrders(orders.orders, start, end, mean, side);
   for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
     orders.orders.push({
       symbol: symbol,
       side: side,
-      orderQty: q,
+      orderQty: mean,
       price: start + i * increment,
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
+      text: 'order'
     });
   }
 
@@ -93,13 +93,13 @@ export const orderBulk = ({
   symbol // : XBTUSD, ETHUSD...
 }) => {
   switch (distribution) {
-    case "Positive":
+    case 'Positive':
       return Positive(quantity, n_tp, start, end, side, symbol);
-    case "Negative":
+    case 'Negative':
       return Negative(quantity, n_tp, start, end, side, symbol);
-    case "Normal":
+    case 'Normal':
       return Normal(quantity, n_tp, start, end, side, symbol);
-    case "Uniform":
+    case 'Uniform':
     default:
       return Uniform(quantity, n_tp, start, end, side, symbol);
   }

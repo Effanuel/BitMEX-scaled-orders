@@ -25,17 +25,17 @@ class App extends Component {
     distribution: 'Uniform',
     side: 'Sell',
     symbol: 'XBTUSD',
-    instruments: []
+    instruments: ['XBTUSD', 'ETHUSD']
   };
 
-  async componentDidMount() {
-    try {
-      const response = await axios.get('/admin/getInstruments');
-      this.setState({ instruments: response.data.instruments });
-    } catch (err) {
-      console.log(err, 'error');
-    }
-  }
+  // async componentDidMount() {
+  //   try {
+  //     const response = await axios.get('/admin/getInstruments');
+  //     this.setState({ instruments: response.data.instruments });
+  //   } catch (err) {
+  //     console.log(err, 'error');
+  //   }
+  // }
 
   handleOnChange = event => {
     this.setState({
