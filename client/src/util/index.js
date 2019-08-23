@@ -43,42 +43,49 @@ const Uniform = (amount, n_tp, start, end, side, symbol) => {
 
   return orders;
 };
-const Positive = (amount, n_tp, start, end, side) => {
+const Positive = (amount, n_tp, start, end, side, symbol) => {
   let orders = { orders: [] };
   const increment = Math.round((end - start) / n_tp);
 
   return orders;
 };
-const Negative = (amount, n_tp, start, end, side) => {
+const Negative = (amount, n_tp, start, end, side, symbol) => {
   let orders = { orders: [] };
   const increment = Math.round((end - start) / n_tp);
 
   return orders;
 };
-const Normal = (amount, n_tp, start, end, side) => {
-  let orders = { orders: [] };
-  // const q = Math.floor(amount / 4);
-  // const increment_price = Math.round((end - start) / (n_tp - 1));
-  // const increment_size = Math.round(q / n_tp - 2);
-  // console.log(increment, "INCREMENTS");
-  // if (n_tp == 2) {
-  //   const q = Math.floor(amount / 4);
-  //   startEndPutOrders(orders.orders, start, end, q, side);
-  // }
+const Normal = (amount, n_tp, start, end, side, symbol) => {
+  const gauss = (mean, x, delta) => {
+    const member1 = 1 / (delta * Math.sqrt(2 * Math.PI));
+    const member2 = Math.pow(Math.E, -((x - mean) ** 2) / (2 * delta ** 2));
+    return member1 * member2;
+  };
+  const START_CFG = -2;
+  const END_CFG = 2;
 
-  // for (let i = 1; i < n_tp - 1; i++) {
-  //   //ROUND TO NEAREST 0.5
-  //   //i = 0 places at the start of the range
-  //   orders.orders.push({
-  //     symbol: "XBTUSD",
-  //     side: side,
-  //     orderQty: q,
-  //     price: start + i * increment_price,
-  //     ordType: "Limit",
-  //     execInst: "ParticipateDoNotInitiate",
-  //     text: "order"
-  //   });
-  // }
+  const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
+
+  const arr = [];
+  for (let i = 0; i < n_tp; i++) {
+    arr.push(gauss(0, START_CFG + i * incrementQty, 1)); //mean == 0
+  }
+  const summ = arr.reduce((a, b) => a + b, 0);
+
+  const incrementPrice = (end - start) / (n_tp - 1);
+  let orders = { orders: [] };
+  for (let i = 0; i < n_tp; i++) {
+    //ROUND TO NEAREST 0.5
+    orders.orders.push({
+      symbol: symbol,
+      side: side,
+      orderQty: Math.floor((arr[i] / summ) * amount),
+      price: roundHalf(start + i * incrementPrice),
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
+      text: 'order'
+    });
+  }
 
   return orders;
 };
