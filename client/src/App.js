@@ -24,13 +24,12 @@ class App extends Component {
     end: 12500,
     distribution: 'Uniform',
     side: 'Sell',
-    symbol: 'XBTUSD',
-    instruments: ['XBTUSD', 'ETHUSD']
+    symbol: 'XBTUSD'
   };
 
   // async componentDidMount() {
   //   try {
-  //     const response = await axios.get('/admin/getInstruments');
+  //     const response = await axios.get('/bitmex/getInstruments');
   //     this.setState({ instruments: response.data.instruments });
   //   } catch (err) {
   //     console.log(err, 'error');
@@ -78,7 +77,7 @@ class App extends Component {
             <Row className={styles.myRow}>
               <Col>
                 <SelectDropdown
-                  instruments={this.state.instruments}
+                  instruments={['XBTUSD', 'ETHUSD']}
                   id="symbol"
                   onChange={this.handleOnChange}
                   label="Instrument"
