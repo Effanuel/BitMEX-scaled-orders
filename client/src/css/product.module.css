@@ -33,6 +33,10 @@ input[type='radio']:checked:after {
   font-size: calc(0.5em + 0.5vw);
 }
 
+.myTextButton:disabled {
+  color: lightgrey;
+}
+
 .myTextButton:focus,
 .myTextButton:hover {
   background-color: unset !important;

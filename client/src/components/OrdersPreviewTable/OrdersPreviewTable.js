@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 const OrdersPreviewTable = ({ preview }) => {
   return (
-    <Table striped bordered hover variant="dark" size="sm">
+    <Table striped bordered variant="dark" size="sm">
       <thead>
         <tr>
           <th>Quantity</th>

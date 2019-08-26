@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -16,7 +16,7 @@ import CustomRadioButton from './components/CustomRadioButton/CustomRadioButton'
 import OrdersPreviewTable from './components/OrdersPreviewTable/OrdersPreviewTable';
 import styles from './css/product.module.css';
 
-class App extends Component {
+class App extends PureComponent {
   state = {
     quantity: 700,
     n_tp: 2,
@@ -172,6 +172,9 @@ class App extends Component {
                     onClick={this.onPreviewOrders}
                     variant="link"
                     className={styles.myTextButton}
+                    disabled={
+                      !(quantity && n_tp && start && end) || quantity < n_tp
+                    }
                   >
                     Preview
                   </Button>
@@ -192,6 +195,7 @@ class App extends Component {
             </Row>
           </form>
         </Container>
+
         {showPreview && (
           <Container className={styles.myContainer}>
             <OrdersPreviewTable />
