@@ -1,7 +1,7 @@
 ## Table of Contents
 
-- [About the Project](#about-the-project)
-  - [Built With](#built-with)
+- [Current Features](#current-features)
+- [Built With](#built-with)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -11,14 +11,19 @@
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 
+<p align="center"> 
+<img src="assets/interface_range_tool.png">
+</p>
+
 # BitMEX trading tool
 
-This project is a trading tool based on **BitMEX API** to help you place orders in a range _( It can also be used to overcome the overload feature on the website _(although sometimes API's also get suspended due to high load)\*.
+This project is a trading tool based on **BitMEX API** to help you place orders in a range ( It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load).
 
 ### Current Features
 
 - Place up to 30 orders in a range at once;
 - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section);
+- Get current price *(it is based on the lastest ask price)*
 
 ### Built With
 
@@ -33,7 +38,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ## Getting Started
 
-- Go to https://www.bitmex.com/;
+- Go to https://www.bitmex.com
 
   _(If you are **new** to BitMEX, consider using my [affiliate link](https://www.bitmex.com/register/yjssSB) to get **10% off** the fees for 6 months.)_
 
@@ -77,7 +82,7 @@ ENABLE_RATE_LIMIT = true
 
 4. Rename `.sample-env` to `.env` (you can also change whether you want to use **Testnet**, **Rate Limit**)
 
-   ##### Disclaimer: If you set TESTNET to true, you need to create a [Testnet](https://testnet.bitmex.com/) account and set the API keys appropriately. Your main Bitmex account API won't work with TESTNET option set to true.
+   #### Disclaimer: If you set TESTNET to true, you need to create a [Testnet](https://testnet.bitmex.com/) account and set the API keys appropriately. Your main Bitmex account API won't work with TESTNET option set to true.
 
 <!-- USAGE EXAMPLES -->
 
@@ -86,6 +91,12 @@ ENABLE_RATE_LIMIT = true
 <!-- ROADMAP -->
 
 ## Distributions
+These are the available distributions to choose from:
+<p align="center"> 
+<img src="assets/distributions.png">
+</p>
+
+*(The chart representations are symbolic)*
 
 ## Roadmap
 
