@@ -9,6 +9,7 @@
     "server": "nodemon index.js",
     "dev": "SET NODE_ENV=development && concurrently \"npm run server\" \"npm run client\"",
     "dev:server": "SET NODE_ENV=production && cd ../client && npm run build && cd ../api && npm run start",
+    "init:packages": "npm install && cd ../client && npm install && cd ../api",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Juozas Rimantas",
