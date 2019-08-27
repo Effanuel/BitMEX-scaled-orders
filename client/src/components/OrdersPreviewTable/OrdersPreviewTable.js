@@ -1,10 +1,11 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import styles from './OrdersPreviewTable.module.css';
 
 const OrdersPreviewTable = ({ preview }) => {
   return (
-    <Table striped bordered variant="dark" size="sm">
+    <Table className={styles.myTable} striped bordered variant="dark" size="sm">
       <thead>
         <tr>
           <th>Quantity</th>

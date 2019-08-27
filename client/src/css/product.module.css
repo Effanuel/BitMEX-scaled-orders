@@ -7,10 +7,12 @@ body {
 
 .myContainer {
   display: flex;
+
   border: 2px solid var(--accentColor);
   background-color: var(--secondaryColor);
   justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .myRow {
