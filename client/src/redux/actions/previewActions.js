@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   // POST_ORDER, //IGNORING LOADERS FOR NOW
   POST_ORDER_SUCCESS,
+  POST_ORDER_ERROR,
   // PREVIEW_PRICE, //IGNORING LOADERS FOR NOW
   PREVIEW_PRICE_SUCCESS,
   // PREVIEW_ORDERS, //IGNORING LOADERS FOR NOW
@@ -16,15 +17,21 @@ export const postOrder = pay => async dispatch => {
     const response = await axios.post('/bitmex/postOrder', payload);
     dispatch(postOrderSuccess(response.data));
   } catch (err) {
-    console.log(err, 'error111');
+    dispatch(postOrderError(err.response.data));
   }
 };
 
 export const postOrderSuccess = ({ success }) => {
-  //console.log("ORDER SUBMIT SUCCESS");
   return {
     type: POST_ORDER_SUCCESS,
     payload: success
+  };
+};
+
+export const postOrderError = ({ errorMessage }) => {
+  return {
+    type: POST_ORDER_ERROR,
+    payload: errorMessage
   };
 };
 
@@ -34,7 +41,7 @@ export const previewPrice = payload => async dispatch => {
     const response = await axios.post('/bitmex/getPrice', payload);
     dispatch(previewPriceSuccess(response.data));
   } catch (err) {
-    console.log(err, 'error');
+    console.log(err.response.data, 'error previewprice redux');
   }
 };
 

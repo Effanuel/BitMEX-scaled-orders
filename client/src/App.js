@@ -67,7 +67,7 @@ class App extends PureComponent {
   //testdev123
   render() {
     const emptyStr = '';
-    const { showPreview, currentPrice } = this.props;
+    const { showPreview, currentPrice, error } = this.props;
     const { quantity, n_tp, start, end } = this.state;
 
     return (
@@ -162,9 +162,7 @@ class App extends PureComponent {
                   name="distribution"
                 />
               </Col>
-              <Col className={styles.myErrorMessage}>
-                {this.state.errorMessage}
-              </Col>
+              <Col className={styles.myErrorMessage}>{error}</Col>
 
               <Col className="">
                 <Col className="text-right">
@@ -209,7 +207,8 @@ class App extends PureComponent {
 const mapStateToProps = ({ preview }) => ({
   // preview: state.preview
   showPreview: preview.showPreview,
-  currentPrice: preview.currentPrice
+  currentPrice: preview.currentPrice,
+  error: preview.error
 });
 export default connect(
   mapStateToProps,

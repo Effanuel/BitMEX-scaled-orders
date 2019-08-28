@@ -23,9 +23,15 @@ exports.displayPrice = async (req, res, next) => {
     });
     return res.send({ currentPrice: response.asks[0][0] });
   } catch (error) {
-    console.log(error);
+    console.log(error, 'request error');
     if (JSON.parse(response).error) {
-      return res.send({ errorMessage: JSON.parse(body).error.message });
+      console.log(
+        JSON.parse(body).error.message,
+        'display price error express'
+      );
+      return res
+        .status(500)
+        .json({ errorMessage: JSON.parse(body).error.message });
     }
   }
 };
@@ -33,17 +39,19 @@ exports.displayPrice = async (req, res, next) => {
 exports.postOrder = async (req, res, next) => {
   try {
     const response = await exchange.privatePostOrderBulk(req.body);
-    return res.send({ success: response.statusCode });
-  } catch (err) {
+    return res.send({ success: res.statusCode });
+  } catch (e) {
     if (e instanceof ccxt.NetworkError) {
-      console.log(e.message, 'CCXT MESSAGE ERR');
-      return res.send({ errorMessage: e.message });
+      //console.log(e.message, 'CCXT network ERR');
+      return res.status(500).json({ errorMessage: e.name });
     } else if (e instanceof ccxt.ExchangeError) {
-      console.log(e.message, 'CCXT MESSAGE ERR');
-      return res.send({ errorMessage: e.message });
+      return res.status(500).json({ errorMessage: e.name });
+    } else if (e instanceof ccxt.ValidationError) {
+      //console.log(e.message, 'CCXT Validation ERR');
+      return res.status(500).json({ errorMessage: e.name });
     } else {
-      console.log('CCXT MESSAGE ERR');
-      return res.send({ errorMessage: 'ERR' });
+      // console.log('CCXT MESSAGE ERR');
+      return res.status(500).json({ errorMessage: 'ERROR' });
     }
   }
 };
