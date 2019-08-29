@@ -13,7 +13,9 @@ const exchangeId = 'bitmex',
 if (process.env.TESTNET == 'true') {
   exchange.urls['api'] = exchange.urls['test'];
 }
-
+/**
+ * Current price GET request to the exchange API
+ */
 exports.displayPrice = async (req, res, next) => {
   console.log(process.env.API_KEY, typeof process.env.API_KEY);
   try {
@@ -36,6 +38,9 @@ exports.displayPrice = async (req, res, next) => {
   }
 };
 
+/**
+ * Bulk order POST request to the exchange API
+ */
 exports.postOrder = async (req, res, next) => {
   try {
     const response = await exchange.privatePostOrderBulk(req.body);

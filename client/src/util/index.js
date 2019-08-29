@@ -1,7 +1,19 @@
-const roundHalf = num => {
-  return Math.round(num * 2) / 2;
+/**
+ * Round a number to .5 place
+ * @param {number} number
+ * @returns {number} rounded number
+ */
+const roundHalf = number => {
+  return Math.round(number * 2) / 2;
 };
 
+/**
+ * Probability density function
+ * @param {number} mean of the distribution
+ * @param {number} x is a point in that distribution
+ * @param {number} delta is a variance parameter
+ * @returns {number} location probability of that x
+ */
 const gaussian = (mean, x, delta) => {
   const member1 = 1 / (delta * Math.sqrt(2 * Math.PI));
   const member2 = Math.pow(Math.E, -((x - mean) ** 2) / (2 * delta ** 2));
@@ -117,6 +129,9 @@ const Normal = (amount, n_tp, start, end, side, symbol) => {
   return orders;
 };
 
+/**
+ * Setting one of the distributions
+ */
 export const orderBulk = ({
   quantity,
   n_tp,
