@@ -9,7 +9,7 @@
 - [Distributions](#distributions)
 - [Roadmap](#roadmap)
 - [License](#license)
-- [Acknowledgements](#acknowledgements)
+- [Useful material](#useful-material)
 
 <p align="center"> 
 <img src="assets/interface_range_tool.png">
@@ -86,9 +86,12 @@ ENABLE_RATE_LIMIT = true
 
 <!-- USAGE EXAMPLES -->
 
-## Usage
+5. Build and run
+```
+npm run dev:server
+```
 
-<!-- ROADMAP -->
+## Usage
 
 ## Distributions
 These are the available distributions to choose from:
@@ -110,12 +113,9 @@ These are the available distributions to choose from:
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-<!-- ACKNOWLEDGEMENTS -->
+<!-- USEFUL METERIAL -->
 
-## Acknowledgements
-
-## TODO:
-
-- Memoization on Redux;
-- Proper error handling;
-- Documentation(comments);
+## Useful Material
+- [BitMEX Survival Guide](https://www.crypto-simplified.com/wp-content/uploads/2018/09/BitMEX-Survival-Guide-v1.5.pdf)
+- [Crypto news](https://cointelegraph.com/)
+- [BitMEX position calculator](https://blockchainwhispers.com/bitmex-position-calculator/)
