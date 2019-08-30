@@ -13,11 +13,25 @@ const exchangeId = 'bitmex',
 if (process.env.TESTNET == 'true') {
   exchange.urls['api'] = exchange.urls['test'];
 }
+
+const errorHandling = e => {
+  const errorMessage = JSON.parse(e.message.slice(7)).error.message;
+
+  if (e instanceof ccxt.NetworkError) {
+    return res.status(500).json({ errorMessage });
+  } else if (e instanceof ccxt.ExchangeError) {
+    return res.status(500).json({ errorMessage });
+  } else if (e instanceof ccxt.ValidationError) {
+    return res.status(500).json({ errorMessage });
+  } else {
+    return res.status(500).json({ errorMessage: 'ERROR' });
+  }
+};
+
 /**
  * Current price GET request to the exchange API
  */
 exports.displayPrice = async (req, res, next) => {
-  console.log(process.env.API_KEY, typeof process.env.API_KEY);
   try {
     const response = await exchange.fetchOrderBook('BTC/USD', 1, {
       // this parameter is exchange-specific, all extra params have unique names per exchange
@@ -25,16 +39,7 @@ exports.displayPrice = async (req, res, next) => {
     });
     return res.send({ currentPrice: response.asks[0][0] });
   } catch (error) {
-    console.log(error, 'request error');
-    if (JSON.parse(response).error) {
-      console.log(
-        JSON.parse(body).error.message,
-        'display price error express'
-      );
-      return res
-        .status(500)
-        .json({ errorMessage: JSON.parse(body).error.message });
-    }
+    errorHandling(error);
   }
 };
 
@@ -45,19 +50,8 @@ exports.postOrder = async (req, res, next) => {
   try {
     const response = await exchange.privatePostOrderBulk(req.body);
     return res.send({ success: res.statusCode });
-  } catch (e) {
-    if (e instanceof ccxt.NetworkError) {
-      //console.log(e.message, 'CCXT network ERR');
-      return res.status(500).json({ errorMessage: e.name });
-    } else if (e instanceof ccxt.ExchangeError) {
-      return res.status(500).json({ errorMessage: e.name });
-    } else if (e instanceof ccxt.ValidationError) {
-      //console.log(e.message, 'CCXT Validation ERR');
-      return res.status(500).json({ errorMessage: e.name });
-    } else {
-      // console.log('CCXT MESSAGE ERR');
-      return res.status(500).json({ errorMessage: 'ERROR' });
-    }
+  } catch (error) {
+    errorHandling(error);
   }
 };
 
