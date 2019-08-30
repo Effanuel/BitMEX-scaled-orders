@@ -54,7 +54,6 @@ export const previewPrice = payload => async dispatch => {
   try {
     // console.log(payload, "POAYLOAD PRICE");
     const response = await axios.post('/bitmex/getPrice', payload);
-    console.log(typeof dispatch(previewPriceSuccess(response.data)));
     dispatch(previewPriceSuccess(response.data));
   } catch (err) {
     console.log(err.response.data, 'error previewprice redux');

@@ -2,7 +2,12 @@ import React, { PureComponent } from 'react';
 
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
-// import axios from 'axios';
+
+import {
+  showPreviewSelector,
+  currentPriceSelector,
+  errorSelector
+} from './redux/selectors';
 
 import {
   previewPrice,
@@ -204,11 +209,11 @@ class App extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ preview }) => ({
+const mapStateToProps = state => ({
   // preview: state.preview
-  showPreview: preview.showPreview,
-  currentPrice: preview.currentPrice,
-  error: preview.error
+  showPreview: showPreviewSelector(state),
+  currentPrice: currentPriceSelector(state),
+  error: errorSelector(state)
 });
 export default connect(
   mapStateToProps,
