@@ -26,4 +26,4 @@ SelectDropdown.propTypes = {
   onChange: PropTypes.func
 };
 
-export default SelectDropdown;
+export { SelectDropdown };

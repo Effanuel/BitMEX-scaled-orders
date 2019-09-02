@@ -1,25 +1,28 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent } from "react";
 
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { Container, Row, Col, Button } from "react-bootstrap";
+import { connect } from "react-redux";
 
 import {
   showPreviewSelector,
   currentPriceSelector,
   errorSelector
-} from './redux/selectors';
+} from "./redux/selectors";
 
 import {
   previewPrice,
   postOrder,
   previewOrders
-} from './redux/actions/previewActions';
+} from "./redux/actions/previewActions";
 
-import InputField from './components/InputField/InputField';
-import SelectDropdown from './components/SelectDropdown/SelectDropdown';
-import CustomRadioButton from './components/CustomRadioButton/CustomRadioButton';
-import OrdersPreviewTable from './components/OrdersPreviewTable/OrdersPreviewTable';
-import styles from './css/product.module.css';
+import {
+  InputField,
+  SelectDropdown,
+  CustomRadioButton,
+  OrdersPreviewTable
+} from "./components";
+
+import styles from "./css/product.module.css";
 
 class App extends PureComponent {
   state = {
@@ -27,9 +30,9 @@ class App extends PureComponent {
     n_tp: 2,
     start: 12000,
     end: 12500,
-    distribution: 'Uniform',
-    side: 'Sell',
-    symbol: 'XBTUSD'
+    distribution: "Uniform",
+    side: "Sell",
+    symbol: "XBTUSD"
   };
 
   // async componentDidMount() {
@@ -71,7 +74,7 @@ class App extends PureComponent {
 
   //testdev123
   render() {
-    const emptyStr = '';
+    const emptyStr = "";
     const { showPreview, currentPrice, error } = this.props;
     const { quantity, n_tp, start, end } = this.state;
 
@@ -82,7 +85,7 @@ class App extends PureComponent {
             <Row className={styles.myRow}>
               <Col>
                 <SelectDropdown
-                  instruments={['XBTUSD', 'ETHUSD']}
+                  instruments={["XBTUSD", "ETHUSD"]}
                   id="symbol"
                   onChange={this.handleOnChange}
                   label="Instrument"

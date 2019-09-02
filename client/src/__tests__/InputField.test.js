@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import InputField from "../components/InputField/InputField";
+import { InputField } from "../components";
 
 const onChange = jest.fn(),
   props = {

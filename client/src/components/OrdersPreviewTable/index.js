@@ -1,7 +1,7 @@
-import React from 'react';
-import { Table } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import styles from './OrdersPreviewTable.module.css';
+import React from "react";
+import { Table } from "react-bootstrap";
+import { connect } from "react-redux";
+import styles from "./OrdersPreviewTable.module.css";
 
 const OrdersPreviewTable = ({ preview }) => {
   return (
@@ -17,9 +17,9 @@ const OrdersPreviewTable = ({ preview }) => {
         {preview.orders.map((x, i) => {
           return (
             <tr key={String(i)}>
-              <td key={x * i + 'a'}>{x.orderQty}</td>
-              <td key={x * i + 'b'}>{x.side}</td>
-              <td key={x * i + 'c'}>{x.price}</td>
+              <td key={x * i + "a"}>{x.orderQty}</td>
+              <td key={x * i + "b"}>{x.side}</td>
+              <td key={x * i + "c"}>{x.price}</td>
             </tr>
           );
         })}

@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import CustomRadioButton from "../components/CustomRadioButton/CustomRadioButton";
+import { CustomRadioButton } from "../components";
 
 const props = {
   label: "Sell",

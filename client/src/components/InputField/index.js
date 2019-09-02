@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import './InputField.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import "./InputField.module.css";
 
-import { InputGroup, FormControl } from 'react-bootstrap';
+import { InputGroup, FormControl } from "react-bootstrap";
 
 const InputField = ({ id, label, value, onChange }) => {
   return (
@@ -28,4 +28,4 @@ InputField.propTypes = {
   onChange: PropTypes.func
 };
 
-export default InputField;
+export { InputField };

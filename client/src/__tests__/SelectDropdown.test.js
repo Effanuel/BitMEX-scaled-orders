@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import SelectDropdown from "../components/SelectDropdown/SelectDropdown";
+import { SelectDropdown } from "../components";
 
 const onChange = jest.fn(),
   props = {
