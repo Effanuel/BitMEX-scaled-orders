@@ -29,21 +29,6 @@ const errorHandling = e => {
 };
 
 /**
- * Current price GET request to the exchange API
- */
-exports.displayPrice = async (req, res, next) => {
-  try {
-    const response = await exchange.fetchOrderBook("BTC/USD", 1, {
-      // this parameter is exchange-specific, all extra params have unique names per exchange
-      group: 1 // 1 = orders are grouped by price, 0 = orders are separate
-    });
-    return res.send({ currentPrice: response.asks[0][0] });
-  } catch (error) {
-    errorHandling(error);
-  }
-};
-
-/**
  * Bulk order POST request to the exchange API
  */
 exports.postOrder = async (req, res, next) => {

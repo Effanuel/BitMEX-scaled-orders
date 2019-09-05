@@ -1,4 +1,4 @@
-@import 'root.css';
+@import "root.css";
 body {
   background-color: var(--primaryColor);
   min-width: 600px;
@@ -29,6 +29,11 @@ body {
 input[type='radio']:checked:after {
   background: #ebff43;
 } */
+
+.myText {
+  color: var(--accentColor);
+  font-size: calc(0.5em + 0.5vw);
+}
 
 .myTextButton {
   color: var(--accentColor);
