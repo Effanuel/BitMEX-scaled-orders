@@ -1,9 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { FormCheck } from "react-bootstrap";
 import styles from "./CustomRadioButton.module.css";
 
-const CustomRadioButton = ({ label, type, name, defaultChecked }) => {
+const CustomRadioButton = memo(({ label, type, name, defaultChecked }) => {
   return (
     <div className={styles.myLabel}>
       <FormCheck
@@ -18,7 +18,7 @@ const CustomRadioButton = ({ label, type, name, defaultChecked }) => {
       />
     </div>
   );
-};
+});
 
 CustomRadioButton.propTypes = {
   name: PropTypes.string,

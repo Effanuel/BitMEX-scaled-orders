@@ -1,10 +1,10 @@
-import React from "react";
+import React, { memo } from "react";
 import PropTypes from "prop-types";
 import "./InputField.module.css";
 
 import { InputGroup, FormControl } from "react-bootstrap";
 
-const InputField = ({ id, label, value, onChange }) => {
+const InputField = memo(({ id, label, value, onChange }) => {
   return (
     <div>
       <label htmlFor={label}>{label}</label>
@@ -20,7 +20,7 @@ const InputField = ({ id, label, value, onChange }) => {
       </InputGroup>
     </div>
   );
-};
+});
 
 InputField.propTypes = {
   label: PropTypes.string,

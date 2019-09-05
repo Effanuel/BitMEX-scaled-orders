@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import PropTypes from "prop-types";
 import styles from "./SelectDropdown.module.css";
 
-const SelectDropdown = ({ label, instruments, onChange, id }) => {
+const SelectDropdown = memo(({ label, instruments, onChange, id }) => {
   //event.target.value
   return (
     <div className={styles.selectDropdown}>
@@ -17,7 +17,7 @@ const SelectDropdown = ({ label, instruments, onChange, id }) => {
       </select>
     </div>
   );
-};
+});
 
 SelectDropdown.propTypes = {
   label: PropTypes.string,
