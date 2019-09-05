@@ -5,21 +5,25 @@ import { connect } from "react-redux";
 
 import {
   showPreviewSelector,
-  currentPriceSelector,
-  errorSelector
+  errorSelector,
+  websocketDataSelector
 } from "./redux/selectors";
 
+import { postOrder, previewOrders } from "./redux/actions/previewActions";
+
 import {
-  previewPrice,
-  postOrder,
-  previewOrders
-} from "./redux/actions/previewActions";
+  wsConnect,
+  wsDisconnect,
+  wsHandleSubscribeChange,
+  wsPriceSubscribe
+} from "./redux/actions/websocketActions";
 
 import {
   InputField,
   SelectDropdown,
   CustomRadioButton,
-  OrdersPreviewTable
+  OrdersPreviewTable,
+  SpinnerComponent
 } from "./components";
 
 import styles from "./css/product.module.css";
@@ -35,18 +39,22 @@ class App extends PureComponent {
     symbol: "XBTUSD"
   };
 
-  // async componentDidMount() {
-  //   try {
-  //     const response = await axios.get('/bitmex/getInstruments');
-  //     this.setState({ instruments: response.data.instruments });
-  //   } catch (err) {
-  //     console.log(err, 'error');
-  //   }
-  // }
+  async componentDidMount() {
+    await this.props.wsConnect();
+    await this.props.wsPriceSubscribe(this.state.symbol);
+  }
+  componentWillUnmount() {
+    this.props.wsDisconnect();
+  }
 
   handleOnChange = event => {
+    const { value, id } = event.target;
+    this.props.wsHandleSubscribeChange({
+      A: this.state.symbol,
+      B: value
+    });
     this.setState({
-      [event.target.id]: event.target.value
+      [id]: value
     });
   };
 
@@ -65,9 +73,6 @@ class App extends PureComponent {
   onRadioChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
-  onPreviewPrice = () => {
-    this.props.previewPrice(this.state.symbol);
-  };
   onPreviewOrders = () => {
     this.props.previewOrders(this.state);
   };
@@ -75,11 +80,11 @@ class App extends PureComponent {
   //testdev123
   render() {
     const emptyStr = "";
-    const { showPreview, currentPrice, error } = this.props;
+    const { showPreview, error, websocketData, loading } = this.props;
     const { quantity, n_tp, start, end } = this.state;
 
     return (
-      <div>
+      <>
         <Container className={styles.myContainer}>
           <form id="orderForm">
             <Row className={styles.myRow}>
@@ -96,17 +101,13 @@ class App extends PureComponent {
                 <CustomRadioButton label="Buy" type="radio" name="side" />
               </Col>
               <Col>
-                <Button
-                  onClick={this.onPreviewPrice}
-                  variant="link"
-                  className={styles.myTextButton}
-                >
-                  Get current price
-                </Button>
+                <div variant="link" className={styles.myText}>
+                  Current price:
+                </div>
               </Col>
               <Col>
                 <div className={styles.myTextField} id="divtest">
-                  {currentPrice}
+                  {websocketData || (loading && <SpinnerComponent />)}
                 </div>
               </Col>
             </Row>
@@ -207,7 +208,7 @@ class App extends PureComponent {
             <OrdersPreviewTable />
           </Container>
         )}
-      </div>
+      </>
     );
   }
 }
@@ -215,10 +216,18 @@ class App extends PureComponent {
 const mapStateToProps = state => ({
   // preview: state.preview
   showPreview: showPreviewSelector(state),
-  currentPrice: currentPriceSelector(state),
-  error: errorSelector(state)
+  error: errorSelector(state),
+  websocketData: websocketDataSelector(state),
+  loading: state.websocket.loading
 });
 export default connect(
   mapStateToProps,
-  { previewPrice, postOrder, previewOrders }
+  {
+    postOrder,
+    previewOrders,
+    wsConnect,
+    wsDisconnect,
+    wsHandleSubscribeChange,
+    wsPriceSubscribe
+  }
 )(App);
