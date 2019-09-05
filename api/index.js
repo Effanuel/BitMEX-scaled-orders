@@ -1,31 +1,33 @@
-require('dotenv').config();
+require("dotenv").config();
 
-const express = require('express'),
+const express = require("express"),
+  BitMEXClient = require("bitmex-realtime-api"),
   app = express(),
-  cors = require('cors'),
-  bodyParser = require('body-parser'),
-  request = require('request'),
-  bitmexRoutes = require('./routes/bitmex'),
-  path = require('path');
+  helmet = require("helmet"),
+  cors = require("cors"),
+  bodyParser = require("body-parser"),
+  bitmexRoutes = require("./routes/bitmex"),
+  path = require("path");
 
 const port = process.env.PORT || 3001;
 
+app.use(helmet());
 app.use(cors());
-app.disable('etag').disable('x-powered-by');
+app.disable("etag").disable("x-powered-by");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use('/bitmex', bitmexRoutes);
+app.use("/bitmex", bitmexRoutes);
 
 //require('./routes')(app);
 
-if (process.env.NODE_ENV != 'development ') {
+if (process.env.NODE_ENV != "development ") {
   // Serve any static files
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  app.use(express.static(path.join(__dirname, "../client/build")));
 
   // Handle React routing, return all requests to React app
-  app.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  app.get("/*", function(req, res) {
+    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
 }
 

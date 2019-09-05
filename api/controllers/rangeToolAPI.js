@@ -1,17 +1,17 @@
-const request = require('request');
-const crypto = require('crypto');
-const ccxt = require('ccxt');
+// const request = require('request');
+// const crypto = require('crypto');
+const ccxt = require("ccxt");
 
-const exchangeId = 'bitmex',
+const exchangeId = "bitmex",
   exchangeClass = ccxt[exchangeId],
   exchange = new exchangeClass({
     apiKey: process.env.API_KEY,
     secret: process.env.API_SECRET,
     timeout: 30000,
-    enableRateLimit: process.env.ENABLE_RATE_LIMIT == 'true'
+    enableRateLimit: process.env.ENABLE_RATE_LIMIT == "true"
   });
-if (process.env.TESTNET == 'true') {
-  exchange.urls['api'] = exchange.urls['test'];
+if (process.env.TESTNET == "true") {
+  exchange.urls["api"] = exchange.urls["test"];
 }
 
 const errorHandling = e => {
@@ -24,7 +24,7 @@ const errorHandling = e => {
   } else if (e instanceof ccxt.ValidationError) {
     return res.status(500).json({ errorMessage });
   } else {
-    return res.status(500).json({ errorMessage: 'ERROR' });
+    return res.status(500).json({ errorMessage: "ERROR" });
   }
 };
 
@@ -33,7 +33,7 @@ const errorHandling = e => {
  */
 exports.displayPrice = async (req, res, next) => {
   try {
-    const response = await exchange.fetchOrderBook('BTC/USD', 1, {
+    const response = await exchange.fetchOrderBook("BTC/USD", 1, {
       // this parameter is exchange-specific, all extra params have unique names per exchange
       group: 1 // 1 = orders are grouped by price, 0 = orders are separate
     });
