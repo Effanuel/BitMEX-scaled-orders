@@ -1,3 +1,13 @@
+:root {
+  --accentColor: #00ca45;
+}
+
 .myTable {
   margin: 12px;
+  font-size: 12px;
+}
+
+.customStyle {
+  color: var(--accentColor);
+  font-size: 14px;
 }
