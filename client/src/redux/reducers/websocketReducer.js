@@ -9,7 +9,6 @@ import {
 } from "../actions/actionTypes";
 
 const initialState = {
-  url: "",
   data: {},
   connected: false,
   loading: false
@@ -20,7 +19,7 @@ export default (state = initialState, { type, payload }) => {
     case "INTERNAL::CLEAR_MESSAGE_LOG":
       return {
         ...state,
-        messages: []
+        data: {}
       };
     case REDUX_WEBSOCKET_LOADING:
       return {
@@ -30,13 +29,13 @@ export default (state = initialState, { type, payload }) => {
     case REDUX_WEBSOCKET_CONNECT:
       return {
         ...state,
-        url: payload.url,
         loading: true
       };
 
     case REDUX_WEBSOCKET_OPEN:
       return {
         ...state,
+        loading: false,
         connected: true
       };
 

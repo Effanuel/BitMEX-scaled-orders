@@ -8,16 +8,10 @@ import {
   WEBSOCKET_SEND
 } from "@giantmachines/redux-websocket";
 
-export const POST_ORDER = "POST_ORDER";
 export const POST_ORDER_SUCCESS = "POST_ORDER_SUCCESS";
 export const POST_ORDER_ERROR = "POST_ORDER_ERROR";
 export const POST_ORDER_LOADING = "POST_ORDER_LOADING";
 
-// export const PREVIEW_PRICE = "PREVIEW_PRICE";
-// export const PREVIEW_PRICE_SUCCESS = "PREVIEW_PRICE_SUCCESS";
-// export const PREVIEW_PRICE_ERROR = "PREVIEW_PRICE_ERROR";
-
-// export const PREVIEW_ORDERS = "PREVIEW_ORDERS";
 export const PREVIEW_ORDERS_SUCCESS = "PREVIEW_ORDERS_SUCCESS";
 
 const WEBSOCKET_PREFIX = "REDUX_WEBSOCKET";

@@ -1,6 +1,5 @@
 import axios from "axios";
 import {
-  // POST_ORDER, //IGNORING LOADERS FOR NOW
   POST_ORDER_SUCCESS,
   POST_ORDER_ERROR,
   POST_ORDER_LOADING,
