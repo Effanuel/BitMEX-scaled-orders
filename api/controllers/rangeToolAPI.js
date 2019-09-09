@@ -14,7 +14,7 @@ if (process.env.TESTNET == "true") {
   exchange.urls["api"] = exchange.urls["test"];
 }
 
-const errorHandling = e => {
+const errorHandling = (e, res) => {
   const errorMessage = JSON.parse(e.message.slice(7)).error.message;
 
   if (e instanceof ccxt.NetworkError) {
@@ -36,7 +36,7 @@ exports.postOrder = async (req, res, next) => {
     const response = await exchange.privatePostOrderBulk(req.body);
     return res.send({ success: res.statusCode });
   } catch (error) {
-    errorHandling(error);
+    errorHandling(error, res);
   }
 };
 
