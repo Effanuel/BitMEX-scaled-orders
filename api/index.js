@@ -1,7 +1,6 @@
 require("dotenv").config();
 
 const express = require("express"),
-  BitMEXClient = require("bitmex-realtime-api"),
   app = express(),
   helmet = require("helmet"),
   cors = require("cors"),
