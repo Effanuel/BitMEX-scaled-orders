@@ -15,7 +15,6 @@ export const wsLoading = payload => {
 
 export const wsPriceSubscribe = payload => async dispatch => {
   try {
-    await sleep(1000);
     dispatch(send({ op: "subscribe", args: [`quote:${payload || "XBTUSD"}`] }));
   } catch (err) {
     console.log(err.response.data, "error previewpriceWS redux");

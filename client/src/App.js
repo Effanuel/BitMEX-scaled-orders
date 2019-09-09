@@ -41,8 +41,14 @@ class App extends PureComponent {
 
   async componentDidMount() {
     await this.props.wsConnect();
-    await this.props.wsPriceSubscribe(this.state.symbol);
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.connected !== this.props.connected) {
+      this.props.wsPriceSubscribe(this.state.symbol);
+    }
+  }
+
   componentWillUnmount() {
     this.props.wsDisconnect();
   }
@@ -80,7 +86,13 @@ class App extends PureComponent {
   //testdev123
   render() {
     const emptyStr = "";
-    const { showPreview, error, websocketData, loading } = this.props;
+    const {
+      showPreview,
+      error,
+      websocketData,
+      loading,
+      loadingreq
+    } = this.props;
     const { quantity, n_tp, start, end } = this.state;
 
     return (
@@ -196,7 +208,7 @@ class App extends PureComponent {
                     !(quantity && n_tp && start && end) || quantity < n_tp
                   }
                 >
-                  Submit
+                  Submit{loadingreq && <SpinnerComponent />}
                 </Button>
               </Col>
             </Row>
@@ -218,7 +230,9 @@ const mapStateToProps = state => ({
   showPreview: showPreviewSelector(state),
   error: errorSelector(state),
   websocketData: websocketDataSelector(state),
-  loading: state.websocket.loading
+  loading: state.websocket.loading,
+  loadingreq: state.preview.loading,
+  connected: state.websocket.connected
 });
 export default connect(
   mapStateToProps,
