@@ -1,8 +1,8 @@
-import React, { memo } from "react";
-import PropTypes from "prop-types";
-import "./InputField.module.css";
+import React, { memo } from 'react';
+import PropTypes from 'prop-types';
+import './InputField.module.css';
 
-import { InputGroup, FormControl } from "react-bootstrap";
+import { InputGroup, FormControl } from 'react-bootstrap';
 
 const InputField = memo(({ id, label, value, onChange }) => {
   return (
@@ -23,6 +23,7 @@ const InputField = memo(({ id, label, value, onChange }) => {
 });
 
 InputField.propTypes = {
+  id: PropTypes.string,
   label: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func
