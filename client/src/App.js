@@ -1,32 +1,36 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent, Suspense, lazy } from 'react';
 
-import { Container, Row, Col, Button } from "react-bootstrap";
-import { connect } from "react-redux";
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import {
   showPreviewSelector,
   errorSelector,
   websocketDataSelector
-} from "./redux/selectors";
+} from './redux/selectors';
 
-import { postOrder, previewOrders } from "./redux/actions/previewActions";
+import { postOrder, previewOrders } from './redux/actions/previewActions';
 
 import {
   wsConnect,
   wsDisconnect,
   wsHandleSubscribeChange,
   wsPriceSubscribe
-} from "./redux/actions/websocketActions";
+} from './redux/actions/websocketActions';
 
 import {
   InputField,
   SelectDropdown,
   CustomRadioButton,
-  OrdersPreviewTable,
+  // OrdersPreviewTable,
   SpinnerComponent
-} from "./components";
+} from './components';
 
-import styles from "./css/product.module.css";
+import styles from './css/product.module.css';
+
+const OrdersPreviewTable = lazy(() =>
+  import('./components/OrdersPreviewTable')
+);
 
 class App extends PureComponent {
   state = {
@@ -34,9 +38,9 @@ class App extends PureComponent {
     n_tp: 2,
     start: 12000,
     end: 12500,
-    distribution: "Uniform",
-    side: "Sell",
-    symbol: "XBTUSD"
+    distribution: 'Uniform',
+    side: 'Sell',
+    symbol: 'XBTUSD'
   };
 
   async componentDidMount() {
@@ -85,7 +89,7 @@ class App extends PureComponent {
 
   //testdev123
   render() {
-    const emptyStr = "";
+    const emptyStr = '';
     const {
       showPreview,
       error,
@@ -102,7 +106,7 @@ class App extends PureComponent {
             <Row className={styles.myRow}>
               <Col>
                 <SelectDropdown
-                  instruments={["XBTUSD", "ETHUSD"]}
+                  instruments={['XBTUSD', 'ETHUSD']}
                   id="symbol"
                   onChange={this.handleOnChange}
                   label="Instrument"
@@ -217,7 +221,9 @@ class App extends PureComponent {
 
         {showPreview && (
           <Container className={styles.myContainer}>
-            <OrdersPreviewTable />
+            <Suspense fallback={<div>Loading...</div>}>
+              <OrdersPreviewTable />
+            </Suspense>
           </Container>
         )}
       </>
