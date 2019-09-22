@@ -1,7 +1,7 @@
-@import "root.css";
+@import 'root.css';
 body {
   background-color: var(--primaryColor);
-  min-width: 600px;
+  min-width: 500px;
   min-height: 750px;
 }
 

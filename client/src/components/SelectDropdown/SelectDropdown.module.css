@@ -1,11 +1,22 @@
+@import '../../css/root.css';
+
 .selectDropdown label {
   color: white;
   font-size: 12px;
 }
 
 .selectDropdown select {
-  background-color: #707070;
+  background-color: var(--primaryColor);
   color: white;
   border-radius: 0;
   border: 1px solid grey;
+  outline: none;
+}
+.selectDropdown select:focus {
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  border: 1px solid var(--accentColor);
 }
