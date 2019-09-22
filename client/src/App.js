@@ -113,7 +113,12 @@ class App extends PureComponent {
                 />
               </Col>
               <Col onChange={this.onRadioChange}>
-                <CustomRadioButton label="Sell" type="radio" name="side" />
+                <CustomRadioButton
+                  defaultChecked
+                  label="Sell"
+                  type="radio"
+                  name="side"
+                />
                 <CustomRadioButton label="Buy" type="radio" name="side" />
               </Col>
               <Col>
