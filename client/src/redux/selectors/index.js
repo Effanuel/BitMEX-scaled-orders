@@ -1,4 +1,4 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
 
 const getShowPreview = state => state.preview.showPreview;
 const getError = state => state.preview.error;
@@ -18,7 +18,7 @@ export const errorSelector = createSelector(
 export const websocketDataSelector = createSelector(
   [websocketData],
   data => {
-    return data.action === "insert" ? data.data[0].askPrice : "";
+    return data.action === 'insert' ? `$${data.data[0].askPrice}` : '';
   }
 );
 
