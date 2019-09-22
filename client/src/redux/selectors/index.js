@@ -38,3 +38,8 @@ export const ordersAveragePriceSelector = createSelector(
     }
   }
 );
+
+export const ordersSelector = createSelector(
+  [getOrders],
+  orders => orders
+);

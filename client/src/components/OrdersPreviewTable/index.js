@@ -1,17 +1,21 @@
-import React from "react";
-import { Table } from "react-bootstrap";
-import { connect } from "react-redux";
-import styles from "./OrdersPreviewTable.module.css";
+import React from 'react';
+import { Table } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import styles from './OrdersPreviewTable.module.css';
 
-import { ordersAveragePriceSelector } from "../../redux/selectors";
+import {
+  ordersAveragePriceSelector,
+  ordersSelector
+} from '../../redux/selectors';
 
-const OrdersPreviewTable = ({ preview, averagePrice }) => {
+const OrdersPreviewTable = ({ averagePrice, orders }) => {
   return (
     <Table className={styles.myTable} striped variant="dark" size="sm">
       <thead>
         <tr>
           <th colSpan={3}>
-            Average price: <d className={styles.customStyle}>{averagePrice}</d>
+            Average price:
+            <span className={styles.customStyle}>{averagePrice}</span>
           </th>
         </tr>
         <tr>
@@ -21,17 +25,17 @@ const OrdersPreviewTable = ({ preview, averagePrice }) => {
         </tr>
       </thead>
       <tbody>
-        {preview.orders.map((x, i) => {
+        {orders.map((x, i) => {
           return (
             <tr key={String(i)}>
-              <td key={x * i + "a"}>{x.orderQty}</td>
+              <td key={x * i + 'a'}>{x.orderQty}</td>
               <td
-                key={x * i + "b"}
-                style={{ color: x.side === "Sell" ? "#d50000" : "#00ca45" }}
+                key={x * i + 'b'}
+                style={{ color: x.side === 'Sell' ? '#d50000' : '#00ca45' }}
               >
                 {x.side}
               </td>
-              <td key={x * i + "c"}>{x.price}</td>
+              <td key={x * i + 'c'}>{x.price}</td>
             </tr>
           );
         })}
@@ -41,7 +45,7 @@ const OrdersPreviewTable = ({ preview, averagePrice }) => {
 };
 
 const mapStateToProps = state => ({
-  preview: state.preview,
+  orders: ordersSelector(state),
   averagePrice: ordersAveragePriceSelector(state)
 });
 export default connect(
