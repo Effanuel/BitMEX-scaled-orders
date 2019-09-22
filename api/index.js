@@ -14,6 +14,10 @@ app.use(helmet());
 app.use(cors());
 app.disable("etag").disable("x-powered-by");
 
+// exports.get404 = (req, res, next) => {
+//   res.status(404).render('404', {pageTitle: 'Page not found'})
+// }
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/bitmex", bitmexRoutes);

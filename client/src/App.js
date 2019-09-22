@@ -93,7 +93,7 @@ class App extends PureComponent {
     const {
       showPreview,
       error,
-      websocketData,
+      wsCurrentPrice,
       loading,
       loadingreq
     } = this.props;
@@ -122,8 +122,8 @@ class App extends PureComponent {
                 </div>
               </Col>
               <Col>
-                <div className={styles.myTextField} id="divtest">
-                  {websocketData || (loading && <SpinnerComponent />)}
+                <div className={styles.myTextField}>
+                  {wsCurrentPrice || (loading && <SpinnerComponent />)}
                 </div>
               </Col>
             </Row>
@@ -235,7 +235,7 @@ const mapStateToProps = state => ({
   // preview: state.preview
   showPreview: showPreviewSelector(state),
   error: errorSelector(state),
-  websocketData: websocketDataSelector(state),
+  wsCurrentPrice: websocketDataSelector(state),
   loading: state.websocket.loading,
   loadingreq: state.preview.loading,
   connected: state.websocket.connected
