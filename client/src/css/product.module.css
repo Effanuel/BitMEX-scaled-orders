@@ -33,6 +33,12 @@ input[type='radio']:checked:after {
 .myText {
   color: var(--accentColor);
   font-size: calc(0.5em + 0.5vw);
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently*/
 }
 
 .myTextButton {
