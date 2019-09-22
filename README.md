@@ -99,6 +99,10 @@ These are the available distributions to choose from:
 <img src="assets/distributions.png">
 </p>
 
+This is the formula used to calculate distributions:
+
+![formula](https://wikimedia.org/api/rest_v1/media/math/render/svg/4abaca87a10ecfa77b5a205056523706fe6c9c3f)
+
 *(The chart representations are symbolic)*
 
 ## Roadmap
@@ -119,3 +123,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - [BitMEX Survival Guide](https://www.crypto-simplified.com/wp-content/uploads/2018/09/BitMEX-Survival-Guide-v1.5.pdf)
 - [Crypto news](https://cointelegraph.com/)
 - [BitMEX position calculator](https://blockchainwhispers.com/bitmex-position-calculator/)
+- [Crypto sentiment/statistics tool](https://thetie.io/)
