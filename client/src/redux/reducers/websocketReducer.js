@@ -5,18 +5,21 @@ import {
   REDUX_WEBSOCKET_MESSAGE,
   REDUX_WEBSOCKET_OPEN,
   REDUX_WEBSOCKET_SEND,
-  REDUX_WEBSOCKET_LOADING
-} from "../actions/actionTypes";
+  REDUX_WEBSOCKET_LOADING,
+  REDUX_WEBSOCKET_ERROR
+} from '../actions/actionTypes';
 
 const initialState = {
   data: {},
   connected: false,
-  loading: false
+  loading: false,
+  error: ''
 };
 
 export default (state = initialState, { type, payload }) => {
+  console.log(type);
   switch (type) {
-    case "INTERNAL::CLEAR_MESSAGE_LOG":
+    case 'INTERNAL::CLEAR_MESSAGE_LOG':
       return {
         ...state,
         data: {}
@@ -44,6 +47,12 @@ export default (state = initialState, { type, payload }) => {
       return {
         ...state,
         connected: false
+      };
+    case REDUX_WEBSOCKET_ERROR:
+      return {
+        ...state,
+        error: 'Websocket Error. Perhaps too many reloads.',
+        loading: false
       };
 
     case REDUX_WEBSOCKET_MESSAGE:

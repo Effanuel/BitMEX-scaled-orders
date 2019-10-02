@@ -93,6 +93,7 @@ class App extends PureComponent {
     const {
       showPreview,
       error,
+      wsError,
       wsCurrentPrice,
       loading,
       loadingreq
@@ -192,7 +193,7 @@ class App extends PureComponent {
                   name="distribution"
                 />
               </Col>
-              <Col className={styles.myErrorMessage}>{error}</Col>
+              <Col className={styles.myErrorMessage}>{error || wsError}</Col>
 
               <Col className="">
                 <Col className="text-right">
@@ -240,6 +241,7 @@ const mapStateToProps = state => ({
   // preview: state.preview
   showPreview: showPreviewSelector(state),
   error: errorSelector(state),
+  wsError: state.websocket.error,
   wsCurrentPrice: websocketDataSelector(state),
   loading: state.websocket.loading,
   loadingreq: state.preview.loading,
