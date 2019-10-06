@@ -6,7 +6,9 @@ import { connect } from 'react-redux';
 import {
   showPreviewSelector,
   errorSelector,
-  websocketDataSelector
+  websocketDataSelector,
+  websocketLoadingSelector,
+  websocketConnectedSelector
 } from './redux/selectors';
 
 import { postOrder, previewOrders } from './redux/actions/previewActions';
@@ -243,9 +245,9 @@ const mapStateToProps = state => ({
   error: errorSelector(state),
   wsError: state.websocket.error,
   wsCurrentPrice: websocketDataSelector(state),
-  loading: state.websocket.loading,
+  loading: websocketLoadingSelector(state),
   loadingreq: state.preview.loading,
-  connected: state.websocket.connected
+  connected: websocketConnectedSelector(state)
 });
 export default connect(
   mapStateToProps,

@@ -2,8 +2,11 @@ import { createSelector } from 'reselect';
 
 const getShowPreview = state => state.preview.showPreview;
 const getError = state => state.preview.error;
-const websocketData = state => state.websocket.data;
 const getOrders = state => state.preview.orders;
+
+const websocketData = state => state.websocket.data;
+const websocketLoading = state => state.websocket.loading;
+const websocketConnected = state => state.websocket.connected;
 
 export const showPreviewSelector = createSelector(
   [getShowPreview],
@@ -42,4 +45,14 @@ export const ordersAveragePriceSelector = createSelector(
 export const ordersSelector = createSelector(
   [getOrders],
   orders => orders
+);
+
+export const websocketLoadingSelector = createSelector(
+  [websocketLoading],
+  loading => loading
+);
+
+export const websocketConnectedSelector = createSelector(
+  [websocketConnected],
+  connected => connected
 );
