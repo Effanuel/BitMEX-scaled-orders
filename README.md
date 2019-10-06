@@ -21,9 +21,9 @@ This project is a trading tool based on **BitMEX API** to help you place orders 
 
 ### Current Features
 
-- Place up to 30 orders in a range at once;*(small order sizes will cause a **spam warning**)*
+- Place up to 30 orders in a range at once _(small order sizes will cause a **spam warning**)_;
 - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section);
-- Show current price _(it is based on the latest ask price)_
+- Shows current price _(it is based on the latest ask price)_
 
 ### Built With
 
@@ -50,28 +50,24 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 ### Prerequisites
 
 - [Nodejs](https://nodejs.org/en/download/)
-- Update npm:
-
-```sh
-npm install npm@latest -g
-```
+- [Git](https://git-scm.com/downloads) _(for cloning the repository)_
 
 ### Installation
 
-1. Clone the repo
+1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/dev/release-1.1.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-trading-tool.git
+cd Bitmex-scaled-orders/api
 ```
 
-2. Install NPM packages
+2. Install NPM packages for client and server:
 
 ```sh
-cd Bitmex-scaled-orders/api
 npm run init:packages
 ```
 
-3. Enter your API keys in `.sample-env` _(no quotes are needed)_
+3. Enter your API keys in `.sample-env` _(no quotes are needed)_:
 
 ```
 API_KEY = <API_KEY>
@@ -80,11 +76,17 @@ TESTNET = false
 ENABLE_RATE_LIMIT = true
 ```
 
-_**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_ `npm run clean` and `npm run dev:server`
+_**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_ `npm run clean` and `npm build`
 
-4. Rename `.sample-env` to `.env` (you can also change whether you want to use **Testnet**, **Rate Limit**)
+4. Rename `.sample-env` to `.env` (you can also change whether you want to use **Testnet**, **Rate Limit**):
 
 _**Disclaimer:** If you set TESTNET to true, you need to create a [Testnet](https://testnet.bitmex.com/) account and set the API keys appropriately. Your main BitMEX account API won't work with TESTNET option set to true._
+
+5. Build the application:
+
+```sh
+npm run build
+```
 
 <!-- USAGE EXAMPLES -->
 
@@ -99,7 +101,8 @@ cd Bitmex-scaled-orders/api
 
 ```sh
 npm run init:packages
-npm run dev:server
+npm run build
+npm run prod
 ```
 
 ## Usage
@@ -108,7 +111,7 @@ npm run dev:server
 
 ```sh
 cd Bitmex-scaled-orders/api
-npm run dev:server
+npm run prod
 ```
 
 ## Distributions
