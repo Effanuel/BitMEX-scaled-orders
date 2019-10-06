@@ -1,7 +1,7 @@
-import React from "react";
-import { shallow } from "enzyme";
-import configureStore from "redux-mock-store";
-import { OrdersPreviewTable } from "../components";
+import React from 'react';
+import { shallow } from 'enzyme';
+import configureStore from 'redux-mock-store';
+import { OrdersPreviewTable } from '../components';
 
 // const onChange = jest.fn(),
 //   props = {
@@ -11,34 +11,36 @@ import { OrdersPreviewTable } from "../components";
 //     onChange
 //   };
 
-describe("OrderPreviewTable component", () => {
+describe('OrderPreviewTable component', () => {
   const initialState = {
-    orders: [
-      {
-        symbol: "XBTUSD",
-        side: "Sell",
-        orderQty: 350,
-        price: 12000,
-        ordType: "Limit",
-        execInst: "ParticipateDoNotInitiate",
-        text: "order"
-      },
-      {
-        symbol: "XBTUSD",
-        side: "Sell",
-        orderQty: 350,
-        price: 12500,
-        ordType: "Limit",
-        execInst: "ParticipateDoNotInitiate",
-        text: "order"
-      }
-    ],
-    distribution: "Uniform",
-    side: "",
-    error: "",
-    showPreview: false,
-    currentPrice: null,
-    instrument: "XBTUSD"
+    preview: {
+      orders: [
+        {
+          symbol: 'XBTUSD',
+          side: 'Sell',
+          orderQty: 350,
+          price: 12000,
+          ordType: 'Limit',
+          execInst: 'ParticipateDoNotInitiate',
+          text: 'order'
+        },
+        {
+          symbol: 'XBTUSD',
+          side: 'Sell',
+          orderQty: 350,
+          price: 12500,
+          ordType: 'Limit',
+          execInst: 'ParticipateDoNotInitiate',
+          text: 'order'
+        }
+      ],
+      distribution: 'Uniform',
+      side: '',
+      error: '',
+      showPreview: false,
+      currentPrice: null,
+      instrument: 'XBTUSD'
+    }
   }; // here it is possible to pass in any middleware if needed into //configureStore
   const mockStore = configureStore();
   let component;
@@ -49,7 +51,7 @@ describe("OrderPreviewTable component", () => {
     component = shallow(<OrdersPreviewTable store={store} />);
   });
 
-  it("renders without crashing given redux store", () => {
+  it('renders without crashing given redux store', () => {
     expect(component).toMatchSnapshot();
   });
 
