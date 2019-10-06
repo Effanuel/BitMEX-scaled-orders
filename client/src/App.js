@@ -36,10 +36,10 @@ const OrdersPreviewTable = lazy(() =>
 
 class App extends PureComponent {
   state = {
-    quantity: 700,
-    n_tp: 2,
-    start: 12000,
-    end: 12500,
+    quantity: '',
+    n_tp: '',
+    start: '',
+    end: '',
     distribution: 'Uniform',
     side: 'Sell',
     symbol: 'XBTUSD'
