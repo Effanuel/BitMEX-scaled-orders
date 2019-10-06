@@ -15,15 +15,15 @@
 <img src="assets/interface_range_tool.png">
 </p>
 
-# BitMEX trading tool
+# BitMEX scaled orders tool
 
-This project is a trading tool based on **BitMEX API** to help you place orders in a range ( It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load).
+This project is a trading tool based on **BitMEX API** to help you place orders in a range (It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load)).
 
 ### Current Features
 
-- Place up to 30 orders in a range at once;
+- Place up to 30 orders in a range at once;*(small order sizes will cause a **spam warning**)*
 - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section);
-- Get current price *(it is based on the lastest ask price)*
+- Show current price _(it is based on the latest ask price)_
 
 ### Built With
 
@@ -40,7 +40,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 - Go to https://www.bitmex.com
 
-  _(If you are **new** to BitMEX, consider using my [affiliate link](https://www.bitmex.com/register/yjssSB) to get **10% off** the fees for 6 months.)_
+  _(If you are **new** to BitMEX, consider using my [affiliate link](https://www.bitmex.com/register/o8ILy1) to get **10% off** the fees for 6 months.)_
 
 * Get API keys:
   - Account > API keys > Create API key;
@@ -67,8 +67,8 @@ git clone https://github.com/Effanuel/Bitmex-trading-tool.git
 2. Install NPM packages
 
 ```sh
-cd api
-npm init:packages
+cd Bitmex-scaled-orders/api
+npm run init:packages
 ```
 
 3. Enter your API keys in `.sample-env` _(no quotes are needed)_
@@ -80,21 +80,41 @@ TESTNET = false
 ENABLE_RATE_LIMIT = true
 ```
 
+_**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_ `npm run clean` and `npm run dev:server`
+
 4. Rename `.sample-env` to `.env` (you can also change whether you want to use **Testnet**, **Rate Limit**)
 
-   #### Disclaimer: If you set TESTNET to true, you need to create a [Testnet](https://testnet.bitmex.com/) account and set the API keys appropriately. Your main Bitmex account API won't work with TESTNET option set to true.
+_**Disclaimer:** If you set TESTNET to true, you need to create a [Testnet](https://testnet.bitmex.com/) account and set the API keys appropriately. Your main BitMEX account API won't work with TESTNET option set to true._
 
 <!-- USAGE EXAMPLES -->
 
-5. Build and run
+#### TLDR setup:
+
+```sh
+git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
+cd Bitmex-scaled-orders/api
 ```
+
+- Create `.env` file with API keys;
+
+```sh
+npm run init:packages
 npm run dev:server
 ```
 
 ## Usage
 
+##### Run application:
+
+```sh
+cd Bitmex-scaled-orders/api
+npm run dev:server
+```
+
 ## Distributions
+
 These are the available distributions to choose from:
+
 <p align="center"> 
 <img src="assets/distributions.png">
 </p>
@@ -103,7 +123,7 @@ This is the formula used to calculate distributions:
 
 ![formula](https://wikimedia.org/api/rest_v1/media/math/render/svg/4abaca87a10ecfa77b5a205056523706fe6c9c3f)
 
-*(The chart representations are symbolic)*
+_(The chart representations are symbolic)_
 
 ## Roadmap
 
@@ -120,6 +140,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- USEFUL METERIAL -->
 
 ## Useful Material
+
 - [BitMEX Survival Guide](https://www.crypto-simplified.com/wp-content/uploads/2018/09/BitMEX-Survival-Guide-v1.5.pdf)
 - [Crypto news](https://cointelegraph.com/)
 - [BitMEX position calculator](https://blockchainwhispers.com/bitmex-position-calculator/)
