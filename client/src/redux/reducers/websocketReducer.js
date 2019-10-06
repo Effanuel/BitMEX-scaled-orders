@@ -17,7 +17,6 @@ const initialState = {
 };
 
 export default (state = initialState, { type, payload }) => {
-  console.log(type);
   switch (type) {
     case 'INTERNAL::CLEAR_MESSAGE_LOG':
       return {
