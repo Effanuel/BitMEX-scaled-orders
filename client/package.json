@@ -20,12 +20,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
     "test:watch": "npm test -- --watch",
     "eject": "react-scripts eject",
-    "dev:server": "echo \"Wrong directory. `cd ../api` and try again.\" && exit 1",
-    "init:packages": "echo \"Wrong directory. `cd ../api` and try again.\" && exit 1"
+    "clean": "rimraf ./build",
+    "init:packages": "npm install && cd ../api && npm install && cd ../client",
+    "build": "SET NODE_ENV=production && react-scripts build",
+    "prod": "cd ../api && npm run start"
   },
   "proxy": "http://localhost:3001",
   "eslintConfig": {
