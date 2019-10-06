@@ -54,11 +54,11 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ### Installation
 
-1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/dev/release-1.1.zip):
+1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/v1.0.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-trading-tool.git
-cd Bitmex-scaled-orders/api
+cd Bitmex-scaled-orders-master/api
 ```
 
 2. Install NPM packages for client and server:
