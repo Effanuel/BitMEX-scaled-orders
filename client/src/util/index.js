@@ -3,8 +3,8 @@
  * @param {number} number
  * @returns {number} rounded number
  */
-const roundHalf = number => {
-  return Math.round(number * 2) / 2;
+const roundHalf = (number, inc) => {
+  return Math.round(number * inc) / inc;
 };
 
 /**
@@ -21,9 +21,14 @@ const gaussian = (mean, x, delta) => {
 };
 
 const Uniform = (amount, n_tp, start, end, side, symbol) => {
-  let orders = { orders: [] };
+  let inc = symbol === "XBTUSD" ? 2 : 20;
 
-  const increment = roundHalf((end - start) / (n_tp - 1));
+  const start1 = roundHalf(start, inc);
+  const end1 = roundHalf(end, inc);
+
+  let orders = { orders: [] };
+  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
+  console.log(increment);
   const mean = Math.floor(amount / n_tp);
   //startEndPutOrders(orders.orders, start, end, mean, side);
   for (let i = 0; i < n_tp; i++) {
@@ -32,7 +37,7 @@ const Uniform = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: mean,
-      price: start + i * increment,
+      price: start1 + i * increment,
       ordType: "Limit",
       execInst: "ParticipateDoNotInitiate",
       text: "order"
@@ -42,8 +47,13 @@ const Uniform = (amount, n_tp, start, end, side, symbol) => {
   return orders;
 };
 const Positive = (amount, n_tp, start, end, side, symbol) => {
-  const START_CFG = -2;
-  const END_CFG = 2;
+  let inc = symbol === "XBTUSD" ? 2 : 20;
+
+  const start1 = roundHalf(start, inc);
+  const end1 = roundHalf(end, inc);
+
+  const START_CFG = -1;
+  const END_CFG = 1;
 
   const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
 
@@ -53,15 +63,15 @@ const Positive = (amount, n_tp, start, end, side, symbol) => {
   }
   const summ = arr.reduce((a, b) => a + b, 0);
 
-  const incrementPrice = (end - start) / (n_tp - 1);
   let orders = { orders: [] };
+  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
   for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
     orders.orders.push({
       symbol: symbol,
       side: side,
       orderQty: Math.floor((arr[i] / summ) * amount),
-      price: roundHalf(start + i * incrementPrice),
+      price: start1 + i * increment,
       ordType: "Limit",
       execInst: "ParticipateDoNotInitiate",
       text: "order"
@@ -71,8 +81,13 @@ const Positive = (amount, n_tp, start, end, side, symbol) => {
   return orders;
 };
 const Negative = (amount, n_tp, start, end, side, symbol) => {
-  const START_CFG = -2;
-  const END_CFG = 2;
+  let inc = symbol === "XBTUSD" ? 2 : 20;
+
+  const start1 = roundHalf(start, inc);
+  const end1 = roundHalf(end, inc);
+
+  const START_CFG = -1;
+  const END_CFG = 1;
 
   const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
 
@@ -82,7 +97,7 @@ const Negative = (amount, n_tp, start, end, side, symbol) => {
   }
   const summ = arr.reduce((a, b) => a + b, 0);
 
-  const incrementPrice = (end - start) / (n_tp - 1);
+  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
   let orders = { orders: [] };
   for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
@@ -90,7 +105,7 @@ const Negative = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: Math.floor((arr[i] / summ) * amount),
-      price: roundHalf(start + i * incrementPrice),
+      price: start1 + i * increment,
       ordType: "Limit",
       execInst: "ParticipateDoNotInitiate",
       text: "order"
@@ -100,6 +115,11 @@ const Negative = (amount, n_tp, start, end, side, symbol) => {
   return orders;
 };
 const Normal = (amount, n_tp, start, end, side, symbol) => {
+  let inc = symbol === "XBTUSD" ? 2 : 20;
+
+  const start1 = roundHalf(start, inc);
+  const end1 = roundHalf(end, inc);
+
   const START_CFG = -2;
   const END_CFG = 2;
 
@@ -111,7 +131,7 @@ const Normal = (amount, n_tp, start, end, side, symbol) => {
   }
   const summ = arr.reduce((a, b) => a + b, 0);
 
-  const incrementPrice = (end - start) / (n_tp - 1);
+  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
   let orders = { orders: [] };
   for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
@@ -119,7 +139,7 @@ const Normal = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: Math.floor((arr[i] / summ) * amount),
-      price: roundHalf(start + i * incrementPrice),
+      price: start1 + i * increment,
       ordType: "Limit",
       execInst: "ParticipateDoNotInitiate",
       text: "order"
