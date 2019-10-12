@@ -21,14 +21,13 @@ const gaussian = (mean, x, delta) => {
 };
 
 const Uniform = (amount, n_tp, start, end, side, symbol) => {
-  let inc = symbol === "XBTUSD" ? 2 : 20;
+  let inc = symbol === 'XBTUSD' ? 2 : 20;
 
   const start1 = roundHalf(start, inc);
   const end1 = roundHalf(end, inc);
 
   let orders = { orders: [] };
   const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
-  console.log(increment);
   const mean = Math.floor(amount / n_tp);
   //startEndPutOrders(orders.orders, start, end, mean, side);
   for (let i = 0; i < n_tp; i++) {
@@ -37,17 +36,17 @@ const Uniform = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: mean,
-      price: start1 + i * increment,
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
+      price: parseFloat((start1 + i * increment).toFixed(3)),
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
+      text: 'order'
     });
   }
 
   return orders;
 };
 const Positive = (amount, n_tp, start, end, side, symbol) => {
-  let inc = symbol === "XBTUSD" ? 2 : 20;
+  let inc = symbol === 'XBTUSD' ? 2 : 20;
 
   const start1 = roundHalf(start, inc);
   const end1 = roundHalf(end, inc);
@@ -71,17 +70,17 @@ const Positive = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: Math.floor((arr[i] / summ) * amount),
-      price: start1 + i * increment,
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
+      price: parseFloat((start1 + i * increment).toFixed(3)),
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
+      text: 'order'
     });
   }
 
   return orders;
 };
 const Negative = (amount, n_tp, start, end, side, symbol) => {
-  let inc = symbol === "XBTUSD" ? 2 : 20;
+  let inc = symbol === 'XBTUSD' ? 2 : 20;
 
   const start1 = roundHalf(start, inc);
   const end1 = roundHalf(end, inc);
@@ -98,6 +97,7 @@ const Negative = (amount, n_tp, start, end, side, symbol) => {
   const summ = arr.reduce((a, b) => a + b, 0);
 
   const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
+
   let orders = { orders: [] };
   for (let i = 0; i < n_tp; i++) {
     //ROUND TO NEAREST 0.5
@@ -105,17 +105,17 @@ const Negative = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: Math.floor((arr[i] / summ) * amount),
-      price: start1 + i * increment,
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
+      price: parseFloat((start1 + i * increment).toFixed(3)),
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
+      text: 'order'
     });
   }
 
   return orders;
 };
 const Normal = (amount, n_tp, start, end, side, symbol) => {
-  let inc = symbol === "XBTUSD" ? 2 : 20;
+  let inc = symbol === 'XBTUSD' ? 2 : 20;
 
   const start1 = roundHalf(start, inc);
   const end1 = roundHalf(end, inc);
@@ -139,10 +139,10 @@ const Normal = (amount, n_tp, start, end, side, symbol) => {
       symbol: symbol,
       side: side,
       orderQty: Math.floor((arr[i] / summ) * amount),
-      price: start1 + i * increment,
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
+      price: parseFloat((start1 + i * increment).toFixed(3)),
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
+      text: 'order'
     });
   }
 
@@ -162,13 +162,13 @@ export const orderBulk = ({
   symbol // : XBTUSD, ETHUSD...
 }) => {
   switch (distribution) {
-    case "Positive":
+    case 'Positive':
       return Positive(quantity, n_tp, start, end, side, symbol);
-    case "Negative":
+    case 'Negative':
       return Negative(quantity, n_tp, start, end, side, symbol);
-    case "Normal":
+    case 'Normal':
       return Normal(quantity, n_tp, start, end, side, symbol);
-    case "Uniform":
+    case 'Uniform':
     default:
       return Uniform(quantity, n_tp, start, end, side, symbol);
   }
