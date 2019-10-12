@@ -1,3 +1,7 @@
+<p align="center"> 
+  <img src='https://github.com/Effanuel/Bitmex-scaled-orders/blob/master/assets/presentation_v3.gif'>
+</p>
+
 ## Table of Contents
 
 - [Current Features](#current-features)
@@ -133,6 +137,8 @@ _(The chart representations are symbolic)_
 - **Stepping stop-loss on target hit** using a Websocket;
 - **Chasing price** for limit orders;
 - Transition to **TypeScript**;
+- Custom Error handling;
+- Server-sdie Websocket client;
 
 <!-- LICENSE -->
 
