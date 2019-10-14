@@ -1,14 +1,25 @@
-import React from 'react';
+import * as React from 'react';
+
 import { Table } from 'react-bootstrap';
+
 import { connect } from 'react-redux';
-import styles from './OrdersPreviewTable.module.css';
+
+const styles = require('./OrdersPreviewTable.module.css');
 
 import {
   ordersAveragePriceSelector,
   ordersSelector
 } from '../../redux/selectors';
 
-const OrdersPreviewTable = ({ averagePrice, orders }) => {
+interface Props {
+  averagePrice: any;
+  orders: any;
+}
+
+const OrdersPreviewTable: React.FunctionComponent<Props> = ({
+  averagePrice,
+  orders
+}) => {
   return (
     <Table className={styles.myTable} striped variant="dark" size="sm">
       <thead>
@@ -25,7 +36,7 @@ const OrdersPreviewTable = ({ averagePrice, orders }) => {
         </tr>
       </thead>
       <tbody>
-        {orders.map((x, i) => {
+        {orders.map((x: any, i: number) => {
           return (
             <tr key={String(i)}>
               <td key={x * i + 'a'}>{x.orderQty}</td>
@@ -44,7 +55,7 @@ const OrdersPreviewTable = ({ averagePrice, orders }) => {
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: any) => ({
   orders: ordersSelector(state),
   averagePrice: ordersAveragePriceSelector(state)
 });
