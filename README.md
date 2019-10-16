@@ -80,7 +80,8 @@ TESTNET = false
 ENABLE_RATE_LIMIT = true
 ```
 
-_**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_ `npm run clean` and `npm build`
+_**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_</br>
+`npm run clean` and `npm build`
 
 4. Rename `.sample-env` to `.env` (you can also change whether you want to use **Testnet**, **Rate Limit**):
 
@@ -138,7 +139,7 @@ _(The chart representations are symbolic)_
 - **Chasing price** for limit orders;
 - Transition to **TypeScript**;
 - Custom Error handling;
-- Server-sdie Websocket client;
+- Server-side Websocket client;
 
 <!-- LICENSE -->
 
