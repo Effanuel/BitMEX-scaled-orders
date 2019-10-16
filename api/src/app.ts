@@ -6,7 +6,7 @@ import helmet from "helmet";
 import cors from "cors";
 import bodyParser = require("body-parser");
 
-import { Router } from "./routes/bitmex";
+import Router from "./routes/bitmex";
 
 import path = require("path");
 
@@ -16,6 +16,7 @@ const app: express.Application = express();
 
 const port = process.env.PORT || 3001;
 
+app.set("port", port);
 app.use(helmet());
 app.use(cors());
 app.disable("etag").disable("x-powered-by");

@@ -1,9 +1,9 @@
 import express from "express";
-import { postOrder } from "../controllers/rangeToolAPI";
+import * as apiController from "../controllers/rangeToolAPI";
 
 const Router = express.Router();
 
 //Router.post('/getPrice', apiController.displayPrice);
-Router.post("/postOrder", postOrder);
+Router.post("/postOrder", apiController.postOrder);
 // Router.get('/getInstruments', apiController.getInstruments);
-export { Router };
+export default Router;

@@ -1,6 +1,7 @@
 // const request = require('request');
 // const crypto = require('crypto');
 import ccxt from "ccxt";
+import { Request, Response } from "express";
 
 const exchangeId = "bitmex",
   exchangeClass = ccxt[exchangeId],
@@ -32,7 +33,7 @@ const errorHandling = (e: any, res: any) => {
 /**
  * Bulk order POST request to the exchange API
  */
-const postOrder = async (req: Request, res: any, next: any) => {
+export const postOrder = async (req: Request, res: Response, next: any) => {
   try {
     const response = await exchange.privatePostOrderBulk(req.body);
     return res.send({ success: res.statusCode });
@@ -40,8 +41,6 @@ const postOrder = async (req: Request, res: any, next: any) => {
     errorHandling(error, res);
   }
 };
-export { postOrder };
-
 // exports.getInstruments = async (req, res, next) => {
 // try {
 //   // const response = await Promise.all([
