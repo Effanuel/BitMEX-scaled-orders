@@ -1,12 +1,18 @@
-require("dotenv").config();
+import dotenv from "dotenv";
 
-const express = require("express"),
-  app = express(),
-  helmet = require("helmet"),
-  cors = require("cors"),
-  bodyParser = require("body-parser"),
-  bitmexRoutes = require("./routes/bitmex"),
-  path = require("path");
+import express from "express";
+import helmet from "helmet";
+
+import cors from "cors";
+import bodyParser = require("body-parser");
+
+import { Router } from "./routes/bitmex";
+
+import path = require("path");
+
+dotenv.config();
+
+const app: express.Application = express();
 
 const port = process.env.PORT || 3001;
 
@@ -20,7 +26,7 @@ app.disable("etag").disable("x-powered-by");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use("/bitmex", bitmexRoutes);
+app.use("/bitmex", Router);
 
 //require('./routes')(app);
 
@@ -29,7 +35,7 @@ if (process.env.NODE_ENV != "development ") {
   app.use(express.static(path.join(__dirname, "../client/build")));
 
   // Handle React routing, return all requests to React app
-  app.get("/*", function(req, res) {
+  app.get("/*", function(req: express.Request, res: express.Response) {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
 }
@@ -38,4 +44,4 @@ app.listen(port, () => {
   console.log(`Server running on: http://localhost:${port}`);
 });
 
-module.exports = app;
+export default app;

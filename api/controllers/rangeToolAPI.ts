@@ -1,6 +1,6 @@
 // const request = require('request');
 // const crypto = require('crypto');
-const ccxt = require("ccxt");
+import ccxt from "ccxt";
 
 const exchangeId = "bitmex",
   exchangeClass = ccxt[exchangeId],
@@ -14,14 +14,15 @@ if (process.env.TESTNET == "true") {
   exchange.urls["api"] = exchange.urls["test"];
 }
 
-const errorHandling = (e, res) => {
+const errorHandling = (e: any, res: any) => {
   const errorMessage = JSON.parse(e.message.slice(7)).error.message;
 
   if (e instanceof ccxt.NetworkError) {
     return res.status(500).json({ errorMessage });
   } else if (e instanceof ccxt.ExchangeError) {
     return res.status(500).json({ errorMessage });
-  } else if (e instanceof ccxt.ValidationError) {
+  } else if (e instanceof ccxt.RequestTimeout) {
+    //validation error *
     return res.status(500).json({ errorMessage });
   } else {
     return res.status(500).json({ errorMessage: "ERROR" });
@@ -31,7 +32,7 @@ const errorHandling = (e, res) => {
 /**
  * Bulk order POST request to the exchange API
  */
-exports.postOrder = async (req, res, next) => {
+const postOrder = async (req: Request, res: any, next: any) => {
   try {
     const response = await exchange.privatePostOrderBulk(req.body);
     return res.send({ success: res.statusCode });
@@ -39,6 +40,7 @@ exports.postOrder = async (req, res, next) => {
     errorHandling(error, res);
   }
 };
+export { postOrder };
 
 // exports.getInstruments = async (req, res, next) => {
 // try {
