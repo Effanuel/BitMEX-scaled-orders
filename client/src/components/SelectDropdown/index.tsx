@@ -1,19 +1,15 @@
 import * as React from 'react';
 const styles = require('./SelectDropdown.module.css');
 
-interface Props {
+type Props<T extends object> = {
   label: any;
   instruments: any;
   onChange: any;
   id: any;
-}
+};
 
-const SelectDropdown: React.FunctionComponent<Props> = ({
-  label,
-  instruments,
-  onChange,
-  id
-}) => {
+const SelectDropdown = <T extends object>(props: Props<T>) => {
+  const { label, onChange, id, instruments } = props;
   return (
     <div className={styles.selectDropdown}>
       <label htmlFor={label}>{label}</label>

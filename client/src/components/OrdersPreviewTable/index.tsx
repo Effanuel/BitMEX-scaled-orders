@@ -11,15 +11,14 @@ import {
   ordersSelector
 } from '../../redux/selectors';
 
-interface Props {
+type Props<T extends object> = {
   averagePrice: any;
   orders: any;
-}
+};
 
-const OrdersPreviewTable: React.FunctionComponent<Props> = ({
-  averagePrice,
-  orders
-}) => {
+const OrdersPreviewTable = <T extends object>(props: Props<T>) => {
+  const { averagePrice, orders } = props;
+
   return (
     <Table className={styles.myTable} striped variant="dark" size="sm">
       <thead>

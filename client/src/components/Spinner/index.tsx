@@ -3,7 +3,7 @@ import { Spinner } from 'react-bootstrap';
 
 interface Props {}
 
-const SpinnerComponent: React.FunctionComponent<Props> = () => {
+const SpinnerComponent = (props: Props) => {
   return (
     <Spinner animation="border" role="status" variant="success" size="sm">
       <span className="sr-only">Loading...</span>

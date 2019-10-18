@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import * as React from 'react';
+import React from 'react';
 
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -37,7 +37,7 @@ const OrdersPreviewTable = lazy(() =>
   import('./components/OrdersPreviewTable')
 );
 
-interface State {
+type State = {
   quantity?: any;
   n_tp?: any;
   start?: any;
@@ -45,9 +45,9 @@ interface State {
   distribution?: any;
   side?: string;
   symbol?: string;
-}
+};
 
-interface Props {
+type Props = {
   showPreview: boolean;
   error: string;
   wsError: string;
@@ -62,7 +62,7 @@ interface Props {
   wsDisconnect: () => any;
   wsHandleSubscribeChange: (object: { A: string; B: any }) => any;
   wsPriceSubscribe: (payload: string) => any;
-}
+};
 
 const handleOnChange = Symbol();
 const handleOnChangeNumber = Symbol();
