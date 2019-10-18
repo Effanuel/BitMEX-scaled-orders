@@ -5,6 +5,15 @@ import {
   PREVIEW_ORDERS_SUCCESS
 } from '../actions/actionTypes';
 
+import { PostOrder } from '../actions/previewActions';
+
+interface PreviewReducerStore {
+  orders: any;
+  error: string;
+  showPreview: boolean;
+  loading: boolean;
+}
+
 const initialState = {
   orders: [],
   error: '',
@@ -12,14 +21,17 @@ const initialState = {
   loading: false
 };
 
-export default (state = initialState, { type, payload }) => {
-  switch (type) {
+export default (
+  state: PreviewReducerStore = initialState,
+  action: PostOrder
+): PreviewReducerStore => {
+  switch (action.type) {
     case POST_ORDER_LOADING:
       return { ...state, error: '', loading: true };
     case POST_ORDER_SUCCESS:
       return {
         ...state,
-        ...payload,
+        ...action.payload,
         showPreview: false,
         error: '',
         orders: [],
@@ -30,11 +42,16 @@ export default (state = initialState, { type, payload }) => {
         ...state,
         showPreview: false,
         orders: [],
-        error: payload,
+        error: action.payload,
         loading: false
       };
     case PREVIEW_ORDERS_SUCCESS:
-      return { ...state, showPreview: true, orders: payload.orders, error: '' };
+      return {
+        ...state,
+        showPreview: true,
+        orders: action.payload.orders,
+        error: ''
+      };
     default:
       return state;
   }

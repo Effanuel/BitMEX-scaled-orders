@@ -33,4 +33,4 @@ const InputField: React.FunctionComponent<Props> = ({
   );
 };
 
-export default InputField;
+export { InputField };

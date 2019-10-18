@@ -7,7 +7,7 @@ interface Props {
   label: string;
   type: any;
   name: string;
-  defaultChecked: any;
+  defaultChecked?: any;
 }
 
 const CustomRadioButton: React.FunctionComponent<Props> = ({
