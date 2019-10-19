@@ -1,5 +1,5 @@
-import * as React from 'react';
-const styles = require('./SelectDropdown.module.css');
+import React from "react";
+const styles = require("./SelectDropdown.module.css");
 
 type Props<T extends object> = {
   label: any;

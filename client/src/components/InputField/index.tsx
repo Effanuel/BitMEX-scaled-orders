@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { InputGroup, FormControl } from 'react-bootstrap';
+import React from "react";
+import { InputGroup, FormControl } from "react-bootstrap";
 
-import './InputField.module.css';
+import "./InputField.module.css";
 
 type Props<T extends object> = {
   id: string;

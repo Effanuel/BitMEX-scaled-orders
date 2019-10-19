@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { FormCheck } from 'react-bootstrap';
+import React from "react";
+import { FormCheck } from "react-bootstrap";
 
-const styles = require('./CustomRadioButton.css');
+import styles from "./CustomRadioButton.module.css";
 
 type Props<T extends object> = {
   label: string;
@@ -11,7 +11,7 @@ type Props<T extends object> = {
 };
 
 const CustomRadioButton = <T extends object>(props: Props<T>) => {
-  const { label, type, defaultChecked } = props;
+  const { label, type, defaultChecked, name } = props;
   return (
     <div className={styles.myLabel}>
       <FormCheck

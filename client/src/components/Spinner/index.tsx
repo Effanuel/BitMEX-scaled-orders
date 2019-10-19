@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Spinner } from 'react-bootstrap';
+import React from "react";
+import { Spinner } from "react-bootstrap";
 
 interface Props {}
 

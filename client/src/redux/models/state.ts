@@ -10,8 +10,13 @@ export interface PreviewState {
   loading: boolean;
 }
 
+interface WebsocketDataResponse {
+  action: string;
+  data: any;
+}
+
 export interface WebsocketState {
-  data: object;
+  data: WebsocketDataResponse | any;
   connected: boolean;
   loading: boolean;
   error: string;

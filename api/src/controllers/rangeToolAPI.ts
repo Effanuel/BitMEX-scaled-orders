@@ -1,6 +1,6 @@
 // const request = require('request');
 // const crypto = require('crypto');
-import ccxt from "ccxt";
+import * as ccxt from "ccxt";
 import { Request, Response } from "express";
 
 const exchangeId = "bitmex",

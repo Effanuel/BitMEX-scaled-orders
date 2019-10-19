@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 
 import express from "express";
 import helmet from "helmet";
-
 import cors from "cors";
 import bodyParser = require("body-parser");
 
 import Router from "./routes/bitmex";
 
 import path = require("path");
+// import process from "process";
 
 dotenv.config();
 
@@ -33,16 +33,33 @@ app.use("/bitmex", Router);
 
 if (process.env.NODE_ENV != "development ") {
   // Serve any static files
-  app.use(express.static(path.join(__dirname, "../client/build")));
+  app.use(express.static(path.join(__dirname, "../../client/build")));
 
   // Handle React routing, return all requests to React app
   app.get("/*", function(req: express.Request, res: express.Response) {
-    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+    res.sendFile(path.join(__dirname, "../", "client/build/index.html"));
   });
 }
 
-app.listen(port, () => {
-  console.log(`Server running on: http://localhost:${port}`);
+const server = app.listen(app.get("port"), () => {
+  console.log(
+    "  App is running at http://localhost:%d in %s mode",
+    app.get("port"),
+    app.get("env")
+  );
+  console.log("  Press CTRL-C to stop\n");
+});
+
+process.on("SIGTERM", function() {
+  server.close(function() {
+    process.exit(0);
+  });
+});
+
+process.on("uncaughtException", error => {
+  console.log("Oh my god, something terrible happend: ", error);
+
+  process.exit(1); // exit application
 });
 
 export default app;
