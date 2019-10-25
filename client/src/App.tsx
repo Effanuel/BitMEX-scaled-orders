@@ -1,7 +1,8 @@
-import React, { PureComponent, Suspense, lazy } from "react";
+import { Suspense, lazy } from 'react';
+import React from 'react';
 
-import { Container, Row, Col, Button } from "react-bootstrap";
-import { connect } from "react-redux";
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import {
   showPreviewSelector,
@@ -9,16 +10,16 @@ import {
   websocketDataSelector,
   websocketLoadingSelector,
   websocketConnectedSelector
-} from "./redux/selectors";
+} from './redux/selectors';
 
-import { postOrder, previewOrders } from "./redux/actions/previewActions";
+import { postOrder, previewOrders } from './redux/actions/previewActions';
 
 import {
   wsConnect,
   wsDisconnect,
   wsHandleSubscribeChange,
   wsPriceSubscribe
-} from "./redux/actions/websocketActions";
+} from './redux/actions/websocketActions';
 
 import {
   InputField,
@@ -26,30 +27,67 @@ import {
   CustomRadioButton,
   // OrdersPreviewTable,
   SpinnerComponent
-} from "./components";
+} from './components';
 
-import styles from "./css/product.module.css";
+import { AppState } from './redux/models/state';
+
+import styles from './css/product.module.css';
 
 const OrdersPreviewTable = lazy(() =>
-  import("./components/OrdersPreviewTable")
+  import('./components/OrdersPreviewTable')
 );
 
-class App extends PureComponent {
-  state = {
-    quantity: "",
-    n_tp: "",
-    start: "",
-    end: "",
-    distribution: "Uniform",
-    side: "Sell",
-    symbol: "XBTUSD"
-  };
+type State = {
+  quantity?: any;
+  n_tp?: any;
+  start?: any;
+  end?: any;
+  distribution?: any;
+  side?: string;
+  symbol?: string;
+};
+
+type Props = {
+  showPreview: boolean;
+  error: string;
+  wsError: string;
+  wsCurrentPrice: string;
+  loading: boolean;
+  loadingreq: boolean;
+  connected: boolean;
+  //
+  postOrder: (payload: object) => any;
+  previewOrders: (payload: object) => any;
+  wsConnect: () => any;
+  wsDisconnect: () => any;
+  wsHandleSubscribeChange: (object: { A: string; B: any }) => any;
+  wsPriceSubscribe: (payload: string) => any;
+};
+
+const handleOnChange = Symbol();
+const handleOnChangeNumber = Symbol();
+const onOrderSubmit = Symbol();
+const onRadioChange = Symbol();
+const onPreviewOrders = Symbol();
+
+const initialState: { [key: string]: any } = Object.freeze({
+  quantity: '',
+  n_tp: '',
+  start: '',
+  end: '',
+  distribution: 'Uniform',
+  side: 'Sell',
+  symbol: 'XBTUSD'
+});
+
+class App extends React.PureComponent<Props, State> {
+  readonly state = initialState;
 
   async componentDidMount() {
     await this.props.wsConnect();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if (prevProps.connected !== this.props.connected) {
       this.props.wsPriceSubscribe(this.state.symbol);
     }
@@ -59,7 +97,7 @@ class App extends PureComponent {
     this.props.wsDisconnect();
   }
 
-  handleOnChange = event => {
+  [handleOnChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { value, id } = event.target;
     this.props.wsHandleSubscribeChange({
       A: this.state.symbol,
@@ -67,31 +105,38 @@ class App extends PureComponent {
     });
     this.setState({
       [id]: value
-    });
+    } as Pick<State, keyof State>);
   };
 
-  handleOnChangeNumber = event => {
+  [handleOnChangeNumber] = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     this.setState({
       [event.target.id]: { ...this.state[event.target.id] },
       [event.target.id]: parseFloat(event.target.value)
-    });
+    } as Pick<State, keyof State>);
   };
 
-  onOrderSubmit = event => {
+  [onOrderSubmit] = (event: any): void => {
     event.preventDefault();
 
     this.props.postOrder(this.state);
   };
-  onRadioChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+
+  [onRadioChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    this.setState({ [event.target.name]: event.target.value } as Pick<
+      State,
+      keyof State
+    >);
   };
-  onPreviewOrders = () => {
+
+  [onPreviewOrders] = (event: any): void => {
     this.props.previewOrders(this.state);
   };
 
   //testdev123
   render() {
-    const emptyStr = "";
+    const emptyStr = '';
     const {
       showPreview,
       error,
@@ -109,13 +154,13 @@ class App extends PureComponent {
             <Row className={styles.myRow}>
               <Col>
                 <SelectDropdown
-                  instruments={["XBTUSD", "ETHUSD"]}
+                  instruments={['XBTUSD', 'ETHUSD']}
                   id="symbol"
-                  onChange={this.handleOnChange}
+                  onChange={this[handleOnChange]}
                   label="Instrument"
                 />
               </Col>
-              <Col onChange={this.onRadioChange}>
+              <Col onChange={this[onRadioChange]}>
                 <CustomRadioButton
                   defaultChecked
                   label="Sell"
@@ -125,13 +170,12 @@ class App extends PureComponent {
                 <CustomRadioButton label="Buy" type="radio" name="side" />
               </Col>
               <Col>
-                <div variant="link" className={styles.myText}>
-                  Current price:
-                </div>
+                <div className={styles.myText}>Current price:</div>
               </Col>
               <Col>
                 <div className={styles.myTextField}>
-                  {wsCurrentPrice || (loading && <SpinnerComponent />)}
+                  {loading ? 'Loading...' : wsCurrentPrice}
+                  {/* {wsCurrentPrice || (loading && <SpinnerComponent />)} */}
                 </div>
               </Col>
             </Row>
@@ -139,7 +183,7 @@ class App extends PureComponent {
             <Row className={styles.myRow}>
               <Col>
                 <InputField
-                  onChange={this.handleOnChangeNumber}
+                  onChange={this[handleOnChangeNumber]}
                   value={this.state.quantity || emptyStr}
                   label="Quantity"
                   id="quantity"
@@ -147,7 +191,7 @@ class App extends PureComponent {
               </Col>
               <Col>
                 <InputField
-                  onChange={this.handleOnChangeNumber}
+                  onChange={this[handleOnChangeNumber]}
                   value={this.state.n_tp || emptyStr}
                   label="Order count"
                   id="n_tp"
@@ -155,7 +199,7 @@ class App extends PureComponent {
               </Col>
               <Col>
                 <InputField
-                  onChange={this.handleOnChangeNumber}
+                  onChange={this[handleOnChangeNumber]}
                   value={this.state.start || emptyStr}
                   label="Range start USD"
                   id="start"
@@ -163,7 +207,7 @@ class App extends PureComponent {
               </Col>
               <Col>
                 <InputField
-                  onChange={this.handleOnChangeNumber}
+                  onChange={this[handleOnChangeNumber]}
                   value={this.state.end || emptyStr}
                   label="Range end USD"
                   id="end"
@@ -172,7 +216,7 @@ class App extends PureComponent {
             </Row>
 
             <Row className={styles.myRow}>
-              <Col onChange={this.onRadioChange}>
+              <Col onChange={this[onRadioChange]}>
                 <CustomRadioButton
                   defaultChecked
                   label="Uniform"
@@ -200,7 +244,7 @@ class App extends PureComponent {
               <Col className="">
                 <Col className="text-right">
                   <Button
-                    onClick={this.onPreviewOrders}
+                    onClick={this[onPreviewOrders]}
                     variant="link"
                     className={styles.myTextButton}
                     disabled={
@@ -214,7 +258,7 @@ class App extends PureComponent {
 
               <Col>
                 <Button
-                  onClick={this.onOrderSubmit}
+                  onClick={this[onOrderSubmit]}
                   className={styles.myButton}
                   disabled={
                     !(quantity && n_tp && start && end) || quantity < n_tp
@@ -239,7 +283,7 @@ class App extends PureComponent {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: AppState) => ({
   // preview: state.preview
   showPreview: showPreviewSelector(state),
   error: errorSelector(state),
@@ -249,6 +293,7 @@ const mapStateToProps = state => ({
   loadingreq: state.preview.loading,
   connected: websocketConnectedSelector(state)
 });
+
 export default connect(
   mapStateToProps,
   {

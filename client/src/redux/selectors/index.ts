@@ -1,12 +1,14 @@
 import { createSelector } from 'reselect';
 
-const getShowPreview = state => state.preview.showPreview;
-const getError = state => state.preview.error;
-const getOrders = state => state.preview.orders;
+import { AppState } from '../models/state';
 
-const websocketData = state => state.websocket.data;
-const websocketLoading = state => state.websocket.loading;
-const websocketConnected = state => state.websocket.connected;
+const getShowPreview = (state: AppState) => state.preview.showPreview;
+const getError = (state: AppState) => state.preview.error;
+const getOrders = (state: AppState) => state.preview.orders;
+
+const websocketData = (state: AppState) => state.websocket.data;
+const websocketLoading = (state: AppState) => state.websocket.loading;
+const websocketConnected = (state: AppState) => state.websocket.connected;
 
 export const showPreviewSelector = createSelector(
   [getShowPreview],
@@ -21,20 +23,22 @@ export const errorSelector = createSelector(
 export const websocketDataSelector = createSelector(
   [websocketData],
   data => {
-    return data.action === 'insert' ? `$${data.data[0].askPrice}` : '';
+    return data.action === 'insert'
+      ? `$${data.data[0].askPrice}`
+      : 'Loading...';
   }
 );
 
 export const ordersAveragePriceSelector = createSelector(
   [getOrders, getShowPreview],
-  (orderList, previewTable) => {
+  (orderList, previewTable): number | void => {
     if (previewTable) {
       const total_quantity = orderList.reduce(
-        (total, n) => total + n.orderQty,
+        (total: any, n: any): number => total + n.orderQty,
         0
       );
       const contract_value = orderList.reduce(
-        (total, n) => total + n.orderQty / n.price,
+        (total: number, n: any): number => total + n.orderQty / n.price,
         0
       );
       return Math.round((total_quantity / contract_value) * 2) / 2;

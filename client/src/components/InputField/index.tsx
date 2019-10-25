@@ -1,10 +1,17 @@
-import React, { memo } from "react";
-import PropTypes from "prop-types";
-import "./InputField.module.css";
-
+import React from "react";
 import { InputGroup, FormControl } from "react-bootstrap";
 
-const InputField = memo(({ id, label, value, onChange }) => {
+import "./InputField.module.css";
+
+type Props<T extends object> = {
+  id: string;
+  label: string;
+  value: any;
+  onChange: any;
+};
+
+const InputField = <T extends object>(props: Props<T>) => {
+  const { label, id, value, onChange } = props;
   return (
     <div>
       <label htmlFor={label}>{label}</label>
@@ -20,13 +27,6 @@ const InputField = memo(({ id, label, value, onChange }) => {
       </InputGroup>
     </div>
   );
-});
-
-InputField.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  onChange: PropTypes.func
 };
 
 export { InputField };

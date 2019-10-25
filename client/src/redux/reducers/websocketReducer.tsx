@@ -6,8 +6,12 @@ import {
   REDUX_WEBSOCKET_OPEN,
   REDUX_WEBSOCKET_SEND,
   REDUX_WEBSOCKET_LOADING,
-  REDUX_WEBSOCKET_ERROR
+  REDUX_WEBSOCKET_ERROR,
+  INTERNAL_CLEAR_MESSAGE_LOG
 } from '../actions/actionTypes';
+
+import { WebsocketState } from '../models/state';
+import { ReduxWebsocket } from '../actions/websocketActions';
 
 const initialState = {
   data: {},
@@ -16,9 +20,12 @@ const initialState = {
   error: ''
 };
 
-export default (state = initialState, { type, payload }) => {
-  switch (type) {
-    case 'INTERNAL::CLEAR_MESSAGE_LOG':
+export default (
+  state: WebsocketState = initialState,
+  action: ReduxWebsocket
+): WebsocketState => {
+  switch (action.type) {
+    case INTERNAL_CLEAR_MESSAGE_LOG:
       return {
         ...state,
         data: {}
@@ -55,16 +62,17 @@ export default (state = initialState, { type, payload }) => {
       };
 
     case REDUX_WEBSOCKET_MESSAGE:
+      console.log('MESSAGE');
       return {
         ...state,
-        laoding: false,
-        data: JSON.parse(payload.message)
+        data: JSON.parse(action.payload.message),
+        loading: false
       };
 
     case REDUX_WEBSOCKET_SEND:
+      console.log('SEND');
       return {
-        ...state,
-        loading: true
+        ...state
       };
 
     default:

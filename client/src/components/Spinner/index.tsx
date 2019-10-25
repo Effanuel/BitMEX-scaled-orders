@@ -1,6 +1,9 @@
 import React from "react";
 import { Spinner } from "react-bootstrap";
-const SpinnerComponent = () => {
+
+interface Props {}
+
+const SpinnerComponent = (props: Props) => {
   return (
     <Spinner animation="border" role="status" variant="success" size="sm">
       <span className="sr-only">Loading...</span>
