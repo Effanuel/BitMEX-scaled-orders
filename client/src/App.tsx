@@ -1,8 +1,8 @@
-import { Suspense, lazy } from "react";
-import React from "react";
+import { Suspense, lazy } from 'react';
+import React from 'react';
 
-import { Container, Row, Col, Button } from "react-bootstrap";
-import { connect } from "react-redux";
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import {
   showPreviewSelector,
@@ -10,16 +10,16 @@ import {
   websocketDataSelector,
   websocketLoadingSelector,
   websocketConnectedSelector
-} from "./redux/selectors";
+} from './redux/selectors';
 
-import { postOrder, previewOrders } from "./redux/actions/previewActions";
+import { postOrder, previewOrders } from './redux/actions/previewActions';
 
 import {
   wsConnect,
   wsDisconnect,
   wsHandleSubscribeChange,
   wsPriceSubscribe
-} from "./redux/actions/websocketActions";
+} from './redux/actions/websocketActions';
 
 import {
   InputField,
@@ -27,14 +27,14 @@ import {
   CustomRadioButton,
   // OrdersPreviewTable,
   SpinnerComponent
-} from "./components";
+} from './components';
 
-import { AppState } from "./redux/models/state";
+import { AppState } from './redux/models/state';
 
-import styles from "./css/product.module.css";
+import styles from './css/product.module.css';
 
 const OrdersPreviewTable = lazy(() =>
-  import("./components/OrdersPreviewTable")
+  import('./components/OrdersPreviewTable')
 );
 
 type State = {
@@ -70,16 +70,18 @@ const onOrderSubmit = Symbol();
 const onRadioChange = Symbol();
 const onPreviewOrders = Symbol();
 
+const initialState: { [key: string]: any } = Object.freeze({
+  quantity: '',
+  n_tp: '',
+  start: '',
+  end: '',
+  distribution: 'Uniform',
+  side: 'Sell',
+  symbol: 'XBTUSD'
+});
+
 class App extends React.PureComponent<Props, State> {
-  state: { [key: string]: any } = {
-    quantity: "",
-    n_tp: "",
-    start: "",
-    end: "",
-    distribution: "Uniform",
-    side: "Sell",
-    symbol: "XBTUSD"
-  };
+  readonly state = initialState;
 
   async componentDidMount() {
     await this.props.wsConnect();
@@ -134,7 +136,7 @@ class App extends React.PureComponent<Props, State> {
 
   //testdev123
   render() {
-    const emptyStr = "";
+    const emptyStr = '';
     const {
       showPreview,
       error,
@@ -152,7 +154,7 @@ class App extends React.PureComponent<Props, State> {
             <Row className={styles.myRow}>
               <Col>
                 <SelectDropdown
-                  instruments={["XBTUSD", "ETHUSD"]}
+                  instruments={['XBTUSD', 'ETHUSD']}
                   id="symbol"
                   onChange={this[handleOnChange]}
                   label="Instrument"
@@ -172,7 +174,8 @@ class App extends React.PureComponent<Props, State> {
               </Col>
               <Col>
                 <div className={styles.myTextField}>
-                  {wsCurrentPrice || (loading && <SpinnerComponent />)}
+                  {loading ? 'Loading...' : wsCurrentPrice}
+                  {/* {wsCurrentPrice || (loading && <SpinnerComponent />)} */}
                 </div>
               </Col>
             </Row>
