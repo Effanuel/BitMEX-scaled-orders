@@ -18,7 +18,54 @@ export interface WsLoading {
 
 export type Websocket = WsLoading;
 
-export const wsLoading = (payload: any): WsLoading => {
+export interface InternalClearMessageLog {
+  type: constants.INTERNAL_CLEAR_MESSAGE_LOG;
+}
+export interface ReduxWebsocketLoading {
+  type: constants.REDUX_WEBSOCKET_LOADING;
+  payload: any;
+}
+export interface ReduxWebsocketConnect {
+  type: constants.REDUX_WEBSOCKET_CONNECT;
+  payload: any;
+}
+export interface ReduxWebsocketOpen {
+  type: constants.REDUX_WEBSOCKET_OPEN;
+  payload: any;
+}
+export interface ReduxWebsocketBroken {
+  type: constants.REDUX_WEBSOCKET_BROKEN;
+  payload: any;
+}
+export interface ReduxtWebsocketClosed {
+  type: constants.REDUX_WEBSOCKET_CLOSED;
+  payload: any;
+}
+export interface ReduxWebsocketError {
+  type: constants.REDUX_WEBSOCKET_ERROR;
+  payload: any;
+}
+export interface ReduxWebsocketSend {
+  type: constants.REDUX_WEBSOCKET_SEND;
+  payload: any;
+}
+
+export interface ReduxWebsocketMessage {
+  type: constants.REDUX_WEBSOCKET_MESSAGE;
+  payload: any;
+}
+
+export type ReduxWebsocket =
+  | ReduxWebsocketLoading
+  | ReduxWebsocketConnect
+  | ReduxWebsocketOpen
+  | ReduxWebsocketBroken
+  | ReduxtWebsocketClosed
+  | ReduxWebsocketError
+  | ReduxWebsocketSend
+  | ReduxWebsocketMessage;
+
+export const wsLoading = (payload?: any): WsLoading => {
   return {
     type: REDUX_WEBSOCKET_LOADING,
     payload

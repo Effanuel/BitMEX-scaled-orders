@@ -8,21 +8,21 @@ import {
   REDUX_WEBSOCKET_LOADING,
   REDUX_WEBSOCKET_ERROR,
   INTERNAL_CLEAR_MESSAGE_LOG
-} from "../actions/actionTypes";
+} from '../actions/actionTypes';
 
-import { WebsocketState } from "../models/state";
-import { Websocket } from "../actions/websocketActions";
+import { WebsocketState } from '../models/state';
+import { ReduxWebsocket } from '../actions/websocketActions';
 
 const initialState = {
   data: {},
   connected: false,
   loading: false,
-  error: ""
+  error: ''
 };
 
 export default (
   state: WebsocketState = initialState,
-  action: Websocket
+  action: ReduxWebsocket
 ): WebsocketState => {
   switch (action.type) {
     case INTERNAL_CLEAR_MESSAGE_LOG:
@@ -57,21 +57,22 @@ export default (
     case REDUX_WEBSOCKET_ERROR:
       return {
         ...state,
-        error: "Websocket Error. Perhaps too many reloads.",
+        error: 'Websocket Error. Perhaps too many reloads.',
         loading: false
       };
 
     case REDUX_WEBSOCKET_MESSAGE:
+      console.log('MESSAGE');
       return {
         ...state,
-        loading: false,
-        data: JSON.parse(action.payload.message)
+        data: JSON.parse(action.payload.message),
+        loading: false
       };
 
     case REDUX_WEBSOCKET_SEND:
+      console.log('SEND');
       return {
-        ...state,
-        loading: true
+        ...state
       };
 
     default:
