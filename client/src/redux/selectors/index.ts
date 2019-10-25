@@ -1,6 +1,6 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
 
-import { AppState } from "../models/state";
+import { AppState } from '../models/state';
 
 const getShowPreview = (state: AppState) => state.preview.showPreview;
 const getError = (state: AppState) => state.preview.error;
@@ -23,7 +23,9 @@ export const errorSelector = createSelector(
 export const websocketDataSelector = createSelector(
   [websocketData],
   data => {
-    return data.action === "insert" ? `$${data.data[0].askPrice}` : "";
+    return data.action === 'insert'
+      ? `$${data.data[0].askPrice}`
+      : 'Loading...';
   }
 );
 
