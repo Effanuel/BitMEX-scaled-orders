@@ -14,7 +14,6 @@
     "axios": "0.19.0",
     "enzyme": "3.10.0",
     "enzyme-adapter-react-16": "1.14.0",
-    "prop-types": "15.7.2",
     "react": "16.9.0",
     "react-bootstrap": "1.0.0-beta.11",
     "react-dom": "16.9.0",
@@ -23,17 +22,16 @@
     "react-test-renderer": "16.9.0",
     "redux": "4.0.4",
     "redux-thunk": "2.3.0",
-    "reselect": "4.0.0",
-    "typescript": "^3.6.4"
+    "reselect": "4.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "test": "react-scripts test",
     "test:watch": "npm test -- --watch",
     "eject": "react-scripts eject",
-    "clean": "rimraf ./build",
+    "clean": "rimraf ../api/dist ./build",
     "init:packages": "npm install && cd ../api && npm install && cd ../client",
-    "build": "SET NODE_ENV=production && react-scripts build",
+    "build": "SET NODE_ENV=production && cd ../api && cd ../client && react-scripts build",
     "prod": "cd ../api && npm run start"
   },
   "proxy": "http://localhost:3001",
@@ -53,6 +51,14 @@
     ]
   },
   "devDependencies": {
-    "redux-mock-store": "^1.5.3"
+    "@types/enzyme": "3.10.3",
+    "@types/enzyme-adapter-react-16": "1.0.5",
+    "@types/jest": "24.0.19",
+    "@types/node": "12.11.1",
+    "@types/react": "16.9.7",
+    "@types/react-dom": "16.9.2",
+    "@types/react-redux": "7.1.4",
+    "redux-mock-store": "1.5.3",
+    "typescript": "3.6.4"
   }
 }
