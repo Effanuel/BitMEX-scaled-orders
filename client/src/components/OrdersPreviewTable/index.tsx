@@ -10,12 +10,14 @@ import {
 
 import styles from "./OrdersPreviewTable.module.css";
 
-type Props<T extends object> = {
+import { AppState } from "../../redux/models/state";
+
+type Props = {
   averagePrice: any;
   orders: any;
 };
 
-const OrdersPreviewTable = <T extends object>(props: Props<T>) => {
+const OrdersPreviewTable = (props: any) => {
   const { averagePrice, orders } = props;
 
   return (
@@ -53,7 +55,7 @@ const OrdersPreviewTable = <T extends object>(props: Props<T>) => {
   );
 };
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = (state: AppState) => ({
   orders: ordersSelector(state),
   averagePrice: ordersAveragePriceSelector(state)
 });
