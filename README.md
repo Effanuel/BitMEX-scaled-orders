@@ -59,7 +59,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ### Installation
 
-1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/v1.1.zip):
+1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/v1.1.1.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
