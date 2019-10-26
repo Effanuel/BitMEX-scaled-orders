@@ -5,9 +5,9 @@ import styles from "./CustomRadioButton.module.css";
 
 type Props<T extends object> = {
   label: string;
-  type: any;
+  type: "radio" | "checkbox";
   name: string;
-  defaultChecked?: any;
+  defaultChecked?: boolean;
 };
 
 const CustomRadioButton = <T extends object>(props: Props<T>) => {

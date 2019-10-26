@@ -1,4 +1,4 @@
-import * as constants from './actionTypes';
+import * as constants from "./actionTypes";
 
 // ACTION INTERFACES
 export interface PostOrderLoading {
@@ -11,17 +11,17 @@ export interface PostOrderSuccess {
   payload: any;
   showPreview: boolean;
   error: string;
-  orders: any;
+  orders: any; //object[];
   loading: boolean;
 }
 export interface PostOrderError {
   showPreview: boolean;
-  orders: any;
+  orders: object[];
   error: string;
   loading: boolean;
 }
 export interface PreviewOrdersSuccess {
   showPreview: boolean;
-  orders: any;
+  orders: any; //ojbect[]
   error: string;
 }

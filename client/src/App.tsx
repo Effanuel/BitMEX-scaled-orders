@@ -1,8 +1,8 @@
-import { Suspense, lazy } from 'react';
-import React from 'react';
+import { Suspense, lazy, MouseEvent } from "react";
+import React from "react";
 
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { Container, Row, Col, Button } from "react-bootstrap";
+import { connect } from "react-redux";
 
 import {
   showPreviewSelector,
@@ -10,16 +10,16 @@ import {
   websocketDataSelector,
   websocketLoadingSelector,
   websocketConnectedSelector
-} from './redux/selectors';
+} from "./redux/selectors";
 
-import { postOrder, previewOrders } from './redux/actions/previewActions';
+import { postOrder, previewOrders } from "./redux/actions/previewActions";
 
 import {
   wsConnect,
   wsDisconnect,
   wsHandleSubscribeChange,
   wsPriceSubscribe
-} from './redux/actions/websocketActions';
+} from "./redux/actions/websocketActions";
 
 import {
   InputField,
@@ -27,42 +27,17 @@ import {
   CustomRadioButton,
   // OrdersPreviewTable,
   SpinnerComponent
-} from './components';
+} from "./components";
 
-import { AppState } from './redux/models/state';
+import { AppState } from "./redux/models/state";
 
-import styles from './css/product.module.css';
+import { AppComponentProps, AppComponentState } from "./@types";
+
+import styles from "./css/product.module.css";
 
 const OrdersPreviewTable = lazy(() =>
-  import('./components/OrdersPreviewTable')
+  import("./components/OrdersPreviewTable")
 );
-
-type State = {
-  quantity?: any;
-  n_tp?: any;
-  start?: any;
-  end?: any;
-  distribution?: any;
-  side?: string;
-  symbol?: string;
-};
-
-type Props = {
-  showPreview: boolean;
-  error: string;
-  wsError: string;
-  wsCurrentPrice: string;
-  loading: boolean;
-  loadingreq: boolean;
-  connected: boolean;
-  //
-  postOrder: (payload: object) => any;
-  previewOrders: (payload: object) => any;
-  wsConnect: () => any;
-  wsDisconnect: () => any;
-  wsHandleSubscribeChange: (object: { A: string; B: any }) => any;
-  wsPriceSubscribe: (payload: string) => any;
-};
 
 const handleOnChange = Symbol();
 const handleOnChangeNumber = Symbol();
@@ -71,29 +46,32 @@ const onRadioChange = Symbol();
 const onPreviewOrders = Symbol();
 
 const initialState: { [key: string]: any } = Object.freeze({
-  quantity: '',
-  n_tp: '',
-  start: '',
-  end: '',
-  distribution: 'Uniform',
-  side: 'Sell',
-  symbol: 'XBTUSD'
+  quantity: "",
+  n_tp: "",
+  start: "",
+  end: "",
+  distribution: "Uniform",
+  side: "Sell",
+  symbol: "XBTUSD"
 });
 
-class App extends React.PureComponent<Props, State> {
+class App extends React.PureComponent<AppComponentProps, AppComponentState> {
   readonly state = initialState;
 
   async componentDidMount() {
-    await this.props.wsConnect();
+    this.props.wsConnect();
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate(
+    prevProps: AppComponentProps,
+    prevState: AppComponentState
+  ) {
     if (prevProps.connected !== this.props.connected) {
       this.props.wsPriceSubscribe(this.state.symbol);
     }
   }
-
   componentWillUnmount() {
+    console.log("unmount");
     this.props.wsDisconnect();
   }
 
@@ -105,7 +83,7 @@ class App extends React.PureComponent<Props, State> {
     });
     this.setState({
       [id]: value
-    } as Pick<State, keyof State>);
+    } as Pick<AppComponentState, keyof AppComponentState>);
   };
 
   [handleOnChangeNumber] = (
@@ -114,10 +92,10 @@ class App extends React.PureComponent<Props, State> {
     this.setState({
       [event.target.id]: { ...this.state[event.target.id] },
       [event.target.id]: parseFloat(event.target.value)
-    } as Pick<State, keyof State>);
+    } as Pick<AppComponentState, keyof AppComponentState>);
   };
 
-  [onOrderSubmit] = (event: any): void => {
+  [onOrderSubmit] = (event: React.MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
 
     this.props.postOrder(this.state);
@@ -125,18 +103,18 @@ class App extends React.PureComponent<Props, State> {
 
   [onRadioChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState({ [event.target.name]: event.target.value } as Pick<
-      State,
-      keyof State
+      AppComponentState,
+      keyof AppComponentState
     >);
   };
 
-  [onPreviewOrders] = (event: any): void => {
+  [onPreviewOrders] = (event: React.MouseEvent<HTMLButtonElement>): void => {
     this.props.previewOrders(this.state);
   };
 
   //testdev123
   render() {
-    const emptyStr = '';
+    const emptyStr = "";
     const {
       showPreview,
       error,
@@ -154,7 +132,7 @@ class App extends React.PureComponent<Props, State> {
             <Row className={styles.myRow}>
               <Col>
                 <SelectDropdown
-                  instruments={['XBTUSD', 'ETHUSD']}
+                  instruments={["XBTUSD", "ETHUSD"]}
                   id="symbol"
                   onChange={this[handleOnChange]}
                   label="Instrument"
@@ -174,7 +152,7 @@ class App extends React.PureComponent<Props, State> {
               </Col>
               <Col>
                 <div className={styles.myTextField}>
-                  {loading ? 'Loading...' : wsCurrentPrice}
+                  {loading ? "Loading..." : wsCurrentPrice}
                   {/* {wsCurrentPrice || (loading && <SpinnerComponent />)} */}
                 </div>
               </Col>
