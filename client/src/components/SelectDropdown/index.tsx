@@ -2,10 +2,10 @@ import React from "react";
 const styles = require("./SelectDropdown.module.css");
 
 type Props<T extends object> = {
-  label: any;
-  instruments: any;
-  onChange: any;
-  id: any;
+  label: string;
+  instruments: string[];
+  onChange: (arg0: any) => void;
+  id: string;
 };
 
 const SelectDropdown = <T extends object>(props: Props<T>) => {

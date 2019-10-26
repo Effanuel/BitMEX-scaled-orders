@@ -1,9 +1,9 @@
-import { ThunkAction } from 'redux-thunk';
-import { Action } from 'redux';
-import * as constants from './actionTypes';
+import * as constants from "./actionTypes";
 
-import axios from 'axios';
-import { orderBulk } from '../../util';
+import axios from "axios";
+import { orderBulk } from "../../util";
+
+import { Thunk } from "../models/state";
 
 // ACTION INTERFACES
 export interface PostOrderLoading {
@@ -15,11 +15,11 @@ export interface PostOrderSuccess {
 }
 export interface PostOrderError {
   type: constants.POST_ORDER_ERROR;
-  payload: any;
+  payload: string;
 }
 export interface PreviewOrdersSuccess {
   type: constants.PREVIEW_ORDERS_SUCCESS;
-  payload: any;
+  payload: any; //{ orders: object[] };
 }
 
 export type PostOrder =
@@ -33,14 +33,12 @@ export type PostOrder =
  * @param {Object} pay order details
  * @returns {Object} success response(dispatch action)
  */
-export const postOrder = (
-  pay: any
-): ThunkAction<void, any, null, Action<string>> => async dispatch => {
+export const postOrder = (pay: any): Thunk => async dispatch => {
   try {
     // console.log(payload, "post order payload 112");
     dispatch(postOrderLoading());
     const payload = orderBulk(pay);
-    const response = await axios.post('/bitmex/postOrder', payload);
+    const response = await axios.post("/bitmex/postOrder", payload);
     dispatch(postOrderSuccess(response.data));
   } catch (err) {
     dispatch(postOrderError(err.response.data));

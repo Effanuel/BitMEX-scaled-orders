@@ -6,8 +6,8 @@ import "./InputField.module.css";
 type Props<T extends object> = {
   id: string;
   label: string;
-  value: any;
-  onChange: any;
+  value: string | undefined;
+  onChange: (arg0: any) => void;
 };
 
 const InputField = <T extends object>(props: Props<T>) => {

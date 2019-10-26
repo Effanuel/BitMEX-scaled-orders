@@ -1,6 +1,6 @@
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
-import { AppState } from '../models/state';
+import { AppState } from "../models/state";
 
 const getShowPreview = (state: AppState) => state.preview.showPreview;
 const getError = (state: AppState) => state.preview.error;
@@ -23,18 +23,18 @@ export const errorSelector = createSelector(
 export const websocketDataSelector = createSelector(
   [websocketData],
   data => {
-    return data.action === 'insert'
+    return data.action === "insert"
       ? `$${data.data[0].askPrice}`
-      : 'Loading...';
+      : "Loading...";
   }
 );
 
 export const ordersAveragePriceSelector = createSelector(
   [getOrders, getShowPreview],
-  (orderList, previewTable): number | void => {
+  (orderList: [], previewTable): number | void => {
     if (previewTable) {
       const total_quantity = orderList.reduce(
-        (total: any, n: any): number => total + n.orderQty,
+        (total: number, n: any): number => total + n.orderQty,
         0
       );
       const contract_value = orderList.reduce(

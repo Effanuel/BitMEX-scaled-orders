@@ -1,6 +1,7 @@
 /**
- * Round a number to .5 place
+ * Round a number by inc
  * @param {number} number
+ * @param {number} inc
  * @returns {number} rounded number
  */
 const roundHalf = (number: number, inc: number): number => {
@@ -27,7 +28,7 @@ interface Props {
   end: number;
   side: string;
   symbol: string;
-  distribution?: any;
+  distribution?: string | number;
 }
 
 const Uniform = (Props: Props): { orders: object[] } => {
