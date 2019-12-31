@@ -1,29 +1,18 @@
 import { REDUX_WEBSOCKET_LOADING } from "./actionTypes";
 
-
 import { connect, disconnect, send } from "@giantmachines/redux-websocket";
 
 import * as constants from "./actionTypes";
 import { Thunk } from "../models/state";
 
-function sleep(ms: number) {
+const sleep = (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export const wsLoading = (payload?: object): WsLoading => {
-  return {
-    type: REDUX_WEBSOCKET_LOADING,
-    payload
-  };
 };
 
-export const wsPriceSubscribe = (payload: string): Thunk => async dispatch => {
-  try {
-    dispatch(send({ op: "subscribe", args: [`quote:${payload || "XBTUSD"}`] }));
-  } catch (err) {
-    console.log(err.response.data, "error previewpriceWS redux");
-  }
-};
+const wsLoading = (payload?: object): WsLoading => ({
+  type: REDUX_WEBSOCKET_LOADING,
+  payload
+});
 
 export const wsHandleSubscribeChange = (payload: {
   A: string;
@@ -31,9 +20,9 @@ export const wsHandleSubscribeChange = (payload: {
 }): Thunk => async dispatch => {
   try {
     const { A, B } = payload;
-    dispatch(send({ op: "unsubscribe", args: [`quote:${A}`] }));
+    dispatch(send({ op: "unsubscribe", args: [`instrument:${A}`] }));
     await sleep(1000);
-    dispatch(send({ op: "subscribe", args: [`quote:${B}`] }));
+    dispatch(send({ op: "subscribe", args: [`instrument:${B}`] }));
   } catch (err) {
     console.log(err.response.data, "error previewpriceWS redux");
   }
@@ -41,7 +30,9 @@ export const wsHandleSubscribeChange = (payload: {
 
 export const wsConnect = (): Thunk => async dispatch => {
   try {
-    dispatch(connect("wss://www.bitmex.com/realtime"));
+    dispatch(
+      connect("wss://testnet.bitmex.com/realtime?subscribe=instrument:XBTUSD")
+    );
   } catch (err) {
     console.log(err.response.data, "error previewpriceWS redux");
   }
