@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`CustomRadioButton component renders without crashing given the required props 1`] = `ShallowWrapper {}`;
