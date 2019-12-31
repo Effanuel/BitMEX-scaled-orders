@@ -1,4 +1,4 @@
-@import 'root.css';
+@import "../../css/root.module.css";
 body {
   background-color: var(--primaryColor);
   min-width: 500px;

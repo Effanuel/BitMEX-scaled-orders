@@ -1,7 +1,7 @@
 import React from "react";
 import { FormCheck } from "react-bootstrap";
 
-import styles from "./CustomRadioButton.module.css";
+import styles from "./styles.module.css";
 
 type Props<T extends object> = {
   label: string;

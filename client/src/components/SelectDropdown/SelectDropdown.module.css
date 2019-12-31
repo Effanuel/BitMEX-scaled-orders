@@ -1,4 +1,4 @@
-@import '../../css/root.css';
+@import "../../css/root.module.css";
 
 .selectDropdown label {
   color: white;
