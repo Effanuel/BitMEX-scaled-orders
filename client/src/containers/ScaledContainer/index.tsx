@@ -29,7 +29,11 @@ import {
 
 import { AppState } from "../../redux/models/state";
 
-import { AppComponentProps, AppComponentState } from "../../@types";
+import {
+  AppComponentProps,
+  AppComponentState,
+  PickEventScaled
+} from "../../@types";
 
 import styles from "./styles.module.css";
 
@@ -49,7 +53,10 @@ const initialState: { [key: string]: any } = Object.freeze({
   symbol: "XBTUSD"
 });
 
-class ScaledContainer extends React.PureComponent<any, AppComponentState> {
+class ScaledContainer extends React.PureComponent<
+  AppComponentProps,
+  AppComponentState
+> {
   readonly state = initialState;
 
   async componentDidMount() {
@@ -65,49 +72,48 @@ class ScaledContainer extends React.PureComponent<any, AppComponentState> {
   //   }
   // }
   componentWillUnmount() {
-    console.log("unmount");
+    console.log("componentWillUnmount call.");
     this.props.wsDisconnect();
   }
 
   [handleOnChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { value, id } = event.target;
+
     this.props.wsHandleSubscribeChange({
       A: this.state.symbol,
       B: value
     });
     this.setState({
       [id]: value
-    } as Pick<AppComponentState, keyof AppComponentState>);
+    } as PickEventScaled);
   };
 
   [handleOnChangeNumber] = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
+    const { id, value } = event.target;
     this.setState({
-      [event.target.id]: { ...this.state[event.target.id] },
-      [event.target.id]: parseFloat(event.target.value)
-    } as Pick<AppComponentState, keyof AppComponentState>);
+      [id]: { ...this.state[id] },
+      [id]: parseFloat(value)
+    } as PickEventScaled);
   };
 
   [onOrderSubmit] = (event: React.MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
-
     this.props.postOrder(this.state);
   };
 
   [onRadioChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({ [event.target.name]: event.target.value } as Pick<
-      AppComponentState,
-      keyof AppComponentState
-    >);
+    this.setState({
+      [event.target.name]: event.target.value
+    } as PickEventScaled);
   };
 
-  [onPreviewOrders] = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  [onPreviewOrders] = (): void => {
     this.props.previewOrders(this.state);
   };
 
   render() {
-    const emptyStr = "";
     const { error, wsError, wsCurrentPrice, loading, loadingreq } = this.props;
     const { quantity, n_tp, start, end } = this.state;
     return (
@@ -147,7 +153,7 @@ class ScaledContainer extends React.PureComponent<any, AppComponentState> {
               <Col>
                 <InputField
                   onChange={this[handleOnChangeNumber]}
-                  value={this.state.quantity || emptyStr}
+                  value={this.state.quantity}
                   label="Quantity"
                   id="quantity"
                 />
@@ -155,7 +161,7 @@ class ScaledContainer extends React.PureComponent<any, AppComponentState> {
               <Col>
                 <InputField
                   onChange={this[handleOnChangeNumber]}
-                  value={this.state.n_tp || emptyStr}
+                  value={this.state.n_tp}
                   label="Order count"
                   id="n_tp"
                 />
@@ -163,7 +169,7 @@ class ScaledContainer extends React.PureComponent<any, AppComponentState> {
               <Col>
                 <InputField
                   onChange={this[handleOnChangeNumber]}
-                  value={this.state.start || emptyStr}
+                  value={this.state.start}
                   label="Range start USD"
                   id="start"
                 />
@@ -171,7 +177,7 @@ class ScaledContainer extends React.PureComponent<any, AppComponentState> {
               <Col>
                 <InputField
                   onChange={this[handleOnChangeNumber]}
-                  value={this.state.end || emptyStr}
+                  value={this.state.end}
                   label="Range end USD"
                   id="end"
                 />
@@ -239,7 +245,7 @@ class ScaledContainer extends React.PureComponent<any, AppComponentState> {
   }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => ({
+const mapStateToProps = (state: AppState, ownProps: any) => ({
   // preview: state.preview
   error: errorSelector(state),
   wsError: state.websocket.error,

@@ -1,3 +1,5 @@
+export type PickEventScaled = Pick<AppComponentState, keyof AppComponentState>;
+
 export type AppComponentState = {
   quantity?: string | number;
   n_tp?: string | number;
@@ -16,6 +18,7 @@ export type AppComponentProps = {
   loading?: boolean;
   loadingreq?: boolean;
   connected?: boolean;
+  message: any;
   //
   postOrder: (payload: object) => void;
   previewOrders: (payload: object) => void;

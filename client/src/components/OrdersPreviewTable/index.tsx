@@ -8,18 +8,16 @@ import {
   ordersSelector
 } from "../../redux/selectors";
 
-import styles from "./OrdersPreviewTable.module.css";
+import styles from "./styles.module.css";
 
 import { AppState } from "../../redux/models/state";
 
 type Props = {
-  averagePrice: any;
-  orders: any;
+  averagePrice?: number | void;
+  orders?: any;
 };
 
-const OrdersPreviewTable = (props: any) => {
-  const { averagePrice, orders } = props;
-
+const OrdersPreviewTable = ({ averagePrice, orders }: Props) => {
   return (
     <Table className={styles.myTable} striped variant="dark" size="sm">
       <thead>
@@ -59,7 +57,4 @@ const mapStateToProps = (state: AppState) => ({
   orders: ordersSelector(state),
   averagePrice: ordersAveragePriceSelector(state)
 });
-export default connect(
-  mapStateToProps,
-  null
-)(OrdersPreviewTable);
+export default connect(mapStateToProps, null)(OrdersPreviewTable);

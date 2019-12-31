@@ -20,7 +20,7 @@ const InputField = <T extends object>(props: Props<T>) => {
           // pattern="[0-9]*"
           type="number"
           id={id}
-          value={value}
+          value={value || ""}
           onChange={onChange}
           autoComplete="off"
         />
