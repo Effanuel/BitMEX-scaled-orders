@@ -24,6 +24,6 @@ export type AppComponentProps = {
   previewOrders: (payload: object) => void;
   wsConnect: () => void;
   wsDisconnect: () => void;
-  wsHandleSubscribeChange: (object: { A: string; B: string }) => void;
   wsPriceSubscribe: (payload: string) => void;
+  wsTickerChange: (payload: any) => void;
 };

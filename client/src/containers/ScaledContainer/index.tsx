@@ -1,4 +1,3 @@
-import { Suspense, lazy, MouseEvent } from "react";
 import React from "react";
 
 import { Container, Row, Col, Button } from "react-bootstrap";
@@ -7,6 +6,9 @@ import { connect } from "react-redux";
 import {
   errorSelector,
   websocketCurrentPrice,
+  wsLoadingSelector,
+  messageSelector,
+  // getAskPrice,
   websocketLoadingSelector,
   websocketConnectedSelector
 } from "../../redux/selectors";
@@ -16,7 +18,7 @@ import { postOrder, previewOrders } from "../../redux/actions/previewActions";
 import {
   wsConnect,
   wsDisconnect,
-  wsHandleSubscribeChange
+  wsTickerChange
 } from "../../redux/actions/websocketActions";
 
 import {
@@ -79,10 +81,7 @@ class ScaledContainer extends React.PureComponent<
   [handleOnChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { value, id } = event.target;
 
-    this.props.wsHandleSubscribeChange({
-      A: this.state.symbol,
-      B: value
-    });
+    this.props.wsTickerChange(value);
     this.setState({
       [id]: value
     } as PickEventScaled);
@@ -114,6 +113,7 @@ class ScaledContainer extends React.PureComponent<
   };
 
   render() {
+    console.log("render CALL");
     const { error, wsError, wsCurrentPrice, loading, loadingreq } = this.props;
     const { quantity, n_tp, start, end } = this.state;
     return (
@@ -246,14 +246,13 @@ class ScaledContainer extends React.PureComponent<
 }
 
 const mapStateToProps = (state: AppState, ownProps: any) => ({
-  // preview: state.preview
   error: errorSelector(state),
-  wsError: state.websocket.error,
+  // wsError: state.websocket.error,
   wsCurrentPrice: websocketCurrentPrice(state),
   loading: websocketLoadingSelector(state),
-  loadingreq: state.preview.loading,
+  loadingreq: wsLoadingSelector(state),
   connected: websocketConnectedSelector(state),
-  message: state.websocket.message
+  message: messageSelector(state)
 });
 
 export default connect(mapStateToProps, {
@@ -261,5 +260,5 @@ export default connect(mapStateToProps, {
   previewOrders,
   wsConnect,
   wsDisconnect,
-  wsHandleSubscribeChange
+  wsTickerChange
 })(ScaledContainer);

@@ -22,8 +22,11 @@ interface WebsocketDataResponse {
 }
 
 export interface WebsocketState {
-  data: WebsocketDataResponse | any;
-  connected: boolean;
-  loading: boolean;
-  error: string;
+  __keys?: any;
+  instrument?: any;
+  connected?: boolean;
+  loading?: boolean;
+  message?: string;
+  error?: string;
+  symbol?: string;
 }

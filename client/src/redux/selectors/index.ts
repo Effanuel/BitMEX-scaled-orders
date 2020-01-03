@@ -1,31 +1,43 @@
 import { createSelector } from "reselect";
-
 import { AppState } from "../models/state";
 
 const getShowPreview = (state: AppState) => state.preview.showPreview;
 const getError = (state: AppState) => state.preview.error;
 const getOrders = (state: AppState) => state.preview.orders;
 
-const websocketData = (state: AppState) => state.websocket.data;
+const getWsSymbol = (state: AppState) => state.websocket.symbol;
+const table_instrument = (state: AppState) => state.websocket.instrument;
 const websocketLoading = (state: AppState) => state.websocket.loading;
+const websocketMessage = (state: AppState) => state.websocket.message;
 const websocketConnected = (state: AppState) => state.websocket.connected;
 
 export const showPreviewSelector = createSelector(
   [getShowPreview],
   showPreview => showPreview
 );
-
-export const errorSelector = createSelector(
-  [getError],
-  error => error
+export const wsLoadingSelector = createSelector(
+  [websocketLoading],
+  loading => loading
+);
+export const messageSelector = createSelector(
+  [websocketMessage],
+  message => message
 );
 
-export const websocketDataSelector = createSelector(
-  [websocketData],
-  data => {
-    return data.action === "insert"
-      ? `$${data.data[0].askPrice}`
-      : "Loading...";
+export const errorSelector = createSelector([getError], error => {
+  console.log(error);
+  return error;
+});
+
+export const websocketCurrentPrice = createSelector(
+  [table_instrument, getWsSymbol],
+  (data, symbol) => {
+    for (let i = 0; i < Object.keys(data).length; i++) {
+      if (data[i].symbol === symbol && data[i].askPrice) {
+        return `$${data[i].askPrice}`;
+      }
+    }
+    return "Loading...";
   }
 );
 
@@ -46,10 +58,7 @@ export const ordersAveragePriceSelector = createSelector(
   }
 );
 
-export const ordersSelector = createSelector(
-  [getOrders],
-  orders => orders
-);
+export const ordersSelector = createSelector([getOrders], orders => orders);
 
 export const websocketLoadingSelector = createSelector(
   [websocketLoading],

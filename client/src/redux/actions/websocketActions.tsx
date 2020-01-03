@@ -1,37 +1,19 @@
-import { REDUX_WEBSOCKET_LOADING } from "./actionTypes";
-
-import { connect, disconnect, send } from "@giantmachines/redux-websocket";
+import { connect, disconnect } from "@giantmachines/redux-websocket";
 
 import * as constants from "./actionTypes";
 import { Thunk } from "../models/state";
 
-const sleep = (ms: number) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-};
-
-const wsLoading = (payload?: object): WsLoading => ({
-  type: REDUX_WEBSOCKET_LOADING,
+export const wsTickerChange = (payload?: object): WebsocketTickerChange => ({
+  type: constants.REDUX_WEBSOCKET_TICKER,
   payload
 });
-
-export const wsHandleSubscribeChange = (payload: {
-  A: string;
-  B: string;
-}): Thunk => async dispatch => {
-  try {
-    const { A, B } = payload;
-    dispatch(send({ op: "unsubscribe", args: [`instrument:${A}`] }));
-    await sleep(1000);
-    dispatch(send({ op: "subscribe", args: [`instrument:${B}`] }));
-  } catch (err) {
-    console.log(err.response.data, "error previewpriceWS redux");
-  }
-};
 
 export const wsConnect = (): Thunk => async dispatch => {
   try {
     dispatch(
-      connect("wss://testnet.bitmex.com/realtime?subscribe=instrument:XBTUSD")
+      connect(
+        "wss://www.bitmex.com/realtime?subscribe=instrument:XBTUSD,instrument:ETHUSD"
+      )
     );
   } catch (err) {
     console.log(err.response.data, "error previewpriceWS redux");
@@ -46,17 +28,13 @@ export const wsDisconnect = (): Thunk => async dispatch => {
   }
 };
 
-interface WsLoading {
-  type: constants.REDUX_WEBSOCKET_LOADING;
+interface WebsocketTickerChange {
+  type: constants.REDUX_WEBSOCKET_TICKER;
   payload: any;
 }
 
 interface InternalClearMessageLog {
   type: constants.INTERNAL_CLEAR_MESSAGE_LOG;
-  payload: any;
-}
-interface ReduxWebsocketLoading {
-  type: constants.REDUX_WEBSOCKET_LOADING;
   payload: any;
 }
 interface ReduxWebsocketConnect {
@@ -90,7 +68,7 @@ interface ReduxWebsocketMessage {
 }
 
 export type ReduxWebsocket =
-  | ReduxWebsocketLoading
+  | WebsocketTickerChange
   | ReduxWebsocketConnect
   | ReduxWebsocketOpen
   | ReduxWebsocketBroken
