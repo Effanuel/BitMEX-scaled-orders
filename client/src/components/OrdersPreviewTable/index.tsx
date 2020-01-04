@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Table } from "react-bootstrap";
-import { connect } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 
 import {
   ordersAveragePriceSelector,
@@ -12,12 +12,17 @@ import styles from "./styles.module.css";
 
 import { AppState } from "../../redux/models/state";
 
-type Props = {
-  averagePrice?: number | void;
-  orders?: any;
-};
+type Props = {};
 
-const OrdersPreviewTable = ({ averagePrice, orders }: Props) => {
+export default function OrdersPreviewTable(props: Props) {
+  const { orders, averagePrice } = useSelector(
+    (state: AppState) => ({
+      orders: ordersSelector(state),
+      averagePrice: ordersAveragePriceSelector(state)
+    }),
+    shallowEqual
+  );
+
   return (
     <Table className={styles.myTable} striped variant="dark" size="sm">
       <thead>
@@ -36,7 +41,7 @@ const OrdersPreviewTable = ({ averagePrice, orders }: Props) => {
       <tbody>
         {orders.map((x: any, i: number) => {
           return (
-            <tr key={String(i)}>
+            <tr key={`${i}`}>
               <td key={x * i + "a"}>{x.orderQty}</td>
               <td
                 key={x * i + "b"}
@@ -51,10 +56,4 @@ const OrdersPreviewTable = ({ averagePrice, orders }: Props) => {
       </tbody>
     </Table>
   );
-};
-
-const mapStateToProps = (state: AppState) => ({
-  orders: ordersSelector(state),
-  averagePrice: ordersAveragePriceSelector(state)
-});
-export default connect(mapStateToProps, null)(OrdersPreviewTable);
+}

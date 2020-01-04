@@ -3,15 +3,14 @@ import { FormCheck } from "react-bootstrap";
 
 import styles from "./styles.module.css";
 
-type Props<T extends object> = {
+type Props = {
   label: string;
   type: "radio" | "checkbox";
   name: string;
   defaultChecked?: boolean;
 };
 
-const CustomRadioButton = <T extends object>(props: Props<T>) => {
-  const { label, type, defaultChecked, name } = props;
+function CustomRadioButton({ label, type, defaultChecked, name }: Props) {
   return (
     <div className={styles.myLabel}>
       <FormCheck
@@ -26,6 +25,6 @@ const CustomRadioButton = <T extends object>(props: Props<T>) => {
       />
     </div>
   );
-};
+}
 
 export { CustomRadioButton };
