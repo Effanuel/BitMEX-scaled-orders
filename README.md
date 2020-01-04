@@ -32,12 +32,11 @@ This project is a trading tool based on **BitMEX API** to help you place orders 
 
 ### Built With
 
-The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. API requests are made with the help of **CCXT**.
+The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. *(CCXT is no longer a dependency)*
 
 - [Node](https://nodejs.org/en/) + [Express](https://expressjs.com/)
 - [React](https://reactjs.org/) + [Redux](https://redux.js.org/)
 - [React Bootstrap](https://react-bootstrap.github.io/)
-- [CCXT](https://github.com/ccxt/ccxt)
 
 <!-- GETTING STARTED -->
 
@@ -72,23 +71,20 @@ cd Bitmex-scaled-orders-master/api
 npm run init:packages
 ```
 
-3. Enter your API keys in `.sample-env` _(no quotes are needed)_:
+3. Enter your API keys in `.env` _(no quotes are needed)_:
 
 ```
 API_KEY = <API_KEY>
 API_SECRET = <API_SECRET_KEY>
 TESTNET = false
-ENABLE_RATE_LIMIT = true
 ```
 
 _**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_</br>
 `npm run clean` and `npm build`
 
-4. Rename `.sample-env` to `.env` (you can also change whether you want to use **Testnet**, **Rate Limit**):
-
 _**Disclaimer:** If you set TESTNET to true, you need to create a [Testnet](https://testnet.bitmex.com/) account and set the API keys appropriately. Your main BitMEX account API won't work with TESTNET option set to true._
 
-5. Build the application:
+4. Build the application:
 
 ```sh
 npm run build
@@ -103,7 +99,7 @@ git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
 cd Bitmex-scaled-orders/api
 ```
 
-- Create `.env` file with API keys;
+- Put API keys in `.env`
 
 ```sh
 npm run init:packages
@@ -118,6 +114,13 @@ npm run prod
 ```sh
 cd Bitmex-scaled-orders/api
 npm run prod
+```
+
+**Run tests:** *(not many at the moment)*
+
+```sh
+cd Bitmex-scaled-orders/client
+npm run test
 ```
 
 ## Distributions
@@ -138,8 +141,6 @@ _(The chart representations are symbolic)_
 
 - **Stepping stop-loss on target hit** using a Websocket;
 - **Chasing price** for limit orders;
-- Custom Error handling;
-- Server-side Websocket client;
 
 <!-- LICENSE -->
 
