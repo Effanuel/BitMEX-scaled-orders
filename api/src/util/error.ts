@@ -23,8 +23,10 @@ export const ErrorHandler = (error: any) => {
           response_message.includes("insufficient available balance")
         ) {
           return "insufficient funds";
+        } else if (response_message.includes("missing api key")) {
+          return "Missing API key.";
         }
-        return "Error::Status::400";
+
       default:
         return "Error::Default";
     }
