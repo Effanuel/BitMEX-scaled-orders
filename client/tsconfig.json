@@ -1,34 +1,58 @@
+// {
+//   "compilerOptions": {
+//     "outDir": "build/dist",
+//     "module": "esnext",
+//     "target": "es5",
+//     "lib": ["es6", "dom"],
+//     "sourceMap": true,
+//     "allowJs": true,
+//     "jsx": "react",
+//     "moduleResolution": "node",
+//     "esModuleInterop": true,
+//     // "rootDir": "./src",
+//     "noImplicitReturns": true,
+//     "noImplicitThis": true,
+//     "noImplicitAny": true,
+//     "strictNullChecks": true,
+//     "skipLibCheck": true,
+//     "allowSyntheticDefaultImports": true,
+//     "strict": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "noEmit": true,
+//     "removeComments": true,
+//     "types": ["jest", "node"],
+//     "typeRoots": ["./src/@types", "node_modules/@types"]
+//   },
+//   "exclude": ["node_modules", "src/build", "public", "src/css"],
+//   "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+// }
 {
   "compilerOptions": {
-    "outDir": "build/dist",
-    "module": "esnext",
     "target": "es5",
-    "lib": ["es6", "dom"],
-    "sourceMap": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "jsx": "react",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "rootDir": "./src",
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "removeComments": true
+    "sourceMap": true,
+    "removeComments": true,
+    "types": ["jest", "node"],
+    "typeRoots": ["./src/@types", "node_modules/@types"],
+    "jsx": "react"
   },
-  "exclude": [
-    "node_modules",
-    "src/build",
-    "public",
-    "src/__tests__",
-    "src/css"
-  ],
-  "include": ["src"]
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"],
+  "exclude": ["node_modules", "src/build", "public", "src/css"]
 }
