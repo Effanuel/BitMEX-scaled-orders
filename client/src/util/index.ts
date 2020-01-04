@@ -21,35 +21,34 @@ const gaussian = (mean: number, x: number, delta: number): number => {
   return member1 * member2;
 };
 
-interface Props {
-  quantity: number;
-  n_tp: number;
-  start: number;
-  end: number;
-  side: string;
-  symbol: string;
-  distribution?: string | number;
-}
-
+/**
+ * Order generation of Uniform dsitribution
+ * @param {object} Props is the inputs of the user
+ * @param {number} START_CFG is a parameter for gaussian()
+ * @param {number} END_CFG is a parameter for gaussian()
+ * @param {number} mean of placed orders (not average)
+ * @returns {array} Array of objects of orders
+ */
 const Uniform = (Props: Props): { orders: object[] } => {
   const { quantity, n_tp, start, end, side, symbol } = Props;
-
+  //Determening spread of the ticker (currently only XBTUSD and ETHUSD)
   let inc = Props.symbol === "XBTUSD" ? 2 : 20;
+  //Appropriate rounding, else the order is going to get rejected
+  const start_ = roundHalf(start, inc);
+  const end_ = roundHalf(end, inc);
 
-  const start1 = roundHalf(start, inc);
-  const end1 = roundHalf(end, inc);
-
-  let orders: { orders: object[] } = { orders: [] };
-  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
   const mean = Math.floor(quantity / n_tp);
-  //startEndPutOrders(orders.orders, start, end, mean, side);
+  // How much to increment the price of every order
+  const increment = roundHalf((end_ - start_) / (n_tp - 1), inc);
+  let orders: { orders: object[] } = { orders: [] };
+  // Pushing orders to main array
   for (let i = 0; i < n_tp; i++) {
-    //ROUND TO NEAREST 0.5
+    //ROUND
     orders.orders.push({
       symbol: symbol,
       side: side,
       orderQty: mean,
-      price: parseFloat((start1 + i * increment).toFixed(3)),
+      price: parseFloat((start_ + i * increment).toFixed(3)),
       ordType: "Limit",
       execInst: "ParticipateDoNotInitiate",
       text: "order"
@@ -59,114 +58,16 @@ const Uniform = (Props: Props): { orders: object[] } => {
   return orders;
 };
 const Positive = (Props: Props): { orders: object[] } => {
-  const { quantity, n_tp, start, end, side, symbol } = Props;
-
-  let inc = symbol === "XBTUSD" ? 2 : 20;
-
-  const start1 = roundHalf(start, inc);
-  const end1 = roundHalf(end, inc);
-
-  const START_CFG = -1;
-  const END_CFG = 1;
-
-  const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
-
-  const arr = [];
-  for (let i = 0; i < n_tp; i++) {
-    arr.push(gaussian(-1, START_CFG + i * incrementQty, 1)); //mean == -1
-  }
-  const summ = arr.reduce((a, b) => a + b, 0);
-
-  let orders: { orders: object[] } = { orders: [] };
-
-  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
-  for (let i = 0; i < n_tp; i++) {
-    //ROUND TO NEAREST 0.5
-    orders.orders.push({
-      symbol: symbol,
-      side: side,
-      orderQty: Math.floor((arr[i] / summ) * quantity),
-      price: parseFloat((start1 + i * increment).toFixed(3)),
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
-    });
-  }
-
-  return orders;
+  //You can change these parameters if you want to test
+  return skewedDistribution(Props, -1, 1, -1);
 };
 const Negative = (Props: Props): { orders: object[] } => {
-  const { quantity, n_tp, start, end, side, symbol } = Props;
-
-  let inc = symbol === "XBTUSD" ? 2 : 20;
-
-  const start1 = roundHalf(start, inc);
-  const end1 = roundHalf(end, inc);
-
-  const START_CFG = -1;
-  const END_CFG = 1;
-
-  const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
-
-  const arr = [];
-  for (let i = 0; i < n_tp; i++) {
-    arr.push(gaussian(1, START_CFG + i * incrementQty, 1)); //mean == 1
-  }
-  const summ = arr.reduce((a, b) => a + b, 0);
-
-  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
-
-  let orders: { orders: object[] } = { orders: [] };
-  for (let i = 0; i < n_tp; i++) {
-    //ROUND TO NEAREST 0.5
-    orders.orders.push({
-      symbol: symbol,
-      side: side,
-      orderQty: Math.floor((arr[i] / summ) * quantity),
-      price: parseFloat((start1 + i * increment).toFixed(3)),
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
-    });
-  }
-
-  return orders;
+  //You can change these parameters if you want to test
+  return skewedDistribution(Props, -1, 1, 1);
 };
 const Normal = (Props: Props): { orders: object[] } => {
-  const { quantity, n_tp, start, end, side, symbol } = Props;
-
-  let inc = symbol === "XBTUSD" ? 2 : 20;
-
-  const start1 = roundHalf(start, inc);
-  const end1 = roundHalf(end, inc);
-
-  const START_CFG = -2;
-  const END_CFG = 2;
-
-  const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
-
-  const arr = [];
-  for (let i = 0; i < n_tp; i++) {
-    arr.push(gaussian(0, START_CFG + i * incrementQty, 1)); //mean == 0
-  }
-  const summ = arr.reduce((a: number, b: number) => a + b, 0);
-
-  const increment = roundHalf((end1 - start1) / (n_tp - 1), inc);
-  let orders: { orders: object[] } = { orders: [] };
-  for (let i = 0; i < n_tp; i++) {
-    //ROUND TO NEAREST 0.5
-    orders.orders.push({
-      symbol: symbol,
-      side: side,
-      orderQty: Math.floor((arr[i] / summ) * quantity),
-      price: parseFloat((start1 + i * increment).toFixed(3)),
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
-      text: "order"
-    });
-  }
-
-  return orders;
+  //You can change these parameters if you want to test
+  return skewedDistribution(Props, -2, 2, 0);
 };
 
 /**
@@ -193,3 +94,61 @@ export const orderBulk = ({
       return Uniform({ quantity, n_tp, start, end, side, symbol });
   }
 };
+
+/**
+ * Order generation based on a distribution
+ * @param {object} Props is the inputs of the user
+ * @param {number} START_CFG is a parameter for gaussian()
+ * @param {number} END_CFG is a parameter for gaussian()
+ * @param {number} mean of placed orders (not average)
+ * @returns {array} Array of objects of orders
+ */
+const skewedDistribution = (
+  Props: Props,
+  START_CFG: number,
+  END_CFG: number,
+  mean: number
+): { orders: object[] } => {
+  const { quantity, n_tp, start, end, side, symbol } = Props;
+  //Determening spread of the ticker (currently only XBTUSD and ETHUSD)
+  let inc = symbol === "XBTUSD" ? 2 : 20;
+  //Appropriate rounding, else the order is going to get rejected
+  const start_ = roundHalf(start, inc);
+  const end_ = roundHalf(end, inc);
+
+  const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
+
+  const arr = [];
+  for (let i = 0; i < n_tp; i++) {
+    arr.push(gaussian(mean, START_CFG + i * incrementQty, 1)); //mean == 0
+  }
+  const summ = arr.reduce((a: number, b: number) => a + b, 0);
+  // How much to increment the price of every order
+  const increment = roundHalf((end_ - start_) / (n_tp - 1), inc);
+  let orders: { orders: object[] } = { orders: [] };
+  // Pushing orders to main array
+  for (let i = 0; i < n_tp; i++) {
+    //ROUND
+    orders.orders.push({
+      symbol: symbol,
+      side: side,
+      orderQty: Math.floor((arr[i] / summ) * quantity),
+      price: parseFloat((start_ + i * increment).toFixed(3)),
+      ordType: "Limit",
+      execInst: "ParticipateDoNotInitiate",
+      text: "order"
+    });
+  }
+
+  return orders;
+};
+
+interface Props {
+  quantity: number;
+  n_tp: number;
+  start: number;
+  end: number;
+  side: string;
+  symbol: string;
+  distribution?: string | number;
+}
