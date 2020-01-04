@@ -113,7 +113,6 @@ class ScaledContainer extends React.PureComponent<
   };
 
   render() {
-    console.log("render CALL");
     const { error, wsError, wsCurrentPrice, loading, loadingreq } = this.props;
     const { quantity, n_tp, start, end } = this.state;
     return (
@@ -239,7 +238,7 @@ class ScaledContainer extends React.PureComponent<
             </Row>
           </form>
         </Container>
-        <div style={{ color: "white" }}>{this.props.message}</div>
+        {/* <div style={{ color: "white" }}>{this.props.message}</div> */}
       </>
     );
   }
