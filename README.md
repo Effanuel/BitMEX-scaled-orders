@@ -32,7 +32,7 @@ This project is a trading tool based on **BitMEX API** to help you place orders 
 
 ### Built With
 
-The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. *(CCXT is no longer a dependency)*
+The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. *(CCXT is no longer a dependency since v1.2)*
 
 - [Node](https://nodejs.org/en/) + [Express](https://expressjs.com/)
 - [React](https://reactjs.org/) + [Redux](https://redux.js.org/)
@@ -58,7 +58,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ### Installation
 
-1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/v1.1.1.zip):
+1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/v1.2.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
@@ -122,6 +122,7 @@ npm run prod
 cd Bitmex-scaled-orders/client
 npm run test
 ```
+* Press "a" to run all.
 
 ## Distributions
 
@@ -135,12 +136,16 @@ This is the formula used to calculate distributions:
 
 ![formula](https://wikimedia.org/api/rest_v1/media/math/render/svg/4abaca87a10ecfa77b5a205056523706fe6c9c3f)
 
-_(The chart representations are symbolic)_
+_(The chart representations are symbolic)_ </br>
+*(You can view the code in `client/src/util/index.ts` file)*
 
 ## Roadmap
 
-- **Stepping stop-loss on target hit** using a Websocket;
+- **Stop-loss with risk percentage**;
 - **Chasing price** for limit orders;
+- **Faster price update**;
+- **Update preview table**;
+- **React Hooks**.
 
 <!-- LICENSE -->
 
