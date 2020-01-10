@@ -3,15 +3,14 @@ import { InputGroup, FormControl } from "react-bootstrap";
 
 import "./InputField.module.css";
 
-type Props<T extends object> = {
+type Props = {
   id: string;
   label: string;
-  value: string | undefined;
+  value: any;
   onChange: (arg0: any) => void;
 };
 
-const InputField = <T extends object>(props: Props<T>) => {
-  const { label, id, value, onChange } = props;
+function InputField({ id, label, value, onChange }: Props) {
   return (
     <div>
       <label htmlFor={label}>{label}</label>
@@ -27,6 +26,6 @@ const InputField = <T extends object>(props: Props<T>) => {
       </InputGroup>
     </div>
   );
-};
+}
 
 export { InputField };

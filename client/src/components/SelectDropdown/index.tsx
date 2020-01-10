@@ -1,15 +1,14 @@
 import React from "react";
-const styles = require("./styles.module.css");
+import styles from "./styles.module.css";
 
-type Props<T extends object> = {
+type Props = {
   label: string;
   instruments: string[];
   onChange: (arg0: any) => void;
   id: string;
 };
 
-const SelectDropdown = <T extends object>(props: Props<T>) => {
-  const { label, onChange, id, instruments } = props;
+function SelectDropdown({ label, onChange, id, instruments }: Props) {
   return (
     <div className={styles.selectDropdown}>
       <label htmlFor={label}>{label}</label>
@@ -23,6 +22,6 @@ const SelectDropdown = <T extends object>(props: Props<T>) => {
       </select>
     </div>
   );
-};
+}
 
 export { SelectDropdown };
