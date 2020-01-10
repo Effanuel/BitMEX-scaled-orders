@@ -3,10 +3,15 @@ import { shallow, mount } from "enzyme";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 // import configureStore from "redux-mock-store";
-import { OrdersPreviewTable } from "../components";
+import OrdersPreviewTable from "../components/OrdersPreviewTable";
 
 import { previewOrders } from "../redux/actions/previewActions";
 
+// jest.mock("react-redux", () => ({
+//   connect: () => jest.fn(),
+//   useSelector: jest.fn(fn => fn()),
+//   useDispatch: () => jest.fn()
+// }));
 const render = () =>
   mount(
     <Provider store={store}>
