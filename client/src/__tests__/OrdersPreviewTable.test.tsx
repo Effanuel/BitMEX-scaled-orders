@@ -7,6 +7,151 @@ import OrdersPreviewTable from "../components/OrdersPreviewTable";
 
 import { previewOrders } from "../redux/actions/previewActions";
 
+const orders_uniform = {
+  orders: [
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 166,
+      price: 7500,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_1"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 166,
+      price: 7600,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_2"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 166,
+      price: 7700,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_3"
+    }
+  ],
+  stop: {}
+};
+
+const orders_normal = {
+  orders: [
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 53,
+      price: 7500,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_1"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 393,
+      price: 7600,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_2"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 53,
+      price: 7700,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_3"
+    }
+  ],
+  stop: {}
+};
+
+const orders_positive = {
+  orders: [
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 287,
+      price: 7500,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_1"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 174,
+      price: 7600,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_2"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 38,
+      price: 7700,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_3"
+    }
+  ],
+  stop: {}
+};
+
+const orders_negative = {
+  orders: [
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 38,
+      price: 7500,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_1"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 174,
+      price: 7600,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_2"
+    },
+    {
+      execInst: "ParticipateDoNotInitiate",
+      ordType: "Limit",
+      orderQty: 287,
+      price: 7700,
+      side: "Sell",
+      symbol: "XBTUSD",
+      text: "order_3"
+    }
+  ],
+  stop: {}
+};
+
+const distributionParams = (distribution: string): object => {
+  return {
+    quantity: 500,
+    n_tp: 3,
+    start: 7500,
+    end: 7700,
+    stop: "",
+    distribution: distribution,
+    side: "Sell",
+    symbol: "XBTUSD"
+  };
+};
+
 // jest.mock("react-redux", () => ({
 //   connect: () => jest.fn(),
 //   useSelector: jest.fn(fn => fn()),
@@ -18,43 +163,22 @@ const render = () =>
       <OrdersPreviewTable />
     </Provider>
   );
-test("should calculate orders from params", () => {
-  const orderParams = {
-    quantity: 100,
-    n_tp: 2,
-    start: 7500,
-    end: 7700,
-    distribution: "Uniform",
-    side: "Sell",
-    symbol: "XBTUSD"
-  };
-  const orders = [
-    {
-      execInst: "ParticipateDoNotInitiate",
-      ordType: "Limit",
-      orderQty: 50,
-      price: 7500,
-      side: "Sell",
-      symbol: "XBTUSD",
-      text: "order"
-    },
-    {
-      execInst: "ParticipateDoNotInitiate",
-      ordType: "Limit",
-      orderQty: 50,
-      price: 7700,
-      side: "Sell",
-      symbol: "XBTUSD",
-      text: "order"
-    }
-  ];
-
-  const component = render();
+test("should calculate different distributions from params", () => {
+  // const component = render();
   expect(store.getState().preview.showPreview).toEqual(false);
 
-  store.dispatch(previewOrders(orderParams));
+  store.dispatch(previewOrders(distributionParams("Uniform")));
+  expect(store.getState().preview.orders).toEqual(orders_uniform);
 
-  expect(store.getState().preview.orders).toEqual(orders);
+  store.dispatch(previewOrders(distributionParams("Normal")));
+  expect(store.getState().preview.orders).toEqual(orders_normal);
+
+  store.dispatch(previewOrders(distributionParams("Positive")));
+  expect(store.getState().preview.orders).toEqual(orders_positive);
+
+  store.dispatch(previewOrders(distributionParams("Negative")));
+  expect(store.getState().preview.orders).toEqual(orders_negative);
+
   expect(store.getState().preview.showPreview).toEqual(true);
   // component.update();
 
@@ -62,34 +186,3 @@ test("should calculate orders from params", () => {
 
   // expect(component.find(OrdersPreviewTable).props()).toBe(10);
 });
-
-// const initialState = {
-//   preview: {
-//     orders: [
-//       {
-//         symbol: 'XBTUSD',
-//         side: 'Sell',
-//         orderQty: 350,
-//         price: 12000,
-//         ordType: 'Limit',
-//         execInst: 'ParticipateDoNotInitiate',
-//         text: 'order'
-//       },
-//       {
-//         symbol: 'XBTUSD',
-//         side: 'Sell',
-//         orderQty: 350,
-//         price: 12500,
-//         ordType: 'Limit',
-//         execInst: 'ParticipateDoNotInitiate',
-//         text: 'order'
-//       }
-//     ],
-//     1tribution: 'Uniform',
-//     side: '',
-//     error: '',
-//     showPreview: false,
-//     currentPrice: null,
-//     instrument: 'XBTUSD'
-//   }
-// }; // here it
