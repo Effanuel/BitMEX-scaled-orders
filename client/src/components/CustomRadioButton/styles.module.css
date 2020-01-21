@@ -1,9 +1,9 @@
-.myLabel {
-  color: white;
+.label {
+  color: rgba(255, 255, 255, 0.87); /*grey*/
   font-size: 12px;
 }
 
-.noselect {
+.label__noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */

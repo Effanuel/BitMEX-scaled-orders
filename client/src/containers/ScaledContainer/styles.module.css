@@ -1,21 +1,24 @@
 @import "../../css/root.module.css";
+@import "../../css/colors.module.css";
+
 body {
   background-color: var(--primaryColor);
   min-width: 500px;
   min-height: 750px;
 }
 
-.myContainer {
+.container_scaled {
   display: flex;
 
-  border: 2px solid var(--accentColor);
+  border: 1px solid var(--accentColor);
   background-color: var(--secondaryColor);
   justify-content: center;
   align-items: center;
   margin-bottom: 10px;
+  padding: 0 0px;
 }
 
-.myRow {
+.container__row {
   /* border: 3px solid red; */
   margin: 5px;
   height: 100px;
@@ -30,9 +33,10 @@ input[type='radio']:checked:after {
   background: #ebff43;
 } */
 
-.myText {
-  color: var(--accentColor);
-  font-size: calc(0.5em + 0.5vw);
+.text_field {
+  color: white;
+  font-size: 18px;
+  margin-top: 30px; /* ?: is not centered by input, but by input+label*/
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
@@ -41,49 +45,63 @@ input[type='radio']:checked:after {
   user-select: none; /* Non-prefixed version, currently*/
 }
 
-.myTextButton {
+.text_button {
   color: var(--accentColor);
   font-size: calc(0.5em + 0.5vw);
 }
 
-.myTextButton:disabled {
+.text_button:disabled {
   color: lightgrey;
 }
 
-.myTextButton:focus,
-.myTextButton:hover {
+.text_button:focus,
+.text_button:hover {
   background-color: unset !important;
   text-decoration: none;
   color: #41e87a;
 }
 
-.myTextField {
+/* .myTextField {
   color: white;
   font-size: 20px;
-}
+} */
 
-.myButton {
+.button {
   border-radius: 0;
   border: none;
   width: 100px;
   background-color: var(--primaryColor);
+  border: 1px solid var(--accentColor);
 }
 
-.myButton:focus:enabled {
+.button:focus:enabled {
   -webkit-box-shadow: none;
   box-shadow: none;
+  border: 1px solid var(--accentColor);
 }
 
-.myButton:hover:enabled {
-  background-color: var(--accentColor);
+.button:hover:enabled {
+  background-color: #203821;
+  border: 1px solid var(--accentColor);
 }
-
-.myButton:disabled {
-  background-color: grey;
+/* Updated with Material*/
+.button:disabled {
+  background-color: rgba(255, 255, 255, 0.38); /*grey*/
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  cursor: default;
 }
 
 .myErrorMessage {
-  color: red;
+  color: #cf6679;
   text-align: center;
   font-size: calc(0.5em + 0.5vw);
+}
+
+.radio__side {
+  margin-top: 30px;
+}
+
+.message {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
 }

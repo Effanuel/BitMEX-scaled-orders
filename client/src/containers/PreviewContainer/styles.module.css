@@ -1,0 +1,26 @@
+@import "../../css/colors.module.css";
+
+.container,
+.container_orders {
+  display: flex;
+
+  border: 1px solid grey;
+  background-color: var(--secondaryColor);
+  width: 100%;
+  /* margin-bottom: 10px; */
+  padding: 0 0px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.container_orders {
+  margin-right: 10px;
+  width: 150%;
+}
+
+.preview_containers {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0px;
+}

@@ -4,11 +4,11 @@
     font-size: 12px;
   } */
 
-.customStyle {
+.color_accent {
   color: var(--accentColor);
 }
 
-.preview {
+.table {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   font-size: 12px;
   border-collapse: collapse;
@@ -16,24 +16,20 @@
   background-color: var(--secondaryColor);
   color: rgba(255, 255, 255, 0.87);
 }
-.preview tr {
+.table tr {
   height: 15px;
 }
 
-.preview td,
-.preview th {
+.table td,
+.table th {
   padding: 5px;
 }
 
-.preview tr:nth-child(even) {
+.table tr:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* .preview tr:hover {
-    background-color: #ddd;
-  } */
-
-.preview th {
+.table th {
   padding-top: 7px;
   padding-bottom: 7px;
   padding-left: 7px;
