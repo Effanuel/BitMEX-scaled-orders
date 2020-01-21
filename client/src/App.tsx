@@ -1,45 +1,25 @@
-import { Suspense, lazy } from "react";
 import React from "react";
-
-import { Container } from "react-bootstrap";
-import { connect } from "react-redux";
-
-import { ScaledContainer } from "./containers";
-
+// REDUX
+import { shallowEqual, useSelector } from "react-redux";
 import { showPreviewSelector } from "./redux/selectors";
+/// COMPONENTS
+import { ScaledContainer, PreviewContainer } from "./containers";
+// UTILS
+import "./css/root.module.css";
 
-import styles from "./css/root.module.css";
+export default function App() {
+  const { showPreview } = useSelector(
+    (state: any) => ({
+      showPreview: showPreviewSelector(state)
+    }),
+    shallowEqual
+  );
 
-const OrdersPreviewTable = lazy(() =>
-  import("./components/OrdersPreviewTable")
-);
+  return (
+    <>
+      <ScaledContainer />
 
-class App extends React.Component<any, any> {
-  render() {
-    const { showPreview } = this.props;
-
-    return (
-      <>
-        <ScaledContainer />
-
-        {showPreview && (
-          <Container className={styles.myContainer}>
-            <Suspense fallback={<div>Loading...</div>}>
-              <OrdersPreviewTable />
-            </Suspense>
-          </Container>
-        )}
-      </>
-    );
-  }
+      {showPreview && <PreviewContainer />}
+    </>
+  );
 }
-
-const mapStateToProps = (state: any, ownProps: any) => ({
-  // preview: state.preview
-  showPreview: showPreviewSelector(state)
-});
-
-export default connect(mapStateToProps, null)(App);
-
-// done list
-// Subscribes on connect instead of send
