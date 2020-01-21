@@ -99,7 +99,7 @@ const skewedDistribution = (
   }
   // Add stop loss order
   if (stop !== undefined && stop) {
-    const __stop = stopLoss({ quantity, stop, symbol });
+    const __stop = stopLoss({ quantity, stop, symbol, side });
     orders.stop = __stop;
   }
   return orders;
@@ -108,17 +108,19 @@ const skewedDistribution = (
 const stopLoss = ({
   quantity,
   stop,
-  symbol // : XBTUSD, ETHUSD...
+  symbol, // : XBTUSD, ETHUSD...
+  side
 }: StopProps) => {
   let inc = symbol === "XBTUSD" ? 2 : 20;
   const price = roundHalf(stop, inc);
-
+  const stop_side = side === "Buy" ? "Sell" : "Buy";
   return {
     symbol: symbol,
+    side: stop_side,
     orderQty: quantity,
     stopPx: parseFloat(price.toFixed(3)),
     ordType: "Stop",
-    execInst: "LastPrice",
+    execInst: "LastPrice,ReduceOnly",
     text: "stop_1"
   };
 };
@@ -162,6 +164,7 @@ interface StopProps {
   quantity: number;
   stop: number;
   symbol: string;
+  side: string;
 }
 
 type ordersProps = { orders: object[]; stop: object };
