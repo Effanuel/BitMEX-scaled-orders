@@ -1,4 +1,5 @@
 import React from "react";
+// UTILS
 import styles from "./styles.module.css";
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 
 function SelectDropdown({ label, onChange, id, instruments }: Props) {
   return (
-    <div className={styles.selectDropdown}>
+    <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>
 
       <select className="custom-select" onChange={onChange} id={id}>

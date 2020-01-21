@@ -1,12 +1,12 @@
 import React from "react";
+// REDUX
 import { useSelector, shallowEqual } from "react-redux";
-
 import {
   ordersSelector,
   ordersAveragePriceSelector,
   ordersRiskSelector
 } from "../../redux/selectors";
-
+// UTILS
 import styles from "./styles.module.css";
 
 interface IDetailsTableProps {}
@@ -21,7 +21,7 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
     shallowEqual
   );
   return (
-    <table className={styles.preview}>
+    <table className={styles.table}>
       <thead>
         <tr>
           <th>Details</th>
@@ -33,7 +33,7 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
           <td>Average price:</td>
           <td>
             {`${averagePrice}`}
-            <span className={styles.customStyle}> USD</span>
+            <span className={styles.color_accent}> USD</span>
           </td>
         </tr>
         {riskBTC ? (
@@ -41,7 +41,7 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
             <td>Risk:</td>
             <td>
               {riskBTC}
-              <span className={styles.customStyle}> BTC</span>
+              <span className={styles.color_accent}> BTC</span>
             </td>
           </tr>
         ) : null}
