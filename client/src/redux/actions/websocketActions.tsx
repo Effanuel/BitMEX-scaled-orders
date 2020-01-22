@@ -1,9 +1,10 @@
 import { connect, disconnect } from "@giantmachines/redux-websocket";
 
+// import crypto from "crypto";
 import * as constants from "./actionTypes";
 import { Thunk } from "../models/state";
 
-export const wsTickerChange = (payload?: object): WebsocketTickerChange => ({
+export const wsTickerChange = (payload?: any): WebsocketTickerChange => ({
   type: constants.REDUX_WEBSOCKET_TICKER,
   payload
 });
@@ -12,7 +13,7 @@ export const wsConnect = (): Thunk => async dispatch => {
   try {
     dispatch(
       connect(
-        "wss://www.bitmex.com/realtime?subscribe=instrument:XBTUSD,instrument:ETHUSD"
+        `wss://www.bitmex.com/realtime?subscribe=instrument:XBTUSD,instrument:ETHUSD`
       )
     );
   } catch (err) {
