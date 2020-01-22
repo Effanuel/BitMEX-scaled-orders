@@ -28,6 +28,7 @@ This project is a trading tool based on **BitMEX API** to help you place orders 
 - Place up to 30 orders in a range at once _(small order sizes will cause a **spam warning**)_;
 - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section);
 - Shows current price _(it is based on the latest ask price)_
+- Shows risk on orders;
 - Built with **TypeScript**;
 
 ### Built With
@@ -58,7 +59,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ### Installation
 
-1. Clone the repo or [download zip](https://github.com/Effanuel/Bitmex-scaled-orders/archive/v1.2.zip):
+1. Clone the repo or [download zip](https://github.com/Effanuel/BitMEX-scaled-orders/archive/v1.5.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
@@ -142,6 +143,7 @@ _(The chart representations are symbolic)_ </br>
 
 - **Chasing price** for limit orders;
 - **Faster price update**;
+- **Removing Express server?**
 
 <!-- LICENSE -->
 
