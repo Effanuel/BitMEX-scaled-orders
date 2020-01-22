@@ -1,5 +1,5 @@
 <p align="center"> 
-  <img src='https://github.com/Effanuel/Bitmex-scaled-orders/blob/master/assets/presentation_v3.gif'>
+  <img src='assets/presentation_scaled_v4.gif'>
 </p>
 
 ## Table of Contents
@@ -16,7 +16,7 @@
 - [Useful material](#useful-material)
 
 <p align="center"> 
-<img src="assets/interface_range_tool.png">
+<img src="assets/interface_range_tool_v4.png">
 </p>
 
 # BitMEX scaled orders tool
@@ -122,7 +122,6 @@ npm run prod
 cd Bitmex-scaled-orders/client
 npm run test
 ```
-* Press "a" to run all.
 
 ## Distributions
 
@@ -141,11 +140,8 @@ _(The chart representations are symbolic)_ </br>
 
 ## Roadmap
 
-- **Stop-loss with risk percentage**;
 - **Chasing price** for limit orders;
 - **Faster price update**;
-- **Update preview table**;
-- **React Hooks**.
 
 <!-- LICENSE -->
 
