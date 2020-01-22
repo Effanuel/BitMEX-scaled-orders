@@ -1,21 +1,7 @@
-:root {
-  --accentColor: #00ca45;
-  --primaryColor: #323e4d;
-  --secondaryColor: #253034;
-}
+@import "./colors.module.css";
 
 body {
   background-color: var(--primaryColor);
   min-width: 500px;
   min-height: 750px;
-}
-
-.myContainer {
-  display: flex;
-
-  border: 2px solid var(--accentColor);
-  background-color: var(--secondaryColor);
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
 }

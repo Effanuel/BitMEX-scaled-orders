@@ -1,6 +1,7 @@
 import React from "react";
+// COMPONENTS
 import { FormCheck } from "react-bootstrap";
-
+// UTILS
 import styles from "./styles.module.css";
 
 type Props = {
@@ -12,7 +13,7 @@ type Props = {
 
 function CustomRadioButton({ label, type, defaultChecked, name }: Props) {
   return (
-    <div className={styles.myLabel}>
+    <div className={styles.label}>
       <FormCheck
         custom
         name={name}
@@ -21,7 +22,7 @@ function CustomRadioButton({ label, type, defaultChecked, name }: Props) {
         id={label}
         value={label}
         defaultChecked={defaultChecked}
-        className={styles.noselect}
+        className={styles.label__noselect}
       />
     </div>
   );

@@ -5,6 +5,7 @@ export type AppComponentState = {
   n_tp?: string | number;
   start?: string | number;
   end?: string | number;
+  stop?: string | number;
   distribution?: string | number;
   side?: string;
   symbol?: string;

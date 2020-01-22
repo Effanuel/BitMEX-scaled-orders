@@ -1,22 +1,41 @@
 @import "../../css/root.module.css";
+@import "../../css/colors.module.css";
 
-.selectDropdown label {
-  color: white;
-  font-size: 12px;
+.select_dropdown label {
+  color: rgba(255, 255, 255, 0.6); /*grey*/
+  font-size: calc(0.5em + 0.5vw);
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }
 
-.selectDropdown select {
+.select_dropdown select {
   background-color: var(--primaryColor);
-  color: white;
+  color: rgba(255, 255, 255, 0.87);
   border-radius: 0;
   border: 1px solid grey;
   outline: none;
+  /* this is must */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
-.selectDropdown select:focus {
+.select_dropdown select:focus {
   outline: none !important;
   outline-width: 0 !important;
   box-shadow: none;
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
   border: 1px solid var(--accentColor);
+}
+
+select::-ms-expand {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }

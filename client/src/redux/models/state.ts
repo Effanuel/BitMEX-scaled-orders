@@ -24,6 +24,7 @@ interface WebsocketDataResponse {
 export interface WebsocketState {
   __keys?: any;
   instrument?: any;
+  order?: any;
   connected?: boolean;
   loading?: boolean;
   message?: string;

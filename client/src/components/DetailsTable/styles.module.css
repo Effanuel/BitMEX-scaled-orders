@@ -1,4 +1,12 @@
 @import "../../css/colors.module.css";
+/* .myTable {
+    margin: 12px;
+    font-size: 12px;
+  } */
+
+.color_accent {
+  color: var(--accentColor);
+}
 
 .table {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -20,10 +28,6 @@
 .table tr:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.1);
 }
-
-/* .table tr:hover {
-  background-color: #ddd;
-} */
 
 .table th {
   padding-top: 7px;

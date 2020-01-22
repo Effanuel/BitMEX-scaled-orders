@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
-
-import { Container, Row, Col, Button } from "react-bootstrap";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-
+// REDUX
 import {
-  errorSelector,
-  websocketCurrentPrice,
-  wsLoadingSelector,
   messageSelector,
-  // getAskPrice,
-  websocketLoadingSelector,
-  websocketConnectedSelector
+  orderLoadingSelector,
+  orderErrorSelector,
+  websocketCurrentPrice,
+  websocketOrder,
+  websocketLoadingSelector
 } from "../../redux/selectors";
 
-import { postOrder, previewOrders } from "../../redux/actions/previewActions";
+import {
+  postOrder,
+  previewOrders,
+  previewClose
+} from "../../redux/actions/previewActions";
 
 import {
   wsConnect,
   wsDisconnect,
   wsTickerChange
 } from "../../redux/actions/websocketActions";
+// COMPONENTS
+import { Container, Row, Col, Button } from "react-bootstrap";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 
 import {
   InputField,
@@ -29,14 +32,9 @@ import {
   SpinnerComponent
 } from "../../components";
 
+// UTILS
 import { AppState } from "../../redux/models/state";
-
-import {
-  AppComponentProps,
-  AppComponentState,
-  PickEventScaled
-} from "../../@types";
-
+import { AppComponentState } from "../../@types"; //AppComponentProps,
 import styles from "./styles.module.css";
 
 const initialState = Object.freeze({
@@ -44,6 +42,7 @@ const initialState = Object.freeze({
   n_tp: "",
   start: "",
   end: "",
+  stop: "",
   distribution: "Uniform",
   side: "Sell",
   symbol: "XBTUSD"
@@ -52,26 +51,26 @@ const initialState = Object.freeze({
 export default function ScaledContainer() {
   const dispatch = useDispatch();
   const {
-    error,
     wsCurrentPrice,
     loading,
-    loadingreq,
-    connected,
-    message
+    orderLoading,
+    ordersFilled,
+    message,
+    orderError
   } = useSelector(
     (state: AppState) => ({
-      error: errorSelector(state),
-      // wsError: state.websocket.error,
       wsCurrentPrice: websocketCurrentPrice(state),
       loading: websocketLoadingSelector(state),
-      loadingreq: wsLoadingSelector(state),
-      connected: websocketConnectedSelector(state),
-      message: messageSelector(state)
+      orderLoading: orderLoadingSelector(state),
+      message: messageSelector(state),
+      ordersFilled: websocketOrder(state),
+      orderError: orderErrorSelector(state)
     }),
     shallowEqual
   );
 
   const [state, setState] = useState<AppComponentState>(initialState);
+  const [cache, setCache] = useState({ cache: true });
 
   useEffect((): any => {
     dispatch(wsConnect());
@@ -79,11 +78,21 @@ export default function ScaledContainer() {
       dispatch(wsDisconnect());
     };
   }, []);
+  //
+  //======================================================
+  //
+  // not so elequent way to handle preview button press handling
+  function handleCache() {
+    setCache(prevState => ({ ...prevState, cache: false }));
+  }
 
   function handleOnChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const { value, id } = event.target;
     dispatch(wsTickerChange(value));
     setState(prevState => ({ ...prevState, [id]: value }));
+    //
+    //
+    handleCache();
   }
 
   function handleOnChangeNumber(
@@ -91,27 +100,41 @@ export default function ScaledContainer() {
   ): void {
     const { id, value } = event.target;
     setState(prevState => ({ ...prevState, [id]: parseFloat(value) }));
+    //
+    //
+    handleCache();
   }
 
   function onOrderSubmit(event: React.MouseEvent<HTMLButtonElement>): void {
     event.preventDefault();
     dispatch(postOrder(state));
+    //
+    // instead of this, input fields could be cleared
+    handleCache();
   }
 
   function onRadioChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const { name, value } = event.target;
     setState(prevState => ({ ...prevState, [name]: value }));
+    //
+    //
+    handleCache();
   }
 
   function onPreviewOrders(): void {
-    dispatch(previewOrders(state));
+    if (cache.cache === true) {
+      dispatch(previewClose());
+    } else {
+      setCache(prevState => ({ ...prevState, cache: true }));
+      dispatch(previewOrders(state));
+    }
   }
 
   return (
     <>
-      <Container className={styles.myContainer}>
+      <Container className={styles.container_scaled}>
         <form id="orderForm">
-          <Row className={styles.myRow}>
+          <Row className={styles.container__row}>
             <Col>
               <SelectDropdown
                 instruments={["XBTUSD", "ETHUSD"]}
@@ -120,7 +143,7 @@ export default function ScaledContainer() {
                 label="Instrument"
               />
             </Col>
-            <Col onChange={onRadioChange}>
+            <Col onChange={onRadioChange} className={styles.radio__side}>
               <CustomRadioButton
                 defaultChecked
                 label="Sell"
@@ -130,17 +153,25 @@ export default function ScaledContainer() {
               <CustomRadioButton label="Buy" type="radio" name="side" />
             </Col>
             <Col>
-              <div className={styles.myText}>Current price:</div>
-            </Col>
-            <Col>
-              <div className={styles.myTextField}>
+              <div className={styles.text_field}>
                 {loading ? "Loading..." : wsCurrentPrice}
+
                 {/* {wsCurrentPrice || (loading && <SpinnerComponent />)} */}
               </div>
+              <div className={styles.message}>{message}</div>
+            </Col>
+            <Col>
+              <InputField
+                onChange={handleOnChangeNumber}
+                value={state.stop}
+                label="Stop-Loss"
+                id="stop"
+                stop={true}
+              />
             </Col>
           </Row>
 
-          <Row className={styles.myRow}>
+          <Row className={styles.container__row}>
             <Col>
               <InputField
                 onChange={handleOnChangeNumber}
@@ -175,7 +206,7 @@ export default function ScaledContainer() {
             </Col>
           </Row>
 
-          <Row className={styles.myRow}>
+          <Row className={styles.container__row}>
             <Col onChange={onRadioChange}>
               <CustomRadioButton
                 defaultChecked
@@ -199,21 +230,29 @@ export default function ScaledContainer() {
                 name="distribution"
               />
             </Col>
-            <Col className={styles.myErrorMessage}>{error /* || wsError*/}</Col>
+            <Col className={styles.myErrorMessage}>{orderError}</Col>
 
             <Col className="">
               <Col className="text-right">
                 <Button
                   onClick={onPreviewOrders}
                   variant="link"
-                  className={styles.myTextButton}
+                  className={styles.text_button}
                   disabled={
                     !(
                       state.quantity &&
                       state.n_tp &&
+                      state.n_tp > 1 &&
                       state.start &&
                       state.end
-                    ) || state.quantity < state.n_tp
+                    ) ||
+                    state.quantity < state.n_tp ||
+                    (state.stop && state.side === "Buy"
+                      ? state.stop > state.start && state.stop > state.end
+                      : false) ||
+                    (state.stop && state.side === "Sell"
+                      ? state.stop < state.start && state.stop < state.end
+                      : false)
                   }
                 >
                   Preview
@@ -224,306 +263,31 @@ export default function ScaledContainer() {
             <Col>
               <Button
                 onClick={onOrderSubmit}
-                className={styles.myButton}
+                className={styles.button}
                 disabled={
-                  !(state.quantity && state.n_tp && state.start && state.end) ||
-                  state.quantity < state.n_tp
+                  !(
+                    state.quantity &&
+                    state.n_tp &&
+                    state.n_tp > 1 &&
+                    state.start &&
+                    state.end
+                  ) ||
+                  state.quantity < state.n_tp ||
+                  (state.stop && state.side === "Buy"
+                    ? state.stop > state.start && state.stop > state.end
+                    : false) ||
+                  (state.stop && state.side === "Sell"
+                    ? state.stop < state.start && state.stop < state.end
+                    : false)
                 }
               >
-                Submit{loadingreq && <SpinnerComponent />}
+                Submit{orderLoading && <SpinnerComponent />}
               </Button>
             </Col>
           </Row>
         </form>
       </Container>
-      {/* <div style={{ color: "white" }}>{this.props.message}</div> */}
+      <div style={{ color: "white" }}>{ordersFilled}</div>
     </>
   );
 }
-
-// const mapStateToProps = (state: AppState, ownProps: any) => ({
-//   error: errorSelector(state),
-//   // wsError: state.websocket.error,
-//   wsCurrentPrice: websocketCurrentPrice(state),
-//   loading: websocketLoadingSelector(state),
-//   loadingreq: wsLoadingSelector(state),
-//   connected: websocketConnectedSelector(state),
-//   message: messageSelector(state)
-// });
-
-// export default connect(mapStateToProps, {
-//   postOrder,
-//   previewOrders,
-//   wsConnect,
-//   wsDisconnect,
-//   wsTickerChange
-// })(ScaledContainer);
-
-// import React from "react";
-
-// import { Container, Row, Col, Button } from "react-bootstrap";
-// import { connect, useEffect } from "react-redux";
-
-// import {
-//   errorSelector,
-//   websocketCurrentPrice,
-//   wsLoadingSelector,
-//   messageSelector,
-//   // getAskPrice,
-//   websocketLoadingSelector,
-//   websocketConnectedSelector
-// } from "../../redux/selectors";
-
-// import { postOrder, previewOrders } from "../../redux/actions/previewActions";
-
-// import {
-//   wsConnect,
-//   wsDisconnect,
-//   wsTickerChange
-// } from "../../redux/actions/websocketActions";
-
-// import {
-//   InputField,
-//   SelectDropdown,
-//   CustomRadioButton,
-//   // OrdersPreviewTable,
-//   SpinnerComponent
-// } from "../../components";
-
-// import { AppState } from "../../redux/models/state";
-
-// import {
-//   AppComponentProps,
-//   AppComponentState,
-//   PickEventScaled
-// } from "../../@types";
-
-// import styles from "./styles.module.css";
-
-// const handleOnChange = Symbol();
-// const handleOnChangeNumber = Symbol();
-// const onOrderSubmit = Symbol();
-// const onRadioChange = Symbol();
-// const onPreviewOrders = Symbol();
-
-// const initialState: { [key: string]: any } = Object.freeze({
-//   quantity: "",
-//   n_tp: "",
-//   start: "",
-//   end: "",
-//   distribution: "Uniform",
-//   side: "Sell",
-//   symbol: "XBTUSD"
-// });
-
-// class ScaledContainer extends React.PureComponent<
-//   AppComponentProps,
-//   AppComponentState
-// > {
-//   readonly state = initialState;
-
-//   // useEffect(() => {
-//   //   this.props.wsConnect();
-
-//   // }, [])
-
-//   async componentDidMount() {
-//     this.props.wsConnect();
-//   }
-
-//   // componentDidUpdate(
-//   //   prevProps: AppComponentProps,
-//   //   prevState: AppComponentState
-//   // ) {
-//   //   if (prevProps.connected !== this.props.connected) {
-//   //     this.props.wsPriceSubscribe(this.state.symbol);
-//   //   }
-//   // }
-//   componentWillUnmount() {
-//     console.log("componentWillUnmount call.");
-//     this.props.wsDisconnect();
-//   }
-
-//   [handleOnChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
-//     const { value, id } = event.target;
-
-//     this.props.wsTickerChange(value);
-//     this.setState({
-//       [id]: value
-//     } as PickEventScaled);
-//   };
-
-//   [handleOnChangeNumber] = (
-//     event: React.ChangeEvent<HTMLInputElement>
-//   ): void => {
-//     const { id, value } = event.target;
-//     this.setState({
-//       [id]: { ...this.state[id] },
-//       [id]: parseFloat(value)
-//     } as PickEventScaled);
-//   };
-
-//   [onOrderSubmit] = (event: React.MouseEvent<HTMLButtonElement>): void => {
-//     event.preventDefault();
-//     this.props.postOrder(this.state);
-//   };
-
-//   [onRadioChange] = (event: React.ChangeEvent<HTMLInputElement>): void => {
-//     this.setState({
-//       [event.target.name]: event.target.value
-//     } as PickEventScaled);
-//   };
-
-//   [onPreviewOrders] = (): void => {
-//     this.props.previewOrders(this.state);
-//   };
-
-//   render() {
-//     const { error, wsError, wsCurrentPrice, loading, loadingreq } = this.props;
-//     const { quantity, n_tp, start, end } = this.state;
-//     return (
-//       <>
-//         <Container className={styles.myContainer}>
-//           <form id="orderForm">
-//             <Row className={styles.myRow}>
-//               <Col>
-//                 <SelectDropdown
-//                   instruments={["XBTUSD", "ETHUSD"]}
-//                   id="symbol"
-//                   onChange={this[handleOnChange]}
-//                   label="Instrument"
-//                 />
-//               </Col>
-//               <Col onChange={this[onRadioChange]}>
-//                 <CustomRadioButton
-//                   defaultChecked
-//                   label="Sell"
-//                   type="radio"
-//                   name="side"
-//                 />
-//                 <CustomRadioButton label="Buy" type="radio" name="side" />
-//               </Col>
-//               <Col>
-//                 <div className={styles.myText}>Current price:</div>
-//               </Col>
-//               <Col>
-//                 <div className={styles.myTextField}>
-//                   {loading ? "Loading..." : wsCurrentPrice}
-//                   {/* {wsCurrentPrice || (loading && <SpinnerComponent />)} */}
-//                 </div>
-//               </Col>
-//             </Row>
-
-//             <Row className={styles.myRow}>
-//               <Col>
-//                 <InputField
-//                   onChange={this[handleOnChangeNumber]}
-//                   value={this.state.quantity}
-//                   label="Quantity"
-//                   id="quantity"
-//                 />
-//               </Col>
-//               <Col>
-//                 <InputField
-//                   onChange={this[handleOnChangeNumber]}
-//                   value={this.state.n_tp}
-//                   label="Order count"
-//                   id="n_tp"
-//                 />
-//               </Col>
-//               <Col>
-//                 <InputField
-//                   onChange={this[handleOnChangeNumber]}
-//                   value={this.state.start}
-//                   label="Range start USD"
-//                   id="start"
-//                 />
-//               </Col>
-//               <Col>
-//                 <InputField
-//                   onChange={this[handleOnChangeNumber]}
-//                   value={this.state.end}
-//                   label="Range end USD"
-//                   id="end"
-//                 />
-//               </Col>
-//             </Row>
-
-//             <Row className={styles.myRow}>
-//               <Col onChange={this[onRadioChange]}>
-//                 <CustomRadioButton
-//                   defaultChecked
-//                   label="Uniform"
-//                   type="radio"
-//                   name="distribution"
-//                 />
-//                 <CustomRadioButton
-//                   label="Normal"
-//                   type="radio"
-//                   name="distribution"
-//                 />
-//                 <CustomRadioButton
-//                   label="Positive"
-//                   type="radio"
-//                   name="distribution"
-//                 />
-//                 <CustomRadioButton
-//                   label="Negative"
-//                   type="radio"
-//                   name="distribution"
-//                 />
-//               </Col>
-//               <Col className={styles.myErrorMessage}>{error || wsError}</Col>
-
-//               <Col className="">
-//                 <Col className="text-right">
-//                   <Button
-//                     onClick={this[onPreviewOrders]}
-//                     variant="link"
-//                     className={styles.myTextButton}
-//                     disabled={
-//                       !(quantity && n_tp && start && end) || quantity < n_tp
-//                     }
-//                   >
-//                     Preview
-//                   </Button>
-//                 </Col>
-//               </Col>
-
-//               <Col>
-//                 <Button
-//                   onClick={this[onOrderSubmit]}
-//                   className={styles.myButton}
-//                   disabled={
-//                     !(quantity && n_tp && start && end) || quantity < n_tp
-//                   }
-//                 >
-//                   Submit{loadingreq && <SpinnerComponent />}
-//                 </Button>
-//               </Col>
-//             </Row>
-//           </form>
-//         </Container>
-//         {/* <div style={{ color: "white" }}>{this.props.message}</div> */}
-//       </>
-//     );
-//   }
-// }
-
-// const mapStateToProps = (state: AppState, ownProps: any) => ({
-//   error: errorSelector(state),
-//   // wsError: state.websocket.error,
-//   wsCurrentPrice: websocketCurrentPrice(state),
-//   loading: websocketLoadingSelector(state),
-//   loadingreq: wsLoadingSelector(state),
-//   connected: websocketConnectedSelector(state),
-//   message: messageSelector(state)
-// });
-
-// export default connect(mapStateToProps, {
-//   postOrder,
-//   previewOrders,
-//   wsConnect,
-//   wsDisconnect,
-//   wsTickerChange
-// })(ScaledContainer);

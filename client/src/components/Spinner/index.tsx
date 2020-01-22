@@ -1,4 +1,5 @@
 import React from "react";
+// COMPONENTS
 import { Spinner } from "react-bootstrap";
 
 type Props = {};
