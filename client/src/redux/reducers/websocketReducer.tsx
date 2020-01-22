@@ -41,7 +41,7 @@ const initialState = {
 export default (
   state: WebsocketState = initialState,
   action: ReduxWebsocket
-): any => {
+): WebsocketState => {
   switch (action.type) {
     case INTERNAL_CLEAR_MESSAGE_LOG:
       return state;

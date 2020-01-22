@@ -4,6 +4,7 @@ import { AppState } from "../models/state";
 const getShowPreview = (state: AppState) => state.preview.showPreview;
 const getOrders = (state: AppState) => state.preview.orders;
 const getOrderLoading = (state: AppState) => state.preview.loading;
+const getOrderError = (state: AppState) => state.preview.error;
 // WEBSOCKET ACTIONS
 const getWsSymbol = (state: AppState) => state.websocket.symbol;
 const table_instrument = (state: AppState) => state.websocket.instrument;
@@ -11,6 +12,11 @@ const table_order = (state: AppState) => state.websocket.order;
 const websocketLoading = (state: AppState) => state.websocket.loading;
 const websocketMessage = (state: AppState) => state.websocket.message;
 const websocketConnected = (state: AppState) => state.websocket.connected;
+
+export const orderErrorSelector = createSelector(
+  [getOrderError],
+  error => error
+);
 
 export const orderLoadingSelector = createSelector(
   [getOrderLoading],

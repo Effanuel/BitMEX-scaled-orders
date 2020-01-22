@@ -7,7 +7,7 @@ import styles from "./styles.module.css";
 
 interface Props {}
 
-export default function PreviewContainer() {
+export default function PreviewContainer(props: Props) {
   return (
     <Container className={styles.preview_containers}>
       <Container className={styles.container_orders}>

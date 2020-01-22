@@ -5,11 +5,12 @@ import { showPreviewSelector } from "./redux/selectors";
 /// COMPONENTS
 import { ScaledContainer, PreviewContainer } from "./containers";
 // UTILS
+import { AppState } from "./redux/models/state";
 import "./css/root.module.css";
 
 export default function App() {
   const { showPreview } = useSelector(
-    (state: any) => ({
+    (state: AppState) => ({
       showPreview: showPreviewSelector(state)
     }),
     shallowEqual

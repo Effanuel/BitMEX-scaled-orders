@@ -8,11 +8,11 @@ type Props = {
   id: string;
   label: string;
   value: any;
-  stop: boolean;
+  stop?: boolean;
   onChange: (arg0: any) => void;
 };
 
-function InputField({ id, label, value, stop = false, onChange }: any) {
+function InputField({ id, label, value, stop = false, onChange }: Props) {
   return (
     <div>
       <label htmlFor={label}>{label}</label>

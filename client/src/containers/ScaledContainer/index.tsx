@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 // REDUX
 import {
-  websocketCurrentPrice,
   messageSelector,
   orderLoadingSelector,
+  orderErrorSelector,
+  websocketCurrentPrice,
   websocketOrder,
   websocketLoadingSelector
 } from "../../redux/selectors";
@@ -50,19 +51,20 @@ const initialState = Object.freeze({
 export default function ScaledContainer() {
   const dispatch = useDispatch();
   const {
-    error,
     wsCurrentPrice,
     loading,
     orderLoading,
     ordersFilled,
-    message
+    message,
+    orderError
   } = useSelector(
-    (state: AppState): any /*AppComponentProps*/ => ({
+    (state: AppState) => ({
       wsCurrentPrice: websocketCurrentPrice(state),
       loading: websocketLoadingSelector(state),
       orderLoading: orderLoadingSelector(state),
       message: messageSelector(state),
-      ordersFilled: websocketOrder(state)
+      ordersFilled: websocketOrder(state),
+      orderError: orderErrorSelector(state)
     }),
     shallowEqual
   );
@@ -228,7 +230,7 @@ export default function ScaledContainer() {
                 name="distribution"
               />
             </Col>
-            <Col className={styles.myErrorMessage}>{error /* || wsError*/}</Col>
+            <Col className={styles.myErrorMessage}>{orderError}</Col>
 
             <Col className="">
               <Col className="text-right">

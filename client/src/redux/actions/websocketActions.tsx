@@ -4,7 +4,7 @@ import { connect, disconnect } from "@giantmachines/redux-websocket";
 import * as constants from "./actionTypes";
 import { Thunk } from "../models/state";
 
-export const wsTickerChange = (payload?: any): WebsocketTickerChange => ({
+export const wsTickerChange = (payload: string): WebsocketTickerChange => ({
   type: constants.REDUX_WEBSOCKET_TICKER,
   payload
 });
