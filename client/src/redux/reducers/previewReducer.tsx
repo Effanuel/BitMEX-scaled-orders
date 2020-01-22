@@ -2,14 +2,15 @@ import {
   POST_ORDER_SUCCESS,
   POST_ORDER_ERROR,
   POST_ORDER_LOADING,
-  PREVIEW_ORDERS_SUCCESS
+  PREVIEW_ORDERS_SUCCESS,
+  PREVIEW_ORDERS_CLOSE
 } from "../actions/actionTypes";
 
 import { PostOrder } from "../actions/previewActions";
 import { PreviewState } from "../models/state";
 
 const initialState = {
-  orders: [],
+  orders: {},
   error: "",
   showPreview: false,
   loading: false
@@ -42,8 +43,14 @@ export default (
     case PREVIEW_ORDERS_SUCCESS:
       return {
         ...state,
+        orders: action.payload,
         showPreview: true,
-        orders: action.payload.orders,
+        error: ""
+      };
+    case PREVIEW_ORDERS_CLOSE:
+      return {
+        ...state,
+        showPreview: !state.showPreview,
         error: ""
       };
     default:

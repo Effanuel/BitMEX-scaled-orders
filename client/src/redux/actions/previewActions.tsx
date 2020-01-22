@@ -14,9 +14,15 @@ export const postOrder = (pay: any): Thunk => async dispatch => {
   try {
     // console.log(payload, "post order payload 112");
     dispatch(postOrderLoading());
-    const payload = orderBulk(pay);
+    let payload = orderBulk(pay);
+    payload.orders.push(payload.stop);
+    // const config = {
+    //   headers: {
+    //     Accept: "application/json"
+    //   }
+    // };
     const response = await axios.post("/bitmex/postOrder", payload);
-    dispatch(postOrderSuccess(response.data));
+    dispatch(postOrderSuccess(response));
     console.log("POST ERR1", response);
   } catch (err) {
     dispatch(postOrderError(err.response.data.error));
@@ -55,6 +61,10 @@ export const previewOrders = (pay: any): PreviewOrdersSuccess => {
   };
 };
 
+export const previewClose = (): PreviewOrdersClose => ({
+  type: constants.PREVIEW_ORDERS_CLOSE
+});
+
 // ACTION INTERFACES
 export interface PostOrderLoading {
   type: constants.POST_ORDER_LOADING;
@@ -72,8 +82,13 @@ export interface PreviewOrdersSuccess {
   payload: any; //{ orders: object[] };
 }
 
+export interface PreviewOrdersClose {
+  type: constants.PREVIEW_ORDERS_CLOSE;
+}
+
 export type PostOrder =
   | PostOrderLoading
   | PostOrderSuccess
   | PostOrderError
-  | PreviewOrdersSuccess;
+  | PreviewOrdersSuccess
+  | PreviewOrdersClose;
