@@ -32,7 +32,7 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
         <tr>
           <td>Average price:</td>
           <td>
-            {`${averagePrice}`}
+            {`${averagePrice}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             <span className={styles.color_accent}> USD</span>
           </td>
         </tr>

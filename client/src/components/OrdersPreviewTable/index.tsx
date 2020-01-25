@@ -40,11 +40,15 @@ export default function OrdersPreviewTable(props: Props) {
                 borderLeft: `6px solid ${sideColor}`
               }}
             >
-              <td key={x * i + "a"}>{x.orderQty}</td>
+              <td key={x * i + "a"}>
+                {x.orderQty.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              </td>
               <td key={x * i + "b"} style={{ color: sideColor }}>
                 {x.side}
               </td>
-              <td key={x * i + "c"}>{x.price}</td>
+              <td key={x * i + "c"}>
+                {x.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              </td>
             </tr>
           );
         })}
@@ -56,9 +60,17 @@ export default function OrdersPreviewTable(props: Props) {
               borderTop: `1px solid ${__sideColor}`
             }}
           >
-            <td>{orders.stop.orderQty}</td>
+            <td>
+              {orders.stop.orderQty
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </td>
             <td style={{ color: `${__sideColor}` }}>{_side}</td>
-            <td>{orders.stop.stopPx}</td>
+            <td>
+              {orders.stop.stopPx
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </td>
           </tr>
         ) : null}
       </tbody>
