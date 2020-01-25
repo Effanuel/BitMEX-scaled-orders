@@ -7,25 +7,13 @@ import {
   REDUX_WEBSOCKET_SEND,
   REDUX_WEBSOCKET_ERROR,
   INTERNAL_CLEAR_MESSAGE_LOG,
-  REDUX_WEBSOCKET_TICKER
-} from "../actions/actionTypes";
+  REDUX_WEBSOCKET_TICKER,
+  WebsocketActionTypes,
+  WebsocketState
+} from "./types";
 
-import { WebsocketState } from "../models/state";
-import { ReduxWebsocket } from "../actions/websocketActions";
-
-const findItemByKeys = (keys: any, table: any, matchData: any): number => {
-  for (let j in Object.keys(table)) {
-    let matched = true;
-    for (let i = 0, len = keys.length; i < len; ++i) {
-      if (table[j][keys[i]] !== matchData[keys[i]]) {
-        matched = false;
-      }
-    }
-
-    if (matched) return parseInt(j);
-  }
-  return -1;
-};
+import { connect, disconnect } from "@giantmachines/redux-websocket";
+import { Thunk } from "../../models/state";
 
 const initialState = {
   __keys: {},
@@ -37,10 +25,10 @@ const initialState = {
   message: "",
   symbol: "XBTUSD"
 };
-
-export default (
+// Reducer
+export const websocketReducer = (
   state: WebsocketState = initialState,
-  action: ReduxWebsocket
+  action: WebsocketActionTypes
 ): WebsocketState => {
   switch (action.type) {
     case INTERNAL_CLEAR_MESSAGE_LOG:
@@ -178,4 +166,44 @@ const reduxWeboscketMessage = (
     // console.log(item);
   }
   return state;
+};
+
+// Actions
+// ==============================
+export const wsTickerChange = (payload: string): WebsocketActionTypes => ({
+  type: REDUX_WEBSOCKET_TICKER,
+  payload
+});
+
+export const wsConnect = (): Thunk => async dispatch => {
+  try {
+    const url = "wss://www.bitmex.com/realtime?subscribe=";
+    const subscribe = "instrument:XBTUSD,instrument:ETHUSD";
+    dispatch(connect(`${url}${subscribe}`));
+  } catch (err) {
+    console.log(err.response.data, "error previewpriceWS redux");
+  }
+};
+
+export const wsDisconnect = (): Thunk => async dispatch => {
+  try {
+    dispatch(disconnect());
+  } catch (err) {
+    console.log(err.response.data, "error previewpriceWS redux");
+  }
+};
+
+// Utils
+const findItemByKeys = (keys: any, table: any, matchData: any): number => {
+  for (let j in Object.keys(table)) {
+    let matched = true;
+    for (let i = 0, len = keys.length; i < len; ++i) {
+      if (table[j][keys[i]] !== matchData[keys[i]]) {
+        matched = false;
+      }
+    }
+
+    if (matched) return parseInt(j);
+  }
+  return -1;
 };

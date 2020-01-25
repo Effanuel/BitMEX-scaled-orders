@@ -13,13 +13,13 @@ import {
   postOrder,
   previewOrders,
   previewClose
-} from "../../redux/actions/previewActions";
+} from "../../redux/modules/preview/preview";
 
 import {
   wsConnect,
   wsDisconnect,
   wsTickerChange
-} from "../../redux/actions/websocketActions";
+} from "../../redux/modules/websocket/websocket";
 // COMPONENTS
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";

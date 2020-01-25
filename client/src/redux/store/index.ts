@@ -1,6 +1,6 @@
 import { combineReducers, createStore, applyMiddleware, compose } from "redux";
-import previewReducer from "../reducers/previewReducer";
-import websocketReducer from "../reducers/websocketReducer";
+import { previewReducer } from "../modules/preview/preview";
+import { websocketReducer } from "../modules/websocket/websocket";
 
 import thunk from "redux-thunk";
 import reduxWebsocket from "@giantmachines/redux-websocket";
