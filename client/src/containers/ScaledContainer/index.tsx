@@ -48,7 +48,7 @@ const initialState = Object.freeze({
   symbol: "XBTUSD"
 });
 
-export default function ScaledContainer() {
+const ScaledContainer = React.memo(props => {
   const dispatch = useDispatch();
   const {
     wsCurrentPrice,
@@ -70,20 +70,21 @@ export default function ScaledContainer() {
   );
 
   const [state, setState] = useState<AppComponentState>(initialState);
-  const [cache, setCache] = useState({ cache: true });
+  const [cache, setCache] = useState(true);
 
   useEffect((): any => {
     dispatch(wsConnect());
     return () => {
       dispatch(wsDisconnect());
     };
-  }, []);
+  }, [dispatch]);
   //
   //======================================================
   //
   // not so elequent way to handle preview button press handling
   function handleCache() {
-    setCache(prevState => ({ ...prevState, cache: false }));
+    // setCache(prevState => ({ ...prevState, cache: false }));
+    setCache(false);
   }
 
   function handleOnChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -122,10 +123,10 @@ export default function ScaledContainer() {
   }
 
   function onPreviewOrders(): void {
-    if (cache.cache === true) {
+    if (cache) {
       dispatch(previewClose());
     } else {
-      setCache(prevState => ({ ...prevState, cache: true }));
+      setCache(true);
       dispatch(previewOrders(state));
     }
   }
@@ -290,4 +291,5 @@ export default function ScaledContainer() {
       <div style={{ color: "white" }}>{ordersFilled}</div>
     </>
   );
-}
+});
+export default ScaledContainer;
