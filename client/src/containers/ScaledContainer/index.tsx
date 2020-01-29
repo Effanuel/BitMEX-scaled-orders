@@ -5,14 +5,15 @@ import {
   orderLoadingSelector,
   orderErrorSelector,
   websocketCurrentPrice,
-  websocketOrder,
+  // websocketOrder,
   websocketLoadingSelector
 } from "../../redux/selectors";
 
 import {
   postOrder,
   previewOrders,
-  previewClose
+  previewClose,
+  getBalance
 } from "../../redux/modules/preview/preview";
 
 import {
@@ -54,7 +55,7 @@ const ScaledContainer = React.memo(props => {
     wsCurrentPrice,
     loading,
     orderLoading,
-    ordersFilled,
+    // ordersFilled,
     message,
     orderError
   } = useSelector(
@@ -63,7 +64,7 @@ const ScaledContainer = React.memo(props => {
       loading: websocketLoadingSelector(state),
       orderLoading: orderLoadingSelector(state),
       message: messageSelector(state),
-      ordersFilled: websocketOrder(state),
+      // ordersFilled: websocketOrder(state),
       orderError: orderErrorSelector(state)
     }),
     shallowEqual
@@ -74,6 +75,7 @@ const ScaledContainer = React.memo(props => {
 
   useEffect((): any => {
     dispatch(wsConnect());
+    dispatch(getBalance());
     return () => {
       dispatch(wsDisconnect());
     };
@@ -168,6 +170,8 @@ const ScaledContainer = React.memo(props => {
                 label="Stop-Loss"
                 id="stop"
                 stop={true}
+                t_placement="bottom"
+                tooltip="Price at which to market exit all contracts."
               />
             </Col>
           </Row>
@@ -179,6 +183,7 @@ const ScaledContainer = React.memo(props => {
                 value={state.quantity}
                 label="Quantity"
                 id="quantity"
+                tooltip="Number of contracts"
               />
             </Col>
             <Col>
@@ -187,6 +192,7 @@ const ScaledContainer = React.memo(props => {
                 value={state.n_tp}
                 label="Order count"
                 id="n_tp"
+                tooltip="Number of individual orders"
               />
             </Col>
             <Col>
@@ -195,6 +201,7 @@ const ScaledContainer = React.memo(props => {
                 value={state.start}
                 label="Range start USD"
                 id="start"
+                tooltip="First placed order's price"
               />
             </Col>
             <Col>
@@ -203,6 +210,7 @@ const ScaledContainer = React.memo(props => {
                 value={state.end}
                 label="Range end USD"
                 id="end"
+                tooltip="Last placed order's price"
               />
             </Col>
           </Row>
@@ -288,7 +296,7 @@ const ScaledContainer = React.memo(props => {
           </Row>
         </form>
       </Container>
-      <div style={{ color: "white" }}>{ordersFilled}</div>
+      {/* <div style={{ color: "white" }}>{ordersFilled}</div> */}
     </>
   );
 });
