@@ -4,6 +4,7 @@ import {
   ORDER_LOADING,
   SHOW_PREVIEW,
   SWITCH_PREVIEW,
+  BALANCE_SUCCESS,
   PreviewActionTypes,
   PreviewState
 } from "./types";
@@ -14,6 +15,7 @@ import { Thunk } from "../../models/state";
 
 const initialState = {
   orders: {},
+  balance: 0,
   error: "",
   showPreview: false,
   loading: false
@@ -34,6 +36,11 @@ export const previewReducer = (
         error: "",
         orders: [],
         loading: false
+      };
+    case BALANCE_SUCCESS:
+      return {
+        ...state,
+        balance: action.payload
       };
     case ORDER_ERROR:
       return {
@@ -84,6 +91,31 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
     dispatch(postOrderError(err.response.data.error));
   }
 };
+
+/**
+ * [Get Balance] action creator
+ * @returns {Object} success response(dispatch action)
+ */
+export const getBalance = (): Thunk => async dispatch => {
+  try {
+    const response = await axios.post("/bitmex/getBalance");
+    const { data } = response.data;
+    const { walletBalance } = JSON.parse(data);
+    dispatch(getBalanceSucess(walletBalance));
+  } catch (err) {
+    // console.log(response.data);
+    if (err.message.includes("500")) console.error("Error with the server");
+    /// TODO
+    //HANDLE ERROR 500
+    // console.log(err.response.data.error);
+    // dispatch(postOrderError(err.response.data.error));
+  }
+};
+
+export const getBalanceSucess = (payload: any): PreviewActionTypes => ({
+  type: BALANCE_SUCCESS,
+  payload
+});
 
 const postOrderLoading = (): PreviewActionTypes => ({
   type: ORDER_LOADING

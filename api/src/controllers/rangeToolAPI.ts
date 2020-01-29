@@ -7,14 +7,27 @@ import { logger } from "../util/logger";
  */
 export const postOrder = async (req: Request, res: Response, next: any) => {
   try {
-    // const response = await exchange.privatePostOrderBulk(req.body);
-    const response = await _curl_bitmex("order/bulk", req.body, "POST");
+    const response = await _curl_bitmex("order/bulk", "POST", req.body);
     logger.info("Successful POST request (postOrder)");
     return res.send({ success: res.statusCode });
   } catch (error) {
     return res.status(400).send({ error: error });
   }
 };
+
+/**
+ * Bulk order POST request to the exchange API
+ */
+export const getBalance = async (req: Request, res: Response, next: any) => {
+  try {
+    const response = await _curl_bitmex("user/margin", "GET");
+    logger.info("Successful GET request (getBalance)");
+    return res.send({ data: response });
+  } catch (error) {
+    return res.status(400).send({ error: error });
+  }
+};
+
 // exports.getInstruments = async (req, res, next) => {
 // try {
 //   // const response = await Promise.all([

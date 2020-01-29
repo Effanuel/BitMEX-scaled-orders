@@ -4,8 +4,9 @@ export const ORDER_ERROR = "preview/error";
 export const ORDER_LOADING = "preview/loading";
 //
 export const SHOW_PREVIEW = "preview/preview_show";
-export const SWITCH_PREVIEW = "preview/preview_close";
-
+export const SWITCH_PREVIEW = "preview/preview_switch";
+//
+export const BALANCE_SUCCESS = "preview/balance_success";
 // Action Types
 interface OrderLoading {
   type: typeof ORDER_LOADING;
@@ -25,15 +26,22 @@ interface ShowPreview {
 interface SwitchPreview {
   type: typeof SWITCH_PREVIEW;
 }
+
+interface BalanceSuccess {
+  type: typeof BALANCE_SUCCESS;
+  payload: any;
+}
 export type PreviewActionTypes =
   | OrderLoading
   | OrderSuccess
   | OrderError
   | ShowPreview
-  | SwitchPreview;
+  | SwitchPreview
+  | BalanceSuccess;
 // State
 export interface PreviewState {
   orders: any;
+  balance: number;
   error: string;
   showPreview: boolean;
   loading: boolean;
