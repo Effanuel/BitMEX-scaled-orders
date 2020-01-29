@@ -22,7 +22,7 @@ const initialState = {
   order: {},
   connected: false,
   loading: false,
-  message: "",
+  message: "Websocket is offline.",
   symbol: "XBTUSD"
 };
 // Reducer
@@ -92,7 +92,7 @@ const reduxWeboscketMessage = (
     if (dat["success"]) {
       return {
         ...state,
-        message: "Succesful subscription."
+        message: "Successful subscription."
       };
     } else {
       return {
