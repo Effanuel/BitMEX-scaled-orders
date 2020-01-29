@@ -5,7 +5,7 @@ import { logger } from "./logger";
 import { ErrorHandler } from "./error";
 
 export const generate_requestOptions = (
-  data: any,
+  data: any = "",
   path: string,
   method: string,
   url: string
@@ -15,7 +15,7 @@ export const generate_requestOptions = (
   const secret = process.env.API_SECRET || "";
 
   let expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
-  let postBody = JSON.stringify(data);
+  let postBody = data ? JSON.stringify(data) : "";
   let signature = crypto
     .createHmac("sha256", secret)
     .update(method + `/api/v1/${path}` + expires + postBody)
@@ -39,8 +39,8 @@ export const generate_requestOptions = (
 
 export const _curl_bitmex = async (
   path: any,
-  postdict: any,
   verb?: any,
+  postdict?: any,
   query?: any,
   rethrow_errors?: any,
   max_retries: any = null
@@ -58,10 +58,9 @@ export const _curl_bitmex = async (
   let response = null;
   const requestOptions = generate_requestOptions(postdict, path, verb, url);
   try {
-    logger.log("debug", "Sending request from _curl_bitmex()...");
-    const respon = await rq(requestOptions);
-    const result = response;
-    return respon;
+    logger.log("debug", `Sending request from _curl_bitmex(${path})...`);
+    const response = await rq(requestOptions);
+    return response;
   } catch (error) {
     throw ErrorHandler(error);
   }

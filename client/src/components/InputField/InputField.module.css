@@ -52,3 +52,11 @@ input[type="number"]::-ms-selection {
 input[type="number"]::-moz-selection {
   background-color: var(--accentColor);
 }
+
+span[id="icon"] {
+  color: white;
+  margin-left: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
