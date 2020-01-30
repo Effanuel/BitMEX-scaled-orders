@@ -1,11 +1,15 @@
 {
   "name": "client",
-  "version": "1.5.0",
+  "version": "1.5.5",
   "private": true,
   "dependencies": {
     "@giantmachines/redux-websocket": "1.1.6",
+    "@reduxjs/toolkit": "^1.2.3",
+    "@types/why-did-you-update": "0.0.10",
+    "@welldone-software/why-did-you-render": "^3.6.0",
     "axios": "0.19.0",
     "bootstrap": "4.4.1",
+    "crypto": "^1.0.1",
     "enzyme": "3.10.0",
     "enzyme-adapter-react-16": "1.14.0",
     "enzyme-to-json": "3.4.3",
@@ -17,7 +21,8 @@
     "react-test-renderer": "16.9.0",
     "redux": "4.0.4",
     "redux-thunk": "2.3.0",
-    "reselect": "4.0.0"
+    "reselect": "4.0.0",
+    "why-did-you-update": "^1.0.6"
   },
   "scripts": {
     "start": "react-scripts start",

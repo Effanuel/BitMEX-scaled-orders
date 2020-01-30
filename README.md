@@ -1,4 +1,4 @@
-<p align="center"> 
+<p align="center">
   <img src='assets/presentation_scaled_v4.gif'>
 </p>
 
@@ -15,7 +15,7 @@
 - [License](#license)
 - [Useful material](#useful-material)
 
-<p align="center"> 
+<p align="center">
 <img src="assets/interface_range_tool_v4.png">
 </p>
 
@@ -25,21 +25,27 @@ This project is a trading tool based on **BitMEX API** to help you place orders 
 
 ### Current Features
 
-- Place up to 30 orders in a range at once _(small order sizes will cause a **spam warning**)_;
-- **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section);
-- Shows current price _(it is based on the latest ask price)_
-- Shows risk on orders;
-- Built with **TypeScript**;
+- **Scaled orders:**
+  - Place up to 30 orders in a range at once _(small order sizes will cause a **spam warning**)_;
+  - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section).
+- **Shows current price:**
+  - Based on the latest ask price;
+  - Fetched via **Websocket**;
+  - BTC and ETH _(currently)_.
+- **Details table:**
+  - Average entry of scaled orders;
+  - Risk in BTC;
+  - Risk of account balance.
 
 ### Built With
 
-The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. *(CCXT is no longer a dependency since v1.2)*
+The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. _(CCXT is no longer a dependency since v1.2)_
 
 - [Node](https://nodejs.org/en/) + [Express](https://expressjs.com/)
 - [React](https://reactjs.org/) + [Redux](https://redux.js.org/)
 - [React Bootstrap](https://react-bootstrap.github.io/)
 
-<!-- GETTING STARTED -->
+  <!-- GETTING STARTED -->
 
 ## Getting Started
 
@@ -91,7 +97,7 @@ _**Disclaimer:** If you set TESTNET to true, you need to create a [Testnet](http
 npm run build
 ```
 
-<!-- USAGE EXAMPLES -->
+  <!-- USAGE EXAMPLES -->
 
 #### TLDR setup:
 
@@ -110,14 +116,14 @@ npm run prod
 
 ## Usage
 
-##### Run application:
+##### After building you just need to run the application:
 
 ```sh
 cd Bitmex-scaled-orders/api
 npm run prod
 ```
 
-**Run tests:** *(not many at the moment)*
+**Run tests:** _(not many at the moment)_
 
 ```sh
 cd Bitmex-scaled-orders/client
@@ -128,30 +134,31 @@ npm run test
 
 These are the available distributions to choose from:
 
-<p align="center"> 
-<img src="assets/distributions.png">
-</p>
+  <p align="center">
+  <img src="assets/distributions.png">
+  </p>
 
 This is the formula used to calculate distributions:
 
 ![formula](https://wikimedia.org/api/rest_v1/media/math/render/svg/4abaca87a10ecfa77b5a205056523706fe6c9c3f)
 
 _(The chart representations are symbolic)_ </br>
-*(You can view the code in `client/src/util/index.ts` file)*
+_(You can view the code in `client/src/util/index.ts` file)_
 
 ## Roadmap
 
 - **Chasing price** for limit orders;
 - **Faster price update**;
-- **Removing Express server?**
+- Stepping stop-loss;
+- 1-min
 
-<!-- LICENSE -->
+  <!-- LICENSE -->
 
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-<!-- USEFUL METERIAL -->
+  <!-- USEFUL METERIAL -->
 
 ## Useful Material
 

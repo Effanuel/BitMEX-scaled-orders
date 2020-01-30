@@ -5,6 +5,7 @@ const getShowPreview = (state: AppState) => state.preview.showPreview;
 const getOrders = (state: AppState) => state.preview.orders;
 const getOrderLoading = (state: AppState) => state.preview.loading;
 const getOrderError = (state: AppState) => state.preview.error;
+const getBalance = (state: AppState) => state.preview.balance;
 // WEBSOCKET ACTIONS
 const getWsSymbol = (state: AppState) => state.websocket.symbol;
 const table_instrument = (state: AppState) => state.websocket.instrument;
@@ -44,7 +45,7 @@ export const messageSelector = createSelector(
 
 export const websocketCurrentPrice = createSelector(
   [table_instrument, getWsSymbol],
-  (data, symbol) => {
+  (data, symbol): any => {
     for (let i = 0; i < Object.keys(data).length; i++) {
       if (data[i].symbol === symbol && data[i].askPrice) {
         return `$${data[i].askPrice}`;
@@ -87,7 +88,7 @@ export const ordersRiskSelector = createSelector(
         quantity *= 1e-6 * averageEntry ** 2;
       const entryValue = quantity / averageEntry;
       const exitValue = quantity / orderList.stop["stopPx"] || 1;
-      return Math.abs(parseFloat((entryValue - exitValue).toFixed(5)));
+      return Math.abs(+(entryValue - exitValue).toFixed(5));
     }
   }
 );
@@ -100,4 +101,19 @@ export const websocketLoadingSelector = createSelector(
 export const websocketConnectedSelector = createSelector(
   [websocketConnected],
   connected => connected
+);
+
+export const balanceSelector = createSelector([getBalance], (balance):
+  | number
+  | void => {
+  if (balance) {
+    return +(balance / 1e8).toFixed(4);
+  }
+});
+export const ordersRiskPercSelector = createSelector(
+  [balanceSelector, ordersRiskSelector],
+  (balance: any, risk: any) => {
+    if (balance !== 0) return +((risk / balance) * 100).toFixed(2);
+    return 0;
+  }
 );

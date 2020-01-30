@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 
 export const ErrorHandler = (error: any) => {
-  // console.log(error.message, "STATUS CODE OF ERROR");
+  logger.debug(error.message);
   const errorMessage = ((statusCode: number): string => {
     switch (statusCode) {
       case 401:
@@ -22,7 +22,7 @@ export const ErrorHandler = (error: any) => {
         } else if (
           response_message.includes("insufficient available balance")
         ) {
-          return "insufficient funds";
+          return "Insufficient funds.";
         } else if (response_message.includes("missing api key")) {
           return "Missing API key.";
         }

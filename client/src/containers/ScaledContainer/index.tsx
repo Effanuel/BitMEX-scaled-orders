@@ -5,21 +5,22 @@ import {
   orderLoadingSelector,
   orderErrorSelector,
   websocketCurrentPrice,
-  websocketOrder,
+  // websocketOrder,
   websocketLoadingSelector
 } from "../../redux/selectors";
 
 import {
   postOrder,
   previewOrders,
-  previewClose
-} from "../../redux/actions/previewActions";
+  previewClose,
+  getBalance
+} from "../../redux/modules/preview/preview";
 
 import {
   wsConnect,
   wsDisconnect,
   wsTickerChange
-} from "../../redux/actions/websocketActions";
+} from "../../redux/modules/websocket/websocket";
 // COMPONENTS
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -48,13 +49,13 @@ const initialState = Object.freeze({
   symbol: "XBTUSD"
 });
 
-export default function ScaledContainer() {
+const ScaledContainer = React.memo(props => {
   const dispatch = useDispatch();
   const {
     wsCurrentPrice,
     loading,
     orderLoading,
-    ordersFilled,
+    // ordersFilled,
     message,
     orderError
   } = useSelector(
@@ -63,27 +64,29 @@ export default function ScaledContainer() {
       loading: websocketLoadingSelector(state),
       orderLoading: orderLoadingSelector(state),
       message: messageSelector(state),
-      ordersFilled: websocketOrder(state),
+      // ordersFilled: websocketOrder(state),
       orderError: orderErrorSelector(state)
     }),
     shallowEqual
   );
 
   const [state, setState] = useState<AppComponentState>(initialState);
-  const [cache, setCache] = useState({ cache: true });
+  const [cache, setCache] = useState(true);
 
   useEffect((): any => {
     dispatch(wsConnect());
+    dispatch(getBalance());
     return () => {
       dispatch(wsDisconnect());
     };
-  }, []);
+  }, [dispatch]);
   //
   //======================================================
   //
   // not so elequent way to handle preview button press handling
   function handleCache() {
-    setCache(prevState => ({ ...prevState, cache: false }));
+    // setCache(prevState => ({ ...prevState, cache: false }));
+    setCache(false);
   }
 
   function handleOnChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -122,10 +125,10 @@ export default function ScaledContainer() {
   }
 
   function onPreviewOrders(): void {
-    if (cache.cache === true) {
+    if (cache) {
       dispatch(previewClose());
     } else {
-      setCache(prevState => ({ ...prevState, cache: true }));
+      setCache(true);
       dispatch(previewOrders(state));
     }
   }
@@ -167,6 +170,8 @@ export default function ScaledContainer() {
                 label="Stop-Loss"
                 id="stop"
                 stop={true}
+                t_placement="bottom"
+                tooltip="Price at which to market exit all contracts."
               />
             </Col>
           </Row>
@@ -178,6 +183,7 @@ export default function ScaledContainer() {
                 value={state.quantity}
                 label="Quantity"
                 id="quantity"
+                tooltip="Number of contracts"
               />
             </Col>
             <Col>
@@ -186,6 +192,7 @@ export default function ScaledContainer() {
                 value={state.n_tp}
                 label="Order count"
                 id="n_tp"
+                tooltip="Number of individual orders"
               />
             </Col>
             <Col>
@@ -194,6 +201,7 @@ export default function ScaledContainer() {
                 value={state.start}
                 label="Range start USD"
                 id="start"
+                tooltip="First placed order's price"
               />
             </Col>
             <Col>
@@ -202,6 +210,7 @@ export default function ScaledContainer() {
                 value={state.end}
                 label="Range end USD"
                 id="end"
+                tooltip="Last placed order's price"
               />
             </Col>
           </Row>
@@ -287,7 +296,8 @@ export default function ScaledContainer() {
           </Row>
         </form>
       </Container>
-      <div style={{ color: "white" }}>{ordersFilled}</div>
+      {/* <div style={{ color: "white" }}>{ordersFilled}</div> */}
     </>
   );
-}
+});
+export default ScaledContainer;

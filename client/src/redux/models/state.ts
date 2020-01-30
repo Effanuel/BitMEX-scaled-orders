@@ -11,6 +11,7 @@ export interface AppState {
 
 export interface PreviewState {
   orders: any;
+  balance: number;
   error: string;
   showPreview: boolean;
   loading: boolean;
