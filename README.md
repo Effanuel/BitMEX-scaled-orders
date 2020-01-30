@@ -22,6 +22,7 @@
 # BitMEX scaled orders tool
 
 This project is a trading tool based on **BitMEX API** to help you place orders in a range (It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load)).
+*(In the next major update, I'll try to include custom order placement with a stepping stop-loss)*
 
 ### Current Features
 
@@ -48,7 +49,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ## Getting Started
 
-- Go to https://www.bitmex.com
+- Create a [BitMEX](https://www.bitmex.com) account;
 
   _(If you are **new** to BitMEX, consider using my [affiliate link](https://www.bitmex.com/register/o8ILy1) to get **10% off** the fees for 6 months.)_
 
