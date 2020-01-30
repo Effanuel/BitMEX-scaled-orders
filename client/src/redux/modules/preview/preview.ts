@@ -101,7 +101,7 @@ export const getBalance = (): Thunk => async dispatch => {
     const response = await axios.post("/bitmex/getBalance");
     const { data } = response.data;
     const { walletBalance } = JSON.parse(data);
-    dispatch(getBalanceSucess(walletBalance));
+    dispatch(getBalanceSuccess(walletBalance));
   } catch (err) {
     // console.log(response.data);
     if (err.message.includes("500")) console.error("Error with the server");
@@ -112,7 +112,7 @@ export const getBalance = (): Thunk => async dispatch => {
   }
 };
 
-export const getBalanceSucess = (payload: any): PreviewActionTypes => ({
+export const getBalanceSuccess = (payload: any): PreviewActionTypes => ({
   type: BALANCE_SUCCESS,
   payload
 });
