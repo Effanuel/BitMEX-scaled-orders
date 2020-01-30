@@ -16,7 +16,7 @@
 - [Useful material](#useful-material)
 
 <p align="center">
-<img src="assets/interface_range_tool_v4.png">
+  <img src="assets/interface_range_tool_v5.png">
 </p>
 
 # BitMEX scaled orders tool
@@ -44,7 +44,6 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 - [Node](https://nodejs.org/en/) + [Express](https://expressjs.com/)
 - [React](https://reactjs.org/) + [Redux](https://redux.js.org/)
 - [React Bootstrap](https://react-bootstrap.github.io/)
-
   <!-- GETTING STARTED -->
 
 ## Getting Started
@@ -65,7 +64,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ### Installation
 
-1. Clone the repo or [download zip](https://github.com/Effanuel/BitMEX-scaled-orders/archive/v1.5.zip):
+1. Clone the repo or [download zip](https://github.com/Effanuel/BitMEX-scaled-orders/archive/v1.5.5.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
@@ -146,11 +145,10 @@ _(The chart representations are symbolic)_ </br>
 _(You can view the code in `client/src/util/index.ts` file)_
 
 ## Roadmap
-
 - **Chasing price** for limit orders;
 - **Faster price update**;
 - Stepping stop-loss;
-- 1-min
+- Custom order/profit target placement;
 
   <!-- LICENSE -->
 
