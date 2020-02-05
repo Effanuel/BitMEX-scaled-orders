@@ -1,0 +1,76 @@
+.container_scaled {
+  display: flex;
+
+  border: 1px solid var(--accentColor);
+  border-radius: 3px;
+  background-color: var(--secondaryColor);
+  width: auto;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 0px;
+  box-shadow: 3px 3px 5px black;
+}
+
+/*@media only screen and (min-width: 1200px) {
+  .container_scaled {
+    width: 960px;
+  },
+  .container_minimized{
+    width: 960px;
+  }
+}
+*/
+.container__row {
+  /* border: 3px solid red; */
+  margin: 0px;
+  padding: 0px;
+  height: 70px;
+  align-items: center;
+}
+
+.container__col {
+  padding-left: 0px;
+}
+
+.container_minimized {
+  display: flex;
+
+  border: 1px solid var(--accentColor);
+  background-color: var(--secondaryColor);
+
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 0px;
+  box-shadow: 2px 2px darkgreen;
+}
+
+.container__row__minimized {
+  /* border: 3px solid red; */
+  margin: 0px;
+  padding: 0px;
+  height: 25px;
+  align-items: center;
+  /* background-color: brown; */
+
+  /* background-color: red; */
+}
+
+.div_corner {
+  height: 100%;
+  width: 20px;
+  /* background-color: red; */
+}
+
+.div_corner__button {
+  height: 40px;
+  width: 20px;
+  background: var(--accentColor);
+  cursor: pointer;
+  /* border: 1px solid red; */
+  clip-path: polygon(0 0, 0% 50%, 100% 0);
+  /* -webkit-clip-path: polygon(1px 31px, 505px 230px, 301px -2px, 0px 0px); */
+}
+.div_corner__button:hover {
+  background-color: lightgreen;
+  transition: 0.25s;
+}
