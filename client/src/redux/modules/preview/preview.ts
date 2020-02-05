@@ -80,7 +80,10 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
   try {
     dispatch(postOrderLoading());
     let orders = orderBulk(payload);
-    orders.orders.push(orders.stop);
+
+    if (payload.stop && payload.stop !== "") {
+      orders.orders.push(orders.stop);
+    }
     console.log("order");
 
     const response = await axios.post("/bitmex/postOrder", orders);
