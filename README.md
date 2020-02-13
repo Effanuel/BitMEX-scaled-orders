@@ -65,7 +65,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ### Installation
 
-1. Clone the repo or [download zip](https://github.com/Effanuel/BitMEX-scaled-orders/archive/v1.5.5.zip):
+1. Clone the repo or [download zip](https://github.com/Effanuel/BitMEX-scaled-orders/archive/v1.5.6.zip):
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
@@ -150,6 +150,15 @@ _(You can view the code in `client/src/util/index.ts` file)_
 - **Faster price update**;
 - Stepping stop-loss;
 - Custom order/profit target placement;
+- Market Orders;
+- Bitfinex/Binance API;
+- Easier API setup;
+- Multiple accounts for every platform;
+- Saving cache;
+- Settings for multiple ticker subscriptions;
+
+
+
 
   <!-- LICENSE -->
 
