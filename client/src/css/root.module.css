@@ -1,7 +1,7 @@
-@import "./colors.module.css";
-
 body {
-  background-color: var(--primaryColor);
+  background-color: var(--primaryColor) !important;
   min-width: 500px;
   min-height: 750px;
+  padding-top: 5px;
+  font-family: "Helvetica", "Roboto", '"Helvetica Neue"', "Arial", "sans-serif" !important;
 }
