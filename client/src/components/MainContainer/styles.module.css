@@ -2,13 +2,13 @@
   display: flex;
 
   border: 1px solid var(--accentColor);
-  border-radius: 3px;
+  border-radius: 2px;
   background-color: var(--secondaryColor);
   width: auto;
   align-items: center;
   margin-bottom: 10px;
-  padding: 0 0px;
-  box-shadow: 3px 3px 5px black;
+  padding-left: 0px;
+  box-shadow: 2px 2px 5px black;
 }
 
 /*@media only screen and (min-width: 1200px) {
@@ -45,12 +45,12 @@
 }
 
 .container__row__minimized {
-  /* border: 3px solid red; */
+  display: flex;
+  flex-direction: row;
   margin: 0px;
   padding: 0px;
   height: 25px;
   align-items: center;
-  /* background-color: brown; */
 
   /* background-color: red; */
 }
