@@ -25,6 +25,8 @@ export const ErrorHandler = (error: any) => {
           return "Insufficient funds.";
         } else if (response_message.includes("missing api key")) {
           return "Missing API key.";
+        } else if (response_message.includes("spam")){
+          return "Spam: quantity is too low.";
         }
 
       default:
