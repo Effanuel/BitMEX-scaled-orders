@@ -1,14 +1,6 @@
 import React from "react";
 // COMPONENTS
-import {
-  TextField,
-  withStyles,
-  makeStyles,
-  FormControl,
-  InputLabel,
-  Tooltip,
-  Button
-} from "@material-ui/core";
+import { TextField, makeStyles, FormControl } from "@material-ui/core";
 
 import "./InputField.module.css";
 import cx from "classnames";
@@ -23,18 +15,6 @@ type Props = {
   t_placement?: any;
   onChange: (arg0: any) => void;
 };
-
-// const Input = withStyles({
-//   // root: {
-//   //   "& label": {
-//   //     color: "grey",
-//   //     marginBottom: 10,
-//   //     "&.Mui-focused": {
-//   //       color: "grey"
-//   //     }
-//   //   }
-//   // }
-// })(TextField);
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -66,29 +46,7 @@ function InputField({
 }: Props) {
   const classes = useStyles();
   return (
-    // <div>
-    //   <label htmlFor={label}>{label}</label>
-    //   <OverlayTrigger
-    //     placement={t_placement}
-    //     overlay={<Tooltip id="tooltip-disabled">{tooltip}</Tooltip>}
-    //   >
-    //     <span id="icon">?</span>
-    //   </OverlayTrigger>
-    //   <InputGroup>
-    //     <FormControl
-    //       // pattern="[0-9]*"
-    //       style={stop ? { borderColor: "#cf6679" } : {}}
-    //       type="number"
-    //       id={id}
-    //       value={value || ""}
-    //       onChange={onChange}
-    //       autoComplete="off"
-    //       placeholder={placeholder}
-    //     />
-    //   </InputGroup>
-    // </div>
-    // enterDelay={500} leaveDelay={200}
-    <FormControl>
+    <FormControl >
       {/*<Tooltip title={tooltip} placement={t_placement} enterDelay={500} arrow disableFocusListener disableTouchListener>*/}
       <label className={classes.label}>{label}</label>
       {/*</Tooltip>*/}

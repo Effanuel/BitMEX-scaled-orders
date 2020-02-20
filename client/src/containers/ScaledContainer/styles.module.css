@@ -1,28 +1,14 @@
-@import "../../css/root.module.css";
-@import "../../css/colors.module.css";
-
-body {
-  background-color: var(--primaryColor);
-  min-width: 500px;
-  min-height: 750px;
-}
-
-.container_scaled {
-  display: flex;
-
-  border: 1px solid var(--accentColor);
-  background-color: var(--secondaryColor);
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
-  padding: 0 0px;
-}
-
 .container__row {
   /* border: 3px solid red; */
-  margin: 5px;
-  height: 100px;
+  margin: 0px;
+  padding: 0px;
+  height: 70px;
   align-items: center;
+  /* background-color: green; */
+}
+
+.container__col {
+  padding-left: 0px;
 }
 
 /* input[type='radio']:after {
@@ -36,7 +22,7 @@ input[type='radio']:checked:after {
 .text_field {
   color: white;
   font-size: 18px;
-  margin-top: 30px; /* ?: is not centered by input, but by input+label*/
+  margin-top: 20px; /* ?: is not centered by input, but by input+label*/
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
@@ -48,6 +34,7 @@ input[type='radio']:checked:after {
 .text_button {
   color: var(--accentColor);
   font-size: calc(0.5em + 0.5vw);
+  padding-right: 0px;
 }
 
 .text_button:disabled {
@@ -61,13 +48,13 @@ input[type='radio']:checked:after {
   color: #41e87a;
 }
 
-/* .myTextField {
+.myTextField {
   color: white;
   font-size: 20px;
-} */
+}
 
 .button {
-  border-radius: 0;
+  border-radius: 2;
   border: none;
   width: 100px;
   background-color: var(--primaryColor);
@@ -86,7 +73,7 @@ input[type='radio']:checked:after {
 }
 /* Updated with Material*/
 .button:disabled {
-  background-color: rgba(255, 255, 255, 0.38); /*grey*/
+  background-color: rgba(255, 255, 255, 0.38);
   border: 1px solid rgba(255, 255, 255, 0.38);
   cursor: default;
 }
@@ -97,9 +84,9 @@ input[type='radio']:checked:after {
   font-size: calc(0.5em + 0.5vw);
 }
 
-.radio__side {
+/*.radio__side {
   margin-top: 30px;
-}
+}*/
 
 .message {
   font-size: 10px;

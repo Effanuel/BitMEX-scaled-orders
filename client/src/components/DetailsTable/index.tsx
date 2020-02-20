@@ -23,6 +23,11 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
     }),
     shallowEqual
   );
+ function format(num:any) {
+    return num.toString().replace(/^[+-]?\d+/, function(int:any) {
+      return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+  });
+}
 
   return (
     <table className={styles.table}>
@@ -36,7 +41,7 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
         <tr>
           <td>Average price:</td>
           <td>
-            {`${averagePrice}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            {format(averagePrice)}
             <span className={styles.color_accent}> USD</span>
           </td>
         </tr>

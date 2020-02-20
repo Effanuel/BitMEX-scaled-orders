@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { ordersSelector } from "../../redux/selectors";
 // UTILS
+import cx from 'classnames'
 import styles from "./styles.module.css";
 import { AppState } from "../../redux/models/state";
 
@@ -15,11 +16,32 @@ export default function OrdersPreviewTable(props: Props) {
     }),
     shallowEqual
   );
+
   // This code needs fixing...
-  const sideColor = orders.orders[0].side === "Sell" ? "#cf6679" : "#4caf50";
-  const __sideColor = sideColor === "#cf6679" ? "#4caf50" : "#cf6679";
-  const side = orders.orders[0].side;
-  const _side = side === "Sell" ? "Buy" : "Sell";
+  const x_side = orders.orders[0].side === "Sell"
+  const y_side = x_side ? "Buy": "Sell"
+
+  let sideStyle = cx({
+    [styles.side_color__sell]: x_side,
+    [styles.side_color__buy]: !x_side
+  });
+  let sideStyle_stop = cx({
+    [styles.side_stop__sell]: !x_side,
+    [styles.side_stop__buy]: x_side
+  });
+  let sideText_x = cx({
+    [styles.side__sell]: x_side,
+    [styles.side__buy]: !x_side
+  });
+  let sideText_y = cx({
+    [styles.side__sell]: !x_side,
+    [styles.side__buy]: x_side
+  });
+  
+  function reformat(number: any): string{
+    // reformats 1234567 to 1,234,567
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  }
 
   return (
     <table className={styles.table}>
@@ -35,41 +57,31 @@ export default function OrdersPreviewTable(props: Props) {
           return (
             <tr
               key={`${i}`}
-              style={{
-                paddingLeft: "5px",
-                borderLeft: `6px solid ${sideColor}`
-              }}
+              className={sideStyle}
             >
               <td key={x * i + "a"}>
-                {x.orderQty.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                {reformat(x.orderQty)}
               </td>
-              <td key={x * i + "b"} style={{ color: sideColor }}>
+              <td key={x * i + "b"} className={sideText_x}>
                 {x.side}
               </td>
               <td key={x * i + "c"}>
-                {x.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                {reformat(x.price)}
               </td>
             </tr>
           );
         })}
+
         {orders.stop.stopPx ? (
           <tr
-            style={{
-              paddingLeft: "5px",
-              borderLeft: `6px solid ${__sideColor}`,
-              borderTop: `1px solid ${__sideColor}`
-            }}
+            className={sideStyle_stop}
           >
             <td>
-              {orders.stop.orderQty
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              {reformat(orders.stop.orderQty)}
             </td>
-            <td style={{ color: `${__sideColor}` }}>{_side}</td>
+            <td className={sideText_y}>{y_side}</td>
             <td>
-              {orders.stop.stopPx
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              {reformat(orders.stop.stopPx)}
             </td>
           </tr>
         ) : null}
