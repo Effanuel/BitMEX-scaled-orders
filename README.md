@@ -1,5 +1,5 @@
 <p align="center">
-  <img src='assets/presentation_scaled_v4.gif'>
+  <img src='assets/presentation_scaled_v5.gif'>
 </p>
 
 ## Table of Contents
@@ -16,13 +16,13 @@
 - [Useful material](#useful-material)
 
 <p align="center">
-  <img src="assets/interface_range_tool_v5.png">
+  <img src="assets/interface_range_tool_v6.png">
 </p>
 
 # BitMEX scaled orders tool
 
 This project is a trading tool based on **BitMEX API** to help you place orders in a range (It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load)).
-*(In the next major update, I'll try to include custom order placement with a stepping stop-loss)*
+_(In the next major update, I'll try to include custom order placement with a stepping stop-loss)_
 
 ### Current Features
 
@@ -127,7 +127,7 @@ npm run prod
 
 ```sh
 cd Bitmex-scaled-orders/client
-npm run test
+npm test
 ```
 
 ## Distributions
@@ -146,6 +146,7 @@ _(The chart representations are symbolic)_ </br>
 _(You can view the code in `client/src/util/index.ts` file)_
 
 ## Roadmap
+
 - **Chasing price** for limit orders;
 - **Faster price update**;
 - Stepping stop-loss;
