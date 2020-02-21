@@ -5,7 +5,9 @@ import { showPreviewSelector } from "./redux/selectors";
 /// COMPONENTS
 import { ScaledContainer, PreviewContainer } from "./containers";
 // UTILS
+import { PositionedSnackbar } from "./components";
 import { AppState } from "./redux/models/state";
+// STYLES
 import "./css/root.module.css";
 
 export default function App() {
@@ -18,6 +20,7 @@ export default function App() {
 
   return (
     <>
+      <PositionedSnackbar />
       <ScaledContainer />
 
       {showPreview && <PreviewContainer />}

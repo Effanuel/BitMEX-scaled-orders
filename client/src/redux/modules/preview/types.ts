@@ -45,4 +45,5 @@ export interface PreviewState {
   error: string;
   showPreview: boolean;
   loading: boolean;
+  message: string;
 }

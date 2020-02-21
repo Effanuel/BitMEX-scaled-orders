@@ -1,20 +1,13 @@
 import { ThunkAction } from "redux-thunk";
 import { Action } from "redux";
+import { PreviewState } from "../modules/preview/types";
 
-export type Thunk = ThunkAction<void, any, any, Action<string>>;
+export type Thunk = ThunkAction<void, AppState, undefined, Action<string>>;
 //========================================
 
 export interface AppState {
   preview: PreviewState;
   websocket: WebsocketState;
-}
-
-export interface PreviewState {
-  orders: any;
-  balance: number;
-  error: string;
-  showPreview: boolean;
-  loading: boolean;
 }
 
 interface WebsocketDataResponse {
