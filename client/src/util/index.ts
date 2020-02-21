@@ -87,7 +87,7 @@ const skewedDistribution = (
   const summ = arr.reduce((a: number, b: number) => a + b, 0);
   // How much to increment the price of every order
   const increment = roundHalf((end_ - start_) / (n_tp - 1), symbol);
-  let orders: ordersProps = { orders: [], stop: {} };
+  let orders: any = { orders: [], stop: {} };
 
   // Pushing orders to main array
   for (let i = 0; i < n_tp; i++) {
@@ -109,7 +109,21 @@ const skewedDistribution = (
     const __stop = stopLoss(quantity, stop, symbol, side);
     orders.stop = __stop;
   }
-  console.log("orders", orders.orders);
+  // Price never goes above "Range end"
+  if (orders.orders[orders.orders.length - 1].price > end) {
+    orders.orders[orders.orders.length - 1].price = end;
+  }
+  const total_quantity = orders.orders.reduce(
+    (total: number, n: any): number => total + n.orderQty,
+    0
+  );
+  // Quantity always stays the same
+  if (total_quantity < quantity) {
+    orders.orders[orders.orders.length - 1].orderQty =
+      orders.orders[orders.orders.length - 1].orderQty +
+      quantity -
+      total_quantity;
+  }
   return orders;
 };
 
