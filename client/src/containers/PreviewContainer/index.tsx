@@ -9,7 +9,11 @@ interface Props {}
 
 export default function PreviewContainer(props: Props) {
   return (
-    <Container fixed maxWidth="sm" style={{ padding: "0px" }}>
+    <Container
+      fixed
+      maxWidth="sm"
+      style={{ padding: "0px", overflow: "hidden" }}
+    >
       <Grid item xs container direction="row">
         <Grid
           item
