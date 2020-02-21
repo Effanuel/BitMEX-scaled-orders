@@ -58,11 +58,11 @@ export const websocketCurrentPrice = createSelector(
 export const ordersAveragePriceSelector = createSelector(
   [getOrders, getShowPreview],
   (orderList = [], previewTable): number | void => {
-    if (previewTable) {
+    if (previewTable && orderList) {
       // We push stop-loss order in /utils distribution functions
       // so we want to exclude it here.
 
-      //
+
       const total_quantity = orderList.orders.reduce(
         (total: number, n: any): number => total + n.orderQty,
         0
@@ -71,7 +71,8 @@ export const ordersAveragePriceSelector = createSelector(
         (total: number, n: any): number => total + n.orderQty / n.price,
         0
       );
-      return Math.round((total_quantity / contract_value) * 2) / 2;
+       // Divide by 10,000 so that ordersRiskSelector calculated risk more accurately
+      return Math.round((total_quantity / contract_value) * 10000) / 10000;
     }
   }
 );
@@ -86,6 +87,8 @@ export const ordersRiskSelector = createSelector(
       // 1 contract of ETH is for 0.01 mXBT which is 1e-6 XBT
       if (orderList.stop["symbol"] === "ETHUSD")
         quantity *= 1e-6 * averageEntry ** 2;
+      if (orderList.stop["symbol"] === "XRPUSD")
+        quantity *= 2e-4 * averageEntry ** 2;
       const entryValue = quantity / averageEntry;
       const exitValue = quantity / orderList.stop["stopPx"] || 1;
       return Math.abs(+(entryValue - exitValue).toFixed(5));

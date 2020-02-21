@@ -40,7 +40,7 @@ const orders_uniform = {
     {
       execInst: "ParticipateDoNotInitiate",
       ordType: "Limit",
-      orderQty: 166,
+      orderQty: 168,
       price: 7700,
       side: "Sell",
       symbol: "XBTUSD",
@@ -73,7 +73,7 @@ const orders_normal = {
     {
       execInst: "ParticipateDoNotInitiate",
       ordType: "Limit",
-      orderQty: 53,
+      orderQty: 54,
       price: 7700,
       side: "Sell",
       symbol: "XBTUSD",
@@ -106,7 +106,7 @@ const orders_positive = {
     {
       execInst: "ParticipateDoNotInitiate",
       ordType: "Limit",
-      orderQty: 38,
+      orderQty: 39,
       price: 7700,
       side: "Sell",
       symbol: "XBTUSD",
@@ -139,7 +139,7 @@ const orders_negative = {
     {
       execInst: "ParticipateDoNotInitiate",
       ordType: "Limit",
-      orderQty: 287,
+      orderQty: 288,
       price: 7700,
       side: "Sell",
       symbol: "XBTUSD",

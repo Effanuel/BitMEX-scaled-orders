@@ -14,11 +14,12 @@ import { orderBulk } from "../../../util";
 import { Thunk } from "../../models/state";
 
 const initialState = {
-  orders: {},
+  orders: [],
   balance: 0,
   error: "",
   showPreview: false,
-  loading: false
+  loading: false,
+  message: ""
 };
 // Reducer
 export const previewReducer = (
@@ -27,7 +28,7 @@ export const previewReducer = (
 ): PreviewState => {
   switch (action.type) {
     case ORDER_LOADING:
-      return { ...state, error: "", loading: true };
+      return { ...state, error: "", loading: true, message: "" };
     case ORDER_SUCCESS:
       return {
         ...state,
@@ -90,8 +91,11 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
 
     dispatch(postOrderSuccess(response));
   } catch (err) {
-    console.log(err.response.data.error);
-    dispatch(postOrderError(err.response.data.error));
+    if (err.message.includes("500")) {
+      dispatch(postOrderError("Server is offline."));
+    } else {
+      dispatch(postOrderError(err.response.data.error));
+    }
   }
 };
 
@@ -107,37 +111,13 @@ export const getBalance = (): Thunk => async dispatch => {
     dispatch(getBalanceSuccess(walletBalance));
   } catch (err) {
     // console.log(response.data);
-    if (err.message.includes("500")) console.error("Error with the server");
-    /// TODO
-    //HANDLE ERROR 500
-    // console.log(err.response.data.error);
-    // dispatch(postOrderError(err.response.data.error));
+    if (err.message.includes("500")) {
+      dispatch(postOrderError("Server is offline."));
+    } else {
+      dispatch(postOrderError(err.response.data.error));
+    }
   }
 };
-
-export const getBalanceSuccess = (payload: any): PreviewActionTypes => ({
-  type: BALANCE_SUCCESS,
-  payload
-});
-
-const postOrderLoading = (): PreviewActionTypes => ({
-  type: ORDER_LOADING
-});
-
-/**
- * SUCCESS [Order bulk] action creator
- * @param {number} succcess response of a request
- * @returns {Object} SUCCESS action to reducer
- */
-export const postOrderSuccess = (payload: any): PreviewActionTypes => ({
-  type: ORDER_SUCCESS,
-  payload: payload.success
-});
-
-export const postOrderError = (payload: any): PreviewActionTypes => ({
-  type: ORDER_ERROR,
-  payload
-});
 
 /**
  * SUCCESS [Current price of symbol] action creator
@@ -151,6 +131,25 @@ export const previewOrders = (payload: any): PreviewActionTypes => {
     payload: orders
   };
 };
+
+export const getBalanceSuccess = (payload: any): PreviewActionTypes => ({
+  type: BALANCE_SUCCESS,
+  payload
+});
+
+const postOrderLoading = (): PreviewActionTypes => ({
+  type: ORDER_LOADING
+});
+
+const postOrderSuccess = (payload: any): PreviewActionTypes => ({
+  type: ORDER_SUCCESS,
+  payload: payload.success
+});
+
+const postOrderError = (payload: any): PreviewActionTypes => ({
+  type: ORDER_ERROR,
+  payload
+});
 
 export const previewClose = (): PreviewActionTypes => ({
   type: SWITCH_PREVIEW

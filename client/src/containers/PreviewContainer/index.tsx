@@ -1,6 +1,6 @@
 import React from "react";
 // COMPONENTS
-import { Container } from "react-bootstrap";
+import { Container, Grid } from "@material-ui/core";
 import { OrdersPreviewTable, DetailsTable } from "../../components";
 // UTILS
 import styles from "./styles.module.css";
@@ -9,13 +9,24 @@ interface Props {}
 
 export default function PreviewContainer(props: Props) {
   return (
-    <Container className={styles.preview_containers}>
-      <Container className={styles.container_orders}>
-        <OrdersPreviewTable />
-      </Container>
-      <Container className={styles.container}>
-        <DetailsTable />
-      </Container>
+    <Container
+      fixed
+      maxWidth="sm"
+      style={{ padding: "0px", overflow: "hidden" }}
+    >
+      <Grid item xs container direction="row">
+        <Grid
+          item
+          xs={7}
+          className={styles.preview_container}
+          style={{ marginRight: "10px" }}
+        >
+          <OrdersPreviewTable />
+        </Grid>
+        <Grid item xs className={styles.details_container}>
+          <DetailsTable />
+        </Grid>
+      </Grid>
     </Container>
   );
 }

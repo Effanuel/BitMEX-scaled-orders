@@ -178,7 +178,7 @@ export const wsTickerChange = (payload: string): WebsocketActionTypes => ({
 export const wsConnect = (): Thunk => async dispatch => {
   try {
     const url = "wss://www.bitmex.com/realtime?subscribe=";
-    const subscribe = "instrument:XBTUSD,instrument:ETHUSD";
+    const subscribe = "instrument:XBTUSD,instrument:ETHUSD,instrument:XRPUSD";
     dispatch(connect(`${url}${subscribe}`));
   } catch (err) {
     console.log(err.response.data, "error previewpriceWS redux");
