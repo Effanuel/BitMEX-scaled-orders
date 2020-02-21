@@ -48,7 +48,8 @@ const initialState = {
     balance: 2560000,
     error: "",
     showPreview: true,
-    loading: false
+    loading: false,
+    message: ""
   },
   websocket: {}
 };
