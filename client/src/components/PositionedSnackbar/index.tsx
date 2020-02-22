@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from "react";
-import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
-import { orderErrorSelector } from "../../redux/selectors";
+// REDUX
+import {
+  orderErrorSelector,
+  previewMessageSelector
+} from "../../redux/selectors";
 import { shallowEqual, useSelector } from "react-redux";
+import { AppState } from "../../redux/models/state";
+// COMPONENTS
+import Snackbar from "@material-ui/core/Snackbar";
+// STYLES
 import cx from "classnames";
 import styles from "./styles.module.css";
+// UTILS
 import { SVGIcon } from "../";
 import ICONS from "../SVGIcon/icons";
 
-function PositionedSnackbar() {
-  const { orderError } = useSelector(
-    (state: any) => ({
+export const PositionedSnackbar = React.memo(() => {
+  const { orderError, preview_message } = useSelector(
+    (state: AppState) => ({
       orderError: orderErrorSelector(state),
-      message: state.preview.message
+      preview_message: previewMessageSelector(state)
     }),
     shallowEqual
   );
@@ -23,13 +30,15 @@ function PositionedSnackbar() {
 
   let snackbar_style = cx({
     [styles.error_snackbar]: type === "error",
-    [styles.success_snackbar]: type === "success"
+    [styles.success_snackbar]: type === "success",
+    [styles.snackbar_none]: type === ""
   });
 
   function Bar() {
+    console.log("BAR TYPE", type);
     return (
       <div className={snackbar_style}>
-        {type === "error" && <SVGIcon icon={ICONS.ERROR} />}
+        {type === "error" && <SVGIcon color="pink" icon={ICONS.ERROR} />}
         {type === "success" && <SVGIcon color="green" icon={ICONS.SUCCESS} />}
 
         <span className={styles.snackbar_text}>{message}</span>
@@ -38,20 +47,16 @@ function PositionedSnackbar() {
   }
 
   useEffect(() => {
-    if (orderError) {
+    if (orderError !== "") {
       setMessage(orderError);
       setType("error");
       setOpen(true);
-    }
-  }, [orderError]);
-
-  useEffect(() => {
-    if (message) {
-      setMessage(message);
+    } else if (preview_message !== "") {
+      setMessage(preview_message);
       setType("success");
       setOpen(true);
     }
-  }, [message]);
+  }, [orderError, preview_message]);
 
   const handleClose = () => {
     setOpen(false);
@@ -60,6 +65,7 @@ function PositionedSnackbar() {
   return (
     <Snackbar
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      autoHideDuration={3000}
       open={open}
       onClose={handleClose}
       style={{ top: "10px" }}
@@ -67,5 +73,4 @@ function PositionedSnackbar() {
       <Bar />
     </Snackbar>
   );
-}
-export { PositionedSnackbar };
+});

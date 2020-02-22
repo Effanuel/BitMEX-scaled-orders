@@ -32,8 +32,8 @@ export const previewReducer = (
     case ORDER_SUCCESS:
       return {
         ...state,
-        ...action.payload,
         showPreview: false,
+        message: action.payload,
         error: "",
         orders: [],
         loading: false
@@ -88,8 +88,8 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
     console.log("order");
 
     const response = await axios.post("/bitmex/postOrder", orders);
-
-    dispatch(postOrderSuccess(response));
+    const { success } = response.data;
+    dispatch(postOrderSuccess(success));
   } catch (err) {
     if (err.message.includes("500")) {
       dispatch(postOrderError("Server is offline."));
@@ -132,7 +132,7 @@ export const previewOrders = (payload: any): PreviewActionTypes => {
   };
 };
 
-export const getBalanceSuccess = (payload: any): PreviewActionTypes => ({
+export const getBalanceSuccess = (payload: number): PreviewActionTypes => ({
   type: BALANCE_SUCCESS,
   payload
 });
@@ -143,7 +143,7 @@ const postOrderLoading = (): PreviewActionTypes => ({
 
 const postOrderSuccess = (payload: any): PreviewActionTypes => ({
   type: ORDER_SUCCESS,
-  payload: payload.success
+  payload: payload === 200 ? "Success: <Scaled_Orders>" : "ScaledOrders_message"
 });
 
 const postOrderError = (payload: any): PreviewActionTypes => ({
