@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import styles from "./styles.module.css";
+// COMPONENTS
 import { Container, Grid } from "@material-ui/core";
+// STYLES
+import styles from "./styles.module.css";
 
-export const MainContainer = React.memo(({ children, label }: any) => {
+interface Props {
+  children: React.ReactNode;
+  label: string;
+}
+
+export const MainContainer = React.memo(({ children, label }: Props) => {
   const [minimized, setMinimized] = useState(false);
 
   const cornerButton = (

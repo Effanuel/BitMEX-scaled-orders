@@ -5,17 +5,25 @@ import {
   ordersSelector,
   ordersAveragePriceSelector,
   ordersRiskSelector,
-  balanceSelector,
   ordersRiskPercSelector
 } from "../../redux/selectors";
+import { AppState } from "../../redux/models/state";
 // UTILS
 import styles from "./styles.module.css";
 
-interface IDetailsTableProps {}
+interface Props {}
 
-export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props => {
+// Reformats numbers
+// ex. 123456.7890 => 123,456.7890
+function format(num: any) {
+  return num.toString().replace(/^[+-]?\d+/, function(int: any) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+  });
+}
+
+function DetailsTable(props: Props) {
   const { averagePrice, riskBTC, riskPerc } = useSelector(
-    (state: any) => ({
+    (state: AppState) => ({
       orders: ordersSelector(state),
       averagePrice: ordersAveragePriceSelector(state),
       riskBTC: ordersRiskSelector(state),
@@ -23,11 +31,6 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
     }),
     shallowEqual
   );
- function format(num:any) {
-    return num.toString().replace(/^[+-]?\d+/, function(int:any) {
-      return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
-  });
-}
 
   return (
     <table className={styles.table}>
@@ -60,7 +63,6 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
                 <td>
                   {riskPerc}
                   <span className={styles.color_accent}> %</span>
-                  {/* <span className={styles.color_accent}> BTC</span> */}
                 </td>
               </tr>
             )}
@@ -69,4 +71,6 @@ export const DetailsTable: React.FunctionComponent<IDetailsTableProps> = props =
       </tbody>
     </table>
   );
-};
+}
+
+export { DetailsTable };

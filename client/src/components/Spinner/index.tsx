@@ -1,9 +1,11 @@
 import React from "react";
 // COMPONENTS
-import { makeStyles } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+// STYLES
+import { Theme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   spinner: {
     "& .MuiCircularProgress-svg": {
       color: "green"
@@ -14,12 +16,7 @@ const useStyles = makeStyles(theme => ({
 function SpinnerComponent() {
   const styles = useStyles();
 
-  return (
-    // <Spinner animation="border" role="status" variant="success" size="sm">
-    //   <span className="sr-only">Loading...</span>
-    // </Spinner>
-    <CircularProgress size={20} className={styles.spinner} />
-  );
+  return <CircularProgress size={20} className={styles.spinner} />;
 }
 
 export { SpinnerComponent };

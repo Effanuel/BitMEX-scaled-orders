@@ -2,10 +2,10 @@ import React from "react";
 // REDUX
 import { useSelector, shallowEqual } from "react-redux";
 import { ordersSelector } from "../../redux/selectors";
-// UTILS
+import { AppState } from "../../redux/models/state";
+// STYLES
 import cx from "classnames";
 import styles from "./styles.module.css";
-import { AppState } from "../../redux/models/state";
 
 type Props = {};
 
@@ -16,8 +16,7 @@ export default function OrdersPreviewTable(props: Props) {
     }),
     shallowEqual
   );
-
-  // This code needs fixing...
+  // Handles side border colors
   const x_side = orders.orders[0].side === "Sell";
   const y_side = x_side ? "Buy" : "Sell";
 
@@ -38,6 +37,8 @@ export default function OrdersPreviewTable(props: Props) {
     [styles.side__buy]: x_side
   });
 
+  // Reformats numbers
+  // ex. 123456.7890 => 123,456.7890
   function reformat(num: any) {
     return num.toString().replace(/^[+-]?\d+/, function(int: any) {
       return int.replace(/(\d)(?=(\d{3})+$)/g, "$1,");

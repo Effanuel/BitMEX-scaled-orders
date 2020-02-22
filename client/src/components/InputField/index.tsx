@@ -1,22 +1,12 @@
 import React from "react";
 // COMPONENTS
 import { TextField, makeStyles, FormControl } from "@material-ui/core";
-
-import "./InputField.module.css";
+// STYLES
+import { Theme } from "@material-ui/core/styles";
 import cx from "classnames";
+import "./InputField.module.css";
 
-type Props = {
-  id: string;
-  label?: string;
-  value: any;
-  stop?: boolean;
-  tooltip?: any;
-  placeholder?: string;
-  t_placement?: any;
-  onChange: (arg0: any) => void;
-};
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   label: {
     color: "rgba(255, 255, 255, 0.6)",
     fontSize: "14px"
@@ -33,7 +23,18 @@ const useStyles = makeStyles(theme => ({
     color: "red"
   }
 }));
-const handleFocus = (event: any) => event.target.select();
+
+type Props = {
+  id: string;
+  label?: string;
+  value: any;
+  stop?: boolean;
+  tooltip?: any;
+  placeholder?: string;
+  t_placement?: any;
+  onChange: (arg0: any) => void;
+};
+
 function InputField({
   id,
   label,
@@ -45,8 +46,9 @@ function InputField({
   onChange
 }: Props) {
   const classes = useStyles();
+  const handleFocus = (event: any) => event.target.select();
   return (
-    <FormControl >
+    <FormControl>
       {/*<Tooltip title={tooltip} placement={t_placement} enterDelay={500} arrow disableFocusListener disableTouchListener>*/}
       <label className={classes.label}>{label}</label>
       {/*</Tooltip>*/}

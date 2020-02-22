@@ -1,9 +1,11 @@
 import React from "react";
+// COMPONENTS
 import Radio from "@material-ui/core/Radio";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { makeStyles } from "@material-ui/core";
+// STYLES
+import { makeStyles, Theme } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     "& .MuiFormControlLabel-label": {
       color: "rgba(255, 255, 255, 0.6)",
@@ -18,13 +20,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type Props = {
+interface Props {
   checked?: boolean;
   id: string;
   value: string;
   label: any;
   labelPlacement?: any;
-};
+}
 
 function CustomRadioButton({
   checked,

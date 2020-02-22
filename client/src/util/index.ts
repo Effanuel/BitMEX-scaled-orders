@@ -64,7 +64,7 @@ const skewedDistribution = (
     ETHUSD: 3,
     XRPUSD: 4
   };
-  //Determening spread of the ticker (currently only XBTUSD and ETHUSD)
+  //Determening spread of the ticker
   //Appropriate rounding, else the order is going to get rejected
   const start_ = roundHalf(start, symbol);
   const end_ = roundHalf(end, symbol);

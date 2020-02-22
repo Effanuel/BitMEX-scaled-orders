@@ -81,7 +81,7 @@ input[type='radio']:checked:after {
 .myErrorMessage {
   color: #cf6679;
   text-align: center;
-  font-size: calc(0.5em + 0.5vw);
+  font-size: 14px;
 }
 
 /*.radio__side {

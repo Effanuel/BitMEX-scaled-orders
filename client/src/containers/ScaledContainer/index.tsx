@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 // REDUX
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import {
   messageSelector,
   orderLoadingSelector,
@@ -22,8 +23,6 @@ import {
   wsTickerChange
 } from "../../redux/modules/websocket/websocket";
 // COMPONENTS
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-
 import {
   InputField,
   SelectDropdown,
@@ -35,12 +34,13 @@ import {
   Button
 } from "../../components";
 
-import { Grid, RadioGroup, FormControl } from "@material-ui/core";
+import { Grid, RadioGroup } from "@material-ui/core";
 import ICONS from "../../components/SVGIcon/icons";
 
 // UTILS
 import { AppState } from "../../redux/models/state";
-import { AppComponentState } from "../../@types"; //AppComponentProps,
+import { AppComponentState } from "../../@types";
+// STYLES
 import styles from "./styles.module.css";
 
 const initialState = Object.freeze({
@@ -60,7 +60,6 @@ const ScaledContainer = React.memo(props => {
     wsCurrentPrice,
     loading,
     orderLoading,
-    // ordersFilled,
     message,
     orderError
   } = useSelector(
@@ -69,7 +68,6 @@ const ScaledContainer = React.memo(props => {
       loading: websocketLoadingSelector(state),
       orderLoading: orderLoadingSelector(state),
       message: messageSelector(state),
-      // ordersFilled: websocketOrder(state),
       orderError: orderErrorSelector(state)
     }),
     shallowEqual
@@ -77,14 +75,17 @@ const ScaledContainer = React.memo(props => {
 
   const [state, setState] = useState<AppComponentState>(initialState);
   const [cache, setCache] = useState(true);
-  useEffect(()=>{
+  useEffect(() => {
+    // Subscribe to Websocket
     dispatch(wsConnect());
+    // Fetch balance so we can calculate risk later
     dispatch(getBalance());
-    return ()=>{
-      dispatch(wsDisconnect()) 
-    }
-  }, [dispatch])
-  
+    return () => {
+      // Unsubscribe from Websocket
+      dispatch(wsDisconnect());
+    };
+  }, [dispatch]);
+
   //======================================================
   //
   // not so elequent way to handle preview button press handling
@@ -127,7 +128,6 @@ const ScaledContainer = React.memo(props => {
   }
 
   function onRadioChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    console.log("radio", event.target.value, state.side);
     const { name, value } = event.target;
     setState(prevState => ({ ...prevState, [name]: value }));
     //

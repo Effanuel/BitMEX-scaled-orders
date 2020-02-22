@@ -178,10 +178,13 @@ export const wsTickerChange = (payload: string): WebsocketActionTypes => ({
 export const wsConnect = (): Thunk => async dispatch => {
   try {
     const url = "wss://www.bitmex.com/realtime?subscribe=";
+    // If you want to add your own ticker,
+    // you will need to add 'instrument:<ticker_name>' here
+    // also change some code in <ScaledContainer />, selectors and utils
     const subscribe = "instrument:XBTUSD,instrument:ETHUSD,instrument:XRPUSD";
     dispatch(connect(`${url}${subscribe}`));
   } catch (err) {
-    console.log(err.response.data, "error previewpriceWS redux");
+    console.log(err.response.data, "wsConnect Error");
   }
 };
 
@@ -189,7 +192,7 @@ export const wsDisconnect = (): Thunk => async dispatch => {
   try {
     dispatch(disconnect());
   } catch (err) {
-    console.log(err.response.data, "error previewpriceWS redux");
+    console.log(err.response.data, "wsDisconnect Error");
   }
 };
 

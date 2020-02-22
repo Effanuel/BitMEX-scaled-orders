@@ -3,13 +3,13 @@ import React from "react";
 import styles from "./styles.module.css";
 
 type Props = {
-  label: string;
-  instruments: string[];
-  onChange: (arg0: any) => void;
   id: string;
+  label: string;
+  onChange: (event: any) => void;
+  instruments: string[];
 };
 
-function SelectDropdown({ label, onChange, id, instruments }: Props) {
+function SelectDropdown({ id, label, onChange, instruments }: Props) {
   return (
     <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>

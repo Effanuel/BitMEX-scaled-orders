@@ -1,25 +1,28 @@
-.snackbar, .error_snackbar, .success_snackbar {
-	align-items: flex-start;
-	border-radius: 4px;
-	padding: 6px 16px;
-	padding-right: 50px;
-	box-shadow: 2px 2px 3px black;
+.snackbar,
+.error_snackbar,
+.success_snackbar {
+  align-items: flex-start;
+  border-radius: 4px;
+  padding: 6px 16px;
+  padding-right: 50px;
+  box-shadow: 2px 2px 3px black;
 }
 
-
+.snackbar_none {
+  display: none;
+}
 
 .error_snackbar {
-	color: pink;
-	background-color: #180605;
+  color: pink;
+  background-color: #180605;
 }
 
 .success_snackbar {
-	color: var(--accentColor);
-	background-color: rgb(7, 17, 7)
-
+  color: var(--accentColor);
+  background-color: rgb(7, 17, 7);
 }
 
-.snackbar_text{
-	font-size: 14px;
-	padding: 8px 0;
+.snackbar_text {
+  font-size: 14px;
+  padding: 8px 0;
 }
