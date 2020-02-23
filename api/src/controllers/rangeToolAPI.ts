@@ -16,13 +16,26 @@ export const postOrder = async (req: Request, res: Response, next: any) => {
 };
 
 /**
- * Bulk order POST request to the exchange API
+ * Balance GET request to the exchange API
  */
 export const getBalance = async (req: Request, res: Response, next: any) => {
   try {
     const response = await _curl_bitmex("user/margin", "GET");
     logger.info("Successful GET request (getBalance)");
     return res.send({ data: response });
+  } catch (error) {
+    return res.status(400).send({ error: error });
+  }
+};
+
+/**
+ * Market order POST request to the exchange API
+ */
+export const marketOrder = async (req: Request, res: Response, next: any) => {
+  try {
+    const response = await _curl_bitmex("order", "POST", req.body);
+    logger.info("Successful POST request (marketOrder)");
+    return res.send({ success: res.statusCode });
   } catch (error) {
     return res.status(400).send({ error: error });
   }

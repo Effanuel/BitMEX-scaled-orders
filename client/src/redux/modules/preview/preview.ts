@@ -10,7 +10,7 @@ import {
 } from "./types";
 
 import axios from "axios";
-import { orderBulk } from "../../../util";
+import { orderBulk, market_order } from "../../../util";
 import { Thunk } from "../../models/state";
 
 const initialState = {
@@ -89,7 +89,7 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
 
     const response = await axios.post("/bitmex/postOrder", orders);
     const { success } = response.data;
-    dispatch(postOrderSuccess(success));
+    dispatch(postOrderSuccess({ success, from: "Scaled_orders" }));
   } catch (err) {
     if (err.message.includes("500")) {
       dispatch(postOrderError("Server is offline."));
@@ -119,6 +119,17 @@ export const getBalance = (): Thunk => async dispatch => {
   }
 };
 
+export const marketOrder = (payload: any): Thunk => async dispatch => {
+  try {
+    dispatch(postOrderLoading());
+    const order = market_order(payload);
+
+    const response = await axios.post("/bitmex/marketOrder", order);
+    const { success } = response.data;
+    dispatch(postOrderSuccess({ success, from: "Market_order" }));
+  } catch (err) {}
+};
+
 /**
  * SUCCESS [Current price of symbol] action creator
  * @param {number} currentPrice of a symbol
@@ -141,9 +152,9 @@ const postOrderLoading = (): PreviewActionTypes => ({
   type: ORDER_LOADING
 });
 
-const postOrderSuccess = (payload: any): PreviewActionTypes => ({
+const postOrderSuccess = ({ success, from }: any): PreviewActionTypes => ({
   type: ORDER_SUCCESS,
-  payload: payload === 200 ? "Success: <Scaled_Orders>" : "ScaledOrders_message"
+  payload: success === 200 ? `Success: <${from}>` : "Message"
 });
 
 const postOrderError = (payload: any): PreviewActionTypes => ({

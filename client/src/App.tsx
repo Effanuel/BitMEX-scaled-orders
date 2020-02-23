@@ -3,7 +3,11 @@ import React from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { showPreviewSelector } from "./redux/selectors";
 /// COMPONENTS
-import { ScaledContainer, PreviewContainer } from "./containers";
+import {
+  ScaledContainer,
+  PreviewContainer,
+  MarketOrderContainer
+} from "./containers";
 // UTILS
 import { PositionedSnackbar } from "./components";
 import { AppState } from "./redux/models/state";
@@ -21,6 +25,7 @@ export default function App() {
   return (
     <>
       <PositionedSnackbar />
+      <MarketOrderContainer />
       <ScaledContainer />
 
       {showPreview && <PreviewContainer />}

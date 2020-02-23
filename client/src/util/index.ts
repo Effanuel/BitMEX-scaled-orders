@@ -147,6 +147,15 @@ const stopLoss = (
   };
 };
 
+export const market_order = ({ symbol, quantity, side }: any) => {
+  return {
+    symbol: symbol,
+    orderQty: quantity,
+    side: side,
+    ordType: "Market"
+  };
+};
+
 // ------ UTILS ------
 /**
  * Round a number by inc
