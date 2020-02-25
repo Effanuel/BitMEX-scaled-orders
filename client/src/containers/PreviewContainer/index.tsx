@@ -1,7 +1,7 @@
 import React from "react";
 // COMPONENTS
 import { Container, Grid } from "@material-ui/core";
-import { OrdersPreviewTable, DetailsTable } from "../../components";
+import { OrdersPreviewTable, DetailsTable } from "components";
 // STYLES
 import styles from "./styles.module.css";
 

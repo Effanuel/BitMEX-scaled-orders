@@ -1,8 +1,8 @@
 import React from "react";
 // REDUX
 import { useSelector, shallowEqual } from "react-redux";
-import { ordersSelector } from "../../redux/selectors";
-import { AppState } from "../../redux/models/state";
+import { ordersSelector } from "redux/selectors";
+import { AppState } from "redux/models/state";
 // STYLES
 import cx from "classnames";
 import styles from "./styles.module.css";

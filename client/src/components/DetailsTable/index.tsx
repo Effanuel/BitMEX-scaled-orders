@@ -6,8 +6,8 @@ import {
   ordersAveragePriceSelector,
   ordersRiskSelector,
   ordersRiskPercSelector
-} from "../../redux/selectors";
-import { AppState } from "../../redux/models/state";
+} from "redux/selectors";
+import { AppState } from "redux/models/state";
 // UTILS
 import styles from "./styles.module.css";
 

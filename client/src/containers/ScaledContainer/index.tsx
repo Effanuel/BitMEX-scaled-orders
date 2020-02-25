@@ -8,20 +8,20 @@ import {
   websocketCurrentPrice,
   // websocketOrder,
   websocketLoadingSelector
-} from "../../redux/selectors";
+} from "redux/selectors";
 
 import {
   postOrder,
   previewOrders,
   previewClose,
   getBalance
-} from "../../redux/modules/preview/preview";
+} from "redux/modules/preview/preview";
 
 import {
   wsConnect,
   wsDisconnect,
   wsTickerChange
-} from "../../redux/modules/websocket/websocket";
+} from "redux/modules/websocket/websocket";
 // COMPONENTS
 import {
   InputField,
@@ -32,14 +32,14 @@ import {
   MainContainer,
   SVGIcon,
   Button
-} from "../../components";
+} from "components";
 
 import { Grid, RadioGroup } from "@material-ui/core";
-import ICONS from "../../components/SVGIcon/icons";
+import ICONS from "components/SVGIcon/icons";
 
 // UTILS
-import { AppState } from "../../redux/models/state";
-import { AppComponentState } from "../../@types";
+import { AppState } from "redux/models/state";
+import { AppComponentState } from "@types";
 // STYLES
 import styles from "./styles.module.css";
 

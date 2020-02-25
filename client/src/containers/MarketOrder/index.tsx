@@ -1,14 +1,10 @@
 import React from "react";
 // REDUX
-import { marketOrder } from "../../redux/modules/preview/preview";
-import { useDispatch } from "react-redux";
+import { marketOrder, bestOrder } from "redux/modules/preview/preview";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { websocketCurrentPrice } from "redux/selectors";
 // COMPONENTS
-import {
-  MainContainer,
-  SelectDropdown,
-  InputField,
-  Button
-} from "../../components";
+import { MainContainer, SelectDropdown, InputField, Button } from "components";
 import Grid from "@material-ui/core/Grid";
 // STYLES
 import styles from "./styles.module.css";
@@ -17,16 +13,31 @@ export interface Props {}
 
 const initialState = Object.freeze({
   symbol: "XBTUSD",
-  quantity: ""
+  quantity: 50
 });
 
 function MarketOrderContainer(props: Props) {
   const dispatch = useDispatch();
+  const { wsCurrentPrice } = useSelector(
+    (state: any) => ({
+      wsCurrentPrice: websocketCurrentPrice(state)
+    }),
+    shallowEqual
+  );
 
   const [state, setState] = React.useState(initialState);
 
   function submitMarketOrder(event: any) {
-    dispatch(marketOrder({ ...state, side: event.target.id }));
+    // dispatch(marketOrder({ ...state, side: event.target.id }));
+    // ({ symbol, price, quantity, side, ordType, text_index=0 }: any)
+    dispatch(
+      bestOrder({
+        ...state,
+        price: wsCurrentPrice,
+        side: "Sell",
+        ordType: "Limit"
+      })
+    );
   }
 
   function handleOnChangeNumber(
@@ -78,7 +89,7 @@ function MarketOrderContainer(props: Props) {
             variant="custom"
             className={styles.button_sell}
             onClick={submitMarketOrder}
-            disabled={!state.quantity}
+            disabled={!state.quantity || !wsCurrentPrice}
           >
             MARKET Sell
           </Button>

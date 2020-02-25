@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 // REDUX
-import {
-  orderErrorSelector,
-  previewMessageSelector
-} from "../../redux/selectors";
+import { orderErrorSelector, previewMessageSelector } from "redux/selectors";
 import { shallowEqual, useSelector } from "react-redux";
-import { AppState } from "../../redux/models/state";
+import { AppState } from "redux/models/state";
 // COMPONENTS
 import Snackbar from "@material-ui/core/Snackbar";
 // STYLES
