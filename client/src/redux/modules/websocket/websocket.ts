@@ -177,9 +177,10 @@ export const wsTickerChange = (payload: string): WebsocketActionTypes => ({
 
 export const wsConnect = (): Thunk => async dispatch => {
   try {
-    const url = `https://${
+    const url = `wss://${
       process.env.REACT_APP___TESTNET == "true" ? "testnet" : "www"
     }.bitmex.com/realtime?subscribe=`;
+    console.log(url, "gogogo");
     // If you want to add your own ticker,
     // you will need to add 'instrument:<ticker_name>' here
     // also change some code in <ScaledContainer />, selectors and utils
