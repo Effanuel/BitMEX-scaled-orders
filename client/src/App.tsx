@@ -1,31 +1,35 @@
 import React from "react";
 // REDUX
 import { shallowEqual, useSelector } from "react-redux";
-import { showPreviewSelector } from "./redux/selectors";
+import { showPreviewSelector, orderLoadingSelector } from "redux/selectors";
 /// COMPONENTS
 import {
   ScaledContainer,
   PreviewContainer,
   MarketOrderContainer
-} from "./containers";
+} from "containers";
 // UTILS
-import { PositionedSnackbar } from "./components";
-import { AppState } from "./redux/models/state";
+import { PositionedSnackbar, SpinnerComponent } from "components";
+import { AppState } from "redux/models/state";
 // STYLES
-import "./css/root.module.css";
+import "css/root.module.css";
+// import { order } from "util";
 
 export default function App() {
-  const { showPreview } = useSelector(
+  const { showPreview, orderLoading } = useSelector(
     (state: AppState) => ({
-      showPreview: showPreviewSelector(state)
+      showPreview: showPreviewSelector(state),
+      orderLoading: orderLoadingSelector(state)
     }),
     shallowEqual
   );
-
+  // console.log(test, "LOGOGOGO");
   return (
     <>
       <PositionedSnackbar />
+      <SpinnerComponent loading={orderLoading} />
       <MarketOrderContainer />
+
       <ScaledContainer />
 
       {showPreview && <PreviewContainer />}

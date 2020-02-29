@@ -1,22 +1,37 @@
 import React from "react";
 // COMPONENTS
-import CircularProgress from "@material-ui/core/CircularProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
 // STYLES
-import { Theme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  spinner: {
-    "& .MuiCircularProgress-svg": {
-      color: "green"
-    }
+const ColorLinearProgress = withStyles({
+  root: {
+    height: "5px",
+    width: "600px",
+    margin: "0 auto"
+  },
+  colorPrimary: {
+    backgroundColor: "#b2dfdb"
+  },
+  barColorPrimary: {
+    backgroundColor: "#4caf50"
   }
-}));
+})(LinearProgress);
 
-function SpinnerComponent() {
-  const styles = useStyles();
-
-  return <CircularProgress size={20} className={styles.spinner} />;
+interface Props {
+  loading: boolean;
+}
+function SpinnerComponent({ loading }: Props) {
+  return (
+    <>
+      {loading ? (
+        <ColorLinearProgress />
+      ) : (
+        <div style={{ height: "5px" }}></div>
+      )}
+    </>
+  );
+  // return <CircularProgress size={20} className={styles.spinner} />;
 }
 
 export { SpinnerComponent };
