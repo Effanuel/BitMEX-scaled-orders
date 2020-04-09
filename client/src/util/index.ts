@@ -116,7 +116,7 @@ const skewedDistribution = (
   }
   // Add stop loss order
   if (stop && stop !== "") {
-    const __stop = stopLoss(quantity, stop, symbol, side);
+    const __stop = createStopLoss(quantity, stop, symbol, side);
     totalOrders.stop = __stop;
   }
   // Price never goes above "Range end"
@@ -137,13 +137,13 @@ const skewedDistribution = (
   return totalOrders;
 };
 
-const stopLoss = (
+const createStopLoss = (
   quantity: any,
   stop: any,
   symbol: any, // : XBTUSD, ETHUSD...
   side: any,
   text_index = 1
-): stopLoss => {
+): stopLossType => {
   const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
   const price = roundHalf(stop, symbol);
   const stop_side = side === "Buy" ? "Sell" : "Buy";
@@ -164,11 +164,11 @@ interface markets {
   quantity: any;
   side: any;
 }
-export const marketOrder = ({
+export const createMarketOrder = ({
   symbol,
   quantity,
   side,
-}: markets): marketOrder => {
+}: markets): marketOrderType => {
   return {
     symbol: symbol,
     orderQty: quantity,
@@ -192,7 +192,7 @@ export const marketOrder = ({
 //   };
 // };
 
-export const order = ({
+export const createOrder = ({
   symbol,
   price,
   quantity,
@@ -259,18 +259,21 @@ interface StopProps {
 
 type ordersProps = { orders: object[]; stop: object };
 //===
-type marketOrder = Pick<orderType, "symbol" | "orderQty" | "side" | "ordType">;
+type marketOrderType = Pick<
+  orderType,
+  "symbol" | "orderQty" | "side" | "ordType"
+>;
 type order = Pick<
   orderType,
   "symbol" | "price" | "orderQty" | "side" | "ordType" | "text" | "execInst"
 >;
-type stopLoss = Pick<
+type stopLossType = Pick<
   orderType,
   "symbol" | "side" | "orderQty" | "stopPx" | "ordType" | "execInst" | "text"
 >;
 interface totalOrdersType {
   orders: order[];
-  stop: Partial<stopLoss>;
+  stop: Partial<stopLossType>;
 }
 //===
 export const BitMEX_ws_send = () => {

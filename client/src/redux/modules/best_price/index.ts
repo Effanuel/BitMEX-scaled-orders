@@ -6,11 +6,11 @@ import {
   __CLEAR_BEST_ORDER,
   LOADING,
   BestPriceState,
-  BestPriceActionTypes
+  BestPriceActionTypes,
 } from "./types";
 
 import axios from "axios";
-import { order } from "util/index";
+import { createOrder } from "util/index";
 import { Thunk } from "../../models/state";
 
 const initialState = {
@@ -21,7 +21,7 @@ const initialState = {
   // since websocket doesn't handle that
   status: "Order not placed.",
   //
-  loading: false
+  loading: false,
 };
 
 export const best_priceReducer = (
@@ -62,23 +62,23 @@ const postOrderReducer = (state: any, action: any) => {
         bestOrderID: orderID,
         price: price,
         // for websocket subscription to be made
-        status: "Order placed."
+        status: "Order placed.",
       }
     : {
         ...state,
         loading: false,
         // This is the only thing we need from this reducer's <status> state
-        status: "Order cancelled."
+        status: "Order cancelled.",
       };
 };
 
 // ACTIONS
 // =====================================
 
-export const post_bestOrder = (payload: any): Thunk => async dispatch => {
+export const post_bestOrder = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(orderLoading());
-    const best_order = order(payload);
+    const best_order = createOrder(payload);
 
     const response = await axios.post("/bitmex/order", best_order);
     const { data, success } = response.data;
@@ -97,10 +97,10 @@ export const post_bestOrder = (payload: any): Thunk => async dispatch => {
   }
 };
 // TODO
-export const put_bestOrder = (payload: any): Thunk => async dispatch => {
+export const put_bestOrder = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(orderLoading());
-    const best_order = order(payload);
+    const best_order = createOrder(payload);
 
     const response = await axios.post("/bitmex/order", best_order);
     const { data, success } = response.data;
@@ -125,32 +125,32 @@ export const put_bestOrder = (payload: any): Thunk => async dispatch => {
 };
 
 const orderLoading = (): BestPriceActionTypes => ({
-  type: LOADING
+  type: LOADING,
 });
 
 const orderError = (): BestPriceActionTypes => ({
-  type: LOADING
+  type: LOADING,
 });
 
 const postOrderSuccess = (payload: any): BestPriceActionTypes => ({
   type: POST_ORDER,
-  payload
+  payload,
 });
 
 const putOrderSuccess = (payload: any): BestPriceActionTypes => ({
   type: PUT_ORDER,
-  payload
+  payload,
 });
 
 export const __clearBestOrder = (): BestPriceActionTypes => ({
-  type: __CLEAR_BEST_ORDER
+  type: __CLEAR_BEST_ORDER,
 });
 
 const putOrderError = (): BestPriceActionTypes => ({
-  type: PUT_ORDER_ERROR
+  type: PUT_ORDER_ERROR,
 });
 
 const postOrderError = (payload: any): BestPriceActionTypes => ({
   type: POST_ORDER_ERROR,
-  payload
+  payload,
 });

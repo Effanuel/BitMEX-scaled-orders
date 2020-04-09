@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { marketOrder } from "redux/modules/preview";
 import {
   wsSubscribeTo_order,
-  wsUnsubscribeFrom
+  wsUnsubscribeFrom,
 } from "redux/modules/websocket";
 import { post_bestOrder, __clearBestOrder } from "redux/modules/best_price";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -18,7 +18,7 @@ export interface Props {}
 
 const initialState = Object.freeze({
   symbol: "XBTUSD",
-  quantity: 50
+  quantity: 50,
 });
 
 function MarketOrderContainer({ wsCurrentPrice }: any) {
@@ -28,7 +28,7 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
   const { status, best_order_status } = useSelector(
     (state: any) => ({
       status: bestOrderStatus(state),
-      best_order_status: bestOrderStatusSelector(state)
+      best_order_status: bestOrderStatusSelector(state),
       // check current open orders
 
       // check if connected to websocket
@@ -78,7 +78,7 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
         price: wsCurrentPrice,
         side: id,
         ordType: "Limit",
-        text_prefix: "best_order"
+        text_prefix: "best_order",
       })
     );
   }
@@ -91,13 +91,13 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
   function onChangeNumber(event: React.ChangeEvent<HTMLInputElement>): void {
     const { id, value } = event.target;
     // Handles uncontrolled number input to be controlled if its empty
-    setState(prevState => ({ ...prevState, [id]: +value }));
+    setState((prevState) => ({ ...prevState, [id]: +value }));
   }
   function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const { value, id } = event.target;
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
-      [id]: value
+      [id]: value,
     }));
   }
   return (

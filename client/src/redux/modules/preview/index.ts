@@ -10,7 +10,7 @@ import {
 } from "./types";
 
 import axios from "axios";
-import { order, orderBulk, marketOrder } from "util/index";
+import { createOrder, orderBulk, createMarketOrder } from "util/index";
 import { Thunk } from "../../models/state";
 
 const initialState = {
@@ -121,7 +121,7 @@ export const getBalance = (): Thunk => async (dispatch) => {
 export const marketOrder = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(postOrderLoading());
-    const order = marketOrder(payload);
+    const order = createMarketOrder(payload);
 
     const response = await axios.post("/bitmex/order", order);
     const { data, success } = response.data;
