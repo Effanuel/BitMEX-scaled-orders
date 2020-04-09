@@ -1,62 +1,74 @@
 import React, { useState, useEffect } from "react";
 // REDUX
-import { orderErrorSelector, previewMessageSelector } from "redux/selectors";
-import { shallowEqual, useSelector } from "react-redux";
+import { clearNotifications } from "redux/modules/notify";
+// import { orderErrorSelector } from "redux/selectors";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { AppState } from "redux/models/state";
 // COMPONENTS
 import Snackbar from "@material-ui/core/Snackbar";
-// STYLES
-import cx from "classnames";
-import styles from "./styles.module.css";
-// UTILS
-import { SVGIcon } from "../";
-import ICONS from "../SVGIcon/icons";
+import { NotificationBar } from "../";
+
+const initialState = Object.freeze({
+  open: false,
+  message: "",
+  type: ""
+});
 
 export const PositionedSnackbar = React.memo(() => {
-  const { orderError, preview_message } = useSelector(
+  const [state, setState] = useState(initialState);
+  const { open, message, type } = state;
+  //REDUX
+  const dispatch = useDispatch();
+  const { not_type, notification } = useSelector(
     (state: AppState) => ({
-      orderError: orderErrorSelector(state),
-      preview_message: previewMessageSelector(state)
+      // orderError: orderErrorSelector(state),
+      notification: state.notify.message,
+      not_type: state.notify.type
     }),
     shallowEqual
   );
+  // ====
 
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [type, setType] = useState("");
+  // const [open, setOpen] = useState(false);
+  // const [message, setMessage] = useState("");
+  // const [type, setType] = useState("");
 
-  let snackbar_style = cx({
-    [styles.error_snackbar]: type === "error",
-    [styles.success_snackbar]: type === "success",
-    [styles.snackbar_none]: type === ""
-  });
-
-  function Bar() {
-    console.log("BAR TYPE", type);
-    return (
-      <div className={snackbar_style}>
-        {type === "error" && <SVGIcon color="pink" icon={ICONS.ERROR} />}
-        {type === "success" && <SVGIcon color="green" icon={ICONS.SUCCESS} />}
-
-        <span className={styles.snackbar_text}>{message}</span>
-      </div>
-    );
-  }
-
+  // useEffect(() => {
+  //   if (orderError !== "") {
+  //     setMessage(orderError);
+  //     setType("error");
+  //     setOpen(true);
+  //   }
+  // }, [orderError]);
   useEffect(() => {
-    if (orderError !== "") {
-      setMessage(orderError);
-      setType("error");
-      setOpen(true);
-    } else if (preview_message !== "") {
-      setMessage(preview_message);
-      setType("success");
-      setOpen(true);
+    if (notification) {
+      setState(prevState => ({
+        ...prevState,
+        open: true,
+        message: notification,
+        type: not_type
+      }));
+      // setMessage(notification);
+      // setType(not_type);
+      // setOpen(true);
     }
-  }, [orderError, preview_message]);
+  }, [notification, not_type]);
+
+  // useEffect(() => {
+  //   if (orderMessage.from !== "") {
+  //     setMessage(orderMessage.from);
+  //     setType(orderMessage.type);
+  //     setOpen(true);
+  //   }
+  // }, [orderMessage]);
 
   const handleClose = () => {
-    setOpen(false);
+    setState(prevState => ({
+      ...prevState,
+      open: false
+    }));
+    // setOpen(false);
+    dispatch(clearNotifications());
   };
 
   return (
@@ -67,7 +79,7 @@ export const PositionedSnackbar = React.memo(() => {
       onClose={handleClose}
       style={{ top: "10px" }}
     >
-      <Bar />
+      <NotificationBar notificationType={type} message={message} />
     </Snackbar>
   );
 });

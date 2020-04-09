@@ -8,3 +8,4 @@ export * from "./MainContainer";
 export * from "./PositionedSnackbar";
 export * from "./SVGIcon";
 export * from "./Button";
+export * from "./NotificationBar";
