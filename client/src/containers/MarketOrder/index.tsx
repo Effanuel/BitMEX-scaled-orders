@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 // REDUX
-import { marketOrder, bestOrder } from "redux/modules/preview/preview";
+import { marketOrder } from "redux/modules/preview";
+import {
+  wsSubscribeTo_order,
+  wsUnsubscribeFrom
+} from "redux/modules/websocket";
+import { post_bestOrder, __clearBestOrder } from "redux/modules/best_price";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { websocketCurrentPrice } from "redux/selectors";
+import { bestOrderStatus, bestOrderStatusSelector } from "redux/selectors";
 // COMPONENTS
 import { MainContainer, SelectDropdown, InputField, Button } from "components";
 import Grid from "@material-ui/core/Grid";
@@ -16,37 +21,79 @@ const initialState = Object.freeze({
   quantity: 50
 });
 
-function MarketOrderContainer(props: Props) {
+function MarketOrderContainer({ wsCurrentPrice }: any) {
+  const [state, setState] = React.useState(initialState);
+  // REDUX
   const dispatch = useDispatch();
-  const { wsCurrentPrice } = useSelector(
+  const { status, best_order_status } = useSelector(
     (state: any) => ({
-      wsCurrentPrice: websocketCurrentPrice(state)
+      status: bestOrderStatus(state),
+      best_order_status: bestOrderStatusSelector(state)
+      // check current open orders
+
+      // check if connected to websocket
     }),
     shallowEqual
   );
+  // ===
 
-  const [state, setState] = React.useState(initialState);
+  // useEffect(() => {
+  //cancel order if crashed
+  //   dispatch(getOrders());
+  // }, [dispatch]);
 
-  function submitMarketOrder(event: any) {
+  useEffect(() => {
+    //Check the status of our best_order
+    const statuses = ["Filled", "Canceled", "Order not placed."];
+    if (
+      statuses.includes(best_order_status) &&
+      status !== "Order not placed."
+    ) {
+      // Set a timeout so we can still see a "Canceled" message.
+      setTimeout(async () => {
+        // Clear state if order is filled/canceled, since we have a separate reducer for that
+        dispatch(__clearBestOrder());
+        dispatch(wsUnsubscribeFrom("order"));
+        //unsubscribe from websocket order
+      }, 3000);
+    }
+  }, [dispatch, best_order_status]);
+
+  useEffect(() => {
+    // As soon as the order is placed on the order books,
+    // subscribe to /order/
+    if (status === "Order placed.") {
+      console.log("call sub to order");
+      dispatch(wsSubscribeTo_order());
+    }
+  }, [dispatch, status]);
+
+  function submitBestOrder(event: any) {
     // dispatch(marketOrder({ ...state, side: event.target.id }));
     // ({ symbol, price, quantity, side, ordType, text_index=0 }: any)
+    const { id } = event.target;
     dispatch(
-      bestOrder({
+      post_bestOrder({
         ...state,
         price: wsCurrentPrice,
-        side: "Sell",
-        ordType: "Limit"
+        side: id,
+        ordType: "Limit",
+        text_prefix: "best_order"
       })
     );
   }
 
-  function handleOnChangeNumber(
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void {
-    const { id, value } = event.target;
-    setState(prevState => ({ ...prevState, [id]: parseFloat(value) }));
+  function submitMarketOrder(event: any) {
+    const { id } = event.target;
+    dispatch(marketOrder({ ...state, side: id }));
   }
-  function handleOnChange(event: React.ChangeEvent<HTMLInputElement>): void {
+
+  function onChangeNumber(event: React.ChangeEvent<HTMLInputElement>): void {
+    const { id, value } = event.target;
+    // Handles uncontrolled number input to be controlled if its empty
+    setState(prevState => ({ ...prevState, [id]: +value }));
+  }
+  function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const { value, id } = event.target;
     setState(prevState => ({
       ...prevState,
@@ -60,27 +107,63 @@ function MarketOrderContainer(props: Props) {
           <SelectDropdown
             instruments={["XBTUSD", "ETHUSD", "XRPUSD"]}
             id="symbol"
-            onChange={handleOnChange}
+            onChange={onChange}
             label="Instrument"
           />
         </Grid>
         <Grid item xs={3}>
           <InputField
-            onChange={handleOnChangeNumber}
+            onChange={onChangeNumber}
             value={state.quantity}
             label="Quantity"
             id="quantity"
           />
+        </Grid>
+        <Grid item xs={3} className={styles.top_row}>
+          <Button
+            id="Buy"
+            variant="custom"
+            className={styles.button_buy}
+            onClick={submitMarketOrder}
+            disabled={!state.quantity || state.quantity > 20e6}
+          >
+            MARKET Buy
+          </Button>
+        </Grid>
+        <Grid item xs={3} className={styles.top_row}>
+          <Button
+            id="Sell"
+            variant="custom"
+            className={styles.button_sell}
+            onClick={submitMarketOrder}
+            disabled={
+              !state.quantity || !wsCurrentPrice || state.quantity > 20e6
+            }
+          >
+            MARKET Sell
+          </Button>
+        </Grid>
+        <Grid item xs={6}>
+          <div style={{ color: "white" }}>
+            Best order status:{" "}
+            <span style={{ color: "green" }}>{best_order_status}</span>
+          </div>
+          {/* <div style={{ color: "green" }}>{status}</div> */}
         </Grid>
         <Grid item xs={3}>
           <Button
             id="Buy"
             variant="custom"
             className={styles.button_buy}
-            onClick={submitMarketOrder}
-            disabled={!state.quantity}
+            onClick={submitBestOrder}
+            disabled={
+              !state.quantity ||
+              state.quantity > 20e6 ||
+              best_order_status === "New" ||
+              !wsCurrentPrice
+            }
           >
-            MARKET Buy
+            BEST Buy
           </Button>
         </Grid>
         <Grid item xs={3}>
@@ -88,10 +171,16 @@ function MarketOrderContainer(props: Props) {
             id="Sell"
             variant="custom"
             className={styles.button_sell}
-            onClick={submitMarketOrder}
-            disabled={!state.quantity || !wsCurrentPrice}
+            onClick={submitBestOrder}
+            disabled={
+              !state.quantity ||
+              !wsCurrentPrice ||
+              state.quantity > 20e6 ||
+              best_order_status === "New" ||
+              !wsCurrentPrice
+            }
           >
-            MARKET Sell
+            BEST Sell
           </Button>
         </Grid>
       </Grid>
