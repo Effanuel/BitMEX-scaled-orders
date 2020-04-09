@@ -1,5 +1,6 @@
+import _path from "path";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: _path.join(__dirname, "../../client/.env") });
 
 import express from "express";
 import helmet from "helmet";

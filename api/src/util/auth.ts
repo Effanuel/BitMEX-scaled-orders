@@ -11,8 +11,8 @@ export const generate_requestOptions = (
   url: string
 ) => {
   //path_leverage = '/api/v1/position/leverage', //POST /position/leverage
-  const api = process.env.API_KEY || "";
-  const secret = process.env.API_SECRET || "";
+  const api = process.env.REACT_APP___API_KEY || "";
+  const secret = process.env.REACT_APP___API_SECRET || "";
 
   let expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
   let postBody = data ? JSON.stringify(data) : "";
@@ -46,7 +46,7 @@ export const _curl_bitmex = async (
   max_retries: any = null
 ) => {
   const url = `https://${
-    process.env.TESTNET == "true" ? "testnet" : "www"
+    process.env.REACT_APP___TESTNET == "true" ? "testnet" : "www"
   }.bitmex.com/api/v1/${path}`;
 
   if (!verb) verb = postdict ? "POST" : "GET";
@@ -55,7 +55,7 @@ export const _curl_bitmex = async (
     max_retries = ["POST", "PUT"].includes(verb) ? 0 : 3;
   }
 
-  let response = null;
+  // let response = null;
   const requestOptions = generate_requestOptions(postdict, path, verb, url);
   try {
     logger.log("debug", `Sending request from _curl_bitmex(${path})...`);
