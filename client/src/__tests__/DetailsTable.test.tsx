@@ -2,7 +2,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-import { getBalanceSuccess } from "../redux/modules/preview/preview";
+import { getBalanceSuccess } from "../redux/modules/preview";
 import { ordersRiskPercSelector, balanceSelector } from "../redux/selectors";
 // import configureStore from "redux-mock-store";
 import OrdersPreviewTable from "../components/OrdersPreviewTable";

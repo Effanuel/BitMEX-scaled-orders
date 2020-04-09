@@ -17,7 +17,7 @@ interface OrderSuccess {
 }
 interface OrderError {
   type: typeof ORDER_ERROR;
-  payload: string;
+  payload: any;
 }
 interface ShowPreview {
   type: typeof SHOW_PREVIEW;
@@ -26,11 +26,11 @@ interface ShowPreview {
 interface SwitchPreview {
   type: typeof SWITCH_PREVIEW;
 }
-
 interface BalanceSuccess {
   type: typeof BALANCE_SUCCESS;
   payload: any;
 }
+
 export type PreviewActionTypes =
   | OrderLoading
   | OrderSuccess
@@ -45,5 +45,4 @@ export interface PreviewState {
   error: string;
   showPreview: boolean;
   loading: boolean;
-  message: string;
 }

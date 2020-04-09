@@ -5,30 +5,28 @@ import {
   messageSelector,
   orderLoadingSelector,
   orderErrorSelector,
-  websocketCurrentPrice,
   // websocketOrder,
   websocketLoadingSelector
 } from "redux/selectors";
 
 import {
-  postOrder,
   previewOrders,
   previewClose,
-  getBalance
-} from "redux/modules/preview/preview";
+  getBalance,
+  scaledOrders
+} from "redux/modules/preview";
 
 import {
   wsConnect,
   wsDisconnect,
   wsTickerChange
-} from "redux/modules/websocket/websocket";
+} from "redux/modules/websocket";
 // COMPONENTS
 import {
   InputField,
   SelectDropdown,
   CustomRadioButton,
   // OrdersPreviewTable,
-  SpinnerComponent,
   MainContainer,
   SVGIcon,
   Button
@@ -54,17 +52,10 @@ const initialState = Object.freeze({
   symbol: "XBTUSD"
 });
 
-const ScaledContainer = React.memo(props => {
+const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
   const dispatch = useDispatch();
-  const {
-    wsCurrentPrice,
-    loading,
-    orderLoading,
-    message,
-    orderError
-  } = useSelector(
+  const { loading, orderLoading, message, orderError } = useSelector(
     (state: AppState) => ({
-      wsCurrentPrice: websocketCurrentPrice(state),
       loading: websocketLoadingSelector(state),
       orderLoading: orderLoadingSelector(state),
       message: messageSelector(state),
@@ -121,7 +112,7 @@ const ScaledContainer = React.memo(props => {
 
   function onOrderSubmit(event: React.MouseEvent<HTMLButtonElement>): void {
     event.preventDefault();
-    dispatch(postOrder(state));
+    dispatch(scaledOrders(state));
     //
     // instead of this, input fields could be cleared
     handleCache();
@@ -300,7 +291,8 @@ const ScaledContainer = React.memo(props => {
                 : false) ||
               (state.stop && state.side === "Sell"
                 ? state.stop < state.start && state.stop < state.end
-                : false)
+                : false) ||
+              state.quantity > 20e6
             }
           >
             Preview
@@ -325,10 +317,11 @@ const ScaledContainer = React.memo(props => {
                 : false) ||
               (state.stop && state.side === "Sell"
                 ? state.stop < state.start && state.stop < state.end
-                : false)
+                : false) ||
+              state.quantity > 20e6
             }
           >
-            Submit{orderLoading && <SpinnerComponent />}
+            Submit
           </Button>
         </Grid>
       </Grid>

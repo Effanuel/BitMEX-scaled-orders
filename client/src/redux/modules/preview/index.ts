@@ -6,11 +6,11 @@ import {
   SWITCH_PREVIEW,
   BALANCE_SUCCESS,
   PreviewActionTypes,
-  PreviewState
+  PreviewState,
 } from "./types";
 
 import axios from "axios";
-import { orderBulk, market_order } from "../../../util";
+import { order, orderBulk, marketOrder } from "util/index";
 import { Thunk } from "../../models/state";
 
 const initialState = {
@@ -19,7 +19,6 @@ const initialState = {
   error: "",
   showPreview: false,
   loading: false,
-  message: ""
 };
 // Reducer
 export const previewReducer = (
@@ -28,20 +27,23 @@ export const previewReducer = (
 ): PreviewState => {
   switch (action.type) {
     case ORDER_LOADING:
-      return { ...state, error: "", loading: true, message: "" };
+      return {
+        ...state,
+        error: "",
+        loading: true,
+      };
     case ORDER_SUCCESS:
       return {
         ...state,
         showPreview: false,
-        message: action.payload,
         error: "",
         orders: [],
-        loading: false
+        loading: false,
       };
     case BALANCE_SUCCESS:
       return {
         ...state,
-        balance: action.payload
+        balance: action.payload,
       };
     case ORDER_ERROR:
       return {
@@ -49,20 +51,20 @@ export const previewReducer = (
         showPreview: false,
         orders: [],
         error: action.payload,
-        loading: false
+        loading: false,
       };
     case SHOW_PREVIEW:
       return {
         ...state,
         orders: action.payload,
         showPreview: true,
-        error: ""
+        error: "",
       };
     case SWITCH_PREVIEW:
       return {
         ...state,
         showPreview: !state.showPreview,
-        error: ""
+        error: "",
       };
     default:
       return state;
@@ -77,7 +79,7 @@ export const previewReducer = (
  * @param {Object} payload order details
  * @returns {Object} success response(dispatch action)
  */
-export const postOrder = (payload: any): Thunk => async dispatch => {
+export const scaledOrders = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(postOrderLoading());
     let orders = orderBulk(payload);
@@ -87,15 +89,15 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
     }
     console.log("order");
 
-    const response = await axios.post("/bitmex/postOrder", orders);
+    const response = await axios.post("/bitmex/bulkOrders", orders);
     const { success } = response.data;
+    console.log("SCALED ORDERS>>>", response);
+    //success, text, orderID, price
     dispatch(postOrderSuccess({ success, from: "Scaled_orders" }));
   } catch (err) {
-    if (err.message.includes("500")) {
-      dispatch(postOrderError("Server is offline."));
-    } else {
-      dispatch(postOrderError(err.response.data.error));
-    }
+    err.message.includes("500")
+      ? dispatch(postOrderError("Server is offline."))
+      : dispatch(postOrderError(err.response.data.error));
   }
 };
 
@@ -103,31 +105,35 @@ export const postOrder = (payload: any): Thunk => async dispatch => {
  * [Get Balance] action creator
  * @returns {Object} success response(dispatch action)
  */
-export const getBalance = (): Thunk => async dispatch => {
+export const getBalance = (): Thunk => async (dispatch) => {
   try {
     const response = await axios.post("/bitmex/getBalance");
     const { data } = response.data;
     const { walletBalance } = JSON.parse(data);
     dispatch(getBalanceSuccess(walletBalance));
   } catch (err) {
-    // console.log(response.data);
-    if (err.message.includes("500")) {
-      dispatch(postOrderError("Server is offline."));
-    } else {
-      dispatch(postOrderError(err.response.data.error));
-    }
+    err.message.includes("500")
+      ? dispatch(postOrderError("Server is offline."))
+      : dispatch(postOrderError(err.response.data.error));
   }
 };
 
-export const marketOrder = (payload: any): Thunk => async dispatch => {
+export const marketOrder = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(postOrderLoading());
-    const order = market_order(payload);
+    const order = marketOrder(payload);
 
-    const response = await axios.post("/bitmex/marketOrder", order);
-    const { success } = response.data;
-    dispatch(postOrderSuccess({ success, from: "Market_order" }));
-  } catch (err) {}
+    const response = await axios.post("/bitmex/order", order);
+    const { data, success } = response.data;
+    const { text } = JSON.parse(data);
+
+    dispatch(postOrderSuccess({ success, text, from: "MarketOrder" }));
+  } catch (err) {
+    console.log(err, err.message, "MARKET ERROR");
+    err.message.includes("500")
+      ? dispatch(postOrderError("Server is offline."))
+      : dispatch(postOrderError(err.response.data.error));
+  }
 };
 
 /**
@@ -139,29 +145,29 @@ export const previewOrders = (payload: any): PreviewActionTypes => {
   const orders = orderBulk(payload);
   return {
     type: SHOW_PREVIEW,
-    payload: orders
+    payload: orders,
   };
 };
 
 export const getBalanceSuccess = (payload: number): PreviewActionTypes => ({
   type: BALANCE_SUCCESS,
-  payload
+  payload,
 });
 
 const postOrderLoading = (): PreviewActionTypes => ({
-  type: ORDER_LOADING
+  type: ORDER_LOADING,
 });
 
-const postOrderSuccess = ({ success, from }: any): PreviewActionTypes => ({
+const postOrderSuccess = (payload: any): PreviewActionTypes => ({
   type: ORDER_SUCCESS,
-  payload: success === 200 ? `Success: <${from}>` : "Message"
+  payload,
 });
 
 const postOrderError = (payload: any): PreviewActionTypes => ({
   type: ORDER_ERROR,
-  payload
+  payload: payload || "error",
 });
 
 export const previewClose = (): PreviewActionTypes => ({
-  type: SWITCH_PREVIEW
+  type: SWITCH_PREVIEW,
 });

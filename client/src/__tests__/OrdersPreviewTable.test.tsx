@@ -5,7 +5,7 @@ import { store } from "../redux/store";
 // import configureStore from "redux-mock-store";
 import OrdersPreviewTable from "../components/OrdersPreviewTable";
 
-import { previewOrders } from "../redux/modules/preview/preview";
+import { previewOrders } from "../redux/modules/preview";
 
 const stop = {
   execInst: "LastPrice,ReduceOnly",
