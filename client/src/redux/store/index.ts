@@ -1,10 +1,13 @@
 import { combineReducers, createStore, applyMiddleware, compose } from "redux";
 // Reducers
-import { previewReducer } from "../modules/preview/preview";
-import { websocketReducer } from "../modules/websocket/websocket";
+import { previewReducer as preview } from "../modules/preview";
+import { websocketReducer as websocket } from "../modules/websocket";
+import { best_priceReducer as best_price } from "../modules/best_price";
+import { notifyReducer as notify } from "../modules/notify";
 // Middleware
 import thunk from "redux-thunk";
 import reduxWebsocket from "@giantmachines/redux-websocket";
+import notificationMiddleware from "../middlewares/notification";
 // State
 import { AppState } from "../models/state";
 
@@ -16,11 +19,14 @@ const composeEnhancers =
 const initialState = {};
 // Adding thunk for async dispatch of actions
 // Adding reduxWebsocketMiddleware for subscribing to a websocket
-const middleware = [thunk, reduxWebsocketMiddleware];
+// Adding notificationMiddleware for handling messages for snackbar
+const middleware = [thunk, reduxWebsocketMiddleware, notificationMiddleware];
 
 const rootReducer = combineReducers<AppState>({
-  preview: previewReducer,
-  websocket: websocketReducer
+  preview,
+  websocket,
+  best_price,
+  notify
 });
 
 const store = createStore(

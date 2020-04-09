@@ -9,6 +9,8 @@ import {
   WEBSOCKET_ERROR
 } from "@giantmachines/redux-websocket";
 // Actions
+export const FETCH_ORDERS = "websocket/fetch_orders";
+
 const WEBSOCKET_PREFIX: string = "REDUX_WEBSOCKET";
 export const REDUX_WEBSOCKET_BROKEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_BROKEN}`;
 export const REDUX_WEBSOCKET_OPEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_OPEN}`;
@@ -19,16 +21,21 @@ export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISC
 export const REDUX_WEBSOCKET_SEND = `${WEBSOCKET_PREFIX}::${WEBSOCKET_SEND}`;
 export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
 export const REDUX_WEBSOCKET_TICKER = "REDUX_WEBSOCKET_TICKER"; // :string fixes internal action error
-export const INTERNAL_CLEAR_MESSAGE_LOG = "INTERNAL::CLEAR_MESSAGE_LOG";
+// export const INTERNAL_CLEAR_MESSAGE_LOG = "INTERNAL::CLEAR_MESSAGE_LOG";
 // Actions Types
+interface ReduxWebsocketFetchOrders {
+  type: typeof FETCH_ORDERS;
+  payload: any;
+}
+
 interface WebsocketTickerChange {
   type: typeof REDUX_WEBSOCKET_TICKER;
   payload: any;
 }
-interface InternalClearMessageLog {
-  type: typeof INTERNAL_CLEAR_MESSAGE_LOG;
-  payload: any;
-}
+// interface InternalClearMessageLog {
+//   type: typeof INTERNAL_CLEAR_MESSAGE_LOG;
+//   payload: any;
+// }
 interface ReduxWebsocketConnect {
   type: typeof REDUX_WEBSOCKET_CONNECT;
   payload: any;
@@ -59,6 +66,7 @@ interface ReduxWebsocketMessage {
 }
 
 export type WebsocketActionTypes =
+  | ReduxWebsocketFetchOrders
   | WebsocketTickerChange
   | ReduxWebsocketConnect
   | ReduxWebsocketOpen
@@ -66,8 +74,8 @@ export type WebsocketActionTypes =
   | ReduxtWebsocketClosed
   | ReduxWebsocketError
   | ReduxWebsocketSend
-  | ReduxWebsocketMessage
-  | InternalClearMessageLog;
+  | ReduxWebsocketMessage;
+// | InternalClearMessageLog;
 // State
 export interface WebsocketState {
   __keys?: any;

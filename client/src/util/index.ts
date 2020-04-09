@@ -1,3 +1,11 @@
+import { orderType } from "./BitMEX-types";
+
+const INSTRUMENT_PARAMS: any = {
+  XBTUSD: { decimal_rounding: 3, ticksize: 2 },
+  ETHUSD: { decimal_rounding: 3, ticksize: 20 },
+  XRPUSD: { decimal_rounding: 4, ticksize: 10000 },
+};
+
 /**
  * Setting one of the distributions
  */
@@ -9,7 +17,7 @@ export const orderBulk = ({
   side,
   stop,
   distribution,
-  symbol // : XBTUSD, ETHUSD...
+  symbol, // : XBTUSD, ETHUSD...
 }: Props): ordersProps => {
   switch (distribution) {
     case "Positive":
@@ -58,73 +66,75 @@ const skewedDistribution = (
   isUniform: boolean = false
 ): ordersProps => {
   const { quantity, n_tp, start, end, side, symbol, stop } = Props;
+  const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
 
-  const decimal_rounding: any = {
-    XBTUSD: 3,
-    ETHUSD: 3,
-    XRPUSD: 4
-  };
   //Determening spread of the ticker
   //Appropriate rounding, else the order is going to get rejected
   const start_ = roundHalf(start, symbol);
   const end_ = roundHalf(end, symbol);
 
-  const arr = [];
+  const probability_distribution: number[] = [];
   // Handling whether the distribution is skewed or not\
   // This part can be written simpler by substituting gaussian
   // middle parameter.
   if (!isUniform) {
     const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
     for (let i = 0; i < n_tp; i++) {
-      arr.push(gaussian(mean, START_CFG + i * incrementQty, 1)); //mean == 0
+      probability_distribution.push(
+        gaussian(mean, START_CFG + i * incrementQty, 1)
+      ); //mean == 0
     }
   } else {
     //If its uniform distribution,
     //fill array with a random number.
-    arr.push(...Array(n_tp).fill(1));
+    probability_distribution.push(...Array(n_tp).fill(1));
   }
 
-  const summ = arr.reduce((a: number, b: number) => a + b, 0);
+  const total_probability = probability_distribution.reduce(
+    (total: number, number: number) => total + number,
+    0
+  );
   // How much to increment the price of every order
-  const increment = roundHalf((end_ - start_) / (n_tp - 1), symbol);
-  let orders: any = { orders: [], stop: {} };
+  const incrPrice = roundHalf((end_ - start_) / (n_tp - 1), symbol);
+
+  let totalOrders: totalOrdersType = { orders: [], stop: {} };
 
   // Pushing orders to main array
   for (let i = 0; i < n_tp; i++) {
     //ROUND
-    orders.orders.push({
+    totalOrders.orders.push({
       symbol: symbol,
       side: side,
-      orderQty: Math.floor((arr[i] / summ) * quantity),
-      price: parseFloat(
-        (start_ + i * increment).toFixed(decimal_rounding[symbol])
+      orderQty: Math.floor(
+        (probability_distribution[i] / total_probability) * quantity
       ),
+      price: parseFloat((start_ + i * incrPrice).toFixed(decimal_rounding)),
       ordType: "Limit",
       execInst: "ParticipateDoNotInitiate",
-      text: `order_${i + 1}`
+      text: `order_${i + 1}`,
     });
   }
   // Add stop loss order
   if (stop && stop !== "") {
     const __stop = stopLoss(quantity, stop, symbol, side);
-    orders.stop = __stop;
+    totalOrders.stop = __stop;
   }
   // Price never goes above "Range end"
-  if (orders.orders[orders.orders.length - 1].price > end) {
-    orders.orders[orders.orders.length - 1].price = end;
+  if (totalOrders.orders[totalOrders.orders.length - 1].price > end) {
+    totalOrders.orders[totalOrders.orders.length - 1].price = end;
   }
-  const total_quantity = orders.orders.reduce(
-    (total: number, n: any): number => total + n.orderQty,
+  const total_quantity = totalOrders.orders.reduce(
+    (total: number, order: order): number => total + order.orderQty,
     0
   );
   // Quantity always stays the same
   if (total_quantity < quantity) {
-    orders.orders[orders.orders.length - 1].orderQty =
-      orders.orders[orders.orders.length - 1].orderQty +
+    totalOrders.orders[totalOrders.orders.length - 1].orderQty =
+      totalOrders.orders[totalOrders.orders.length - 1].orderQty +
       quantity -
       total_quantity;
   }
-  return orders;
+  return totalOrders;
 };
 
 const stopLoss = (
@@ -133,26 +143,73 @@ const stopLoss = (
   symbol: any, // : XBTUSD, ETHUSD...
   side: any,
   text_index = 1
-) => {
+): stopLoss => {
+  const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
   const price = roundHalf(stop, symbol);
   const stop_side = side === "Buy" ? "Sell" : "Buy";
+
   return {
     symbol: symbol,
     side: stop_side,
     orderQty: quantity,
-    stopPx: parseFloat(price.toFixed(3)),
+    stopPx: parseFloat(price.toFixed(decimal_rounding)),
     ordType: "Stop",
     execInst: "LastPrice,ReduceOnly",
-    text: `stop_${text_index}`
+    text: `stop_${text_index}`,
   };
 };
 
-export const market_order = ({ symbol, quantity, side }: any) => {
+interface markets {
+  symbol: string;
+  quantity: any;
+  side: any;
+}
+export const marketOrder = ({
+  symbol,
+  quantity,
+  side,
+}: markets): marketOrder => {
   return {
     symbol: symbol,
     orderQty: quantity,
     side: side,
-    ordType: "Market"
+    ordType: "Market",
+  };
+};
+
+// interface markets {
+//   symbol: string;
+//   quantity: any;
+//   side: any;
+// }
+// type marketOrderType = (arg0: markets) => marketOrder;
+// export const marketOrder: marketOrderType = ({ symbol, quantity, side }) => {
+//   return {
+//     symbol: symbol,
+//     orderQty: quantity,
+//     side: side,
+//     ordType: "Market",
+//   };
+// };
+
+export const order = ({
+  symbol,
+  price,
+  quantity,
+  side,
+  ordType,
+  text_index = 0,
+  text_prefix = "order",
+}: any): order => {
+  console.log("call order");
+  return {
+    symbol: symbol,
+    price: price,
+    orderQty: quantity,
+    side: side,
+    ordType: ordType,
+    text: `${text_prefix}_${text_index}`,
+    execInst: "ParticipateDoNotInitiate",
   };
 };
 
@@ -165,13 +222,8 @@ export const market_order = ({ symbol, quantity, side }: any) => {
  */
 const roundHalf = (number: number, symbol: string): number => {
   // Ticksize - 1 divided by this number
-  const increment: any = {
-    XBTUSD: 2, // 0.5
-    ETHUSD: 20, // 0.05
-    XRPUSD: 10000 // 0.0001
-  };
-  const inc = increment[symbol];
-  return Math.round(number * inc) / inc;
+  const { ticksize } = INSTRUMENT_PARAMS[symbol];
+  return Math.round(number * ticksize) / ticksize;
 };
 
 /**
@@ -206,3 +258,21 @@ interface StopProps {
 }
 
 type ordersProps = { orders: object[]; stop: object };
+//===
+type marketOrder = Pick<orderType, "symbol" | "orderQty" | "side" | "ordType">;
+type order = Pick<
+  orderType,
+  "symbol" | "price" | "orderQty" | "side" | "ordType" | "text" | "execInst"
+>;
+type stopLoss = Pick<
+  orderType,
+  "symbol" | "side" | "orderQty" | "stopPx" | "ordType" | "execInst" | "text"
+>;
+interface totalOrdersType {
+  orders: order[];
+  stop: Partial<stopLoss>;
+}
+//===
+export const BitMEX_ws_send = () => {
+  return;
+};

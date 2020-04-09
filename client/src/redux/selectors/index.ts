@@ -6,14 +6,38 @@ const getOrders = (state: AppState) => state.preview.orders;
 const getOrderLoading = (state: AppState) => state.preview.loading;
 const getOrderError = (state: AppState) => state.preview.error;
 const getBalance = (state: AppState) => state.preview.balance;
-const getMessage = (state: AppState) => state.preview.message;
+// const getMessage = (state: AppState) => state.preview.message; // this is object
 // WEBSOCKET ACTIONS
 const getWsSymbol = (state: AppState) => state.websocket.symbol;
 const table_instrument = (state: AppState) => state.websocket.instrument;
-// const table_order = (state: AppState) => state.websocket.order;
+const table_order = (state: AppState) => state.websocket.order;
 const websocketLoading = (state: AppState) => state.websocket.loading;
 const websocketMessage = (state: AppState) => state.websocket.message;
 const websocketConnected = (state: AppState) => state.websocket.connected;
+// BEST_PRICE ACTIONS
+const getBestOrderStatus = (state: AppState) => state.best_price.status;
+const getbestOrderID = (state: AppState) => state.best_price.bestOrderID;
+
+export const bestOrderStatusSelector = createSelector(
+  [table_order, getbestOrderID],
+  (open_orders, bestOrderID) => {
+    console.log("CALL ORDER STATUS");
+    for (let order in open_orders) {
+      console.log(open_orders[order]?.orderID, bestOrderID);
+      if (open_orders[order]?.orderID === bestOrderID) {
+        console.log(open_orders[order].ordStatus, "STATATATAATUS");
+        return open_orders[order].ordStatus;
+      }
+    }
+    return "Order not placed.";
+  }
+);
+
+export const bestOrderStatus = createSelector(
+  [getBestOrderStatus],
+  (status) => status
+);
+
 //==============================================
 // For later versions :)
 // export const websocketOrder = createSelector([table_order], orders => {
@@ -28,12 +52,23 @@ const websocketConnected = (state: AppState) => state.websocket.connected;
  * @param {string} symbol
  * @returns {number} ask price
  */
+// export const websocketCurrentPrice = createSelector(
+//   [table_instrument, getWsSymbol],
+//   (data, symbol): any => {
+//     for (let i = 0; i < Object.keys(data).length; i++) {
+//       if (data[i].symbol === symbol && data[i].askPrice) {
+//         return data[i].askPrice;
+//       }
+//     }
+//     return "Loading...";
+//   }
+// );
 export const websocketCurrentPrice = createSelector(
   [table_instrument, getWsSymbol],
   (data, symbol): any => {
-    for (let i = 0; i < Object.keys(data).length; i++) {
+    for (let i in data) {
       if (data[i].symbol === symbol && data[i].askPrice) {
-        return `$${data[i].askPrice}`;
+        return data[i].askPrice;
       }
     }
     return "Loading...";
@@ -126,38 +161,44 @@ export const ordersRiskPercSelector = createSelector(
 //WEBSOCKET SELECTORS
 export const websocketLoadingSelector = createSelector(
   [websocketLoading],
-  loading => loading
+  (loading) => loading
 );
 export const websocketConnectedSelector = createSelector(
   [websocketConnected],
-  connected => connected
+  (connected) => connected
 );
 export const wsLoadingSelector = createSelector(
   [websocketLoading],
-  loading => loading
+  (loading) => loading
 );
 export const messageSelector = createSelector(
   [websocketMessage],
-  message => message
+  (message) => message
 );
 
 // PREVIEW SELECTORS
-export const ordersSelector = createSelector([getOrders], orders => orders);
+export const ordersSelector = createSelector([getOrders], (orders) => orders);
 
 export const orderErrorSelector = createSelector(
   [getOrderError],
-  error => error
+  (error) => error
 );
 export const orderLoadingSelector = createSelector(
   [getOrderLoading],
-  loading => loading
+  (loading) => loading
 );
 export const showPreviewSelector = createSelector(
   [getShowPreview],
-  showPreview => showPreview
+  (showPreview) => showPreview
 );
 
-export const previewMessageSelector = createSelector(
-  [getMessage],
-  message => message
-);
+// export const previewMessageSelector = createSelector([getMessage], message => {
+//   if (message && message.from) {
+//     return message.from;
+//   }
+//   return "";
+// });
+
+// export const orderSubmitMessage = createSelector([getMessage], message => {
+//   return message;
+// });

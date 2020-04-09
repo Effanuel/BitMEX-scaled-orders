@@ -5,10 +5,10 @@ import { logger } from "../util/logger";
 /**
  * Bulk order POST request to the exchange API
  */
-export const postOrder = async (req: Request, res: Response, next: any) => {
+export const post_bulkOrders = async (req: Request, res: Response) => {
   try {
     const response = await _curl_bitmex("order/bulk", "POST", req.body);
-    logger.info("Successful POST request (postOrder)");
+    logger.info("Successful POST request (post_bulkOrders)");
     return res.send({ success: res.statusCode });
   } catch (error) {
     return res.status(400).send({ error: error });
@@ -18,7 +18,7 @@ export const postOrder = async (req: Request, res: Response, next: any) => {
 /**
  * Balance GET request to the exchange API
  */
-export const getBalance = async (req: Request, res: Response, next: any) => {
+export const getBalance = async (req: Request, res: Response) => {
   try {
     const response = await _curl_bitmex("user/margin", "GET");
     logger.info("Successful GET request (getBalance)");
@@ -29,63 +29,31 @@ export const getBalance = async (req: Request, res: Response, next: any) => {
 };
 
 /**
- * Market order POST request to the exchange API
+ * Balance GET request to the exchange API
  */
-export const marketOrder = async (req: Request, res: Response, next: any) => {
+export const getOrders = async (req: Request, res: Response) => {
   try {
-    const response = await _curl_bitmex("order", "POST", req.body);
-    logger.info("Successful POST request (marketOrder)");
-    return res.send({ success: res.statusCode });
+    const response = await _curl_bitmex("order", "GET", {
+      //only open orders
+      filter: { open: true }
+    });
+    logger.info("Successful GET request (getOrders)");
+    return res.send({ data: response });
   } catch (error) {
     return res.status(400).send({ error: error });
   }
 };
 
-// exports.getInstruments = async (req, res, next) => {
-// try {
-//   // const response = await Promise.all([
-//   //   exchange.fetchTicker('BTC/USD'),
-//   //   exchange.fetchTicker('ETH/USD')
-//   // ]);
-//   const response2 = await exchange.fetchTicker('BTC/USD');
-
-//   const instrumentsArray = [response2].map(obj => {
-//     return obj.info.symbol;
-//   });
-//   return res.send({ instruments: instrumentsArray });
-// } catch (e) {
-//   if (e instanceof ccxt.NetworkError) {
-//     console.log(
-//       exchange.id,
-//       'fetchTicker failed due to a network error:',
-//       e.message
-//     );
-//   } else if (e instanceof ccxt.ExchangeError) {
-//     console.log(
-//       exchange.id,
-//       'fetchTicker failed due to exchange error:',
-//       e.message
-//     );
-//   } else {
-//     console.log(exchange.id, 'fetchTicker failed with:', e.message);
-//   }
-//   // if (JSON.parse(response).error) {
-//   //   return res.send({ errorMessage: JSON.parse(body).error.message });
-//   // }
-// }
-
-//   const requestOptions = putResponse({}, '/api/v1/instrument/active', 'GET');
-//   request(requestOptions, (error, response, body) => {
-//     if (error) {
-//       return res.send({ errorMessage: error });
-//     }
-//     if (JSON.parse(body).error) {
-//       return res.send({ errorMessage: JSON.parse(body).error.message });
-//     }
-//     const instrumentsArray = JSON.parse(body).map(obj => {
-//       return obj.symbol;
-//     });
-//     // console.log(JSON.parse(body), "body");
-//     return res.send({ instruments: instrumentsArray });
-//   });
-// };
+/**
+ * POST request to the exchange API
+ */
+export const post_order = async (req: Request, res: Response, next: any) => {
+  try {
+    console.log("ORDER POST");
+    const response = await _curl_bitmex("order", "POST", req.body);
+    logger.info("Successful POST request (post_order)");
+    return res.send({ success: res.statusCode, data: response });
+  } catch (error) {
+    return res.status(400).send({ error: error });
+  }
+};
