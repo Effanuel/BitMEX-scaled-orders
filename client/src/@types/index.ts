@@ -1,16 +1,4 @@
-export type PickEventScaled = Pick<AppComponentState, keyof AppComponentState>;
-
-export type AppComponentState = {
-  quantity?: any;
-  n_tp?: any;
-  start?: any;
-  end?: any;
-  stop?: any;
-  distribution?: any;
-  side?: any;
-  symbol?: any;
-  [key: string]: number | string;
-};
+// export type PickEventScaled = Pick<State, keyof State>;
 
 export type Comp = {
   quantity: any;

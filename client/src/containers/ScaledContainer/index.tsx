@@ -6,20 +6,20 @@ import {
   orderLoadingSelector,
   orderErrorSelector,
   // websocketOrder,
-  websocketLoadingSelector
+  websocketLoadingSelector,
 } from "redux/selectors";
 
 import {
   previewOrders,
   previewClose,
   getBalance,
-  scaledOrders
+  scaledOrders,
 } from "redux/modules/preview";
 
 import {
   wsConnect,
   wsDisconnect,
-  wsTickerChange
+  wsTickerChange,
 } from "redux/modules/websocket";
 // COMPONENTS
 import {
@@ -29,7 +29,7 @@ import {
   // OrdersPreviewTable,
   MainContainer,
   SVGIcon,
-  Button
+  Button,
 } from "components";
 
 import { Grid, RadioGroup } from "@material-ui/core";
@@ -37,11 +37,26 @@ import ICONS from "components/SVGIcon/icons";
 
 // UTILS
 import { AppState } from "redux/models/state";
-import { AppComponentState } from "@types";
 // STYLES
 import styles from "./styles.module.css";
 
-const initialState = Object.freeze({
+interface State {
+  quantity: any;
+  n_tp: any;
+  start: any;
+  end: any;
+  stop: any;
+  distribution: any;
+  side: any;
+  symbol: any;
+  [key: string]: number | string;
+}
+
+interface Props {
+  wsCurrentPrice: any;
+}
+
+const initialState: Readonly<State> = {
   quantity: "",
   n_tp: "",
   start: "",
@@ -49,33 +64,34 @@ const initialState = Object.freeze({
   stop: "",
   distribution: "Uniform",
   side: "Sell",
-  symbol: "XBTUSD"
-});
+  symbol: "XBTUSD",
+};
 
-const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
+const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
   const dispatch = useDispatch();
   const { loading, orderLoading, message, orderError } = useSelector(
     (state: AppState) => ({
       loading: websocketLoadingSelector(state),
       orderLoading: orderLoadingSelector(state),
       message: messageSelector(state),
-      orderError: orderErrorSelector(state)
+      orderError: orderErrorSelector(state),
     }),
     shallowEqual
   );
 
-  const [state, setState] = useState<AppComponentState>(initialState);
+  const [state, setState] = useState(initialState);
   const [cache, setCache] = useState(true);
-  useEffect(() => {
-    // Subscribe to Websocket
-    dispatch(wsConnect());
-    // Fetch balance so we can calculate risk later
-    dispatch(getBalance());
-    return () => {
-      // Unsubscribe from Websocket
-      dispatch(wsDisconnect());
-    };
-  }, [dispatch]);
+
+  // useEffect(() => {
+  //   // Subscribe to Websocket
+  //   dispatch(wsConnect());
+  //   // Fetch balance so we can calculate risk later
+  //   dispatch(getBalance());
+  //   return () => {
+  //     // Unsubscribe from Websocket
+  //     dispatch(wsDisconnect());
+  //   };
+  // }, [dispatch]);
 
   //======================================================
   //
@@ -85,26 +101,25 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
     setCache(false);
   }
 
-  function handleOnChange(event: React.ChangeEvent<HTMLInputElement>): void {
+  function onChangeDropdown(event: React.ChangeEvent<HTMLInputElement>): void {
     const { value, id } = event.target;
     dispatch(wsTickerChange(value));
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       [id]: value,
       start: "",
       end: "",
-      stop: ""
+      stop: "",
     }));
     //
     //
     handleCache();
   }
 
-  function handleOnChangeNumber(
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void {
-    const { id, value } = event.target;
-    setState(prevState => ({ ...prevState, [id]: parseFloat(value) }));
+  function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    const { id, value, tagName } = event.target;
+    const updated = tagName == "INPUT" ? +value : value;
+    setState((prevState) => ({ ...prevState, [id]: updated }));
     //
     //
     handleCache();
@@ -115,14 +130,6 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
     dispatch(scaledOrders(state));
     //
     // instead of this, input fields could be cleared
-    handleCache();
-  }
-
-  function onRadioChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    const { name, value } = event.target;
-    setState(prevState => ({ ...prevState, [name]: value }));
-    //
-    //
     handleCache();
   }
 
@@ -142,7 +149,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
           <SelectDropdown
             instruments={["XBTUSD", "ETHUSD", "XRPUSD"]}
             id="symbol"
-            onChange={handleOnChange}
+            onChange={onChangeDropdown}
             label="Instrument"
           />
         </Grid>
@@ -151,7 +158,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
             aria-label="position"
             name="side"
             value={state.side}
-            onChange={onRadioChange}
+            onChange={onChange}
           >
             <CustomRadioButton
               id="scaled_side_sell"
@@ -171,7 +178,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
         </Grid>
         <Grid item xs={3}>
           <InputField
-            onChange={handleOnChangeNumber}
+            onChange={onChange}
             value={state.stop}
             label="Stop-Loss"
             id="stop"
@@ -183,7 +190,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
 
         <Grid item xs={3}>
           <InputField
-            onChange={handleOnChangeNumber}
+            onChange={onChange}
             value={state.quantity}
             label="Quantity"
             id="quantity"
@@ -192,7 +199,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
         </Grid>
         <Grid item xs={3}>
           <InputField
-            onChange={handleOnChangeNumber}
+            onChange={onChange}
             value={state.n_tp}
             label="Order count"
             id="n_tp"
@@ -201,7 +208,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
         </Grid>
         <Grid item xs={3}>
           <InputField
-            onChange={handleOnChangeNumber}
+            onChange={onChange}
             value={state.start}
             label="Range start"
             id="start"
@@ -210,7 +217,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
         </Grid>
         <Grid item xs={3}>
           <InputField
-            onChange={handleOnChangeNumber}
+            onChange={onChange}
             value={state.end}
             label="Range end"
             id="end"
@@ -223,7 +230,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: any) => {
             aria-label="Distribution"
             name="distribution"
             value={state.distribution}
-            onChange={onRadioChange}
+            onChange={onChange}
             row
           >
             <CustomRadioButton

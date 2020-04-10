@@ -1,10 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // REDUX
 import { marketOrder } from "redux/modules/preview";
-import {
-  wsSubscribeTo_order,
-  wsUnsubscribeFrom,
-} from "redux/modules/websocket";
+import { wsSubscribeTo, wsUnsubscribeFrom } from "redux/modules/websocket";
 import { post_bestOrder, __clearBestOrder } from "redux/modules/best_price";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { bestOrderStatus, bestOrderStatusSelector } from "redux/selectors";
@@ -16,13 +13,18 @@ import styles from "./styles.module.css";
 
 export interface Props {}
 
-const initialState = Object.freeze({
+interface State {
+  symbol: string;
+  quantity: any;
+}
+
+const initialState: Readonly<State> = {
   symbol: "XBTUSD",
   quantity: 50,
-});
+};
 
 function MarketOrderContainer({ wsCurrentPrice }: any) {
-  const [state, setState] = React.useState(initialState);
+  const [state, setState] = useState(initialState);
   // REDUX
   const dispatch = useDispatch();
   const { status, best_order_status } = useSelector(
@@ -64,19 +66,19 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
     // subscribe to /order/
     if (status === "Order placed.") {
       console.log("call sub to order");
-      dispatch(wsSubscribeTo_order());
+      dispatch(wsSubscribeTo("order"));
     }
   }, [dispatch, status]);
 
   function submitBestOrder(event: any) {
     // dispatch(marketOrder({ ...state, side: event.target.id }));
     // ({ symbol, price, quantity, side, ordType, text_index=0 }: any)
-    const { id } = event.target;
+    const { id: side } = event.target;
     dispatch(
       post_bestOrder({
         ...state,
         price: wsCurrentPrice,
-        side: id,
+        side,
         ordType: "Limit",
         text_prefix: "best_order",
       })
@@ -88,18 +90,13 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
     dispatch(marketOrder({ ...state, side: id }));
   }
 
-  function onChangeNumber(event: React.ChangeEvent<HTMLInputElement>): void {
-    const { id, value } = event.target;
-    // Handles uncontrolled number input to be controlled if its empty
-    setState((prevState) => ({ ...prevState, [id]: +value }));
-  }
   function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    const { value, id } = event.target;
-    setState((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }));
+    const { id, value, tagName } = event.target;
+    const updated = tagName === "INPUT" ? +value : value;
+    // Handles uncontrolled number input to be controlled if its empty
+    setState((prevState) => ({ ...prevState, [id]: updated }));
   }
+
   return (
     <MainContainer label="MarkerOrder">
       <Grid container spacing={2} justify="center" alignItems="center">
@@ -113,7 +110,7 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
         </Grid>
         <Grid item xs={3}>
           <InputField
-            onChange={onChangeNumber}
+            onChange={onChange}
             value={state.quantity}
             label="Quantity"
             id="quantity"
@@ -136,9 +133,7 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
             variant="custom"
             className={styles.button_sell}
             onClick={submitMarketOrder}
-            disabled={
-              !state.quantity || !wsCurrentPrice || state.quantity > 20e6
-            }
+            disabled={!state.quantity || state.quantity > 20e6}
           >
             MARKET Sell
           </Button>
@@ -174,7 +169,6 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
             onClick={submitBestOrder}
             disabled={
               !state.quantity ||
-              !wsCurrentPrice ||
               state.quantity > 20e6 ||
               best_order_status === "New" ||
               !wsCurrentPrice

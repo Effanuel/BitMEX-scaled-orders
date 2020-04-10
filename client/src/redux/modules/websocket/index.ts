@@ -1,4 +1,7 @@
 import {
+  WebsocketResponse,
+  WebsocketActionTypes,
+  WebsocketState,
   FETCH_ORDERS,
   REDUX_WEBSOCKET_BROKEN,
   REDUX_WEBSOCKET_CLOSED,
@@ -8,8 +11,6 @@ import {
   REDUX_WEBSOCKET_SEND,
   REDUX_WEBSOCKET_ERROR,
   REDUX_WEBSOCKET_TICKER,
-  WebsocketActionTypes,
-  WebsocketState,
 } from "./types";
 import axios from "axios";
 import { connect, disconnect, send } from "@giantmachines/redux-websocket";
@@ -81,24 +82,26 @@ const reduxWeboscketMessage = (
   state: any = initialState,
   { payload }: any
 ): any => {
-  let dat = JSON.parse(payload.message);
-  console.log("REduxWebsocket message", dat);
+  let response: WebsocketResponse = JSON.parse(payload.message);
+  console.log("REduxWebsocket message", response);
 
-  const messageKeys = Object.keys(dat);
-  const table: string = messageKeys.includes("table") ? dat["table"] : null;
-  const _action = messageKeys.includes("action") ? dat["action"] : null;
+  const responseKeys = Object.keys(response);
+  const table: string = responseKeys.includes("table")
+    ? response["table"]
+    : null;
+  const ws_action = responseKeys.includes("action") ? response["action"] : null;
 
-  if (messageKeys.includes("subscribe")) {
-    const message = dat["success"]
+  if (responseKeys.includes("subscribe")) {
+    const message = response["success"]
       ? "Successful subscription."
       : "Error while subscribing...";
     return { ...state, message };
-  } else if (messageKeys.includes("status")) {
+  } else if (responseKeys.includes("status")) {
     return {
       ...state,
-      message: `Websocket. Status: ${dat["status"] || "Error"}`,
+      message: `Websocket. Status: ${response["status"] || "Error"}`,
     };
-  } else if (_action) {
+  } else if (ws_action) {
     const tempState = {
       ...state,
       [table]: {
@@ -106,13 +109,13 @@ const reduxWeboscketMessage = (
       },
     };
     // todo replace with switch case
-    if (_action === "partial") {
+    if (ws_action === "partial") {
       const current_len = Object.keys(tempState[table]).length;
-      const data_len = dat["data"].length;
+      const data_len = response["data"].length;
       for (let i = current_len; i < current_len + data_len; ++i) {
         tempState[table][i] = {
           ...tempState[table][i],
-          ...dat["data"][i],
+          ...response["data"][i],
         };
       }
       // console.log(dat, "PARTIAL");
@@ -125,31 +128,31 @@ const reduxWeboscketMessage = (
       // }
       tempState.__keys = {
         ...tempState.__keys,
-        [table]: dat["keys"],
+        [table]: response["keys"],
       };
-    } else if (_action === "insert") {
+    } else if (ws_action === "insert") {
       const current_len = Object.keys(tempState[table]).length;
-      const data_len = dat["data"].length;
+      const data_len = response["data"].length;
       for (let i = current_len; i < current_len + data_len; ++i) {
         tempState[table][i] = {
           ...tempState[table][i],
-          ...dat["data"][i],
+          ...response["data"][i],
         };
       }
-    } else if (_action === "update") {
+    } else if (ws_action === "update") {
       let item = 0;
       // console.log(dat);
-      for (let key_val in dat["data"]) {
+      for (let key_val in response["data"]) {
         // Finds an item which needs to be updated.
         item = findItemByKeys(
           state.__keys[table], //datta.__keys[table],
           state[table], //datta[table],
-          dat["data"][key_val]
+          response["data"][key_val]
         );
         if (item === -1) continue;
         tempState[table][item] = {
           ...tempState[table][item],
-          ...dat["data"][key_val],
+          ...response["data"][key_val],
         };
         // for future order chasing
         if (table === "order" && tempState[table][item]["leavesQty"] <= 0) {
@@ -160,8 +163,8 @@ const reduxWeboscketMessage = (
     }
     return tempState;
     // console.log(item);
-  } else if (messageKeys.includes("unsubscribe")) {
-    delete state.__keys[dat["unsubscribe"]];
+  } else if (responseKeys.includes("unsubscribe")) {
+    delete state.__keys[response["unsubscribe"]];
   }
   return state;
 };
@@ -222,12 +225,12 @@ export const wsDisconnect = (): Thunk => async (dispatch) => {
   }
 };
 
-export const wsSubscribeTo_order = (): Thunk => async (dispatch) => {
+export const wsSubscribeTo = (payload: string): Thunk => async (dispatch) => {
   try {
     // dispatch(disconnect());
     dispatch(send(authKeyExpires("/realtime", "GET")));
     // restrict symbol?
-    dispatch(send({ op: "subscribe", args: ["order"] }));
+    dispatch(send({ op: "subscribe", args: [payload] }));
   } catch (err) {
     console.log(err.response.data, "wsDisconnect Error");
   }

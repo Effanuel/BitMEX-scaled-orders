@@ -1,23 +1,29 @@
 import { ORDER_ERROR, ORDER_SUCCESS } from "../modules/preview/types";
 import { POST_ORDER_ERROR, POST_ORDER } from "../modules/best_price/types";
-
 import { MESSAGE } from "../modules/notify/types";
 
-const notificationAction = (payload: any) => ({
+interface notificationMessageType {
+  message: string;
+  type: string;
+}
+
+const notificationAction = ({ message, type }: notificationMessageType) => ({
   type: MESSAGE,
-  payload
+  payload: { message, type },
 });
 
-const notificationMessage = (action: any) => {
+const notificationMessage = (action: any): notificationMessageType => {
   switch (action.type) {
     // Catching SUCCESS type actions
     case POST_ORDER:
     case ORDER_SUCCESS:
-      const { success, text } = action.payload;
+      const { success, text, from } = action.payload;
       const isOrderPlaced = success === 200 && !text.includes("Cancel");
 
-      const type = isOrderPlaced ? "success" : "warning";
-      const message = isOrderPlaced ? action.payload.from : "Order cancelled";
+      const { message, type } = isOrderPlaced
+        ? { message: from, type: "success" }
+        : { message: "Order cancelled", type: "warning" };
+
       return { message, type };
     // Catching ERROR type actions
     case POST_ORDER_ERROR:

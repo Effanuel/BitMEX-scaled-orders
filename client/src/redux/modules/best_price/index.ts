@@ -1,12 +1,12 @@
 import {
+  BestPriceState,
+  BestPriceActionTypes,
   POST_ORDER,
   PUT_ORDER,
   PUT_ORDER_ERROR,
   POST_ORDER_ERROR,
   __CLEAR_BEST_ORDER,
   LOADING,
-  BestPriceState,
-  BestPriceActionTypes,
 } from "./types";
 
 import axios from "axios";
@@ -46,32 +46,16 @@ export const best_priceReducer = (
   }
 };
 
-const postOrderReducer = (state: any, action: any) => {
+const postOrderReducer = (state: BestPriceState, action: any) => {
   // Order details:
   const { text, orderID, price, success } = action.payload;
-  // if submitted to order book
-  // success: successful response
-  // best_order_0: check whether it got cancelled or not
-  // one of the reasons why it might have been canceled before
-  // being caught by a websocket is "post only" option
-  console.log("passed post order payload", action.payload);
-  return success === 200 && text === "best_order_0"
-    ? {
-        ...state,
-        loading: false,
-        bestOrderID: orderID,
-        price: price,
-        // for websocket subscription to be made
-        status: "Order placed.",
-      }
-    : {
-        ...state,
-        loading: false,
-        // This is the only thing we need from this reducer's <status> state
-        status: "Order cancelled.",
-      };
-};
 
+  const isSuccess = success === 200 && text === "best_order_0";
+  const response = isSuccess
+    ? { bestOrderID: orderID, price, status: "Order placed." }
+    : { bestOrderID: "", status: "Order cancelled." };
+  return { ...state, ...response, loading: false };
+};
 // ACTIONS
 // =====================================
 
