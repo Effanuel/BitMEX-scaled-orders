@@ -8,6 +8,7 @@ import {
   PreviewActionTypes,
   PreviewState,
 } from "./types";
+import { ActionCreator, Reducer } from "redux";
 
 import axios from "axios";
 import { createOrder, orderBulk, createMarketOrder } from "util/index";
@@ -21,10 +22,10 @@ const initialState = {
   loading: false,
 };
 // Reducer
-export const previewReducer = (
+export const previewReducer: Reducer<PreviewState, PreviewActionTypes> = (
   state: PreviewState = initialState,
-  action: PreviewActionTypes
-): PreviewState => {
+  action
+) => {
   switch (action.type) {
     case ORDER_LOADING:
       return {
@@ -141,7 +142,9 @@ export const marketOrder = (payload: any): Thunk => async (dispatch) => {
  * @param {number} currentPrice of a symbol
  * @returns {Object} SUCCESS action to reducer
  */
-export const previewOrders = (payload: any): PreviewActionTypes => {
+export const previewOrders: ActionCreator<PreviewActionTypes> = (
+  payload: any
+) => {
   const orders = orderBulk(payload);
   return {
     type: SHOW_PREVIEW,
@@ -149,25 +152,29 @@ export const previewOrders = (payload: any): PreviewActionTypes => {
   };
 };
 
-export const getBalanceSuccess = (payload: number): PreviewActionTypes => ({
+export const getBalanceSuccess: ActionCreator<PreviewActionTypes> = (
+  payload: number
+) => ({
   type: BALANCE_SUCCESS,
   payload,
 });
 
-const postOrderLoading = (): PreviewActionTypes => ({
+const postOrderLoading: ActionCreator<PreviewActionTypes> = () => ({
   type: ORDER_LOADING,
 });
 
-const postOrderSuccess = (payload: any): PreviewActionTypes => ({
+const postOrderSuccess: ActionCreator<PreviewActionTypes> = (payload: any) => ({
   type: ORDER_SUCCESS,
   payload,
 });
 
-const postOrderError = (payload: any): PreviewActionTypes => ({
+export const postOrderError: ActionCreator<PreviewActionTypes> = (
+  payload: any
+) => ({
   type: ORDER_ERROR,
   payload: payload || "error",
 });
 
-export const previewClose = (): PreviewActionTypes => ({
+export const previewClose: ActionCreator<PreviewActionTypes> = () => ({
   type: SWITCH_PREVIEW,
 });
