@@ -1,3 +1,4 @@
+import { Action } from "redux";
 import {
   WEBSOCKET_BROKEN,
   WEBSOCKET_CLOSED,
@@ -8,9 +9,8 @@ import {
   WEBSOCKET_SEND,
   WEBSOCKET_ERROR,
 } from "@giantmachines/redux-websocket";
-// Actions
-export const FETCH_ORDERS = "websocket/fetch_orders";
 
+export const FETCH_ORDERS = "websocket/FETCH_ORDERS";
 const WEBSOCKET_PREFIX: string = "REDUX_WEBSOCKET";
 export const REDUX_WEBSOCKET_BROKEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_BROKEN}`;
 export const REDUX_WEBSOCKET_OPEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_OPEN}`;
@@ -21,51 +21,48 @@ export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISC
 export const REDUX_WEBSOCKET_SEND = `${WEBSOCKET_PREFIX}::${WEBSOCKET_SEND}`;
 export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
 export const REDUX_WEBSOCKET_TICKER = "REDUX_WEBSOCKET_TICKER"; // :string fixes internal action error
-// export const INTERNAL_CLEAR_MESSAGE_LOG = "INTERNAL::CLEAR_MESSAGE_LOG";
+
 // Actions Types
-interface ReduxWebsocketFetchOrders {
+interface ReduxWebsocketFetchOrders extends Action {
   type: typeof FETCH_ORDERS;
   payload: any;
 }
-
-interface WebsocketTickerChange {
+interface WebsocketTickerChange extends Action {
   type: typeof REDUX_WEBSOCKET_TICKER;
   payload: any;
 }
-// interface InternalClearMessageLog {
-//   type: typeof INTERNAL_CLEAR_MESSAGE_LOG;
-//   payload: any;
-// }
-interface ReduxWebsocketConnect {
+interface ReduxWebsocketConnect extends Action {
   type: typeof REDUX_WEBSOCKET_CONNECT;
   payload: any;
 }
-interface ReduxWebsocketOpen {
+interface ReduxWebsocketOpen extends Action {
   type: typeof REDUX_WEBSOCKET_OPEN;
   payload: any;
 }
-interface ReduxWebsocketBroken {
+interface ReduxWebsocketBroken extends Action {
   type: typeof REDUX_WEBSOCKET_BROKEN;
   payload: any;
 }
-interface ReduxtWebsocketClosed {
+interface ReduxtWebsocketClosed extends Action {
   type: typeof REDUX_WEBSOCKET_CLOSED;
   payload: any;
 }
-interface ReduxWebsocketError {
+interface ReduxWebsocketError extends Action {
   type: typeof REDUX_WEBSOCKET_ERROR;
   payload: any;
 }
-interface ReduxWebsocketSend {
+interface ReduxWebsocketSend extends Action {
   type: typeof REDUX_WEBSOCKET_SEND;
   payload: any;
 }
-export interface ReduxWebsocketMessage {
+export interface ReduxWebsocketMessage extends Action {
   type: typeof REDUX_WEBSOCKET_MESSAGE;
   payload: any;
 }
 
-export type WebsocketActionTypes =
+// type Actions<T extends Action> = T;
+
+export type WebsocketActions =
   | ReduxWebsocketFetchOrders
   | WebsocketTickerChange
   | ReduxWebsocketConnect
@@ -75,7 +72,7 @@ export type WebsocketActionTypes =
   | ReduxWebsocketError
   | ReduxWebsocketSend
   | ReduxWebsocketMessage;
-// | InternalClearMessageLog;
+
 // State
 export interface WebsocketState {
   [key: string]: any;

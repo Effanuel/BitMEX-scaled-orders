@@ -1,6 +1,6 @@
 import {
   WebsocketResponse,
-  WebsocketActionTypes,
+  WebsocketActions,
   WebsocketState,
   ReduxWebsocketMessage,
   FETCH_ORDERS,
@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import { connect, disconnect, send } from "@giantmachines/redux-websocket";
 import { Thunk } from "../../models/state";
+import { ActionCreator, Reducer } from "redux";
 import { authKeyExpires } from "util/auth";
 
 const initialState = {
@@ -29,9 +30,9 @@ const initialState = {
   symbol: "XBTUSD",
 };
 // Reducer
-export const websocketReducer = (
+export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
   state: WebsocketState = initialState,
-  action: WebsocketActionTypes
+  action
 ): WebsocketState => {
   switch (action.type) {
     case FETCH_ORDERS:
@@ -79,9 +80,9 @@ export const websocketReducer = (
   }
 };
 
-const reduxWeboscketMessage = (
+const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
   state: WebsocketState = initialState,
-  { payload }: ReduxWebsocketMessage
+  { payload }
 ): WebsocketState => {
   let response: WebsocketResponse = JSON.parse(payload.message);
   console.log("REduxWebsocket message", response);
@@ -175,9 +176,11 @@ const reduxWeboscketMessage = (
   return state;
 };
 
+type Actions = ActionCreator<WebsocketActions>;
+
 // Actions
 // ==============================
-export const wsTickerChange = (payload: string): WebsocketActionTypes => ({
+export const wsTickerChange: Actions = (payload: string) => ({
   type: REDUX_WEBSOCKET_TICKER,
   payload,
 });
@@ -202,7 +205,7 @@ export const getOrders = (): Thunk => async (dispatch) => {
   }
 };
 
-export const getSuccess = (payload: any): WebsocketActionTypes => ({
+export const getSuccess: Actions = (payload: any) => ({
   type: FETCH_ORDERS,
   payload,
 });

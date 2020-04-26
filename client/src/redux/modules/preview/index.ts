@@ -137,14 +137,9 @@ export const marketOrder = (payload: any): Thunk => async (dispatch) => {
   }
 };
 
-/**
- * SUCCESS [Current price of symbol] action creator
- * @param {number} currentPrice of a symbol
- * @returns {Object} SUCCESS action to reducer
- */
-export const previewOrders: ActionCreator<PreviewActionTypes> = (
-  payload: any
-) => {
+type Actions = ActionCreator<PreviewActionTypes>;
+
+export const previewOrders: Actions = (payload: any) => {
   const orders = orderBulk(payload);
   return {
     type: SHOW_PREVIEW,
@@ -152,29 +147,25 @@ export const previewOrders: ActionCreator<PreviewActionTypes> = (
   };
 };
 
-export const getBalanceSuccess: ActionCreator<PreviewActionTypes> = (
-  payload: number
-) => ({
+export const getBalanceSuccess: Actions = (payload: number) => ({
   type: BALANCE_SUCCESS,
   payload,
 });
 
-const postOrderLoading: ActionCreator<PreviewActionTypes> = () => ({
+const postOrderLoading: Actions = () => ({
   type: ORDER_LOADING,
 });
 
-const postOrderSuccess: ActionCreator<PreviewActionTypes> = (payload: any) => ({
+const postOrderSuccess: Actions = (payload: any) => ({
   type: ORDER_SUCCESS,
   payload,
 });
 
-export const postOrderError: ActionCreator<PreviewActionTypes> = (
-  payload: any
-) => ({
+export const postOrderError: Actions = (payload: any) => ({
   type: ORDER_ERROR,
   payload: payload || "error",
 });
 
-export const previewClose: ActionCreator<PreviewActionTypes> = () => ({
+export const previewClose: Actions = () => ({
   type: SWITCH_PREVIEW,
 });

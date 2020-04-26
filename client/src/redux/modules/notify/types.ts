@@ -1,11 +1,13 @@
-export const MESSAGE = "notify/message";
-export const CLEAR = "notify/clear";
+import { Action } from "redux";
 
-interface Message {
+export const MESSAGE = "notify/MESSAGE";
+export const CLEAR = "notify/CLEAR";
+
+interface Message extends Action {
   type: typeof MESSAGE;
   payload: any;
 }
-interface Clear {
+interface Clear extends Action {
   type: typeof CLEAR;
 }
 

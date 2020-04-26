@@ -1,6 +1,7 @@
 import {
   BestPriceState,
   BestPriceActionTypes,
+  PostOrder,
   POST_ORDER,
   PUT_ORDER,
   PUT_ORDER_ERROR,
@@ -12,6 +13,7 @@ import {
 import axios from "axios";
 import { createOrder } from "util/index";
 import { Thunk } from "../../models/state";
+import { ActionCreator, Reducer } from "redux";
 
 const initialState = {
   bestOrderID: "",
@@ -24,10 +26,10 @@ const initialState = {
   loading: false,
 };
 
-export const best_priceReducer = (
-  state: BestPriceState = initialState,
-  action: BestPriceActionTypes
-): BestPriceState => {
+export const best_priceReducer: Reducer<
+  BestPriceState,
+  BestPriceActionTypes
+> = (state: BestPriceState = initialState, action): BestPriceState => {
   switch (action.type) {
     case POST_ORDER:
       return postOrderReducer(state, action);
@@ -46,7 +48,10 @@ export const best_priceReducer = (
   }
 };
 
-const postOrderReducer = (state: BestPriceState, action: any) => {
+const postOrderReducer: Reducer<BestPriceState, PostOrder> = (
+  state: BestPriceState = initialState,
+  action
+) => {
   // Order details:
   const { text, orderID, price, success } = action.payload;
 
@@ -108,33 +113,35 @@ export const put_bestOrder = (payload: any): Thunk => async (dispatch) => {
   }
 };
 
-const orderLoading = (): BestPriceActionTypes => ({
+type Actions = ActionCreator<BestPriceActionTypes>;
+
+const orderLoading: Actions = () => ({
   type: LOADING,
 });
 
-const orderError = (): BestPriceActionTypes => ({
+const orderError: Actions = () => ({
   type: LOADING,
 });
 
-const postOrderSuccess = (payload: any): BestPriceActionTypes => ({
+const postOrderSuccess: Actions = (payload: any) => ({
   type: POST_ORDER,
   payload,
 });
 
-const putOrderSuccess = (payload: any): BestPriceActionTypes => ({
+const putOrderSuccess: Actions = (payload: any) => ({
   type: PUT_ORDER,
   payload,
 });
 
-export const __clearBestOrder = (): BestPriceActionTypes => ({
+export const __clearBestOrder: Actions = () => ({
   type: __CLEAR_BEST_ORDER,
 });
 
-const putOrderError = (): BestPriceActionTypes => ({
+const putOrderError: Actions = () => ({
   type: PUT_ORDER_ERROR,
 });
 
-export const postOrderError = (payload: any): BestPriceActionTypes => ({
+export const postOrderError: Actions = (payload: any) => ({
   type: POST_ORDER_ERROR,
   payload,
 });
