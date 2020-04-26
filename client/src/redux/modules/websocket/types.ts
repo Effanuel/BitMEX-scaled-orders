@@ -60,7 +60,7 @@ interface ReduxWebsocketSend {
   type: typeof REDUX_WEBSOCKET_SEND;
   payload: any;
 }
-interface ReduxWebsocketMessage {
+export interface ReduxWebsocketMessage {
   type: typeof REDUX_WEBSOCKET_MESSAGE;
   payload: any;
 }
@@ -78,6 +78,8 @@ export type WebsocketActionTypes =
 // | InternalClearMessageLog;
 // State
 export interface WebsocketState {
+  [key: string]: any;
+
   __keys?: any;
   instrument?: any;
   order?: any;
@@ -87,6 +89,10 @@ export interface WebsocketState {
   error?: string;
   symbol?: string;
 }
+
+// type WebsocketState = Indexable<WebsocketState>;
+// export type WebsocketStateIndexable = Indexable & WebsocketState;
+type Indexable<T> = { [key: string]: string } & T;
 
 interface WebsocketResponseData {
   // Table name / Subscription topic.
@@ -99,7 +105,7 @@ interface WebsocketResponseData {
   // 'delete': Delete a row.
   action: "partial" | "update" | "insert" | "delete";
   // An array of table rows is emitted here. They are identical in structure to data returned from the REST API.
-  data: object[];
+  data: any; //object[]
   //
   // The below fields define the table and are only sent on a `partial`
   //
@@ -127,6 +133,7 @@ interface WebsocketResponseData {
   // These are internal fields that indicate how responses are sorted and grouped.
   attributes?: { [key: string]: string };
 }
+
 interface WebsocketResponseSuccess {
   subscribe: string;
   success: boolean;
@@ -136,9 +143,6 @@ interface WebsocketResponseError {
   error: string;
 }
 
-interface Indexable {
-  [key: string]: any;
-}
-
-export type WebsocketResponse = Indexable &
-  (WebsocketResponseData | WebsocketResponseSuccess | WebsocketResponseError);
+export type WebsocketResponse = Indexable<
+  WebsocketResponseData | WebsocketResponseSuccess | WebsocketResponseError
+>;

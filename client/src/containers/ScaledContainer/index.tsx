@@ -28,12 +28,10 @@ import {
   CustomRadioButton,
   // OrdersPreviewTable,
   MainContainer,
-  SVGIcon,
   Button,
 } from "components";
-
+import DistributionsContainer from "./DistributionsContainer";
 import { Grid, RadioGroup } from "@material-ui/core";
-import ICONS from "components/SVGIcon/icons";
 
 // UTILS
 import { AppState } from "redux/models/state";
@@ -49,7 +47,6 @@ interface State {
   distribution: any;
   side: any;
   symbol: any;
-  [key: string]: number | string;
 }
 
 interface Props {
@@ -96,10 +93,6 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
   //======================================================
   //
   // not so elequent way to handle preview button press handling
-  function handleCache() {
-    // setCache(prevState => ({ ...prevState, cache: false }));
-    setCache(false);
-  }
 
   function onChangeDropdown(event: React.ChangeEvent<HTMLInputElement>): void {
     const { value, id } = event.target;
@@ -113,7 +106,7 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
     }));
     //
     //
-    handleCache();
+    setCache(false);
   }
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -122,15 +115,14 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
     setState((prevState) => ({ ...prevState, [id]: updated }));
     //
     //
-    handleCache();
+    setCache(false);
   }
 
-  function onOrderSubmit(event: React.MouseEvent<HTMLButtonElement>): void {
-    event.preventDefault();
+  function onOrderSubmit(): void {
     dispatch(scaledOrders(state));
     //
     // instead of this, input fields could be cleared
-    handleCache();
+    setCache(false);
   }
 
   function onPreviewOrders(): void {
@@ -142,12 +134,22 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
     }
   }
 
+  function isDisabled(): boolean {
+    const { quantity, n_tp, start, end, stop, side } = state;
+    return (
+      !(quantity && n_tp && n_tp > 1 && start && end) ||
+      n_tp > 50 ||
+      quantity < n_tp ||
+      (stop && side === "Buy" ? stop > start && stop > end : false) ||
+      (stop && side === "Sell" ? stop < start && stop < end : false) ||
+      quantity > 20e6
+    );
+  }
   return (
     <MainContainer label="ScaledOrders">
       <Grid container spacing={2} justify="center" alignItems="center">
         <Grid item xs={3} className={styles.container__col}>
           <SelectDropdown
-            instruments={["XBTUSD", "ETHUSD", "XRPUSD"]}
             id="symbol"
             onChange={onChangeDropdown}
             label="Instrument"
@@ -226,54 +228,10 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
         </Grid>
 
         <Grid item xs={4}>
-          <RadioGroup
-            aria-label="Distribution"
-            name="distribution"
-            value={state.distribution}
+          <DistributionsContainer
             onChange={onChange}
-            row
-          >
-            <CustomRadioButton
-              id="scaled_distr_uniform"
-              label={
-                <>
-                  Uniform
-                  <SVGIcon color="white" icon={ICONS.UNIFORM} />
-                </>
-              }
-              value="Uniform"
-            />
-            <CustomRadioButton
-              id="scaled_distr_normal"
-              label={
-                <>
-                  Normal
-                  <SVGIcon color="white" icon={ICONS.NORMAL} />
-                </>
-              }
-              value="Normal"
-            />
-            <CustomRadioButton
-              id="scaled_distr_positive"
-              label={
-                <>
-                  Positive
-                  <SVGIcon color="white" icon={ICONS.POSITIVE} />
-                </>
-              }
-              value="Positive"
-            />
-            <CustomRadioButton
-              id="scaled_distr_negative"
-              label={
-                <>
-                  Negative
-                  <SVGIcon color="white" icon={ICONS.NEGATIVE} />
-                </>
-              }
-              value="Negative"
-            />
-          </RadioGroup>
+            distribution={state.distribution}
+          />
         </Grid>
         <Grid item xs={3} className={styles.myErrorMessage}>
           {orderError}
@@ -283,51 +241,14 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
           <Button
             onClick={onPreviewOrders}
             variant="text"
-            disabled={
-              !(
-                state.quantity &&
-                state.n_tp &&
-                state.n_tp > 1 &&
-                state.start &&
-                state.end
-              ) ||
-              state.n_tp > 50 ||
-              state.quantity < state.n_tp ||
-              (state.stop && state.side === "Buy"
-                ? state.stop > state.start && state.stop > state.end
-                : false) ||
-              (state.stop && state.side === "Sell"
-                ? state.stop < state.start && state.stop < state.end
-                : false) ||
-              state.quantity > 20e6
-            }
+            disabled={isDisabled()}
           >
             Preview
           </Button>
         </Grid>
 
         <Grid item xs={3}>
-          <Button
-            onClick={onOrderSubmit}
-            disabled={
-              !(
-                state.quantity &&
-                state.n_tp &&
-                state.n_tp > 1 &&
-                state.start &&
-                state.end
-              ) ||
-              state.n_tp > 50 ||
-              state.quantity < state.n_tp ||
-              (state.stop && state.side === "Buy"
-                ? state.stop > state.start && state.stop > state.end
-                : false) ||
-              (state.stop && state.side === "Sell"
-                ? state.stop < state.start && state.stop < state.end
-                : false) ||
-              state.quantity > 20e6
-            }
-          >
+          <Button onClick={onOrderSubmit} disabled={isDisabled()}>
             Submit
           </Button>
         </Grid>

@@ -35,7 +35,7 @@ export const getOrders = async (req: Request, res: Response) => {
   try {
     const response = await _curl_bitmex("order", "GET", {
       //only open orders
-      filter: { open: true }
+      filter: { open: true },
     });
     logger.info("Successful GET request (getOrders)");
     return res.send({ data: response });

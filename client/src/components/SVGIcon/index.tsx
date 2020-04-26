@@ -2,43 +2,28 @@ import React from "react";
 
 interface Props {
   icon: string;
-  name?: string;
-  style?: any;
-  viewBox?: any;
-  className?: any;
   size?: string;
-  color?: string;
+  color: string;
 }
 
-const SVGIcon = ({
-  icon,
-  name = "",
-  style = {},
-  viewBox = "",
-  className = "",
-  size = "22",
-  color = "color"
-}: Props) => {
+const SVGIcon = ({ icon, size = "22", color = "color" }: Props) => {
   const styles = {
     svg: {
-      verticalAlign: "middle"
+      verticalAlign: "middle",
     },
     path: {
-      fill: color
-    }
-  };
-
-  const styles2 = {
+      fill: color,
+    },
     root: {
       display: "inline",
       justify: "middle",
       padding: "7px 0",
-      marginRight: "12px"
-    }
+      marginRight: "12px",
+    },
   };
 
   return (
-    <div style={styles2.root}>
+    <div style={styles.root}>
       <svg
         width={`${size}px`}
         height={`${size}px`}

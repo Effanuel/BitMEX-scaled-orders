@@ -34,7 +34,7 @@ export const orderBulk = ({
 
 const Uniform = (Props: Props): ordersProps => {
   //You can change these parameters if you want to test
-  return skewedDistribution(Props, -1, 1, -1, true);
+  return skewedDistribution(Props, -1, 1, -1, false);
 };
 const Positive = (Props: Props): ordersProps => {
   //You can change these parameters if you want to test
@@ -55,7 +55,7 @@ const Normal = (Props: Props): ordersProps => {
  * @param {number} START_CFG is a parameter for gaussian()
  * @param {number} END_CFG is a parameter for gaussian()
  * @param {number} mean of placed orders (not average)
- * @param {boolean} isUniform indicates if its Uniform or not
+ * @param {boolean} isSkewed indicates if its Uniform or not
  * @returns {object} Object of orders array and stop(if any)
  */
 const skewedDistribution = (
@@ -63,41 +63,32 @@ const skewedDistribution = (
   START_CFG: number,
   END_CFG: number,
   mean: number,
-  isUniform: boolean = false
+  isSkewed: boolean = true
 ): ordersProps => {
   const { quantity, n_tp, start, end, side, symbol, stop } = Props;
   const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
 
   //Determening spread of the ticker
   //Appropriate rounding, else the order is going to get rejected
-  const start_ = roundHalf(start, symbol);
-  const end_ = roundHalf(end, symbol);
+  const start_ = tickerRound(start, symbol);
+  const end_ = tickerRound(end, symbol);
 
-  const probability_distribution: number[] = [];
-  // Handling whether the distribution is skewed or not\
-  // This part can be written simpler by substituting gaussian
-  // middle parameter.
-  if (!isUniform) {
-    const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
-    for (let i = 0; i < n_tp; i++) {
-      probability_distribution.push(
-        gaussian(mean, START_CFG + i * incrementQty, 1)
-      ); //mean == 0
-    }
-  } else {
-    //If its uniform distribution,
-    //fill array with a random number.
-    probability_distribution.push(...Array(n_tp).fill(1));
-  }
+  const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
+
+  const probability_distribution: number[] = isSkewed
+    ? Array.from(Array(n_tp).keys()).map((_, index) =>
+        gaussian(mean, START_CFG + index * incrementQty, 1)
+      )
+    : Array(n_tp).fill(1);
 
   const total_probability = probability_distribution.reduce(
     (total: number, number: number) => total + number,
     0
   );
   // How much to increment the price of every order
-  const incrPrice = roundHalf((end_ - start_) / (n_tp - 1), symbol);
+  const incrPrice = tickerRound((end_ - start_) / (n_tp - 1), symbol);
 
-  let totalOrders: totalOrdersType = { orders: [], stop: {} };
+  let totalOrders: ordersProps = { orders: [], stop: {} };
 
   // Pushing orders to main array
   for (let i = 0; i < n_tp; i++) {
@@ -145,7 +136,7 @@ const createStopLoss = (
   text_index = 1
 ): stopLossType => {
   const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
-  const price = roundHalf(stop, symbol);
+  const price = tickerRound(stop, symbol);
   const stop_side = side === "Buy" ? "Sell" : "Buy";
 
   return {
@@ -220,7 +211,7 @@ export const createOrder = ({
  * @param {number} inc
  * @returns {number} rounded number
  */
-const roundHalf = (number: number, symbol: string): number => {
+const tickerRound = (number: number, symbol: string): number => {
   // Ticksize - 1 divided by this number
   const { ticksize } = INSTRUMENT_PARAMS[symbol];
   return Math.round(number * ticksize) / ticksize;
@@ -257,12 +248,13 @@ interface StopProps {
   side: string;
 }
 
-type ordersProps = { orders: object[]; stop: object };
+// type ordersProps = { orders: object[]; stop: object };
 //===
 type marketOrderType = Pick<
   orderType,
   "symbol" | "orderQty" | "side" | "ordType"
 >;
+
 type order = Pick<
   orderType,
   "symbol" | "price" | "orderQty" | "side" | "ordType" | "text" | "execInst"
@@ -271,7 +263,7 @@ type stopLossType = Pick<
   orderType,
   "symbol" | "side" | "orderQty" | "stopPx" | "ordType" | "execInst" | "text"
 >;
-interface totalOrdersType {
+interface ordersProps {
   orders: order[];
   stop: Partial<stopLossType>;
 }

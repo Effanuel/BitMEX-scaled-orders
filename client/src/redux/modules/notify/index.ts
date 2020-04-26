@@ -2,7 +2,7 @@ import { MESSAGE, CLEAR, NotifyActionTypes, NotifyState } from "./types";
 
 const initialState = {
   message: "",
-  type: ""
+  type: "",
 };
 
 export const notifyReducer = (
@@ -14,7 +14,7 @@ export const notifyReducer = (
       return {
         ...state,
         message: action.payload.message,
-        type: action.payload.type
+        type: action.payload.type,
       };
     case CLEAR:
       return initialState;
@@ -26,5 +26,5 @@ export const notifyReducer = (
 // ACTIONS =======================
 
 export const clearNotifications = () => ({
-  type: CLEAR
+  type: CLEAR,
 });

@@ -134,7 +134,7 @@ const putOrderError = (): BestPriceActionTypes => ({
   type: PUT_ORDER_ERROR,
 });
 
-const postOrderError = (payload: any): BestPriceActionTypes => ({
+export const postOrderError = (payload: any): BestPriceActionTypes => ({
   type: POST_ORDER_ERROR,
   payload,
 });

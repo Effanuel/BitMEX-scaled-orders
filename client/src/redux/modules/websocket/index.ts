@@ -2,6 +2,7 @@ import {
   WebsocketResponse,
   WebsocketActionTypes,
   WebsocketState,
+  ReduxWebsocketMessage,
   FETCH_ORDERS,
   REDUX_WEBSOCKET_BROKEN,
   REDUX_WEBSOCKET_CLOSED,
@@ -79,16 +80,15 @@ export const websocketReducer = (
 };
 
 const reduxWeboscketMessage = (
-  state: any = initialState,
-  { payload }: any
-): any => {
+  state: WebsocketState = initialState,
+  { payload }: ReduxWebsocketMessage
+): WebsocketState => {
   let response: WebsocketResponse = JSON.parse(payload.message);
   console.log("REduxWebsocket message", response);
 
   const responseKeys = Object.keys(response);
-  const table: string = responseKeys.includes("table")
-    ? response["table"]
-    : null;
+  const table = response["table"];
+  const data = response["data"];
   const ws_action = responseKeys.includes("action") ? response["action"] : null;
 
   if (responseKeys.includes("subscribe")) {
@@ -109,60 +109,66 @@ const reduxWeboscketMessage = (
       },
     };
     // todo replace with switch case
-    if (ws_action === "partial") {
-      const current_len = Object.keys(tempState[table]).length;
-      const data_len = response["data"].length;
-      for (let i = current_len; i < current_len + data_len; ++i) {
-        tempState[table][i] = {
-          ...tempState[table][i],
-          ...response["data"][i],
+    switch (ws_action) {
+      case "partial": {
+        const current_len = Object.keys(tempState[table]).length;
+        const data_len = data.length;
+        for (let i = current_len; i < current_len + data_len; ++i) {
+          tempState[table][i] = {
+            ...tempState[table][i],
+            ...data[i], //...response
+          };
+        }
+        // console.log(dat, "PARTIAL");
+        // const len = Object.keys(tempState[table]).length;
+        // for (let i = 0, __len = dat["data"].length; i < __len; ++i) {
+        //   tempState[table][len + i] = {
+        //     ...tempState[table][len + i],
+        //     ...dat["data"][i]
+        //   };
+        // }
+        tempState.__keys = {
+          ...tempState.__keys,
+          [table]: response["keys"],
         };
       }
-      // console.log(dat, "PARTIAL");
-      // const len = Object.keys(tempState[table]).length;
-      // for (let i = 0, __len = dat["data"].length; i < __len; ++i) {
-      //   tempState[table][len + i] = {
-      //     ...tempState[table][len + i],
-      //     ...dat["data"][i]
-      //   };
-      // }
-      tempState.__keys = {
-        ...tempState.__keys,
-        [table]: response["keys"],
-      };
-    } else if (ws_action === "insert") {
-      const current_len = Object.keys(tempState[table]).length;
-      const data_len = response["data"].length;
-      for (let i = current_len; i < current_len + data_len; ++i) {
-        tempState[table][i] = {
-          ...tempState[table][i],
-          ...response["data"][i],
-        };
-      }
-    } else if (ws_action === "update") {
-      let item = 0;
-      // console.log(dat);
-      for (let key_val in response["data"]) {
-        // Finds an item which needs to be updated.
-        item = findItemByKeys(
-          state.__keys[table], //datta.__keys[table],
-          state[table], //datta[table],
-          response["data"][key_val]
-        );
-        if (item === -1) continue;
-        tempState[table][item] = {
-          ...tempState[table][item],
-          ...response["data"][key_val],
-        };
-        // for future order chasing
-        if (table === "order" && tempState[table][item]["leavesQty"] <= 0) {
-          console.log("DELETING FILLED ORDER");
-          delete tempState[table][item];
+      case "insert": {
+        const current_len = Object.keys(tempState[table]).length;
+        for (let i = current_len; i < current_len + data.length; ++i) {
+          tempState[table][i] = {
+            ...tempState[table][i],
+            ...data[i],
+          };
         }
       }
+      case "update": {
+        let item = 0;
+        // console.log(dat);
+        for (let key_val in data) {
+          // Finds an item which needs to be updated.
+          item = findItemByKeys(
+            state.__keys[table], //datta.__keys[table],
+            state[table], //datta[table],
+            data[key_val]
+          );
+          if (item === -1) continue;
+          tempState[table][item] = {
+            ...tempState[table][item],
+            ...data[key_val],
+          };
+          // for future order chasing
+          if (table === "order" && tempState[table][item]["leavesQty"] <= 0) {
+            console.log("DELETING FILLED ORDER");
+            delete tempState[table][item];
+            // const {
+            //   [table]: { [item]: deleted, ...updated },
+            // } = tempState;
+          }
+        }
+        return { ...state, ...tempState };
+      }
+      // console.log(item);
     }
-    return tempState;
-    // console.log(item);
   } else if (responseKeys.includes("unsubscribe")) {
     delete state.__keys[response["unsubscribe"]];
   }
@@ -263,7 +269,7 @@ export const wsUnsubscribeFrom = (payload: string): Thunk => async (
 //   return -1;
 // };
 
-const findItemByKeys = (keys: any, table: any, matchData: any): number => {
+function findItemByKeys(keys: any, table: any, matchData: any): number {
   for (let j in table) {
     // replace with of?
     let matched = true;
@@ -275,4 +281,11 @@ const findItemByKeys = (keys: any, table: any, matchData: any): number => {
     if (matched) return +j;
   }
   return -1;
-};
+}
+// tempState[table][item] = {
+//   ...tempState[table][item],
+//   ...data[key_val],
+// };
+// function deep(state: any, updatedFields: any) {
+//   return { ...state, ...updatedFields };
+// }

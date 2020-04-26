@@ -101,12 +101,7 @@ function MarketOrderContainer({ wsCurrentPrice }: any) {
     <MainContainer label="MarkerOrder">
       <Grid container spacing={2} justify="center" alignItems="center">
         <Grid item xs={3}>
-          <SelectDropdown
-            instruments={["XBTUSD", "ETHUSD", "XRPUSD"]}
-            id="symbol"
-            onChange={onChange}
-            label="Instrument"
-          />
+          <SelectDropdown id="symbol" onChange={onChange} label="Instrument" />
         </Grid>
         <Grid item xs={3}>
           <InputField
