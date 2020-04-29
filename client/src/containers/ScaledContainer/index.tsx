@@ -68,10 +68,10 @@ const ScaledContainer = React.memo(({ wsCurrentPrice }: Props) => {
   const dispatch = useDispatch();
   const { loading, orderLoading, message, orderError } = useSelector(
     (state: AppState) => ({
-      loading: websocketLoadingSelector(state),
-      orderLoading: orderLoadingSelector(state),
-      message: messageSelector(state),
-      orderError: orderErrorSelector(state),
+      loading: state.websocket.loading,
+      orderLoading: state.preview.loading,
+      message: state.websocket.message,
+      orderError: state.preview.error,
     }),
     shallowEqual
   );
