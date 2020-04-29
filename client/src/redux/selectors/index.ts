@@ -1,15 +1,15 @@
 import { createSelector } from "reselect";
 import { AppState } from "../models/state";
 // PREVIEW ACTIONS
-const getShowPreview = (state: AppState) => state.preview.showPreview;
-const getOrders = (state: AppState) => state.preview.orders;
+export const getShowPreview = (state: AppState) => state.preview.showPreview;
+export const getOrders = (state: AppState) => state.preview.orders;
 const getOrderLoading = (state: AppState) => state.preview.loading;
 const getOrderError = (state: AppState) => state.preview.error;
-const getBalance = (state: AppState) => state.preview.balance;
+export const getBalance = (state: AppState) => state.preview.balance;
 // const getMessage = (state: AppState) => state.preview.message; // this is object
 // WEBSOCKET ACTIONS
-const getWsSymbol = (state: AppState) => state.websocket.symbol;
-const table_instrument = (state: AppState) => state.websocket.instrument;
+export const getWsSymbol = (state: AppState) => state.websocket.symbol;
+export const table_instrument = (state: AppState) => state.websocket.instrument;
 const table_order = (state: AppState) => state.websocket.order;
 const websocketLoading = (state: AppState) => state.websocket.loading;
 const websocketMessage = (state: AppState) => state.websocket.message;
@@ -83,21 +83,23 @@ export const websocketCurrentPrice = createSelector(
  */
 export const ordersAveragePriceSelector = createSelector(
   [getOrders, getShowPreview],
-  (orderList = [], previewTable): number | void => {
-    if (previewTable && orderList) {
+  (orderObject: any = {}, previewTable): number | void => {
+    if (previewTable && orderObject?.orders?.length) {
       // We push stop-loss order in /utils distribution functions
       // so we want to exclude it here.
+      const { orders } = orderObject;
 
-      const total_quantity = orderList.orders.reduce(
+      const total_quantity = orders.reduce(
         (total: number, n: any): number => total + n.orderQty,
         0
       );
-      const contract_value = orderList.orders.reduce(
+      const contract_value = orders.reduce(
         (total: number, n: any): number => total + n.orderQty / n.price,
         0
       );
+
       // Divide by 10,000 so that ordersRiskSelector calculated risk more accurately
-      return Math.round((total_quantity / contract_value) * 10000) / 10000;
+      return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
     }
   }
 );
@@ -111,17 +113,22 @@ export const ordersAveragePriceSelector = createSelector(
  */
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAveragePriceSelector, getShowPreview],
-  (orderList = {}, averageEntry, previewTable): number | void => {
-    if (previewTable && averageEntry > 0 && averageEntry && orderList["stop"]) {
-      let quantity = orderList.stop.orderQty;
+  (orderObject: any = {}, averageEntry, previewTable): number | void => {
+    if (
+      previewTable &&
+      averageEntry > 0 &&
+      averageEntry &&
+      orderObject["stop"]
+    ) {
+      let quantity = orderObject.stop.orderQty;
       // 1 contract of ETH is for 0.001 mXBT which is 1e-6 XBT
-      if (orderList.stop["symbol"] === "ETHUSD")
+      if (orderObject.stop["symbol"] === "ETHUSD")
         quantity *= 1e-6 * averageEntry ** 2;
       // 1 contract of XRPUSD is for 0.0002 XBT which is 2e-4 XBT
-      if (orderList.stop["symbol"] === "XRPUSD")
+      if (orderObject.stop["symbol"] === "XRPUSD")
         quantity *= 2e-4 * averageEntry ** 2;
       const entryValue = quantity / averageEntry;
-      const exitValue = quantity / orderList.stop["stopPx"] || 1;
+      const exitValue = quantity / orderObject.stop["stopPx"]; // || 1
       return Math.abs(+(entryValue - exitValue).toFixed(5));
     }
   }
@@ -136,7 +143,7 @@ export const balanceSelector = createSelector([getBalance], (balance):
   | number
   | void => {
   if (balance) {
-    return +(balance / 1e8).toFixed(4);
+    return Math.round((balance / 1e8) * 10000) / 10000;
   }
 });
 
