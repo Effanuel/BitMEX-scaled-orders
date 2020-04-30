@@ -1,17 +1,11 @@
-import { Action } from "redux";
+import { createAction } from "../../helpers/helperTypes";
 
 export const MESSAGE = "notify/MESSAGE";
 export const CLEAR = "notify/CLEAR";
 
-interface Message extends Action {
-  type: typeof MESSAGE;
-  payload: any;
-}
-interface Clear extends Action {
-  type: typeof CLEAR;
-}
-
-export type NotifyActionTypes = Message | Clear;
+export type NotifyActionTypes =
+  | createAction<typeof MESSAGE, any>
+  | createAction<typeof CLEAR>;
 
 export interface NotifyState {
   message: string;

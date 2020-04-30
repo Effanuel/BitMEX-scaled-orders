@@ -1,4 +1,4 @@
-import { Action } from "redux";
+import { createAction } from "../../helpers/helperTypes";
 import {
   WEBSOCKET_BROKEN,
   WEBSOCKET_CLOSED,
@@ -20,60 +20,24 @@ export const REDUX_WEBSOCKET_CONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_CONNECT
 export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISCONNECT}`;
 export const REDUX_WEBSOCKET_SEND = `${WEBSOCKET_PREFIX}::${WEBSOCKET_SEND}`;
 export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
-export const REDUX_WEBSOCKET_TICKER = "REDUX_WEBSOCKET_TICKER"; // :string fixes internal action error
-
-// Actions Types
-interface ReduxWebsocketFetchOrders extends Action {
-  type: typeof FETCH_ORDERS;
-  payload: any;
-}
-interface WebsocketTickerChange extends Action {
-  type: typeof REDUX_WEBSOCKET_TICKER;
-  payload: any;
-}
-interface ReduxWebsocketConnect extends Action {
-  type: typeof REDUX_WEBSOCKET_CONNECT;
-  payload: any;
-}
-interface ReduxWebsocketOpen extends Action {
-  type: typeof REDUX_WEBSOCKET_OPEN;
-  payload: any;
-}
-interface ReduxWebsocketBroken extends Action {
-  type: typeof REDUX_WEBSOCKET_BROKEN;
-  payload: any;
-}
-interface ReduxtWebsocketClosed extends Action {
-  type: typeof REDUX_WEBSOCKET_CLOSED;
-  payload: any;
-}
-interface ReduxWebsocketError extends Action {
-  type: typeof REDUX_WEBSOCKET_ERROR;
-  payload: any;
-}
-interface ReduxWebsocketSend extends Action {
-  type: typeof REDUX_WEBSOCKET_SEND;
-  payload: any;
-}
-export interface ReduxWebsocketMessage extends Action {
-  type: typeof REDUX_WEBSOCKET_MESSAGE;
-  payload: any;
-}
-
-// type Actions<T extends Action> = T;
+export const REDUX_WEBSOCKET_TICKER = "REDUX_WEBSOCKET_TICKER";
 
 export type WebsocketActions =
-  | ReduxWebsocketFetchOrders
-  | WebsocketTickerChange
-  | ReduxWebsocketConnect
-  | ReduxWebsocketOpen
-  | ReduxWebsocketBroken
-  | ReduxtWebsocketClosed
-  | ReduxWebsocketError
-  | ReduxWebsocketSend
+  | createAction<typeof FETCH_ORDERS, any>
+  | createAction<typeof REDUX_WEBSOCKET_TICKER, any>
+  | createAction<typeof REDUX_WEBSOCKET_CONNECT, any>
+  | createAction<typeof REDUX_WEBSOCKET_OPEN, any>
+  | createAction<typeof REDUX_WEBSOCKET_BROKEN, any>
+  | createAction<typeof REDUX_WEBSOCKET_CLOSED, any>
+  | createAction<typeof REDUX_WEBSOCKET_ERROR, any>
+  | createAction<typeof REDUX_WEBSOCKET_SEND, any>
   | ReduxWebsocketMessage;
 
-// State
+export type ReduxWebsocketMessage = createAction<
+  typeof REDUX_WEBSOCKET_MESSAGE,
+  any
+>;
+
 export interface WebsocketState {
   [key: string]: any;
 
