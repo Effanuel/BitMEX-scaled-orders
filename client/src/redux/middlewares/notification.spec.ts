@@ -77,7 +77,7 @@ describe("notificationMessage()", () => {
     let action, message;
 
     it("returns empty message and type fields for non SUCCESS and non ERROR actions", () => {
-      action = orderLoading(payload);
+      action = orderLoading();
       message = notificationMessage(action);
       expect(message).toEqual({ message: "", type: "" });
     });
