@@ -5,7 +5,7 @@ import {
   SHOW_PREVIEW,
   SWITCH_PREVIEW,
   BALANCE_SUCCESS,
-  PreviewActionTypes,
+  PreviewActions,
   PreviewState,
 } from "./types";
 import { ActionCreator, Reducer } from "redux";
@@ -15,15 +15,15 @@ import { createOrder, orderBulk, createMarketOrder } from "util/index";
 import { Thunk } from "../../models/state";
 
 const initialState = {
-  orders: [],
+  orders: {},
   balance: 0,
   error: "",
   showPreview: false,
   loading: false,
 };
 // Reducer
-export const previewReducer: Reducer<PreviewState, PreviewActionTypes> = (
-  state: PreviewState = initialState,
+export const previewReducer: Reducer<PreviewState, PreviewActions> = (
+  state = initialState,
   action
 ) => {
   switch (action.type) {
@@ -86,7 +86,7 @@ export const scaledOrders = (payload: any): Thunk => async (dispatch) => {
     let orders = orderBulk(payload);
 
     if (payload.stop && payload.stop !== "") {
-      orders.orders.push(orders.stop);
+      orders.orders.push(orders.stop as any);
     }
     console.log("order");
 
@@ -106,6 +106,7 @@ export const scaledOrders = (payload: any): Thunk => async (dispatch) => {
  * [Get Balance] action creator
  * @returns {Object} success response(dispatch action)
  */
+
 export const getBalance = (): Thunk => async (dispatch) => {
   try {
     const response = await axios.post("/bitmex/getBalance");
@@ -119,12 +120,53 @@ export const getBalance = (): Thunk => async (dispatch) => {
   }
 };
 
+// const createMarketOrder_ = () => {
+//   const createMarketOrderConfig = {
+//     init: () => postOrderLoading,
+//     onLoad: async (payload: any) => {
+//       const order = createMarketOrder(payload);
+//       const response = await axios.post("/bitmex/order", {
+//         order,
+//         method: "POST",
+//       });
+//       const { data: responseData } = response.data; //success
+//       const parsedData = JSON.parse(responseData); //text
+//       return { responseData, parsedData };
+//     },
+//     onSuccess: (responseData: any, parsedData: any) => {
+//       const { success } = responseData;
+//       const { text } = parsedData;
+//       postOrderSuccess({ success, text, from: "MarketOrder" });
+//     },
+//     onError: (err: any) => {
+//       console.log(err, err.message, "MARKET ERROR");
+//       return err.message.includes("500")
+//         ? postOrderError("Server is offline.")
+//         : postOrderError(err.response.data.error);
+//     },
+//   };
+//   dispatchThunkActions(createMarketOrderConfig);
+// };
+
+// const dispatchThunkActions = (config: any): Thunk => async (dispatch) => {
+//   try {
+//     dispatch(config.init());
+//     const { responseData, parsedData } = config.onLoad();
+//     dispatch(config.onSuccess(responseData, parsedData));
+//   } catch (e) {
+//     dispatch(config.onError(e));
+//   }
+// };
+
 export const marketOrder = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(postOrderLoading());
     const order = createMarketOrder(payload);
 
-    const response = await axios.post("/bitmex/order", order);
+    const response = await axios.post("/bitmex/order", {
+      order,
+      method: "POST",
+    });
     const { data, success } = response.data;
     const { text } = JSON.parse(data);
 
@@ -137,9 +179,9 @@ export const marketOrder = (payload: any): Thunk => async (dispatch) => {
   }
 };
 
-type Actions = ActionCreator<PreviewActionTypes>;
+type Actions = PreviewActions;
 
-export const previewOrders: Actions = (payload: any) => {
+export const previewOrders = (payload: any): Actions => {
   const orders = orderBulk(payload);
   return {
     type: SHOW_PREVIEW,
@@ -147,25 +189,25 @@ export const previewOrders: Actions = (payload: any) => {
   };
 };
 
-export const getBalanceSuccess: Actions = (payload: number) => ({
+export const getBalanceSuccess = (payload: number): Actions => ({
   type: BALANCE_SUCCESS,
   payload,
 });
 
-const postOrderLoading: Actions = () => ({
+const postOrderLoading = (): Actions => ({
   type: ORDER_LOADING,
 });
 
-const postOrderSuccess: Actions = (payload: any) => ({
+export const postOrderSuccess = (payload: any): Actions => ({
   type: ORDER_SUCCESS,
   payload,
 });
 
-export const postOrderError: Actions = (payload: any) => ({
+export const postOrderError = (payload: any): Actions => ({
   type: ORDER_ERROR,
   payload: payload || "error",
 });
 
-export const previewClose: Actions = () => ({
+export const previewClose = (): Actions => ({
   type: SWITCH_PREVIEW,
 });

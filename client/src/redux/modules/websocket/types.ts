@@ -1,4 +1,4 @@
-import { createAction } from "../../helpers/helperTypes";
+import { CreateAction } from "../../helpers/helperTypes";
 import {
   WEBSOCKET_BROKEN,
   WEBSOCKET_CLOSED,
@@ -23,17 +23,17 @@ export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
 export const REDUX_WEBSOCKET_TICKER = "REDUX_WEBSOCKET_TICKER";
 
 export type WebsocketActions =
-  | createAction<typeof FETCH_ORDERS, any>
-  | createAction<typeof REDUX_WEBSOCKET_TICKER, any>
-  | createAction<typeof REDUX_WEBSOCKET_CONNECT, any>
-  | createAction<typeof REDUX_WEBSOCKET_OPEN, any>
-  | createAction<typeof REDUX_WEBSOCKET_BROKEN, any>
-  | createAction<typeof REDUX_WEBSOCKET_CLOSED, any>
-  | createAction<typeof REDUX_WEBSOCKET_ERROR, any>
-  | createAction<typeof REDUX_WEBSOCKET_SEND, any>
+  | CreateAction<typeof FETCH_ORDERS, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_TICKER, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_CONNECT, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_OPEN, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_BROKEN, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_CLOSED, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_ERROR, any>
+  | CreateAction<typeof REDUX_WEBSOCKET_SEND, any>
   | ReduxWebsocketMessage;
 
-export type ReduxWebsocketMessage = createAction<
+export type ReduxWebsocketMessage = CreateAction<
   typeof REDUX_WEBSOCKET_MESSAGE,
   any
 >;

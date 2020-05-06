@@ -1,6 +1,7 @@
 import { Action } from "redux";
 
-export interface createAction<T, P = undefined> extends Action {
-  type: T;
-  payload?: P;
+export type CreateNoPayloadAction<T> = Action<T>;
+
+export interface CreateAction<T, P> extends CreateNoPayloadAction<T> {
+  payload: P;
 }

@@ -1,4 +1,4 @@
-import { createAction } from "../../helpers/helperTypes";
+import { CreateAction, CreateNoPayloadAction } from "../../helpers/helperTypes";
 import { ordersState } from "util/index";
 
 export const ORDER_SUCCESS = "preview/ORDER_SUCCESS";
@@ -10,13 +10,13 @@ export const SWITCH_PREVIEW = "preview/SWITCH_PREVIEW";
 
 export const BALANCE_SUCCESS = "preview/BALANCE_SUCCESS";
 
-export type PreviewActionTypes =
-  | createAction<typeof ORDER_SUCCESS, any>
-  | createAction<typeof ORDER_ERROR, any>
-  | createAction<typeof ORDER_LOADING>
-  | createAction<typeof SHOW_PREVIEW, any>
-  | createAction<typeof SWITCH_PREVIEW>
-  | createAction<typeof BALANCE_SUCCESS, any>;
+export type PreviewActions =
+  | CreateAction<typeof ORDER_SUCCESS, any>
+  | CreateAction<typeof ORDER_ERROR, any>
+  | CreateNoPayloadAction<typeof ORDER_LOADING>
+  | CreateAction<typeof SHOW_PREVIEW, any>
+  | CreateNoPayloadAction<typeof SWITCH_PREVIEW>
+  | CreateAction<typeof BALANCE_SUCCESS, any>;
 
 export interface PreviewState {
   orders: any;

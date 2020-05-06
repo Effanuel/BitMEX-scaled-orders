@@ -31,9 +31,9 @@ const initialState = {
 };
 // Reducer
 export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
-  state: WebsocketState = initialState,
+  state = initialState,
   action
-): WebsocketState => {
+) => {
   switch (action.type) {
     case FETCH_ORDERS:
       return { ...state, order: { ...state.order, ...action.payload } };
@@ -81,11 +81,11 @@ export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
 };
 
 const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
-  state: WebsocketState = initialState,
-  { payload }
-): WebsocketState => {
-  let response: WebsocketResponse = JSON.parse(payload.message);
-  console.log("REduxWebsocket message", response);
+  state = initialState,
+  action
+) => {
+  let response: WebsocketResponse = JSON.parse(action.payload.message);
+  // console.log("REduxWebsocket message", response);
 
   const responseKeys = Object.keys(response);
   const table = response["table"];
@@ -176,11 +176,11 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
   return state;
 };
 
-type Actions = ActionCreator<WebsocketActions>;
+type Actions = WebsocketActions;
 
 // Actions
 // ==============================
-export const wsTickerChange: Actions = (payload: string) => ({
+export const wsTickerChange = (payload: string): Actions => ({
   type: REDUX_WEBSOCKET_TICKER,
   payload,
 });
@@ -205,7 +205,7 @@ export const getOrders = (): Thunk => async (dispatch) => {
   }
 };
 
-export const getSuccess: Actions = (payload: any) => ({
+export const getSuccess = (payload: any): Actions => ({
   type: FETCH_ORDERS,
   payload,
 });

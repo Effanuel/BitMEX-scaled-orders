@@ -1,6 +1,6 @@
 import {
   BestPriceState,
-  BestPriceActionTypes,
+  BestPriceActions,
   PostOrder,
   POST_ORDER,
   PUT_ORDER,
@@ -11,9 +11,9 @@ import {
 } from "./types";
 
 import axios from "axios";
-import { createOrder } from "util/index";
+import { createOrder, amendOrder } from "util/index";
 import { Thunk } from "../../models/state";
-import { ActionCreator, Reducer } from "redux";
+import { Reducer } from "redux";
 
 const initialState = {
   bestOrderID: "",
@@ -26,12 +26,12 @@ const initialState = {
   loading: false,
 };
 
-export const best_priceReducer: Reducer<
-  BestPriceState,
-  BestPriceActionTypes
-> = (state: BestPriceState = initialState, action): BestPriceState => {
+export const best_priceReducer: Reducer<BestPriceState, BestPriceActions> = (
+  state = initialState,
+  action
+) => {
   switch (action.type) {
-    case POST_ORDER:
+    case POST_ORDER: //todo rename to post order success
       return postOrderReducer(state, action);
     case PUT_ORDER:
       return { ...state, loading: false, price: action.payload.price };
@@ -49,7 +49,7 @@ export const best_priceReducer: Reducer<
 };
 
 const postOrderReducer: Reducer<BestPriceState, PostOrder> = (
-  state: BestPriceState = initialState,
+  state = initialState,
   action
 ) => {
   // Order details:
@@ -64,20 +64,21 @@ const postOrderReducer: Reducer<BestPriceState, PostOrder> = (
 // ACTIONS
 // =====================================
 
-export const post_bestOrder = (payload: any): Thunk => async (dispatch) => {
+export const createBestOrder = (payload: any): Thunk => async (dispatch) => {
   try {
     dispatch(orderLoading());
-    const best_order = createOrder(payload);
+    const order = createOrder(payload);
 
-    const response = await axios.post("/bitmex/order", best_order);
+    const response = await axios.post("/bitmex/order", {
+      order,
+      method: "POST",
+    });
     const { data, success } = response.data;
     const { text, orderID, price } = JSON.parse(data);
 
     dispatch(
       postOrderSuccess({ success, text, orderID, price, from: "Best Order" })
     );
-    // dispatch(send(authKeyExpires("/realtime", "GET")));
-    // dispatch(send({ op: "subscribe", args: ["order"] }));
   } catch (err) {
     console.log(err, "ERR");
     err.message.includes("500")
@@ -86,22 +87,27 @@ export const post_bestOrder = (payload: any): Thunk => async (dispatch) => {
   }
 };
 // TODO
-export const put_bestOrder = (payload: any): Thunk => async (dispatch) => {
+export const amendBestOrder = (price: number): Thunk => async (
+  dispatch,
+  getState
+) => {
   try {
     dispatch(orderLoading());
-    const best_order = createOrder(payload);
+    const { bestOrderID } = getState().best_price;
+    const best_order = amendOrder({ orderID: bestOrderID, price });
 
-    const response = await axios.post("/bitmex/order", best_order);
+    const response = await axios.post("/bitmex/order", {
+      order: best_order,
+      method: "PUT",
+    });
     const { data, success } = response.data;
     const { text, orderID } = JSON.parse(data);
 
-    dispatch(putOrderSuccess({ success, from: text, orderID }));
-    // dispatch(send(authKeyExpires("/realtime", "GET")));
-    // dispatch(send({ op: "subscribe", args: ["order"] }));
+    dispatch(putOrderSuccess({ orderID }));
   } catch (err) {
     console.log(err, "PUTERR");
     // if error, cancel the order
-    dispatch(putOrderError());
+    dispatch(putOrderError("a"));
 
     ///
 
@@ -113,35 +119,36 @@ export const put_bestOrder = (payload: any): Thunk => async (dispatch) => {
   }
 };
 
-type Actions = ActionCreator<BestPriceActionTypes>;
+type Actions = BestPriceActions;
 
-const orderLoading: Actions = () => ({
+export const orderLoading = (): Actions => ({
   type: LOADING,
 });
 
-const orderError: Actions = () => ({
+const orderError = (): Actions => ({
   type: LOADING,
 });
 
-const postOrderSuccess: Actions = (payload: any) => ({
+export const postOrderSuccess = (payload: any): Actions => ({
   type: POST_ORDER,
   payload,
 });
 
-const putOrderSuccess: Actions = (payload: any) => ({
+const putOrderSuccess = (payload: any): Actions => ({
   type: PUT_ORDER,
   payload,
 });
 
-export const __clearBestOrder: Actions = () => ({
+export const __clearBestOrder = (): Actions => ({
   type: __CLEAR_BEST_ORDER,
 });
 
-const putOrderError: Actions = () => ({
+const putOrderError = (payload: any): Actions => ({
   type: PUT_ORDER_ERROR,
+  payload,
 });
 
-export const postOrderError: Actions = (payload: any) => ({
+export const postOrderError = (payload: any): Actions => ({
   type: POST_ORDER_ERROR,
   payload,
 });

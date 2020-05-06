@@ -1,4 +1,4 @@
-import { MESSAGE, CLEAR, NotifyActionTypes, NotifyState } from "./types";
+import { MESSAGE, CLEAR, NotifyActions, NotifyState } from "./types";
 import { ActionCreator, Reducer } from "redux";
 
 const initialState = {
@@ -6,8 +6,8 @@ const initialState = {
   type: "",
 };
 
-export const notifyReducer: Reducer<NotifyState, NotifyActionTypes> = (
-  state: NotifyState = initialState,
+export const notifyReducer: Reducer<NotifyState, NotifyActions> = (
+  state = initialState,
   action
 ) => {
   switch (action.type) {
@@ -26,6 +26,6 @@ export const notifyReducer: Reducer<NotifyState, NotifyActionTypes> = (
 
 // ACTIONS =======================
 
-export const clearNotifications: ActionCreator<NotifyActionTypes> = () => ({
+export const clearNotifications = (): NotifyActions => ({
   type: CLEAR,
 });
