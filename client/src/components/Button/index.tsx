@@ -1,41 +1,28 @@
-import React from "react";
+import React from 'react';
 // STYLES
-import cx from "classnames";
-import styles from "./styles.module.css";
+import cx from 'classnames';
+import styles from './styles.module.css';
 
-interface Props {
+export interface Props {
   id?: string;
-  children: React.ReactNode;
-  variant?: "submit" | "text" | "custom";
+  label: string;
+  testID?: string;
+  variant?: 'submit' | 'text' | 'custom';
   disabled?: boolean;
   onClick: (event: any) => void;
   style?: any;
   className?: any;
 }
 
-function Button({
-  id,
-  variant = "submit",
-  children,
-  disabled,
-  onClick,
-  style,
-  className = ""
-}: Props) {
+function Button({ id, label, testID, variant = 'submit', disabled, onClick, style, className = '' }: Props) {
   const buttonStyle = cx({
-    [styles.button]: variant === "submit",
-    [styles.text_button]: variant === "text",
-    [className]: variant === "custom"
+    [styles.button]: variant === 'submit',
+    [styles.text_button]: variant === 'text',
+    [className]: variant === 'custom',
   });
   return (
-    <button
-      id={id}
-      className={buttonStyle}
-      style={style}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {children}
+    <button id={id} data-test-id={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
+      {label}
     </button>
   );
 }

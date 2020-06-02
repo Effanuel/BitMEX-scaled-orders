@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 // UTILS
-import styles from "./styles.module.css";
+import styles from './styles.module.css';
 
 type Props = {
   id: string;
@@ -14,7 +14,7 @@ function SelectDropdown({ id, label, onChange }: Props) {
       <label htmlFor={label}>{label}</label>
 
       <select className="custom-select" onChange={onChange} id={id}>
-        {["XBTUSD", "ETHUSD", "XRPUSD"].map((item: string) => (
+        {['XBTUSD', 'ETHUSD', 'XRPUSD'].map((item) => (
           <option key={item} value={item}>
             {item}
           </option>

@@ -38,7 +38,7 @@ if (process.env.NODE_ENV != "development ") {
   app.use(express.static(path.join(__dirname, "../../client/build")));
 
   // Handle React routing, return all requests to React app
-  app.get("/*", function(req: express.Request, res: express.Response) {
+  app.get("/*", function (req: express.Request, res: express.Response) {
     res.sendFile(path.join(__dirname, "../../", "client/build/index.html"));
   });
 }
@@ -48,29 +48,29 @@ const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
 app.use(
   morgan(morganFormat, {
-    skip: function(req, res) {
+    skip: function (req, res) {
       return res.statusCode < 400;
     },
-    stream: process.stderr
+    stream: process.stderr,
   })
 );
 
 app.use(
   morgan(morganFormat, {
-    skip: function(req, res) {
+    skip: function (req, res) {
       return res.statusCode >= 400;
     },
-    stream: process.stdout
+    stream: process.stdout,
   })
 );
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   logger.debug("Debug statement");
   logger.info("Info statement");
   res.send(req.method + " " + req.originalUrl);
 });
 
-app.get("/error", function(req, res) {
+app.get("/error", function (req, res) {
   throw new Error("Problem Here!");
 });
 
@@ -114,7 +114,7 @@ const server = app.listen(app.get("port"), () => {
 // on kill
 process.on("SIGTERM", () => {
   logger.log("warn", "process.on::SIGTERM");
-  server.close(function() {
+  server.close(function () {
     process.exit(0);
   });
 });
@@ -122,16 +122,16 @@ process.on("SIGTERM", () => {
 process.on("exit", () => {
   logger.log("warn", "process.on::exit");
   console.log("exit");
-  server.close(function() {
+  server.close(function () {
     process.exit(2);
   });
 });
 
 // on crash
-process.on("uncaughtException", error => {
+process.on("uncaughtException", (error) => {
   logger.log("error", "process.on::uncaughtException");
   logger.log("error", `Something terrible happened: ${error}`);
-  server.close(function() {
+  server.close(function () {
     process.exit(1);
   }); // exit application
 });

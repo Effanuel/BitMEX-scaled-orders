@@ -9,32 +9,35 @@ import {
   getWsSymbol,
   websocketCurrentPrice,
   balanceSelector,
-} from "./index";
+} from './index';
 
-describe("Selectors", () => {
+describe('Selectors', () => {
   const mockState: any = {
     websocket: {
       __keys: {},
       instrument: {
         0: {
-          symbol: "XBTUSD",
+          symbol: 'XBTUSD',
           askPrice: 8000,
+          bidPrice: 8001,
         },
         1: {
-          symbol: "ETHUSD",
+          symbol: 'ETHUSD',
           askPrice: 111,
+          bidPrice: 8001,
         },
         2: {
-          symbol: "XRPUSD",
+          symbol: 'XRPUSD',
           askPrice: 0.2,
+          bidPrice: 8001,
         },
       },
       trade: {},
       order: {},
       connected: false,
       loading: false,
-      message: "Websocket is offline.",
-      symbol: "XBTUSD",
+      message: 'Websocket is offline.',
+      symbol: 'XBTUSD',
     },
     preview: {
       orders: {
@@ -47,7 +50,7 @@ describe("Selectors", () => {
           { orderQty: 10000, price: 6000 },
         ],
         stop: {
-          symbol: "XBTUSD",
+          symbol: 'XBTUSD',
           stopPx: 10000,
           orderQty: 60_000,
         },
@@ -58,76 +61,71 @@ describe("Selectors", () => {
   };
 
   let result;
-  describe("websocketCurrentPrice", () => {
-    it("gets askPrice of current symbol", () => {
+  describe('websocketCurrentPrice', () => {
+    it('gets askPrice of current symbol', () => {
+      const instrument = table_instrument(mockState);
       const wsSymbol = getWsSymbol(mockState);
-      const instrumentData = table_instrument(mockState);
-
-      result = websocketCurrentPrice.resultFunc(instrumentData, wsSymbol);
-      expect(result).toEqual(8000);
+      const result = websocketCurrentPrice.resultFunc(instrument, wsSymbol);
+      expect(result!.askPrice).toEqual(8000);
+      expect(result!.bidPrice).toEqual(8001);
     });
 
-    it("returns 'Loading' if no data for symbol was found", () => {
-      const instrumentData = table_instrument(mockState);
-
-      result = websocketCurrentPrice.resultFunc(instrumentData, "HELLO");
-      expect(result).toEqual("Loading...");
+    it('returns undefined if no data for symbol was found', () => {
+      const payload = {
+        ...mockState,
+        websocket: { ...mockState.websocket, symbol: 'HELLO' },
+      };
+      const instrument = table_instrument(payload);
+      const wsSymbol = getWsSymbol(payload);
+      const result = websocketCurrentPrice.resultFunc(instrument, wsSymbol);
+      expect(result).toEqual(undefined);
     });
   });
 
-  describe("balanceSelector", () => {
-    it("divides and rounds the balance to 4th digit", () => {
+  describe('balanceSelector', () => {
+    it('divides and rounds the balance to 4th digit', () => {
       const balance = getBalance(mockState);
-      result = balanceSelector.resultFunc(balance);
+      const result = balanceSelector.resultFunc(balance);
       expect(result).toEqual(123456.7899);
     });
   });
 
-  describe("ordersRiskSelector", () => {
-    it("calculates risk based on average entry for XBTUSD", () => {
+  describe('ordersRiskSelector', () => {
+    it('calculates risk based on average entry for XBTUSD', () => {
       const showPreview = getShowPreview(mockState);
-      let orders = getOrders(mockState);
-      orders.stop["symbol"] = "XBTUSD";
+      const orders = getOrders(mockState);
+      orders.stop['symbol'] = 'XBTUSD';
 
-      const averageEntry = ordersAveragePriceSelector.resultFunc(
-        orders,
-        showPreview
-      );
+      const averageEntry = ordersAveragePriceSelector.resultFunc(orders, showPreview);
 
       result = ordersRiskSelector.resultFunc(orders, averageEntry, showPreview);
       expect(result).toEqual(18.5);
     });
-    it("calculates risk based on average entry for ETHUSD", () => {
+    it('calculates risk based on average entry for ETHUSD', () => {
       const showPreview = getShowPreview(mockState);
-      let orders = getOrders(mockState);
-      orders.stop["symbol"] = "ETHUSD";
+      const orders = getOrders(mockState);
+      orders.stop['symbol'] = 'ETHUSD';
 
-      const averageEntry = ordersAveragePriceSelector.resultFunc(
-        orders,
-        showPreview
-      );
+      const averageEntry = ordersAveragePriceSelector.resultFunc(orders, showPreview);
 
       result = ordersRiskSelector.resultFunc(orders, averageEntry, showPreview);
       expect(result).toEqual(110.95377);
     });
 
-    it("calculates risk based on average entry for XRPUSD", () => {
+    it('calculates risk based on average entry for XRPUSD', () => {
       const showPreview = getShowPreview(mockState);
-      let orders = getOrders(mockState);
-      orders.stop["symbol"] = "XRPUSD";
+      const orders = getOrders(mockState);
+      orders.stop['symbol'] = 'XRPUSD';
 
-      const averageEntry = ordersAveragePriceSelector.resultFunc(
-        orders,
-        showPreview
-      );
+      const averageEntry = ordersAveragePriceSelector.resultFunc(orders, showPreview);
 
       result = ordersRiskSelector.resultFunc(orders, averageEntry, showPreview);
       expect(result).toEqual(22190.7539);
     });
   });
 
-  describe("ordersRiskPercSelector", () => {
-    it("calculates risk percentage based on risk amount and balance", () => {
+  describe('ordersRiskPercSelector', () => {
+    it('calculates risk percentage based on risk amount and balance', () => {
       const balance = getBalance(mockState);
 
       result = ordersRiskPercSelector.resultFunc(balance, 12_345_678_993_321);
@@ -138,15 +136,15 @@ describe("Selectors", () => {
       expect(result).toEqual(17.91);
     });
 
-    it("returns 0 if balance is 0", () => {
+    it('returns 0 if balance is 0', () => {
       const balance = 0;
       result = ordersRiskPercSelector.resultFunc(balance, 12_345_678_993_321);
       expect(result).toEqual(0);
     });
   });
 
-  describe("ordersAveragePriceSelectore", () => {
-    it("returns average price the orders", () => {
+  describe('ordersAveragePriceSelectore', () => {
+    it('returns average price the orders', () => {
       const orders = getOrders(mockState);
       const showPreview = getShowPreview(mockState);
 
@@ -154,7 +152,7 @@ describe("Selectors", () => {
       expect(result).toEqual(2448.9796);
     });
 
-    it("returns undefined if showPreview is false or orderList is undefined", () => {
+    it('returns undefined if showPreview is false or orderList is undefined', () => {
       const orders = getOrders(mockState);
 
       result = ordersAveragePriceSelector.resultFunc(orders, false);

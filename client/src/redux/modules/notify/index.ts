@@ -1,15 +1,12 @@
-import { MESSAGE, CLEAR, NotifyActions, NotifyState } from "./types";
-import { ActionCreator, Reducer } from "redux";
+import { MESSAGE, CLEAR, NotifyActions, NotifyState, NotifyType } from './types';
+import { Reducer } from 'redux';
 
 const initialState = {
-  message: "",
-  type: "",
+  message: '',
+  type: NotifyType.None,
 };
 
-export const notifyReducer: Reducer<NotifyState, NotifyActions> = (
-  state = initialState,
-  action
-) => {
+export const notifyReducer: Reducer<NotifyState, NotifyActions> = (state = initialState, action) => {
   switch (action.type) {
     case MESSAGE:
       return {

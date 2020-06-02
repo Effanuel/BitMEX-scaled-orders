@@ -1,39 +1,33 @@
-import React from "react";
+import React from 'react';
 // REDUX
-import { shallowEqual, useSelector } from "react-redux";
-import { websocketCurrentPrice } from "redux/selectors";
+import { shallowEqual, useSelector } from 'react-redux';
 /// COMPONENTS
-import {
-  ScaledContainer,
-  PreviewContainer,
-  MarketOrderContainer,
-} from "containers";
+import { ScaledContainer, PreviewContainer, MarketOrderContainer } from 'containers';
 // UTILS
-import { PositionedSnackbar, SpinnerComponent } from "components";
-import { AppState } from "redux/models/state";
+import { PositionedSnackbar, SpinnerComponent } from 'components';
+import { AppState } from 'redux/models/state';
 // STYLES
-import "css/root.module.css";
+import 'css/root.module.css';
 // import { order } from "util";
 
 export default function App() {
-  const { showPreview, orderLoading, wsCurrentPrice } = useSelector(
+  const { showPreview, orderLoading } = useSelector(
     (state: AppState) => ({
       showPreview: state.preview.showPreview,
       orderLoading: state.preview.loading,
-      wsCurrentPrice: websocketCurrentPrice(state),
       // TODO: ADD GLOBAL wsCurrentPrice
       // pass to market container and to scaled container
     }),
-    shallowEqual
+    shallowEqual,
   );
   // console.log(test, "LOGOGOGO");
   return (
     <>
       <PositionedSnackbar />
       <SpinnerComponent loading={orderLoading} />
-      <MarketOrderContainer wsCurrentPrice={wsCurrentPrice} />
+      <MarketOrderContainer />
 
-      <ScaledContainer wsCurrentPrice={wsCurrentPrice} />
+      <ScaledContainer />
 
       {showPreview && <PreviewContainer />}
     </>

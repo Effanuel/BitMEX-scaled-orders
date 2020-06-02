@@ -1,12 +1,12 @@
-import { logger } from "./logger";
+import { logger } from './logger';
 
 const error_400_handler = (response_message: string): string => {
   const error_messages: any = {
-    "duplicate clordid": "Duplicate order.",
-    "insufficient available balance": "Insufficient funds.",
-    "missing api key": "Missing API key.",
-    spam: "Spam: quantity is too low.",
-    "immediate liquidation": "Executing would lead to immediate liquidation."
+    'duplicate clordid': 'Duplicate order.',
+    'insufficient available balance': 'Insufficient funds.',
+    'missing api key': 'Missing API key.',
+    spam: 'Spam: quantity is too low.',
+    'immediate liquidation': 'Executing would lead to immediate liquidation.',
   };
 
   // return response_message.includes("duplicate clordid")
@@ -23,10 +23,11 @@ const error_400_handler = (response_message: string): string => {
 
   for (const match in error_messages) {
     if (response_message.includes(match)) {
+      // startswith TODO
       return error_messages[match];
     }
   }
-  return "Unhandled Error";
+  return 'Unhandled Error';
 };
 
 export const ErrorHandler = (error: any) => {
@@ -34,25 +35,25 @@ export const ErrorHandler = (error: any) => {
   const errorMessage = ((statusCode: number): string => {
     switch (statusCode) {
       case 401:
-        return "API Key or Secret incorrect, please check and restart.";
+        return 'API Key or Secret incorrect, please check and restart.';
       case 404:
-        return "Unable to contact the BitMEX API (404).";
+        return 'Unable to contact the BitMEX API (404).';
       case 429:
-        return "Ratelimited on current request";
+        return 'Ratelimited on current request';
       case 503:
-        return "Unable to contact BitMEX";
+        return 'Unable to contact BitMEX';
       case 400:
         const response_error = JSON.parse(error.error).error;
         const response_message = response_error
           ? response_error.message.toLowerCase()
-          : "";
+          : '';
         return error_400_handler(response_message);
 
       default:
-        return "Error::Default";
+        return 'Error::Default';
     }
   })(error.statusCode);
-  logger.log("error", errorMessage);
+  logger.log('error', errorMessage);
   return errorMessage;
 };
 

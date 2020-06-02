@@ -1,23 +1,23 @@
-import React from "react";
+import React from 'react';
 // COMPONENTS
-import Radio from "@material-ui/core/Radio";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 // STYLES
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    "& .MuiFormControlLabel-label": {
-      color: "rgba(255, 255, 255, 0.6)",
-      fontSize: "14px",
-      margin: "0px"
+    '& .MuiFormControlLabel-label': {
+      color: 'rgba(255, 255, 255, 0.6)',
+      fontSize: '14px',
+      margin: '0px',
     },
-    "& .MuiIconButton-root": {
-      color: "#4caf50",
-      padding: "2px"
+    '& .MuiIconButton-root': {
+      color: '#4caf50',
+      padding: '2px',
     },
-    margin: "0px"
-  }
+    margin: '0px',
+  },
 }));
 
 interface Props {
@@ -28,13 +28,7 @@ interface Props {
   labelPlacement?: any;
 }
 
-function CustomRadioButton({
-  checked,
-  id,
-  value,
-  label,
-  labelPlacement = "end"
-}: Props) {
+function CustomRadioButton({ checked, id, value, label, labelPlacement = 'end' }: Props) {
   const classes = useStyles();
 
   return (
