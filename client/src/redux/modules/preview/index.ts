@@ -7,38 +7,38 @@ import {
   BALANCE_SUCCESS,
   PreviewActions,
   PreviewState,
-} from "./types";
-import { ActionCreator, Reducer } from "redux";
+} from './types';
+import { Reducer } from 'redux';
 
-import axios from "axios";
-import { createOrder, orderBulk, createMarketOrder } from "util/index";
-import { Thunk } from "../../models/state";
+import axios from 'axios';
+import { createScaledOrders, createMarketOrder, ScaledOrdersProps } from 'util/index';
+import { Thunk } from '../../models/state';
 
 const initialState = {
-  orders: {},
+  orders: {
+    orders: [],
+    stop: {},
+  },
   balance: 0,
-  error: "",
+  error: '',
   showPreview: false,
   loading: false,
 };
 // Reducer
-export const previewReducer: Reducer<PreviewState, PreviewActions> = (
-  state = initialState,
-  action
-) => {
+export const previewReducer: Reducer<PreviewState, PreviewActions> = (state = initialState, action): PreviewState => {
   switch (action.type) {
     case ORDER_LOADING:
       return {
         ...state,
-        error: "",
+        error: '',
         loading: true,
       };
     case ORDER_SUCCESS:
       return {
         ...state,
         showPreview: false,
-        error: "",
-        orders: [],
+        error: '',
+        orders: initialState.orders,
         loading: false,
       };
     case BALANCE_SUCCESS:
@@ -50,7 +50,7 @@ export const previewReducer: Reducer<PreviewState, PreviewActions> = (
       return {
         ...state,
         showPreview: false,
-        orders: [],
+        orders: initialState.orders,
         error: action.payload,
         loading: false,
       };
@@ -59,13 +59,13 @@ export const previewReducer: Reducer<PreviewState, PreviewActions> = (
         ...state,
         orders: action.payload,
         showPreview: true,
-        error: "",
+        error: '',
       };
     case SWITCH_PREVIEW:
       return {
         ...state,
         showPreview: !state.showPreview,
-        error: "",
+        error: '',
       };
     default:
       return state;
@@ -80,24 +80,25 @@ export const previewReducer: Reducer<PreviewState, PreviewActions> = (
  * @param {Object} payload order details
  * @returns {Object} success response(dispatch action)
  */
-export const scaledOrders = (payload: any): Thunk => async (dispatch) => {
+export const scaledOrders = (payload: ScaledOrdersProps): Thunk => async (dispatch) => {
   try {
     dispatch(postOrderLoading());
-    let orders = orderBulk(payload);
+    const orders = createScaledOrders(payload);
 
-    if (payload.stop && payload.stop !== "") {
+    if (payload.stop && payload.stop !== '') {
       orders.orders.push(orders.stop as any);
     }
-    console.log("order");
+    console.log('order');
 
-    const response = await axios.post("/bitmex/bulkOrders", orders);
-    const { success } = response.data;
-    console.log("SCALED ORDERS>>>", response);
+    const response = await axios.post('/bitmex/bulkOrders', orders);
+    const { success, data } = response.data;
+    const { text } = JSON.parse(data);
+    console.log('SCALED ORDERS>>>', response);
     //success, text, orderID, price
-    dispatch(postOrderSuccess({ success, from: "Scaled_orders" }));
+    dispatch(postOrderSuccess({ success, text, from: 'Scaled_orders' }));
   } catch (err) {
-    err.message.includes("500")
-      ? dispatch(postOrderError("Server is offline."))
+    err.message.includes('500')
+      ? dispatch(postOrderError('Server is offline.'))
       : dispatch(postOrderError(err.response.data.error));
   }
 };
@@ -109,13 +110,13 @@ export const scaledOrders = (payload: any): Thunk => async (dispatch) => {
 
 export const getBalance = (): Thunk => async (dispatch) => {
   try {
-    const response = await axios.post("/bitmex/getBalance");
+    const response = await axios.post('/bitmex/getBalance');
     const { data } = response.data;
     const { walletBalance } = JSON.parse(data);
     dispatch(getBalanceSuccess(walletBalance));
   } catch (err) {
-    err.message.includes("500")
-      ? dispatch(postOrderError("Server is offline."))
+    err.message.includes('500')
+      ? dispatch(postOrderError('Server is offline.'))
       : dispatch(postOrderError(err.response.data.error));
   }
 };
@@ -163,26 +164,26 @@ export const marketOrder = (payload: any): Thunk => async (dispatch) => {
     dispatch(postOrderLoading());
     const order = createMarketOrder(payload);
 
-    const response = await axios.post("/bitmex/order", {
+    const response = await axios.post('/bitmex/order', {
       order,
-      method: "POST",
+      method: 'POST',
     });
     const { data, success } = response.data;
     const { text } = JSON.parse(data);
 
-    dispatch(postOrderSuccess({ success, text, from: "MarketOrder" }));
+    dispatch(postOrderSuccess({ success, text, from: 'MarketOrder' }));
   } catch (err) {
-    console.log(err, err.message, "MARKET ERROR");
-    err.message.includes("500")
-      ? dispatch(postOrderError("Server is offline."))
+    console.log(err, err.message, 'MARKET ERROR');
+    err.message.includes('500')
+      ? dispatch(postOrderError('Server is offline.'))
       : dispatch(postOrderError(err.response.data.error));
   }
 };
 
 type Actions = PreviewActions;
 
-export const previewOrders = (payload: any): Actions => {
-  const orders = orderBulk(payload);
+export const previewOrders = (payload: ScaledOrdersProps): Actions => {
+  const orders = createScaledOrders(payload);
   return {
     type: SHOW_PREVIEW,
     payload: orders,
@@ -198,16 +199,22 @@ const postOrderLoading = (): Actions => ({
   type: ORDER_LOADING,
 });
 
-export const postOrderSuccess = (payload: any): Actions => ({
+export const postOrderSuccess = (payload: PostOrderSuccess): Actions => ({
   type: ORDER_SUCCESS,
   payload,
 });
 
 export const postOrderError = (payload: any): Actions => ({
   type: ORDER_ERROR,
-  payload: payload || "error",
+  payload: payload || 'error',
 });
 
 export const previewClose = (): Actions => ({
   type: SWITCH_PREVIEW,
 });
+
+export interface PostOrderSuccess {
+  success: number;
+  text: string;
+  from: string;
+}

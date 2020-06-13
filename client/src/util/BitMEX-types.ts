@@ -36,24 +36,16 @@ export interface orderType {
   timestamp: string;
 }
 
-type pegPriceType =
-  | "LastPeg"
-  | "MidPricePeg"
-  | "MarketPeg"
-  | "PrimaryPeg"
-  | "TrailingStopPeg";
+type pegPriceType = 'LastPeg' | 'MidPricePeg' | 'MarketPeg' | 'PrimaryPeg' | 'TrailingStopPeg';
 
-type timeInForce =
-  | "Day"
-  | "GoodTillCancel"
-  | "ImmediateOrCancel"
-  | "FillOrKill";
+type timeInForce = 'Day' | 'GoodTillCancel' | 'ImmediateOrCancel' | 'FillOrKill';
 
-type ordType =
-  | "Market"
-  | "Limit"
-  | "Stop"
-  | "StopLimit"
-  | "MarketIfTouched"
-  | "LimitIfTouched"
-  | "Pegged";
+type ordType = 'Market' | 'Limit' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'Pegged';
+
+export enum SYMBOLS {
+  XBTUSD = 'XBTUSD',
+  ETHUSD = 'ETHUSD',
+  XRPUSD = 'XRPUSD',
+}
+
+export type SIDE = 'Sell' | 'Buy';

@@ -1,5 +1,7 @@
-import { createSelector } from "reselect";
-import { AppState } from "../models/state";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { createSelector } from 'reselect';
+import { AppState } from '../models/state';
+import { SYMBOLS } from 'util/BitMEX-types';
 // PREVIEW ACTIONS
 export const getShowPreview = (state: AppState) => state.preview.showPreview;
 export const getOrders = (state: AppState) => state.preview.orders;
@@ -18,25 +20,19 @@ const websocketConnected = (state: AppState) => state.websocket.connected;
 const getBestOrderStatus = (state: AppState) => state.best_price.status;
 const getbestOrderID = (state: AppState) => state.best_price.bestOrderID;
 
-export const bestOrderStatusSelector = createSelector(
-  [table_order, getbestOrderID],
-  (open_orders, bestOrderID) => {
-    console.log("CALL ORDER STATUS");
-    for (let order in open_orders) {
-      console.log(open_orders[order]?.orderID, bestOrderID);
-      if (open_orders[order]?.orderID === bestOrderID) {
-        console.log(open_orders[order].ordStatus, "STATATATAATUS");
-        return open_orders[order].ordStatus;
-      }
+export const bestOrderStatusSelector = createSelector([table_order, getbestOrderID], (open_orders, bestOrderID) => {
+  console.log('CALL ORDER STATUS');
+  for (const order in open_orders) {
+    console.log(open_orders[order]?.orderID, bestOrderID);
+    if (open_orders[order]?.orderID === bestOrderID) {
+      console.log(open_orders[order].ordStatus, 'STATATATAATUS');
+      return open_orders[order].ordStatus;
     }
-    return "Order not placed.";
   }
-);
+  return 'Order not placed.';
+});
 
-export const bestOrderStatus = createSelector(
-  [getBestOrderStatus],
-  (status) => status
-);
+export const bestOrderStatus = createSelector([getBestOrderStatus], (status) => status);
 
 //==============================================
 // For later versions :)
@@ -46,34 +42,32 @@ export const bestOrderStatus = createSelector(
 //   }
 // });
 
+export interface CurrentPrice {
+  askPrice: number;
+  bidPrice: number;
+}
+
 /**
  * Calculates ask price of the selected ticker
  * @param {object} data
  * @param {string} symbol
  * @returns {number} ask price
  */
-// export const websocketCurrentPrice = createSelector(
-//   [table_instrument, getWsSymbol],
-//   (data, symbol): any => {
-//     for (let i = 0; i < Object.keys(data).length; i++) {
-//       if (data[i].symbol === symbol && data[i].askPrice) {
-//         return data[i].askPrice;
-//       }
-//     }
-//     return "Loading...";
-//   }
-// );
-export const websocketCurrentPrice = createSelector(
-  [table_instrument, getWsSymbol],
-  (data, symbol): any => {
-    for (let i in data) {
-      if (data[i].symbol === symbol && data[i].askPrice) {
-        return data[i].askPrice;
-      }
+export const websocketCurrentPrice = createSelector([table_instrument, getWsSymbol], (data, symbol):
+  | CurrentPrice
+  | undefined => {
+  for (const i in data) {
+    if (data[i].symbol === symbol && data[i].askPrice && data[i].bidPrice) {
+      return {
+        askPrice: data[i].askPrice,
+        bidPrice: data[i].bidPrice,
+      };
     }
-    return "Loading...";
   }
-);
+  return undefined;
+
+  // return 'Loading...';
+});
 
 /**
  * Calculates averae price of scaled orders
@@ -81,28 +75,21 @@ export const websocketCurrentPrice = createSelector(
  * @param {boolean} previewTable is preview table open
  * @returns {number} average price
  */
-export const ordersAveragePriceSelector = createSelector(
-  [getOrders, getShowPreview],
-  (orderObject: any = {}, previewTable): number | void => {
-    if (previewTable && orderObject?.orders?.length) {
-      // We push stop-loss order in /utils distribution functions
-      // so we want to exclude it here.
-      const { orders } = orderObject;
+export const ordersAveragePriceSelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
+  | number
+  | void => {
+  if (previewTable && orderObject?.orders?.length) {
+    // We push stop-loss order in /utils distribution functions
+    // so we want to exclude it here.
+    const { orders } = orderObject;
 
-      const total_quantity = orders.reduce(
-        (total: number, n: any): number => total + n.orderQty,
-        0
-      );
-      const contract_value = orders.reduce(
-        (total: number, n: any): number => total + n.orderQty / n.price,
-        0
-      );
+    const total_quantity = orders.reduce((total, n) => total + n.orderQty, 0);
+    const contract_value = orders.reduce((total, n) => total + n.orderQty / n.price, 0);
 
-      // Divide by 10,000 so that ordersRiskSelector calculated risk more accurately
-      return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
-    }
+    // Divide by 10,000 so that ordersRiskSelector calculated risk more accurately
+    return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
   }
-);
+});
 
 /**
  * Calculates risk in XBT
@@ -114,24 +101,17 @@ export const ordersAveragePriceSelector = createSelector(
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAveragePriceSelector, getShowPreview],
   (orderObject: any = {}, averageEntry, previewTable): number | void => {
-    if (
-      previewTable &&
-      averageEntry > 0 &&
-      averageEntry &&
-      orderObject["stop"]
-    ) {
+    if (previewTable && averageEntry > 0 && averageEntry && orderObject['stop']) {
       let quantity = orderObject.stop.orderQty;
       // 1 contract of ETH is for 0.001 mXBT which is 1e-6 XBT
-      if (orderObject.stop["symbol"] === "ETHUSD")
-        quantity *= 1e-6 * averageEntry ** 2;
+      if (orderObject.stop['symbol'] === SYMBOLS.ETHUSD) quantity *= 1e-6 * averageEntry ** 2;
       // 1 contract of XRPUSD is for 0.0002 XBT which is 2e-4 XBT
-      if (orderObject.stop["symbol"] === "XRPUSD")
-        quantity *= 2e-4 * averageEntry ** 2;
+      if (orderObject.stop['symbol'] === SYMBOLS.XRPUSD) quantity *= 2e-4 * averageEntry ** 2;
       const entryValue = quantity / averageEntry;
-      const exitValue = quantity / orderObject.stop["stopPx"]; // || 1
+      const exitValue = quantity / orderObject.stop['stopPx']; // || 1
       return Math.abs(+(entryValue - exitValue).toFixed(5));
     }
-  }
+  },
 );
 
 /**
@@ -139,9 +119,7 @@ export const ordersRiskSelector = createSelector(
  * @param {number} balance fetched balance in satoshis??
  * @returns {number} reformated balance in XBT
  */
-export const balanceSelector = createSelector([getBalance], (balance):
-  | number
-  | void => {
+export const balanceSelector = createSelector([getBalance], (balance): number | void => {
   if (balance) {
     return Math.round((balance / 1e8) * 10000) / 10000;
   }
@@ -158,5 +136,5 @@ export const ordersRiskPercSelector = createSelector(
   (balance: any, risk: any) => {
     if (balance !== 0) return +((risk / balance) * 100).toFixed(2);
     return 0;
-  }
+  },
 );
