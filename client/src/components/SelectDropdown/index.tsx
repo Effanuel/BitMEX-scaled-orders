@@ -2,11 +2,11 @@ import React from 'react';
 // UTILS
 import styles from './styles.module.css';
 
-type Props = {
+interface Props {
   id: string;
   label: string;
   onChange: (event: any) => void;
-};
+}
 
 function SelectDropdown({ id, label, onChange }: Props) {
   return (

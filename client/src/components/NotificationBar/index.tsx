@@ -1,38 +1,41 @@
-import React from "react";
+import React from 'react';
 // COMPONENTS
-import { SVGIcon } from "../";
-import ICONS from "../SVGIcon/icons";
-
+import { SVGIcon } from '../';
+import ICONS from '../SVGIcon/icons';
 // STYLES
-import styles from "./styles.module.css";
-import cx from "classnames";
+import styles from './styles.module.css';
+import cx from 'classnames';
+
+import { NotifyType } from 'redux/modules/notify/types';
 
 export interface Props {
-  notificationType: string; //"error" | "success" | "warning" | "";
+  notificationType: NotifyType;
   message: string;
 }
 
+const notificationColors: { [key in NotifyType]: string } = {
+  error: 'pink',
+  success: 'green',
+  warning: 'orange',
+  '': '',
+};
+
 const NotificationBar = React.memo(({ notificationType, message }: Props) => {
-  let snackbar_style = cx({
-    [styles.error_snackbar]: notificationType === "error",
-    [styles.success_snackbar]: notificationType === "success",
-    [styles.warning_snackbar]: notificationType === "warning",
-    [styles.snackbar_none]: notificationType === ""
+  const snackbar_style = cx({
+    [styles.error_snackbar]: notificationType === NotifyType.error,
+    [styles.success_snackbar]: notificationType === NotifyType.success,
+    [styles.warning_snackbar]: notificationType === NotifyType.warning,
+    [styles.snackbar_none]: notificationType === NotifyType.None,
   });
 
-  //custom render icon switch case return function
+  function renderIcon() {
+    // eslint-disable-next-line react/prop-types
+    return <SVGIcon color={notificationColors[notificationType]} icon={ICONS[notificationType.toUpperCase()]} />;
+  }
+
   return (
     <div className={snackbar_style}>
-      {notificationType === "error" && (
-        <SVGIcon color="pink" icon={ICONS.ERROR} />
-      )}
-      {notificationType === "success" && (
-        <SVGIcon color="green" icon={ICONS.SUCCESS} />
-      )}
-      {notificationType === "warning" && (
-        <SVGIcon color="orange" icon={ICONS.WARNING} />
-      )}
-
+      {renderIcon()}
       <span className={styles.snackbar_text}>{message}</span>
     </div>
   );

@@ -3,7 +3,7 @@ import React from 'react';
 import cx from 'classnames';
 import styles from './styles.module.css';
 
-export interface Props {
+export interface ButtonProps {
   id?: string;
   label: string;
   testID?: string;
@@ -14,7 +14,7 @@ export interface Props {
   className?: any;
 }
 
-function Button({ id, label, testID, variant = 'submit', disabled, onClick, style, className = '' }: Props) {
+function Button({ id, label, testID, variant = 'submit', disabled, onClick, style, className = '' }: ButtonProps) {
   const buttonStyle = cx({
     [styles.button]: variant === 'submit',
     [styles.text_button]: variant === 'text',
