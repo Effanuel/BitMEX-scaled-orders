@@ -1,15 +1,31 @@
-import { orderType } from "./BitMEX-types";
+import {orderType, SYMBOLS, SIDE} from './BitMEX-types';
+import {gaussian} from './mathHelpers';
 
-const INSTRUMENT_PARAMS: any = {
-  XBTUSD: { decimal_rounding: 3, ticksize: 2 },
-  ETHUSD: { decimal_rounding: 3, ticksize: 20 },
-  XRPUSD: { decimal_rounding: 4, ticksize: 10000 },
+type InstrumentParams = {
+  [K in SYMBOLS]: {
+    decimal_rounding: number;
+    ticksize: number;
+  };
+};
+
+export enum DISTRIBUTIONS {
+  Uniform = 'Uniform',
+  Normal = 'Normal',
+  Positive = 'Positive',
+  Negative = 'Negative',
+}
+
+const INSTRUMENT_PARAMS: InstrumentParams = {
+  XBTUSD: {decimal_rounding: 3, ticksize: 2},
+  ETHUSD: {decimal_rounding: 3, ticksize: 20},
+  XRPUSD: {decimal_rounding: 4, ticksize: 10000},
 };
 
 /**
  * Setting one of the distributions
  */
-export const orderBulk = ({
+// TOOD ADD DISTRIBUTION AS ENUM
+export const createScaledOrders = ({
   quantity,
   n_tp,
   start,
@@ -17,37 +33,28 @@ export const orderBulk = ({
   side,
   stop,
   distribution,
-  symbol, // : XBTUSD, ETHUSD...
-}: Props): ordersProps => {
+  symbol,
+}: ScaledOrdersProps): ScaledOrders => {
   switch (distribution) {
-    case "Positive":
-      return Positive({ quantity, n_tp, start, end, side, symbol, stop });
-    case "Negative":
-      return Negative({ quantity, n_tp, start, end, side, symbol, stop });
-    case "Normal":
-      return Normal({ quantity, n_tp, start, end, side, symbol, stop });
-    case "Uniform":
+    case DISTRIBUTIONS.Positive:
+      return Positive({quantity, n_tp, start, end, side, symbol, stop});
+    case DISTRIBUTIONS.Negative:
+      return Negative({quantity, n_tp, start, end, side, symbol, stop});
+    case DISTRIBUTIONS.Normal:
+      return Normal({quantity, n_tp, start, end, side, symbol, stop});
+    case DISTRIBUTIONS.Uniform:
     default:
-      return Uniform({ quantity, n_tp, start, end, side, symbol, stop });
+      return Uniform({quantity, n_tp, start, end, side, symbol, stop});
   }
 };
 
-const Uniform = (Props: Props): ordersProps => {
-  //You can change these parameters if you want to test
-  return skewedDistribution(Props, -1, 1, -1, false);
-};
-const Positive = (Props: Props): ordersProps => {
-  //You can change these parameters if you want to test
-  return skewedDistribution(Props, -1, 1, -1);
-};
-const Negative = (Props: Props): ordersProps => {
-  //You can change these parameters if you want to test
-  return skewedDistribution(Props, -1, 1, 1);
-};
-const Normal = (Props: Props): ordersProps => {
-  //You can change these parameters if you want to test
-  return skewedDistribution(Props, -2, 2, 0);
-};
+const Uniform = (Props: DistributionProps): ScaledOrders => skewedDistribution(Props, -1, 1, -1, false);
+
+const Positive = (Props: DistributionProps): ScaledOrders => skewedDistribution(Props, -1, 1, -1);
+
+const Negative = (Props: DistributionProps): ScaledOrders => skewedDistribution(Props, -1, 1, 1);
+
+const Normal = (Props: DistributionProps): ScaledOrders => skewedDistribution(Props, -2, 2, 0);
 
 /**
  * Order generation based on a distribution
@@ -59,14 +66,14 @@ const Normal = (Props: Props): ordersProps => {
  * @returns {object} Object of orders array and stop(if any)
  */
 const skewedDistribution = (
-  Props: Props,
+  Props: DistributionProps,
   START_CFG: number,
   END_CFG: number,
   mean: number,
-  isSkewed: boolean = true
-): ordersProps => {
-  const { quantity, n_tp, start, end, side, symbol, stop } = Props;
-  const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
+  isSkewed = true,
+): ScaledOrders => {
+  const {quantity, n_tp, start, end, side, symbol, stop} = Props;
+  const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
 
   //Determening spread of the ticker
   //Appropriate rounding, else the order is going to get rejected
@@ -76,19 +83,14 @@ const skewedDistribution = (
   const incrementQty = (END_CFG - START_CFG) / (n_tp - 1);
 
   const probability_distribution: number[] = isSkewed
-    ? Array.from(Array(n_tp).keys()).map((_, index) =>
-        gaussian(mean, START_CFG + index * incrementQty, 1)
-      )
+    ? Array.from(Array(n_tp).keys()).map((_, index) => gaussian(mean, START_CFG + index * incrementQty, 1))
     : Array(n_tp).fill(1);
 
-  const total_probability = probability_distribution.reduce(
-    (total: number, number: number) => total + number,
-    0
-  );
+  const total_probability = probability_distribution.reduce((total: number, number: number) => total + number, 0);
   // How much to increment the price of every order
   const incrPrice = tickerRound((end_ - start_) / (n_tp - 1), symbol);
 
-  let totalOrders: ordersProps = { orders: [], stop: {} };
+  const totalOrders: ScaledOrders = {orders: [], stop: {}};
 
   // Pushing orders to main array
   for (let i = 0; i < n_tp; i++) {
@@ -96,17 +98,15 @@ const skewedDistribution = (
     totalOrders.orders.push({
       symbol: symbol,
       side: side,
-      orderQty: Math.floor(
-        (probability_distribution[i] / total_probability) * quantity
-      ),
+      orderQty: Math.floor((probability_distribution[i] / total_probability) * quantity),
       price: parseFloat((start_ + i * incrPrice).toFixed(decimal_rounding)),
-      ordType: "Limit",
-      execInst: "ParticipateDoNotInitiate",
+      ordType: 'Limit',
+      execInst: 'ParticipateDoNotInitiate',
       text: `order_${i + 1}`,
     });
   }
   // Add stop loss order
-  if (stop && stop !== "") {
+  if (stop && Object.keys(stop).length) {
     const __stop = createStopLoss(quantity, stop, symbol, side);
     totalOrders.stop = __stop;
   }
@@ -114,57 +114,44 @@ const skewedDistribution = (
   if (totalOrders.orders[totalOrders.orders.length - 1].price > end) {
     totalOrders.orders[totalOrders.orders.length - 1].price = end;
   }
-  const total_quantity = totalOrders.orders.reduce(
-    (total: number, order: order): number => total + order.orderQty,
-    0
-  );
+
+  const total_quantity = totalOrders.orders.reduce((total: number, order: Order): number => total + order.orderQty, 0);
+
   // Quantity always stays the same
   if (total_quantity < quantity) {
     totalOrders.orders[totalOrders.orders.length - 1].orderQty =
-      totalOrders.orders[totalOrders.orders.length - 1].orderQty +
-      quantity -
-      total_quantity;
+      totalOrders.orders[totalOrders.orders.length - 1].orderQty + quantity - total_quantity;
   }
   return totalOrders;
 };
 
-const createStopLoss = (
-  quantity: any,
-  stop: any,
-  symbol: any, // : XBTUSD, ETHUSD...
-  side: any,
-  text_index = 1
-): stopLossType => {
-  const { decimal_rounding } = INSTRUMENT_PARAMS[symbol];
+const createStopLoss = (quantity: any, stop: any, symbol: SYMBOLS, side: SIDE, text_index = 1): StopLoss => {
+  const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
   const price = tickerRound(stop, symbol);
-  const stop_side = side === "Buy" ? "Sell" : "Buy";
 
   return {
     symbol: symbol,
-    side: stop_side,
+    side: side === SIDE.BUY ? SIDE.SELL : SIDE.BUY,
     orderQty: quantity,
     stopPx: parseFloat(price.toFixed(decimal_rounding)),
-    ordType: "Stop",
-    execInst: "LastPrice,ReduceOnly",
+    ordType: 'Stop',
+    execInst: 'LastPrice,ReduceOnly',
     text: `stop_${text_index}`,
   };
 };
 
 interface markets {
-  symbol: string;
+  symbol: SYMBOLS;
   quantity: any;
-  side: any;
+  side: SIDE;
 }
-export const createMarketOrder = ({
-  symbol,
-  quantity,
-  side,
-}: markets): marketOrderType => {
+
+export const createMarketOrder = ({symbol, quantity, side}: markets): MarketOrder => {
   return {
     symbol: symbol,
     orderQty: quantity,
     side: side,
-    ordType: "Market",
+    ordType: 'Market',
   };
 };
 
@@ -190,9 +177,9 @@ export const createOrder = ({
   side,
   ordType,
   text_index = 0,
-  text_prefix = "order",
-}: any): order => {
-  console.log("call order");
+  text_prefix = 'order',
+}: any): Order => {
+  console.log('call order');
   return {
     symbol: symbol,
     price: price,
@@ -200,7 +187,14 @@ export const createOrder = ({
     side: side,
     ordType: ordType,
     text: `${text_prefix}_${text_index}`,
-    execInst: "ParticipateDoNotInitiate",
+    execInst: 'ParticipateDoNotInitiate',
+  };
+};
+
+export const amendOrder = ({orderID, price}: any) => {
+  return {
+    orderID,
+    price,
   };
 };
 
@@ -211,63 +205,44 @@ export const createOrder = ({
  * @param {number} inc
  * @returns {number} rounded number
  */
-const tickerRound = (number: number, symbol: string): number => {
+const tickerRound = (number: number, symbol: SYMBOLS): number => {
   // Ticksize - 1 divided by this number
-  const { ticksize } = INSTRUMENT_PARAMS[symbol];
+  const {ticksize} = INSTRUMENT_PARAMS[symbol];
   return Math.round(number * ticksize) / ticksize;
 };
 
-/**
- * Probability density function
- * @param {number} mean of the distribution
- * @param {number} x is a point in that distribution
- * @param {number} delta is a variance parameter
- * @returns {number} location probability of that x
- */
-const gaussian = (mean: number, x: number, delta: number): number => {
-  const member1 = 1 / (delta * Math.sqrt(2 * Math.PI));
-  const member2 = Math.pow(Math.E, -((x - mean) ** 2) / (2 * delta ** 2));
-  return member1 * member2; // this number can be normalized (ex. dividing by 100)
-};
+export interface ScaledOrdersProps extends DistributionProps {
+  distribution: DISTRIBUTIONS;
+}
 
-interface Props {
+interface DistributionProps {
   quantity: number;
   n_tp: number;
   start: number;
   end: number;
-  stop: any;
-  side: string;
-  symbol: string;
-  distribution?: string | number;
+  stop: Partial<StopLoss>;
+  side: SIDE;
+  symbol: SYMBOLS;
 }
 
 interface StopProps {
   quantity: number;
   stop: number;
   symbol: string;
-  side: string;
+  side: SIDE;
 }
 
 // type ordersProps = { orders: object[]; stop: object };
 //===
-type marketOrderType = Pick<
-  orderType,
-  "symbol" | "orderQty" | "side" | "ordType"
->;
+type MarketOrder = Pick<orderType, 'symbol' | 'orderQty' | 'side' | 'ordType'>;
 
-type order = Pick<
+export type Order = Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType' | 'text' | 'execInst'>;
+type StopLoss = Pick<
   orderType,
-  "symbol" | "price" | "orderQty" | "side" | "ordType" | "text" | "execInst"
+  'symbol' | 'side' | 'orderQty' | 'stopPx' | 'ordType' | 'execInst' | 'text'
+  // | "price"
 >;
-type stopLossType = Pick<
-  orderType,
-  "symbol" | "side" | "orderQty" | "stopPx" | "ordType" | "execInst" | "text"
->;
-interface ordersProps {
-  orders: order[];
-  stop: Partial<stopLossType>;
+export interface ScaledOrders {
+  orders: Order[];
+  stop: Partial<StopLoss>;
 }
-//===
-export const BitMEX_ws_send = () => {
-  return;
-};
