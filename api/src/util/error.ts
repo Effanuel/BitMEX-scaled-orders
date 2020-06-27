@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import {logger} from './logger';
 
 const error_400_handler = (response_message: string): string => {
   const error_messages: any = {
@@ -44,9 +44,7 @@ export const ErrorHandler = (error: any) => {
         return 'Unable to contact BitMEX';
       case 400:
         const response_error = JSON.parse(error.error).error;
-        const response_message = response_error
-          ? response_error.message.toLowerCase()
-          : '';
+        const response_message = response_error ? response_error.message.toLowerCase() : '';
         return error_400_handler(response_message);
 
       default:
