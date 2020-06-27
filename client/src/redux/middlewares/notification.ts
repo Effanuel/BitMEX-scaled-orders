@@ -1,45 +1,46 @@
-import { ORDER_ERROR, ORDER_SUCCESS } from "../modules/preview/types";
-import { POST_ORDER_ERROR, POST_ORDER } from "../modules/best_price/types";
-import { MESSAGE } from "../modules/notify/types";
+import {PREVIEW_POST_ORDER} from '../modules/preview/types';
+import {MESSAGE} from '../modules/notify/types';
 
-interface notificationMessageType {
+import {NotifyType} from '../modules/notify/types';
+import {FAILURE, SUCCESS} from 'redux/helpers/actionHelpers';
+import {BEST_POST_ORDER} from 'redux/modules/best-price/types';
+
+export interface Notification {
   message: string;
-  type: string;
+  type: NotifyType;
 }
 
-const notificationAction = ({ message, type }: notificationMessageType) => ({
-  type: MESSAGE,
-  payload: { message, type },
-});
+function handleSuccessActions({payload: {success, text, from}}: any) {
+  const isOrderPlaced = success === 200 && !text.includes('Cancel');
 
-const notificationMessage = (action: any): notificationMessageType => {
+  const {message, type} = isOrderPlaced
+    ? {message: from, type: NotifyType.success}
+    : {message: 'Order cancelled', type: NotifyType.warning};
+
+  return {message, type};
+}
+
+function handleErrorActions({payload: {message, type}}: any) {
+  return {message, type};
+}
+
+export const notificationMessage = (action: any): Notification => {
   switch (action.type) {
-    // Catching SUCCESS type actions
-    case POST_ORDER:
-    case ORDER_SUCCESS:
-      const { success, text, from } = action.payload;
-      const isOrderPlaced = success === 200 && !text.includes("Cancel");
-
-      const { message, type } = isOrderPlaced
-        ? { message: from, type: "success" }
-        : { message: "Order cancelled", type: "warning" };
-
-      return { message, type };
-    // Catching ERROR type actions
-    case POST_ORDER_ERROR:
-    case ORDER_ERROR: {
-      const { message, type } = action.payload;
-      return { message, type };
-    }
+    case SUCCESS[PREVIEW_POST_ORDER]:
+    case SUCCESS[BEST_POST_ORDER]:
+      return handleSuccessActions(action);
+    case FAILURE[PREVIEW_POST_ORDER]:
+    case FAILURE[BEST_POST_ORDER]:
+      return handleErrorActions(action);
     default:
-      return { message: "", type: "" };
+      return {message: '', type: NotifyType.None};
   }
 };
 
-export default ({ dispatch }: any) => (next: any) => (action: any) => {
-  const { message, type } = notificationMessage(action);
-  if (message !== "") {
-    dispatch(notificationAction({ message, type }));
+export default ({dispatch}: any) => (next: any) => (action: Action) => {
+  const payload = notificationMessage(action);
+  if (payload.message !== '') {
+    dispatch({type: MESSAGE, payload});
   }
 
   next(action);

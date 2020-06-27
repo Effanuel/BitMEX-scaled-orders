@@ -1,17 +1,18 @@
-import {
-  postOrderError as postOrderError_preview,
-  postOrderSuccess as postOrderSuccess_preview,
-} from '../modules/preview';
-import {
-  postOrderError as postOrderError_best,
-  postOrderSuccess as postOrderSuccess_best,
-  orderLoading,
-} from '../modules/best-price';
 import configureStore from 'redux-mock-store';
-import notificationMiddleware, { notificationMessage } from './notification';
+
+import notificationMiddleware, {notificationMessage} from './notification';
+import {FAILURE, SUCCESS, REQUEST} from 'redux/helpers/actionHelpers';
+import {PREVIEW_POST_ORDER} from 'redux/modules/preview/types';
+import {BEST_POST_ORDER} from 'redux/modules/best-price/types';
 
 const middlewares = [notificationMiddleware];
 const mockStore = configureStore(middlewares);
+
+const previewPostOrderSuccess = (payload: any) => ({type: SUCCESS[PREVIEW_POST_ORDER], payload});
+const previewPostOrderFailure = (payload: any) => ({type: FAILURE[PREVIEW_POST_ORDER], payload});
+
+const bestPostOrderSuccess = (payload: any) => ({type: SUCCESS[BEST_POST_ORDER], payload});
+const bestPostOrderFailure = (payload: any) => ({type: FAILURE[BEST_POST_ORDER], payload});
 
 describe('notification middleware', () => {
   const initialStore = {};
@@ -27,15 +28,15 @@ describe('notification middleware', () => {
   };
 
   it('should dispatch notify action for success actions', () => {
-    store.dispatch(postOrderSuccess_best(payloadSuccess));
+    store.dispatch(bestPostOrderSuccess(payloadSuccess));
     const expectedActions = [
       {
-        payload: { message: payloadSuccess.from, type: 'success' },
+        payload: {message: payloadSuccess.from, type: 'success'},
         type: 'notify/MESSAGE',
       },
       {
-        payload: { ...payloadSuccess },
-        type: 'best_price/POST_ORDER',
+        payload: {...payloadSuccess},
+        type: 'best_price/BEST_POST_ORDER_SUCCESS',
       },
     ];
 
@@ -48,15 +49,15 @@ describe('notification middleware', () => {
       message: 'Hello',
       type: 'error',
     };
-    store.dispatch(postOrderError_preview(payloadError));
+    store.dispatch(previewPostOrderFailure(payloadError));
     const expectedActions = [
       {
-        payload: { message: payloadError.message, type: 'error' },
+        payload: {message: payloadError.message, type: 'error'},
         type: 'notify/MESSAGE',
       },
       {
-        payload: { ...payloadError },
-        type: 'preview/ORDER_ERROR',
+        payload: {...payloadError},
+        type: 'preview/POST_ORDER_FAILURE',
       },
     ];
 
@@ -65,7 +66,7 @@ describe('notification middleware', () => {
   });
 
   it('should not dispatch notify action for non success actions', () => {
-    store.dispatch(orderLoading());
+    store.dispatch({type: REQUEST[PREVIEW_POST_ORDER], payload: {}});
 
     expect(store.getActions()).toHaveLength(1);
   });
@@ -80,17 +81,17 @@ describe('notificationMessage()', () => {
     let action, message;
 
     it('returns empty message and type fields for non SUCCESS and non ERROR actions', () => {
-      action = orderLoading();
+      action = {type: REQUEST[PREVIEW_POST_ORDER], payload: {}};
       message = notificationMessage(action);
-      expect(message).toEqual({ message: '', type: '' });
+      expect(message).toEqual({message: '', type: ''});
     });
 
     it('returns the same message and type passed for ..._ERROR dispatched actions', () => {
-      action = postOrderError_preview(payload);
+      action = previewPostOrderFailure(payload);
       message = notificationMessage(action);
       expect(message).toEqual(payload);
 
-      action = postOrderError_best(payload);
+      action = bestPostOrderFailure(payload);
       message = notificationMessage(action);
       expect(message).toEqual(payload);
     });
@@ -115,36 +116,36 @@ describe('notificationMessage()', () => {
     let action, message;
 
     it('returns a warning message if text includes <Cancel>', () => {
-      action = postOrderSuccess_preview(payloadWarningText);
+      action = previewPostOrderSuccess(payloadWarningText);
       message = notificationMessage(action);
-      expect(message).toEqual({ message: 'Order cancelled', type: 'warning' });
+      expect(message).toEqual({message: 'Order cancelled', type: 'warning'});
 
-      action = postOrderSuccess_best(payloadWarningText);
+      action = bestPostOrderSuccess(payloadWarningText);
       message = notificationMessage(action);
-      expect(message).toEqual({ message: 'Order cancelled', type: 'warning' });
+      expect(message).toEqual({message: 'Order cancelled', type: 'warning'});
     });
 
     it('returns a warning message if success code isnt 200', () => {
-      action = postOrderSuccess_preview(payloadWarningCode);
+      action = previewPostOrderSuccess(payloadWarningCode);
       message = notificationMessage(action);
-      expect(message).toEqual({ message: 'Order cancelled', type: 'warning' });
+      expect(message).toEqual({message: 'Order cancelled', type: 'warning'});
 
-      action = postOrderSuccess_best(payloadWarningCode);
+      action = bestPostOrderSuccess(payloadWarningCode);
       message = notificationMessage(action);
-      expect(message).toEqual({ message: 'Order cancelled', type: 'warning' });
+      expect(message).toEqual({message: 'Order cancelled', type: 'warning'});
     });
 
     it('returns the same message and type succes if order was placed', () => {
-      const { from } = payloadSuccess;
+      const {from} = payloadSuccess;
 
-      action = postOrderSuccess_preview(payloadSuccess);
+      action = previewPostOrderSuccess(payloadSuccess);
       message = notificationMessage(action);
       expect(message).toEqual({
         message: from,
         type: 'success',
       });
 
-      action = postOrderSuccess_best(payloadSuccess);
+      action = bestPostOrderSuccess(payloadSuccess);
       message = notificationMessage(action);
       expect(message).toEqual({
         message: from,
