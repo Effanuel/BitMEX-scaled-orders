@@ -1,4 +1,4 @@
-import { CreateAction } from "../../helpers/helperTypes";
+import { CreateAction } from '../../helpers/helperTypes';
 import {
   WEBSOCKET_BROKEN,
   WEBSOCKET_CLOSED,
@@ -8,10 +8,10 @@ import {
   WEBSOCKET_OPEN,
   WEBSOCKET_SEND,
   WEBSOCKET_ERROR,
-} from "@giantmachines/redux-websocket";
+} from '@giantmachines/redux-websocket';
 
-export const FETCH_ORDERS = "websocket/FETCH_ORDERS";
-const WEBSOCKET_PREFIX: string = "REDUX_WEBSOCKET";
+export const FETCH_ORDERS = 'websocket/FETCH_ORDERS';
+const WEBSOCKET_PREFIX = 'REDUX_WEBSOCKET';
 export const REDUX_WEBSOCKET_BROKEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_BROKEN}`;
 export const REDUX_WEBSOCKET_OPEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_OPEN}`;
 export const REDUX_WEBSOCKET_CLOSED = `${WEBSOCKET_PREFIX}::${WEBSOCKET_CLOSED}`;
@@ -20,7 +20,7 @@ export const REDUX_WEBSOCKET_CONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_CONNECT
 export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISCONNECT}`;
 export const REDUX_WEBSOCKET_SEND = `${WEBSOCKET_PREFIX}::${WEBSOCKET_SEND}`;
 export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
-export const REDUX_WEBSOCKET_TICKER = "REDUX_WEBSOCKET_TICKER";
+export const REDUX_WEBSOCKET_TICKER = 'REDUX_WEBSOCKET_TICKER';
 
 export type WebsocketActions =
   | CreateAction<typeof FETCH_ORDERS, any>
@@ -33,38 +33,38 @@ export type WebsocketActions =
   | CreateAction<typeof REDUX_WEBSOCKET_SEND, any>
   | ReduxWebsocketMessage;
 
-export type ReduxWebsocketMessage = CreateAction<
-  typeof REDUX_WEBSOCKET_MESSAGE,
-  any
->;
+export type ReduxWebsocketMessage = CreateAction<typeof REDUX_WEBSOCKET_MESSAGE, any>;
 
 export interface WebsocketState {
   [key: string]: any;
 
   __keys?: any;
-  instrument?: any;
+  instrument?: Instrument;
   order?: any;
-  connected?: boolean;
-  loading?: boolean;
+  connected: boolean;
+  loading: boolean;
   message?: string;
-  error?: string;
-  symbol?: string;
+  error: string;
+  symbol: string;
 }
 
-// type WebsocketState = Indexable<WebsocketState>;
-// export type WebsocketStateIndexable = Indexable & WebsocketState;
-type Indexable<T> = { [key: string]: string } & T;
+export enum ResponseActions {
+  PARTIAL = 'partial',
+  UPDATE = 'update',
+  INSERT = 'insert',
+  DELETE = 'delete',
+}
 
 interface WebsocketResponseData {
   // Table name / Subscription topic.
   // Could be "trade", "order", "instrument", etc.
-  table: string;
+  table: 'trade' | 'order' | 'instrument';
   // The type of the message. Types:
   // 'partial'; This is a table image, replace your data entirely.
   // 'update': Update a single row.
   // 'insert': Insert a new row.
   // 'delete': Delete a row.
-  action: "partial" | "update" | "insert" | "delete";
+  action: ResponseActions;
   // An array of table rows is emitted here. They are identical in structure to data returned from the REST API.
   data: any; //object[]
   //
@@ -104,6 +104,112 @@ interface WebsocketResponseError {
   error: string;
 }
 
-export type WebsocketResponse = Indexable<
-  WebsocketResponseData | WebsocketResponseSuccess | WebsocketResponseError
->;
+export type WebsocketResponse = WebsocketResponseData & WebsocketResponseSuccess & WebsocketResponseError;
+
+interface Instrument {
+  [key: string]: {
+    symbol: string;
+    rootSymbol: string;
+    state: string;
+    typ: string;
+    listing: any;
+    front: any;
+    expiry: any;
+    settle: any;
+    relistInterval: any;
+    inverseLeg: string;
+    sellLeg: string;
+    buyLeg: string;
+    optionStrikePcnt: number;
+    optionStrikeRound: number;
+    optionStrikePrice: number;
+    optionMultiplier: number;
+    positionCurrency: string;
+    underlying: string;
+    quoteCurrency: string;
+    underlyingSymbol: string;
+    reference: string;
+    referenceSymbol: string;
+    calcInterval: any;
+    publishInterval: any;
+    publishTime: any;
+    maxOrderQty: number;
+    maxPrice: number;
+    lotSize: number;
+    tickSize: number;
+    multiplier: number;
+    settlCurrency: string;
+    underlyingToPositionMultiplier: number;
+    underlyingToSettleMultiplier: number;
+    quoteToSettleMultiplier: number;
+    isQuanto: true;
+    isInverse: true;
+    initMargin: number;
+    maintMargin: number;
+    riskLimit: number;
+    riskStep: number;
+    limit: number;
+    capped: true;
+    taxed: true;
+    deleverage: true;
+    makerFee: number;
+    takerFee: number;
+    settlementFee: number;
+    insuranceFee: number;
+    fundingBaseSymbol: string;
+    fundingQuoteSymbol: string;
+    fundingPremiumSymbol: string;
+    fundingTimestamp: any;
+    fundingInterval: any;
+    fundingRate: number;
+    indicativeFundingRate: number;
+    rebalanceTimestamp: any;
+    rebalanceInterval: any;
+    openingTimestamp: any;
+    closingTimestamp: any;
+    sessionInterval: any;
+    prevClosePrice: number;
+    limitDownPrice: number;
+    limitUpPrice: number;
+    bankruptLimitDownPrice: number;
+    bankruptLimitUpPrice: number;
+    prevTotalVolume: number;
+    totalVolume: number;
+    volume: number;
+    volume24h: number;
+    prevTotalTurnover: number;
+    totalTurnover: number;
+    turnover: number;
+    turnover24h: number;
+    homeNotional24h: number;
+    foreignNotional24h: number;
+    prevPrice24h: number;
+    vwap: number;
+    highPrice: number;
+    lowPrice: number;
+    lastPrice: number;
+    lastPriceProtected: number;
+    lastTickDirection: string;
+    lastChangePcnt: number;
+    bidPrice: number;
+    midPrice: number;
+    askPrice: number;
+    impactBidPrice: number;
+    impactMidPrice: number;
+    impactAskPrice: number;
+    hasLiquidity: true;
+    openInterest: number;
+    openValue: number;
+    fairMethod: string;
+    fairBasisRate: number;
+    fairBasis: number;
+    fairPrice: number;
+    markMethod: string;
+    markPrice: number;
+    indicativeTaxRate: number;
+    indicativeSettlePrice: number;
+    optionUnderlyingPrice: number;
+    settledPrice: number;
+    timestamp: any;
+  };
+}

@@ -5,8 +5,8 @@ export interface orderType {
   clOrdID: string;
   //   clOrdLinkID: string; // Deprecated
   account: number;
-  symbol: string;
-  side: string;
+  symbol: SYMBOLS;
+  side: SIDE;
   //   simpleOrderQty: number; // Deprecated
   orderQty: number;
   price: number;
@@ -48,4 +48,39 @@ export enum SYMBOLS {
   XRPUSD = 'XRPUSD',
 }
 
-export type SIDE = 'Sell' | 'Buy';
+export enum SIDE {
+  SELL = 'Sell',
+  BUY = 'Buy',
+}
+
+export type SUBSCRIPTION_TOPICS =
+  | 'announcement'
+  | 'chat'
+  | 'connected'
+  | 'funding'
+  | 'instrument'
+  | 'insurance'
+  | 'liquidation'
+  | 'orderBookL2_25'
+  | 'orderBookL2'
+  | 'orderBook10'
+  | 'publicNotifications'
+  | 'quote'
+  | 'quoteBin1m'
+  | 'quoteBin5m'
+  | 'quoteBin1h'
+  | 'quoteBin1d'
+  | 'settlement'
+  | 'trade'
+  | 'tradeBin1m'
+  | 'tradeBin5m'
+  | 'tradeBin1h'
+  | 'tradeBin1d'
+  | 'affiliate'
+  | 'execution'
+  | 'order'
+  | 'margin'
+  | 'position'
+  | 'privateNotifications'
+  | 'transact'
+  | 'wallet';

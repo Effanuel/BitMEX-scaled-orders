@@ -20,8 +20,8 @@ export type AppComponentProps = {
   connected?: boolean;
   message: any;
   //
-  postOrder: (payload: object) => void;
-  previewOrders: (payload: object) => void;
+  postOrder: (payload: any) => void;
+  previewOrders: (payload: any) => void;
   wsConnect: () => void;
   wsDisconnect: () => void;
   wsPriceSubscribe: (payload: string) => void;
