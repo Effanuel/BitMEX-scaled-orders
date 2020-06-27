@@ -1,35 +1,28 @@
-import React from "react";
+import React from 'react';
 // REDUX
-import { useSelector, shallowEqual } from "react-redux";
-import {
-  ordersSelector,
-  ordersAveragePriceSelector,
-  ordersRiskSelector,
-  ordersRiskPercSelector
-} from "redux/selectors";
-import { AppState } from "redux/models/state";
+import { useSelector, shallowEqual } from 'react-redux';
+import { ordersAveragePriceSelector, ordersRiskSelector, ordersRiskPercSelector } from 'redux/selectors';
+import { AppState } from 'redux/models/state';
 // UTILS
-import styles from "./styles.module.css";
-
-interface Props {}
+import styles from './details-table.module.css';
 
 // Reformats numbers
 // ex. 123456.7890 => 123,456.7890
 function format(num: any) {
-  return num.toString().replace(/^[+-]?\d+/, function(int: any) {
-    return int.replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+  return num.toString().replace(/^[+-]?\d+/, function (int: any) {
+    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
   });
 }
 
-function DetailsTable(props: Props) {
+function DetailsTable() {
   const { averagePrice, riskBTC, riskPerc } = useSelector(
     (state: AppState) => ({
-      orders: ordersSelector(state),
+      orders: state.preview.orders,
       averagePrice: ordersAveragePriceSelector(state),
       riskBTC: ordersRiskSelector(state),
-      riskPerc: ordersRiskPercSelector(state)
+      riskPerc: ordersRiskPercSelector(state),
     }),
-    shallowEqual
+    shallowEqual,
   );
 
   return (

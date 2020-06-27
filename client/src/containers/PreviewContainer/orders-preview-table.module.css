@@ -1,7 +1,7 @@
-@import "../../css/colors.module.css";
+@import '../../css/colors.module.css';
 
 .table {
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
   font-size: 12px;
   border-collapse: collapse;
   width: 100%;
@@ -35,31 +35,31 @@
   color: rgba(255, 255, 255, 0.87);
 }
 
-
-.side_color__sell, .side_stop__sell {
+.side_color__sell,
+.side_stop__sell {
   padding-left: 5px;
   border-left: 6px solid var(--stopColor);
 }
 
 td[id='text'] {
-  background-color: 'red'
+  background-color: 'red';
 }
 .side_stop__sell {
   border-top: 1px solid var(--stopColor);
 }
 
-.side__sell{
+.side__sell {
   color: var(--stopColor);
 }
 .side__buy {
   color: var(--accentColor);
 }
 
-
-.side_color__buy, .side_stop__buy {
+.side_color__buy,
+.side_stop__buy {
   padding-left: 5px;
   border-left: 6px solid var(--accentColor);
 }
-.side_stop__buy{
+.side_stop__buy {
   border-top: 1px solid var(--accentColor);
 }

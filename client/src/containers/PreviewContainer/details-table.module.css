@@ -1,4 +1,4 @@
-@import "../../css/colors.module.css";
+@import '../../css/colors.module.css';
 /* .myTable {
     margin: 12px;
     font-size: 12px;
@@ -9,7 +9,7 @@
 }
 
 .table {
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
   font-size: 12px;
   border-collapse: collapse;
   width: 100%;
