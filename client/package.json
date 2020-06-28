@@ -29,7 +29,7 @@
     "eject": "react-scripts eject",
     "clean": "rimraf ../api/dist ./build",
     "init:packages": "npm install && cd ../api && npm install && cd ../client",
-    "build": "NODE_ENV=production && cd ../api && cd ../client && react-scripts build",
+    "build": "cd ../api && cd ../client && react-scripts build",
     "prod": "cd ../api && npm run start",
     "lint": "eslint . -c .eslintrc --ignore-path .eslintignore --ext .ts,.tsx --max-warnings 200 -f stylish"
   },
