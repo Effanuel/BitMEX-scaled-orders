@@ -106,7 +106,7 @@ const skewedDistribution = (
     });
   }
   // Add stop loss order
-  if (stop && Object.keys(stop).length) {
+  if (stop > 0) {
     const __stop = createStopLoss(quantity, stop, symbol, side);
     totalOrders.stop = __stop;
   }
@@ -115,7 +115,7 @@ const skewedDistribution = (
     totalOrders.orders[totalOrders.orders.length - 1].price = end;
   }
 
-  const total_quantity = totalOrders.orders.reduce((total: number, order: Order): number => total + order.orderQty, 0);
+  const total_quantity = totalOrders.orders.reduce((total, order): number => total + order.orderQty, 0);
 
   // Quantity always stays the same
   if (total_quantity < quantity) {
@@ -125,7 +125,7 @@ const skewedDistribution = (
   return totalOrders;
 };
 
-const createStopLoss = (quantity: any, stop: any, symbol: SYMBOLS, side: SIDE, text_index = 1): StopLoss => {
+const createStopLoss = (quantity: number, stop: number, symbol: SYMBOLS, side: SIDE, text_index = 1): StopLoss => {
   const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
   const price = tickerRound(stop, symbol);
 
@@ -198,13 +198,6 @@ export const amendOrder = ({orderID, price}: any) => {
   };
 };
 
-// ------ UTILS ------
-/**
- * Round a number by inc
- * @param {number} number
- * @param {number} inc
- * @returns {number} rounded number
- */
 const tickerRound = (number: number, symbol: SYMBOLS): number => {
   // Ticksize - 1 divided by this number
   const {ticksize} = INSTRUMENT_PARAMS[symbol];
@@ -213,6 +206,7 @@ const tickerRound = (number: number, symbol: SYMBOLS): number => {
 
 export interface ScaledOrdersProps extends DistributionProps {
   distribution: DISTRIBUTIONS;
+  stop: Partial<StopLoss>;
 }
 
 interface DistributionProps {
@@ -220,7 +214,7 @@ interface DistributionProps {
   n_tp: number;
   start: number;
   end: number;
-  stop: Partial<StopLoss>;
+  stop: any;
   side: SIDE;
   symbol: SYMBOLS;
 }

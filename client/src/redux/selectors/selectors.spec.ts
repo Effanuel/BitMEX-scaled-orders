@@ -7,7 +7,7 @@ import {
   getOrders,
   table_instrument,
   getWsSymbol,
-  ws_bidAskPrices,
+  websocketBidAskPrices,
   websocketCurrentPrice,
   balanceSelector,
 } from './index';
@@ -70,7 +70,7 @@ describe('Selectors', () => {
     it('should return askPrice of current symbol', () => {
       const instrument = table_instrument(mockState);
       const wsSymbol = getWsSymbol(mockState);
-      const result = ws_bidAskPrices.resultFunc(instrument, wsSymbol);
+      const result = websocketBidAskPrices.resultFunc(instrument, wsSymbol);
       expect(result!.askPrice).toEqual(8000);
       expect(result!.bidPrice).toEqual(8001);
     });
@@ -82,7 +82,7 @@ describe('Selectors', () => {
       };
       const instrument = table_instrument(payload);
       const wsSymbol = getWsSymbol(payload);
-      const result = ws_bidAskPrices.resultFunc(instrument, wsSymbol);
+      const result = websocketBidAskPrices.resultFunc(instrument, wsSymbol);
       expect(result).toEqual(undefined);
     });
   });

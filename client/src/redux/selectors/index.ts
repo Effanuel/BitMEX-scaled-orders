@@ -1,24 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createSelector } from 'reselect';
-import { AppState } from '../models/state';
-import { SYMBOLS } from 'util/BitMEX-types';
-// PREVIEW ACTIONS
-export const getShowPreview = (state: AppState) => state.preview.showPreview;
-export const getOrders = (state: AppState) => state.preview.orders;
-const getOrderLoading = (state: AppState) => state.preview.loading;
-const getOrderError = (state: AppState) => state.preview.error;
-export const getBalance = (state: AppState) => state.preview.balance;
-// const getMessage = (state: AppState) => state.preview.message; // this is object
-// WEBSOCKET ACTIONS
-export const getWsSymbol = (state: AppState) => state.websocket.symbol;
-export const table_instrument = (state: AppState) => state.websocket.instrument;
-const table_order = (state: AppState) => state.websocket.order;
-const websocketLoading = (state: AppState) => state.websocket.loading;
-const websocketMessage = (state: AppState) => state.websocket.message;
-const websocketConnected = (state: AppState) => state.websocket.connected;
-// BEST_PRICE ACTIONS
-const getBestOrderStatus = (state: AppState) => state.best_price.status;
-const getbestOrderID = (state: AppState) => state.best_price.bestOrderID;
+import {createSelector} from 'reselect';
+import {AppState} from '../models/state';
+import {SYMBOLS, SIDE} from 'util/BitMEX-types';
+
+export interface CurrentPrice {
+  askPrice: number;
+  bidPrice: number;
+}
+
+export const getShowPreview = ({preview: {showPreview}}: AppState) => showPreview;
+export const getOrders = ({preview: {orders}}: AppState) => orders;
+const getOrderLoading = ({preview: {loading}}: AppState) => loading;
+const getOrderError = ({preview: {error}}: AppState) => error;
+export const getBalance = ({preview: {balance}}: AppState) => balance;
+
+export const getWsSymbol = ({websocket: {symbol}}: AppState) => symbol;
+export const table_instrument = ({websocket: {instrument}}: AppState) => instrument;
+const table_order = ({websocket: {order}}: AppState) => order;
+const websocketLoading = ({websocket: {loading}}: AppState) => loading;
+const websocketMessage = ({websocket: {message}}: AppState) => message;
+const websocketConnected = ({websocket: {connected}}: AppState) => connected;
+
+const getBestOrderStatus = ({best_price: {status}}: AppState) => status;
+const getbestOrderID = ({best_price: {bestOrderID}}: AppState) => bestOrderID;
+export const getBestOrderSide = ({best_price: {side}}: AppState) => side;
 
 export const bestOrderStatusSelector = createSelector([table_order, getbestOrderID], (open_orders, bestOrderID) => {
   console.log('CALL ORDER STATUS');
@@ -34,26 +39,7 @@ export const bestOrderStatusSelector = createSelector([table_order, getbestOrder
 
 export const bestOrderStatus = createSelector([getBestOrderStatus], (status) => status);
 
-//==============================================
-// For later versions :)
-// export const websocketOrder = createSelector([table_order], orders => {
-//   if (orders[0]) {
-//     return orders[0].orderID;
-//   }
-// });
-
-export interface CurrentPrice {
-  askPrice: number;
-  bidPrice: number;
-}
-
-/**
- * Calculates ask price of the selected ticker
- * @param {object} data
- * @param {string} symbol
- * @returns {number} ask price
- */
-export const websocketCurrentPrice = createSelector([table_instrument, getWsSymbol], (data, symbol):
+export const websocketBidAskPrices = createSelector([table_instrument, getWsSymbol], (data, symbol):
   | CurrentPrice
   | undefined => {
   for (const i in data) {
@@ -69,35 +55,25 @@ export const websocketCurrentPrice = createSelector([table_instrument, getWsSymb
   // return 'Loading...';
 });
 
-/**
- * Calculates averae price of scaled orders
- * @param {array} orderList list of orders
- * @param {boolean} previewTable is preview table open
- * @returns {number} average price
- */
+export const websocketCurrentPrice = createSelector([websocketBidAskPrices, getBestOrderSide], (bidAskPrices, side):
+  | number
+  | undefined => {
+  return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
+});
+
 export const ordersAveragePriceSelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
   | number
   | void => {
   if (previewTable && orderObject?.orders?.length) {
-    // We push stop-loss order in /utils distribution functions
-    // so we want to exclude it here.
-    const { orders } = orderObject;
+    const {orders} = orderObject;
 
     const total_quantity = orders.reduce((total, n) => total + n.orderQty, 0);
     const contract_value = orders.reduce((total, n) => total + n.orderQty / n.price, 0);
 
-    // Divide by 10,000 so that ordersRiskSelector calculated risk more accurately
     return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
   }
 });
 
-/**
- * Calculates risk in XBT
- * @param {object} orderList list of orders
- * @param {number} averageEntry average entry of scaled orders
- * @param {boolean} previewTable is preview table open
- * @returns {number} risk in XBT if stop-loss was hit
- */
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAveragePriceSelector, getShowPreview],
   (orderObject: any = {}, averageEntry, previewTable): number | void => {
@@ -114,23 +90,12 @@ export const ordersRiskSelector = createSelector(
   },
 );
 
-/**
- * Reformats fetched balance
- * @param {number} balance fetched balance in satoshis??
- * @returns {number} reformated balance in XBT
- */
 export const balanceSelector = createSelector([getBalance], (balance): number | void => {
   if (balance) {
     return Math.round((balance / 1e8) * 10000) / 10000;
   }
 });
 
-/**
- * Calculates risk in percentages
- * @param {number} balance balance of the account
- * @param {number} risk risk in XBT if stop-loss was hit
- * @returns {number} risk in percentages
- */
 export const ordersRiskPercSelector = createSelector(
   [balanceSelector, ordersRiskSelector],
   (balance: any, risk: any) => {

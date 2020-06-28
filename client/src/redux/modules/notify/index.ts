@@ -23,6 +23,4 @@ export const notifyReducer: Reducer<NotifyState, NotifyActions> = (state = initi
 
 // ACTIONS =======================
 
-export const clearNotifications = (): NotifyActions => ({
-  type: CLEAR,
-});
+export const clearNotifications = (): NotifyActions => ({ type: CLEAR });

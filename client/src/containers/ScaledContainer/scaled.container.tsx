@@ -19,9 +19,9 @@ import {Grid, RadioGroup} from '@material-ui/core';
 
 // UTILS
 import {AppState} from 'redux/models/state';
-import {DISTRIBUTIONS, createScaledOrders} from 'util/index';
+import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import {ws_bidAskPrices} from 'redux/selectors';
+import {websocketBidAskPrices} from 'redux/selectors';
 // STYLES
 import styles from './styles.module.css';
 
@@ -51,7 +51,7 @@ const ScaledContainer = React.memo(() => {
   const dispatch = useDispatch();
   const {wsCurrentPrice, loading, message, orderError} = useSelector(
     (state: AppState) => ({
-      wsCurrentPrice: ws_bidAskPrices(state),
+      wsCurrentPrice: websocketBidAskPrices(state),
       loading: state.websocket.loading,
       // orderLoading: state.preview.loading,
       message: state.websocket.message,
@@ -99,11 +99,7 @@ const ScaledContainer = React.memo(() => {
   }
 
   function onOrderSubmit(): void {
-    const orders = createScaledOrders(state);
-    if (state.stop && state.stop !== '') {
-      orders.orders.push(orders.stop as any);
-    }
-    dispatch(scaledOrders(orders));
+    dispatch(scaledOrders(state));
     setCache(false);
   }
 

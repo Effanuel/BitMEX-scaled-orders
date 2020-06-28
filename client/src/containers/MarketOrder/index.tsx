@@ -11,16 +11,16 @@ import {MainContainer, SelectDropdown, InputField, Button} from 'components';
 import Grid from '@material-ui/core/Grid';
 // STYLES
 import styles from './styles.module.css';
-import {createMarketOrder} from 'util';
-import {createOrder} from 'util';
+import {createMarketOrder, createOrder} from 'util/index';
+import {SYMBOLS} from 'util/BitMEX-types';
 
 interface State {
-  symbol: string;
+  symbol: SYMBOLS;
   quantity: any;
 }
 
 const initialState: Readonly<State> = {
-  symbol: 'XBTUSD',
+  symbol: SYMBOLS.XBTUSD,
   quantity: 50,
 };
 

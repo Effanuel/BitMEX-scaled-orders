@@ -32,14 +32,7 @@ export const generate_requestOptions = (data: any = '', path: string, method: st
   };
 };
 
-export const _curl_bitmex = async (
-  path: any,
-  verb?: any,
-  postdict?: any,
-  query?: any,
-  rethrow_errors?: any,
-  max_retries: any = null,
-): any => {
+export const _curl_bitmex = async (path: any, verb?: any, postdict?: any, max_retries: any = null): Promise<any> => {
   const url = `https://${process.env.REACT_APP___TESTNET == 'true' ? 'testnet' : 'www'}.bitmex.com/api/v1/${path}`;
 
   if (!verb) verb = postdict ? 'POST' : 'GET';

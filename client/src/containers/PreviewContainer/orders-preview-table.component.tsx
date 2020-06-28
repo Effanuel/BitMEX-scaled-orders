@@ -1,13 +1,13 @@
 import React from 'react';
 // REDUX
-import { useSelector, shallowEqual } from 'react-redux';
-import { AppState } from 'redux/models/state';
+import {useSelector, shallowEqual} from 'react-redux';
+import {AppState} from 'redux/models/state';
 // STYLES
 import cx from 'classnames';
 import styles from './orders-preview-table.module.css';
 
 function OrdersPreviewTable() {
-  const { orders } = useSelector(
+  const {orders} = useSelector(
     (state: AppState) => ({
       orders: state.preview.orders,
     }),
@@ -15,7 +15,7 @@ function OrdersPreviewTable() {
   );
 
   // Handles side border colors
-  const x_side = orders.orders[0].side === 'Sell';
+  const x_side = orders?.orders?.[0].side === 'Sell';
   const y_side = x_side ? 'Buy' : 'Sell';
 
   const sideStyle = cx({
@@ -78,7 +78,7 @@ function OrdersPreviewTable() {
     </table>
   );
 }
-export { OrdersPreviewTable };
+export {OrdersPreviewTable};
 
 // Reformats numbers
 // ex. 123456.7890 => 123,456.7890

@@ -15,13 +15,13 @@ import {
   REDUX_WEBSOCKET_TICKER,
 } from './types';
 import axios from 'axios';
-import { connect, disconnect, send } from '@giantmachines/redux-websocket';
-import { Thunk } from '../../models/state';
-import { Reducer } from 'redux';
-import { authKeyExpires } from 'util/auth';
-import { SUBSCRIPTION_TOPICS, SYMBOLS } from 'util/BitMEX-types';
+import {connect, disconnect, send} from '@giantmachines/redux-websocket';
+import {Thunk} from '../../models/state';
+import {Reducer} from 'redux';
+import {authKeyExpires} from 'util/auth';
+import {SUBSCRIPTION_TOPICS, SYMBOLS} from 'util/BitMEX-types';
 
-const initialState = {
+const initialState: WebsocketState = {
   __keys: {},
   instrument: {},
   trade: {},
@@ -39,7 +39,10 @@ export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
 ): WebsocketState => {
   switch (action.type) {
     case FETCH_ORDERS:
-      return { ...state, order: { ...state.order, ...action.payload } };
+      return {
+        ...state,
+        order: {...state.order, ...action.payload},
+      };
     case REDUX_WEBSOCKET_TICKER:
       return {
         ...state,
@@ -63,11 +66,13 @@ export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
     case REDUX_WEBSOCKET_BROKEN:
     case REDUX_WEBSOCKET_CLOSED:
       return {
+        ...state,
         ...initialState,
         message: 'Websocket closed.',
       };
     case REDUX_WEBSOCKET_ERROR:
       return {
+        ...state,
         ...initialState,
         message: 'Error. Too many reloads?',
       };
@@ -92,27 +97,22 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
 
   if (response?.subscribe) {
     const message = response['success'] ? 'Successful subscription.' : 'Error while subscribing...';
-    return { ...state, message };
+    return {...state, message};
   } else if (responseKeys.includes('status')) {
-    return {
-      ...state,
-      message: `Websocket. Status: ${(response as any).status || 'Error'}`,
-    };
+    const message = `Websocket. Status: ${(response as any).status || 'Error'}`;
+    return {...state, message};
   } else if (ws_action) {
     const tempState: WebsocketState = {
       ...state,
-      [table]: {
-        ...state[table],
-      },
+      [table]: {...state[table]},
     };
     switch (ws_action) {
       case ResponseActions.PARTIAL: {
         const current_len = Object.keys(tempState[table]).length;
-        const data_len: number = data.length;
-        for (let i = current_len; i < current_len + data_len; ++i) {
+        for (let i = current_len; i < current_len + data.length; ++i) {
           tempState[table][i] = {
             ...tempState[table][i],
-            ...data[i],
+            ...(data[i] as any),
           };
         }
 
@@ -121,7 +121,7 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
           [table]: response['keys'],
         };
 
-        return { ...state, ...tempState };
+        return {...state, ...tempState};
       }
       case ResponseActions.INSERT: {
         const current_len = Object.keys(tempState[table]).length;
@@ -131,7 +131,7 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
             ...data[i],
           };
         }
-        return { ...state, ...tempState };
+        return {...state, ...tempState};
       }
       case ResponseActions.UPDATE: {
         let item = 0;
@@ -147,11 +147,11 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
             delete tempState[table][item];
           }
         }
-        return { ...state, ...tempState };
+        return {...state, ...tempState};
       }
     }
   } else if (responseKeys.includes('unsubscribe')) {
-    delete state.__keys[(response as any)['unsubscribe']];
+    delete state.__keys[response.unsubscribe];
   }
   return state;
 };
@@ -168,7 +168,7 @@ export const wsTickerChange = (payload: SYMBOLS): Actions => ({
 export const getOrders = (): Thunk => async (dispatch) => {
   try {
     const response = await axios.post('/bitmex/getOrders');
-    const { data } = response.data;
+    const {data} = response.data;
     console.log(data, 'orders data');
     // const { text } = JSON.parse(data);
     dispatch(getSuccess(JSON.parse(data)));
@@ -208,7 +208,7 @@ export const wsDisconnect = (): Thunk => async (dispatch) => {
 export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
   try {
     dispatch(send(authKeyExpires('/realtime', 'GET')));
-    dispatch(send({ op: 'subscribe', args: [payload] }));
+    dispatch(send({op: 'subscribe', args: [payload]}));
   } catch (err) {
     console.log(err.response.data, 'wsDisconnect Error');
   }
@@ -216,7 +216,7 @@ export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dis
 
 export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
   try {
-    dispatch(send({ op: 'unsubscribe', args: [payload] }));
+    dispatch(send({op: 'unsubscribe', args: [payload]}));
   } catch (err) {
     console.log(err.response.data, 'wsDisconnect Error');
   }
