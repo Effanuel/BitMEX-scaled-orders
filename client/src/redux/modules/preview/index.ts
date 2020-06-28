@@ -1,11 +1,8 @@
-import axios from 'axios';
-import {createScaledOrders, ScaledOrdersProps, ScaledOrders} from 'util/index';
-
-import {SUCCESS, FAILURE, REQUEST} from 'redux/helpers/actionHelpers';
+import {createScaledOrders, ScaledOrdersProps, ScaledOrders, createMarketOrder} from 'util/index';
+import {SUCCESS, FAILURE, REQUEST, callAPI} from 'redux/helpers/actionHelpers';
 import {SHOW_PREVIEW, SWITCH_PREVIEW, PreviewState, PREVIEW_POST_ORDER, GET_BALANCE} from './types';
-import {Thunk} from '../../models/state';
 
-const defaultState = {
+const defaultState: PreviewState = {
   orders: {orders: [], stop: {}},
   balance: 0,
   showPreview: false,
@@ -26,7 +23,7 @@ export const previewReducer = (state = defaultState, {type, payload}: Action): P
     case SUCCESS[GET_BALANCE]:
       return {
         ...state,
-        balance: payload,
+        balance: payload.walletBalance,
       };
     case FAILURE[GET_BALANCE]:
     case FAILURE[PREVIEW_POST_ORDER]:
@@ -64,47 +61,23 @@ export const previewReducer = (state = defaultState, {type, payload}: Action): P
 // Actions
 // ==============================
 
-export const scaledOrders = (payload: ScaledOrders): Thunk => async (dispatch) => {
-  try {
-    dispatch({type: REQUEST[PREVIEW_POST_ORDER]});
-
-    const response = await axios.post('/bitmex/bulkOrders', payload);
-    const {success} = response.data;
-
-    dispatch({type: SUCCESS[PREVIEW_POST_ORDER], payload: {success, text: 'text', from: 'Scaled_orders'}});
-  } catch (err) {
-    const payload = err.message.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-    dispatch({type: FAILURE[PREVIEW_POST_ORDER], payload});
+export const scaledOrders = (ordersProps: ScaledOrdersProps) => {
+  console.log(ordersProps);
+  const payload = createScaledOrders(ordersProps);
+  if (ordersProps.stop && ordersProps.stop !== '') {
+    payload.orders.push(payload.stop as any);
   }
+  return callAPI(PREVIEW_POST_ORDER, payload, '/bitmex/bulkOrders');
 };
 
-export const getBalance = (): Thunk => async (dispatch) => {
-  try {
-    const response = await axios.post('/bitmex/getBalance');
-    const {data} = response.data;
-    const {walletBalance} = JSON.parse(data);
+export const marketOrder = (orderProps: any) => {
+  const order = createMarketOrder(orderProps);
+  const payload = {order, method: 'POST'};
 
-    dispatch({type: SUCCESS[GET_BALANCE], payload: walletBalance});
-  } catch (err) {
-    const payload = err.message.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-    dispatch({type: FAILURE[GET_BALANCE], payload});
-  }
+  return callAPI(PREVIEW_POST_ORDER, payload, '/bitmex/order');
 };
 
-export const marketOrder = (payload: any): Thunk => async (dispatch) => {
-  try {
-    dispatch({type: REQUEST[PREVIEW_POST_ORDER]});
-
-    const response = await axios.post('/bitmex/order', {payload, method: 'POST'});
-    const {data, success} = response.data;
-    const {text} = JSON.parse(data);
-
-    dispatch({type: SUCCESS[PREVIEW_POST_ORDER], payload: {success, text, from: 'MarketOrder'}});
-  } catch (err) {
-    const payload = err.message.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-    dispatch({type: FAILURE[PREVIEW_POST_ORDER], payload});
-  }
-};
+export const getBalance = () => callAPI(GET_BALANCE, undefined, '/bitmex/getBalance', 'walletBalance');
 
 export const previewOrders = (payload: ScaledOrdersProps): Action => previewShow(createScaledOrders(payload));
 

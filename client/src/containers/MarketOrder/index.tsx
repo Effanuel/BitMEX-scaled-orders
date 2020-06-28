@@ -93,8 +93,7 @@ const MarketOrderContainer = React.memo(() => {
 
   function submitMarketOrder(event: any) {
     const {id} = event.target;
-    const order = createMarketOrder({...state, side: id});
-    dispatch(marketOrder(order));
+    dispatch(marketOrder({...state, side: id}));
   }
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
