@@ -1,4 +1,4 @@
-import { CreateAction } from '../../helpers/helperTypes';
+import {CreateAction} from '../../helpers/helperTypes';
 import {
   WEBSOCKET_BROKEN,
   WEBSOCKET_CLOSED,
@@ -38,7 +38,7 @@ export type ReduxWebsocketMessage = CreateAction<typeof REDUX_WEBSOCKET_MESSAGE,
 export interface WebsocketState {
   [key: string]: any;
 
-  __keys?: any;
+  __keys: Keys;
   instrument?: Instrument;
   order?: any;
   connected: boolean;
@@ -55,10 +55,14 @@ export enum ResponseActions {
   DELETE = 'delete',
 }
 
+type Tables = 'trade' | 'order' | 'instrument';
+
+type Keys = {[key in Tables]?: string[]};
+
 interface WebsocketResponseData {
   // Table name / Subscription topic.
   // Could be "trade", "order", "instrument", etc.
-  table: 'trade' | 'order' | 'instrument';
+  table: Tables;
   // The type of the message. Types:
   // 'partial'; This is a table image, replace your data entirely.
   // 'update': Update a single row.
@@ -66,7 +70,7 @@ interface WebsocketResponseData {
   // 'delete': Delete a row.
   action: ResponseActions;
   // An array of table rows is emitted here. They are identical in structure to data returned from the REST API.
-  data: any; //object[]
+  data: Record<string, unknown>[]; //object[]
   //
   // The below fields define the table and are only sent on a `partial`
   //
@@ -77,7 +81,7 @@ interface WebsocketResponseData {
   keys?: string[];
   // This lists key relationships with other tables.
   // For example, `quote`'s foreign key is {"symbol": "instrument"}
-  foreignKeys?: { [key: string]: string };
+  foreignKeys?: {[key: string]: string};
   // This lists the shape of the table. The possible types:
   // "symbol" - In most languages this is equal to "string"
   // "guid"
@@ -87,16 +91,17 @@ interface WebsocketResponseData {
   // "long"
   // "integer"
   // "boolean"
-  types?: { [key: string]: string };
+  types?: {[key: string]: string};
   // When multiple subscriptions are active to the same table, use the `filter` to correlate which datagram
   // belongs to which subscription, as the `table` property will not contain the subscription's symbol.
-  filter?: { account?: number; symbol?: string };
+  filter?: {account?: number; symbol?: string};
   // These are internal fields that indicate how responses are sorted and grouped.
-  attributes?: { [key: string]: string };
+  attributes?: {[key: string]: string};
 }
 
 interface WebsocketResponseSuccess {
-  subscribe: string;
+  subscribe: Tables;
+  unsubscribe: Tables;
   success: boolean;
 }
 
