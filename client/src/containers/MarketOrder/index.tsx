@@ -11,7 +11,7 @@ import {MainContainer, SelectDropdown, InputField, Button} from 'components';
 import Grid from '@material-ui/core/Grid';
 // STYLES
 import styles from './styles.module.css';
-import {createMarketOrder, createOrder} from 'util/index';
+import {createOrder} from 'util/index';
 import {SYMBOLS} from 'util/BitMEX-types';
 
 interface State {
