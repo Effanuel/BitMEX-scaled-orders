@@ -1,29 +1,55 @@
 import React from 'react';
-// REDUX
-import { useSelector, shallowEqual } from 'react-redux';
-import { ordersAveragePriceSelector, ordersRiskSelector, ordersRiskPercSelector } from 'redux/selectors';
-import { AppState } from 'redux/models/state';
-// UTILS
+import {useSelector, shallowEqual} from 'react-redux';
+
+import {ordersAveragePriceSelector, ordersRiskSelector, ordersRiskPercSelector} from 'redux/selectors';
+import {AppState} from 'redux/models/state';
 import styles from './details-table.module.css';
+import {formatPrice} from 'general/formatting';
 
-// Reformats numbers
-// ex. 123456.7890 => 123,456.7890
-function format(num: any) {
-  return num.toString().replace(/^[+-]?\d+/, function (int: any) {
-    return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
-  });
-}
-
-function DetailsTable() {
-  const { averagePrice, riskBTC, riskPerc } = useSelector(
+export default function DetailsTable() {
+  const {averagePrice, riskBTC, riskPerc} = useSelector(
     (state: AppState) => ({
-      orders: state.preview.orders,
       averagePrice: ordersAveragePriceSelector(state),
       riskBTC: ordersRiskSelector(state),
       riskPerc: ordersRiskPercSelector(state),
     }),
     shallowEqual,
   );
+
+  function renderPriceSection() {
+    return (
+      <tr>
+        <td>Average price:</td>
+        <td>
+          {formatPrice(averagePrice || null)}
+          <span className={styles.color_accent}> USD</span>
+        </td>
+      </tr>
+    );
+  }
+
+  function renderRiskSection() {
+    return riskBTC ? (
+      <>
+        <tr>
+          <td>Risk:</td>
+          <td>
+            {riskBTC}
+            <span className={styles.color_accent}> BTC</span>
+          </td>
+        </tr>
+        {!isNaN(riskPerc) && (
+          <tr>
+            <td>Risk(%):</td>
+            <td>
+              {riskPerc}
+              <span className={styles.color_accent}> %</span>
+            </td>
+          </tr>
+        )}
+      </>
+    ) : null;
+  }
 
   return (
     <table className={styles.table}>
@@ -34,36 +60,9 @@ function DetailsTable() {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Average price:</td>
-          <td>
-            {format(averagePrice)}
-            <span className={styles.color_accent}> USD</span>
-          </td>
-        </tr>
-        {riskBTC ? (
-          <>
-            <tr>
-              <td>Risk:</td>
-              <td>
-                {riskBTC}
-                <span className={styles.color_accent}> BTC</span>
-              </td>
-            </tr>
-            {!isNaN(riskPerc) && (
-              <tr>
-                <td>Risk(%):</td>
-                <td>
-                  {riskPerc}
-                  <span className={styles.color_accent}> %</span>
-                </td>
-              </tr>
-            )}
-          </>
-        ) : null}
+        {renderPriceSection()}
+        {renderRiskSection()}
       </tbody>
     </table>
   );
 }
-
-export { DetailsTable };
