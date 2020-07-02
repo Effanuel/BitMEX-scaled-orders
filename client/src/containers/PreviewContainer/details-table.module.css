@@ -1,8 +1,4 @@
 @import '../../css/colors.module.css';
-/* .myTable {
-    margin: 12px;
-    font-size: 12px;
-  } */
 
 .color_accent {
   color: var(--accentColor);
