@@ -1,27 +1,26 @@
-import React from "react";
-// COMPONENTS
-import { TextField, makeStyles, FormControl } from "@material-ui/core";
-// STYLES
-import { Theme } from "@material-ui/core/styles";
-import cx from "classnames";
-import "./InputField.module.css";
+import React from 'react';
+import cx from 'classnames';
+import {TextField, makeStyles, FormControl} from '@material-ui/core';
+import {Theme} from '@material-ui/core/styles';
+
+import './InputField.module.css';
 
 const useStyles = makeStyles((theme: Theme) => ({
   label: {
-    color: "rgba(255, 255, 255, 0.6)",
-    fontSize: "14px"
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: '14px',
   },
   stop: {
-    "& .MuiInput-input": {
-      borderColor: "#cf6679",
-      "&:focus": {
-        borderColor: "#cf6679"
-      }
-    }
+    '& .MuiInput-input': {
+      borderColor: '#cf6679',
+      '&:focus': {
+        borderColor: '#cf6679',
+      },
+    },
   },
   tooltip: {
-    color: "red"
-  }
+    color: 'red',
+  },
 }));
 
 type Props = {
@@ -35,16 +34,7 @@ type Props = {
   onChange: (arg0: any) => void;
 };
 
-function InputField({
-  id,
-  label,
-  value,
-  stop = false,
-  tooltip,
-  placeholder,
-  t_placement = "top-end",
-  onChange
-}: Props) {
+function InputField({id, label, value, stop = false, tooltip, placeholder, t_placement = 'top-end', onChange}: Props) {
   const classes = useStyles();
   const handleFocus = (event: any) => event.target.select();
   return (
@@ -57,18 +47,18 @@ function InputField({
         placeholder={placeholder}
         type="number"
         id={id}
-        value={value || ""}
+        value={value || ''}
         onChange={onChange}
         onFocus={handleFocus}
         InputProps={{
-          disableUnderline: true
+          disableUnderline: true,
         }}
         className={cx({
-          [classes.stop]: stop
+          [classes.stop]: stop,
         })}
       />
     </FormControl>
   );
 }
 
-export { InputField };
+export {InputField};

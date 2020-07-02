@@ -3,8 +3,9 @@ import {useSelector, shallowEqual} from 'react-redux';
 
 import {ordersAveragePriceSelector, ordersRiskSelector, ordersRiskPercSelector} from 'redux/selectors';
 import {AppState} from 'redux/models/state';
-import styles from './details-table.module.css';
+
 import {formatPrice} from 'general/formatting';
+import styles from './details-table.module.css';
 
 export default function DetailsTable() {
   const {averagePrice, riskBTC, riskPerc} = useSelector(

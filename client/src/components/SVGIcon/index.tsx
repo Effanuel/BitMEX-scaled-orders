@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface Props {
   icon: string;
@@ -6,19 +6,19 @@ interface Props {
   color: string;
 }
 
-const SVGIcon = ({ icon, size = "22", color = "color" }: Props) => {
+const SVGIcon = ({icon, size = '22', color = 'color'}: Props) => {
   const styles = {
     svg: {
-      verticalAlign: "middle",
+      verticalAlign: 'middle',
     },
     path: {
       fill: color,
     },
     root: {
-      display: "inline",
-      justify: "middle",
-      padding: "7px 0",
-      marginRight: "12px",
+      display: 'inline',
+      justify: 'middle',
+      padding: '7px 0',
+      marginRight: '12px',
     },
   };
 
@@ -38,5 +38,5 @@ const SVGIcon = ({ icon, size = "22", color = "color" }: Props) => {
   );
 };
 
-export { SVGIcon };
+export {SVGIcon};
 //Thanks to nishanbajracharya for this code

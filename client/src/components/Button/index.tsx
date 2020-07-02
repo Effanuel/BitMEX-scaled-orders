@@ -1,6 +1,6 @@
 import React from 'react';
-// STYLES
 import cx from 'classnames';
+
 import styles from './styles.module.css';
 
 export interface ButtonProps {
@@ -14,7 +14,7 @@ export interface ButtonProps {
   className?: any;
 }
 
-function Button({ id, label, testID, variant = 'submit', disabled, onClick, style, className = '' }: ButtonProps) {
+function Button({id, label, testID, variant = 'submit', disabled, onClick, style, className = ''}: ButtonProps) {
   const buttonStyle = cx({
     [styles.button]: variant === 'submit',
     [styles.text_button]: variant === 'text',
@@ -27,4 +27,4 @@ function Button({ id, label, testID, variant = 'submit', disabled, onClick, styl
   );
 }
 
-export { Button };
+export {Button};

@@ -8,4 +8,4 @@ export default {
   POSITIVE: 'M10 17L5-5-5-5V10Z',
   NEGATIVE: 'M14 7L-5 5 5 5V7Z',
   UNIFORM: 'M19 13H5V-2H14V2Z',
-} as { [key: string]: string };
+} as {[key: string]: string};

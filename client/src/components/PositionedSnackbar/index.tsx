@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { clearNotifications } from 'redux/modules/notify';
-import { shallowEqual, useSelector, useDispatch } from 'react-redux';
-import { AppState } from 'redux/models/state';
-
+import React, {useState, useEffect} from 'react';
+import {shallowEqual, useSelector, useDispatch} from 'react-redux';
 import Snackbar from '@material-ui/core/Snackbar';
-import { NotificationBar } from '../';
-import { Notification } from 'redux/middlewares/notification';
-import { NotifyType } from 'redux/modules/notify/types';
 
+import {clearNotifications} from 'redux/modules/notify';
+import {NotifyType} from 'redux/modules/notify/types';
+import {Notification} from 'redux/middlewares/notification';
+import {AppState} from 'redux/models/state';
+
+import {NotificationBar} from '../';
 import styles from './styles.module.css';
 
 interface State extends Notification {
@@ -24,7 +24,7 @@ export const PositionedSnackbar = React.memo(() => {
   const [state, setState] = useState(initialState);
 
   const dispatch = useDispatch();
-  const { notification, notification_type } = useSelector(
+  const {notification, notification_type} = useSelector(
     (state: AppState) => ({
       notification: state.notify.message,
       notification_type: state.notify.type,
@@ -59,8 +59,8 @@ export const PositionedSnackbar = React.memo(() => {
     }));
   }
 
-  const { isVisible, message, type } = state;
-  const anchorOrigin: any = { vertical: 'top', horizontal: 'center' };
+  const {isVisible, message, type} = state;
+  const anchorOrigin: any = {vertical: 'top', horizontal: 'center'};
   return (
     <Snackbar
       anchorOrigin={anchorOrigin}

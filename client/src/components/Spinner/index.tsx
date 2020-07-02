@@ -1,8 +1,6 @@
 import React from 'react';
-// COMPONENTS
 import LinearProgress from '@material-ui/core/LinearProgress';
-// STYLES
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 
 const ColorLinearProgress = withStyles({
   root: {
@@ -22,9 +20,9 @@ interface Props {
   loading: boolean;
 }
 
-function SpinnerComponent({ loading }: Props) {
-  return <>{loading ? <ColorLinearProgress /> : <div style={{ height: '5px' }} />}</>;
+function SpinnerComponent({loading}: Props) {
+  return <>{loading ? <ColorLinearProgress /> : <div style={{height: '5px'}} />}</>;
   // return <CircularProgress size={20} className={styles.spinner} />;
 }
 
-export { SpinnerComponent };
+export {SpinnerComponent};

@@ -1,9 +1,6 @@
 import React from 'react';
-// COMPONENTS
-import Radio from '@material-ui/core/Radio';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-// STYLES
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import {Radio, FormControlLabel} from '@material-ui/core';
+import {makeStyles, Theme} from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -28,9 +25,8 @@ interface Props {
   labelPlacement?: any;
 }
 
-function CustomRadioButton({ checked, id, value, label, labelPlacement = 'end' }: Props) {
+function CustomRadioButton({checked, id, value, label, labelPlacement = 'end'}: Props) {
   const classes = useStyles();
-
   return (
     <FormControlLabel
       checked={checked}
@@ -43,4 +39,4 @@ function CustomRadioButton({ checked, id, value, label, labelPlacement = 'end' }
     />
   );
 }
-export { CustomRadioButton };
+export {CustomRadioButton};

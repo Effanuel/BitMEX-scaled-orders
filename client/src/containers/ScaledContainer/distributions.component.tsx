@@ -1,16 +1,15 @@
 import React from 'react';
-import { CustomRadioButton } from 'components';
+import {RadioGroup} from '@material-ui/core';
 
-import { RadioGroup } from '@material-ui/core';
-// import ICONS from 'components/SVGIcon/icons';
-import { DISTRIBUTIONS } from 'util/index';
+import {CustomRadioButton} from 'components';
+import {DISTRIBUTIONS} from 'util/index';
 
 interface Props {
   onChange: (e: any) => void;
   distribution: DISTRIBUTIONS;
 }
 
-function DistributionsContainer({ onChange, distribution }: Props) {
+export default function DistributionsContainer({onChange, distribution}: Props) {
   return (
     <div>
       <RadioGroup aria-label="Distribution" name="distribution" value={distribution} onChange={onChange} row>
@@ -21,5 +20,3 @@ function DistributionsContainer({ onChange, distribution }: Props) {
     </div>
   );
 }
-
-export default DistributionsContainer;

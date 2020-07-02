@@ -1,19 +1,18 @@
-@import "../../css/colors.module.css";
-/* @import "../../css/root.module.css"; */
+@import '../../css/colors.module.css';
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 /* Firefox */
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
 }
 
 /*Update for Material */
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   background-color: var(--primaryColor);
   color: rgba(255, 255, 255, 0.87);
@@ -22,9 +21,8 @@ input[type="number"] {
   padding: 5px 5px;
 }
 
-
 /*Update for Material */
-input[type="number"]:focus {
+input[type='number']:focus {
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
   /*background-color: var(--primaryColor);*/
@@ -46,23 +44,23 @@ input[type="number"]:focus {
   user-select: none;
 }*/
 
-input[type="number"]::selection {
+input[type='number']::selection {
   background-color: var(--accentColor);
 }
-input[type="number"]::-o-selection {
+input[type='number']::-o-selection {
   background-color: var(--accentColor);
 }
-input[type="number"]::-webkit-selection {
+input[type='number']::-webkit-selection {
   background-color: var(--accentColor);
 }
-input[type="number"]::-ms-selection {
+input[type='number']::-ms-selection {
   background-color: var(--accentColor);
 }
-input[type="number"]::-moz-selection {
+input[type='number']::-moz-selection {
   background-color: var(--accentColor);
 }
 
-span[id="icon"] {
+span[id='icon'] {
   color: white;
   margin-left: 5px;
   font-size: 15px;

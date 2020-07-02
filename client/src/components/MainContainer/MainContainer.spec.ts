@@ -1,6 +1,7 @@
-import { ComponentDriver } from 'react-component-driver';
-import { MainContainer, Props as MainContainerProps } from './index';
-import { MAIN_CONTAINER } from '../../data-test-ids';
+import {ComponentDriver} from 'react-component-driver';
+
+import {MainContainer, Props as MainContainerProps} from './index';
+import {MAIN_CONTAINER} from '../../data-test-ids';
 
 describe('MainContainer', () => {
   let driver: MainContainerDriver;

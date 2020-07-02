@@ -1,5 +1,5 @@
 import React from 'react';
-// UTILS
+
 import styles from './styles.module.css';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   onChange: (event: any) => void;
 }
 
-function SelectDropdown({ id, label, onChange }: Props) {
+function SelectDropdown({id, label, onChange}: Props) {
   return (
     <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>
@@ -24,4 +24,4 @@ function SelectDropdown({ id, label, onChange }: Props) {
   );
 }
 
-export { SelectDropdown };
+export {SelectDropdown};

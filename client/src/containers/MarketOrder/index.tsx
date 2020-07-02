@@ -1,15 +1,14 @@
 // eslint-disable
 import React, {useEffect, useState} from 'react';
-// REDUX
+import Grid from '@material-ui/core/Grid';
+import {useDispatch, useSelector, shallowEqual} from 'react-redux';
+
 import {marketOrder} from 'redux/modules/preview';
 import {wsSubscribeTo, wsUnsubscribeFrom} from 'redux/modules/websocket';
 import {createBestOrder, amendBestOrder, __clearBestOrder} from 'redux/modules/best-price';
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 import {bestOrderStatus, bestOrderStatusSelector, websocketCurrentPrice} from 'redux/selectors';
-// COMPONENTS
+
 import {MainContainer, SelectDropdown, InputField, Button} from 'components';
-import Grid from '@material-ui/core/Grid';
-// STYLES
 import styles from './styles.module.css';
 import {createOrder} from 'util/index';
 import {SYMBOLS} from 'util/BitMEX-types';

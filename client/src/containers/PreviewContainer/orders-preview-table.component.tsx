@@ -2,9 +2,9 @@ import React from 'react';
 import {useSelector, shallowEqual} from 'react-redux';
 import cx from 'classnames';
 
+import {formatPrice} from 'general/formatting';
 import {AppState} from 'redux/models/state';
 import styles from './orders-preview-table.module.css';
-import {formatPrice} from 'general/formatting';
 
 const generateSideColorStyles = (xSide: boolean) => ({
   normal: cx({

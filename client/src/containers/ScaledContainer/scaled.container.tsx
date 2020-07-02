@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
-// REDUX
+import {Grid, RadioGroup} from '@material-ui/core';
 import {useDispatch, useSelector, shallowEqual} from 'react-redux';
 
 import {previewOrders, previewToggle, getBalance, scaledOrders} from 'redux/modules/preview';
-
 import {wsConnect, wsDisconnect, wsTickerChange} from 'redux/modules/websocket';
-// COMPONENTS
+import {websocketBidAskPrices} from 'redux/selectors';
+import {AppState} from 'redux/models/state';
+
 import {
   InputField,
   SelectDropdown,
@@ -15,14 +16,9 @@ import {
   Button,
 } from 'components';
 import DistributionsContainer from './distributions.component';
-import {Grid, RadioGroup} from '@material-ui/core';
 
-// UTILS
-import {AppState} from 'redux/models/state';
 import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import {websocketBidAskPrices} from 'redux/selectors';
-// STYLES
 import styles from './styles.module.css';
 
 export interface ScaledContainerState {
@@ -111,6 +107,7 @@ const ScaledContainer = React.memo(() => {
       dispatch(previewOrders(state));
     }
   }
+
   function renderFirstRow() {
     return (
       <>
@@ -145,6 +142,7 @@ const ScaledContainer = React.memo(() => {
       </>
     );
   }
+
   function renderSecondRow() {
     return (
       <>
@@ -187,6 +185,7 @@ const ScaledContainer = React.memo(() => {
       </>
     );
   }
+
   function renderThirdRow() {
     return (
       <>

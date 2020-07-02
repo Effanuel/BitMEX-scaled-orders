@@ -1,12 +1,11 @@
 import React from 'react';
-// COMPONENTS
-import {SVGIcon} from '../';
-import ICONS from '../SVGIcon/icons';
-// STYLES
-import styles from './styles.module.css';
 import cx from 'classnames';
 
 import {NotifyType} from 'redux/modules/notify/types';
+
+import {SVGIcon} from '../';
+import ICONS from '../SVGIcon/icons';
+import styles from './styles.module.css';
 
 export interface Props {
   notificationType: NotifyType;
