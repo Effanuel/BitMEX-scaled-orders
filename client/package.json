@@ -25,8 +25,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "test": "react-scripts test --verbose",
-    "test:watch": "npm test -- --watch",
+    "unit": "react-scripts test --verbose --watchAll=false",
+    "unit:watch": "react-scripts test --verbose --watchAll=true",
     "eject": "react-scripts eject",
     "clean": "rimraf ../api/dist ./build",
     "init:packages": "npm install && cd ../api && npm install && cd ../client",
