@@ -1,5 +1,4 @@
 import {SIDE} from 'util/BitMEX-types';
-import {registerApiActions} from 'redux/helpers/actionHelpers';
 
 export const BEST_POST_ORDER = 'best_price/BEST_POST_ORDER';
 export const BEST_PUT_ORDER = 'best_price/BEST_PUT_ORDER';
@@ -15,4 +14,4 @@ export interface BestPriceState {
   loading: boolean;
 }
 
-registerApiActions(BEST_POST_ORDER, BEST_PUT_ORDER);
+export const best_price_apiActions = [BEST_POST_ORDER, BEST_PUT_ORDER] as const;
