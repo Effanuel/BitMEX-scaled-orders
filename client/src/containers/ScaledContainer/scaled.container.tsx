@@ -20,6 +20,7 @@ import DistributionsContainer from './distributions.component';
 import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
 import styles from './styles.module.css';
+import {SCALED_CONTAINER} from 'data-test-ids';
 
 export interface ScaledContainerState {
   quantity: any;
@@ -196,10 +197,21 @@ const ScaledContainer = React.memo(() => {
           {orderError}
         </Grid>
         <Grid item xs={2} className="text-right">
-          <Button label="Preview" onClick={onPreviewOrders} variant="text" disabled={isDisabled(state)} />
+          <Button
+            testID={SCALED_CONTAINER.PREVIEW_BUTTON}
+            label="Preview"
+            onClick={onPreviewOrders}
+            variant="text"
+            disabled={isDisabled(state)}
+          />
         </Grid>
         <Grid item xs={3}>
-          <Button label="Submit" onClick={onOrderSubmit} disabled={isDisabled(state)} />
+          <Button
+            testID={SCALED_CONTAINER.SUBMIT_BUTTON}
+            label="Submit"
+            onClick={onOrderSubmit}
+            disabled={isDisabled(state)}
+          />
         </Grid>
       </>
     );

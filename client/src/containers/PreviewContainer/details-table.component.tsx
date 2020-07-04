@@ -6,6 +6,7 @@ import {AppState} from 'redux/models/state';
 
 import {formatPrice} from 'general/formatting';
 import styles from './details-table.module.css';
+import {PREVIEW_CONTAINER} from 'data-test-ids';
 
 export default function DetailsTable() {
   const {averagePrice, riskBTC, riskPerc} = useSelector(
@@ -40,7 +41,7 @@ export default function DetailsTable() {
           </td>
         </tr>
         {!isNaN(riskPerc) && (
-          <tr>
+          <tr data-testid={PREVIEW_CONTAINER.RISK_PERC_ROW}>
             <td>Risk(%):</td>
             <td>
               {riskPerc}

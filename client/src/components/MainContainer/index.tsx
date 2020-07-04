@@ -45,7 +45,7 @@ export const MainContainer = React.memo(({children, label}: Props) => {
   }
 
   return (
-    <Container fixed maxWidth="sm" className={styles.container_scaled} style={{padding: '0px'}}>
+    <Container data-testid={label} fixed maxWidth="sm" className={styles.container_scaled} style={{padding: '0px'}}>
       {maximized ? maximizedView() : minimizedView()}
     </Container>
   );

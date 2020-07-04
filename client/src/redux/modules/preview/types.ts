@@ -1,5 +1,4 @@
 import {ScaledOrders} from 'util/index';
-import {registerApiActions} from 'redux/helpers/actionHelpers';
 
 export const PREVIEW_POST_ORDER = 'preview/POST_ORDER';
 export const GET_BALANCE = 'preview/GET_BALANCE';
@@ -15,4 +14,4 @@ export interface PreviewState {
   loading: boolean;
 }
 
-registerApiActions(PREVIEW_POST_ORDER, GET_BALANCE);
+export const preview_apiActions = [GET_BALANCE, PREVIEW_POST_ORDER] as const;

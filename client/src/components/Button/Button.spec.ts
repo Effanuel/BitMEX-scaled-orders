@@ -1,5 +1,5 @@
-import { ComponentDriver } from 'react-component-driver';
-import { Button, ButtonProps } from './index';
+import {ComponentDriver} from 'react-component-driver';
+import {Button, ButtonProps} from './index';
 
 describe('ButtonDriver', () => {
   let driver: ButtonDriver;
@@ -9,19 +9,19 @@ describe('ButtonDriver', () => {
   });
 
   it('should use `button` style for `submit` variant button', async () => {
-    const drv = await driver.withDefaultProps({ variant: 'submit' }).renderAsync();
+    const drv = await driver.withDefaultProps({variant: 'submit'}).renderAsync();
 
     expect(drv.getButtonClassName()).toEqual('button');
   });
 
   it('should use `text_button` style for `text` variant button', async () => {
-    const drv = await driver.withDefaultProps({ variant: 'text' }).renderAsync();
+    const drv = await driver.withDefaultProps({variant: 'text'}).renderAsync();
 
     expect(drv.getButtonClassName()).toEqual('text_button');
   });
 
   it('should use `className` prop for `custom` variant button', async () => {
-    const drv = await driver.withDefaultProps({ variant: 'custom', className: 'abc' }).renderAsync();
+    const drv = await driver.withDefaultProps({variant: 'custom', className: 'abc'}).renderAsync();
 
     expect(drv.getButtonClassName()).toEqual('abc');
   });
@@ -43,7 +43,7 @@ class ButtonDriver extends ComponentDriver<ButtonProps> {
       style: null,
       className: '',
     };
-    return this.setProps({ ...defaultProps, ...props });
+    return this.setProps({...defaultProps, ...props});
   }
 
   getButton() {

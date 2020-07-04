@@ -1,29 +1,38 @@
 import axios from 'axios';
 import * as _ from 'lodash/fp';
 import {Thunk} from 'redux/models/state';
+import {preview_apiActions} from 'redux/modules/preview/types';
+import {best_price_apiActions} from 'redux/modules/best-price/types';
 
-type ActionMap = {[key: string]: string};
+const apiActions = [...preview_apiActions, ...best_price_apiActions] as const;
 
-export const REQUEST: ActionMap = {};
-export const SUCCESS: ActionMap = {};
-export const FAILURE: ActionMap = {};
+type ActionMapKey = typeof apiActions[number];
 
-export function registerApiActions(...names: string[]) {
-  names.forEach((name) => {
-    REQUEST[name] = `${name}_REQUEST`;
-    SUCCESS[name] = `${name}_SUCCESS`;
-    FAILURE[name] = `${name}_FAILURE`;
-  });
-}
+type ActionMap = {[key in ActionMapKey]: string};
 
-export const callAPI = <P>(actionName: string, payload: P, path: string, ...args: string[]): Thunk => async (
+const getApiActions = (actions: typeof apiActions) => ({
+  apiRequestActions: actions.map((name) => ({
+    [name]: `${name}_REQUEST`,
+  })),
+  apiSuccessActions: actions.map((name) => ({
+    [name]: `${name}_SUCCESS`,
+  })),
+  apiFailureActions: actions.map((name) => ({
+    [name]: `${name}_FAILURE`,
+  })),
+});
+
+export const REQUEST: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiRequestActions);
+export const SUCCESS: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiSuccessActions);
+export const FAILURE: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiFailureActions);
+
+export const callAPI = <P>(actionName: ActionMapKey, payload: P, path: string, ...args: string[]): Thunk => async (
   dispatch,
 ) => {
   try {
     dispatch({type: REQUEST[actionName]});
     const response = await axios.post(path, payload);
     const {data, success} = response.data;
-
     const extraData = _.pick([...args, 'text'], JSON.parse(data));
 
     dispatch({type: SUCCESS[actionName], payload: {success, from: 'Scaled_orders', ...extraData}});

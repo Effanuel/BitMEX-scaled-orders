@@ -5,6 +5,7 @@ import cx from 'classnames';
 import {formatPrice} from 'general/formatting';
 import {AppState} from 'redux/models/state';
 import styles from './orders-preview-table.module.css';
+import {PREVIEW_CONTAINER} from 'data-test-ids';
 
 const generateSideColorStyles = (xSide: boolean) => ({
   normal: cx({
@@ -51,7 +52,7 @@ export default function OrdersPreviewTable() {
 
   function renderStop() {
     return orders.stop.stopPx ? (
-      <tr className={stop}>
+      <tr data-testid={PREVIEW_CONTAINER.STOP_ORDER_ROW} className={stop}>
         <td>{formatPrice(orders.stop.orderQty)}</td>
         <td className={textY}>{ySide}</td>
         <td>{formatPrice(orders.stop.stopPx)}</td>
