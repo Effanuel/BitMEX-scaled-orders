@@ -20,8 +20,9 @@ function Button({id, label, testID, variant = 'submit', disabled, onClick, style
     [styles.text_button]: variant === 'text',
     [className]: variant === 'custom',
   });
+
   return (
-    <button id={id} data-testid={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
+    <button id={id} data-test-id={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
       {label}
     </button>
   );
