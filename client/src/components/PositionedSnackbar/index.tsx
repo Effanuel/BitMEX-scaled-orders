@@ -9,6 +9,7 @@ import {AppState} from 'redux/models/state';
 
 import {NotificationBar} from '../';
 import styles from './styles.module.css';
+import {GLOBAL} from 'data-test-ids';
 
 interface State extends Notification {
   isVisible: boolean;
@@ -63,6 +64,7 @@ export const PositionedSnackbar = React.memo(() => {
   const anchorOrigin: any = {vertical: 'top', horizontal: 'center'};
   return (
     <Snackbar
+      data-testid={GLOBAL.SNACKBAR}
       anchorOrigin={anchorOrigin}
       autoHideDuration={3000}
       open={isVisible}

@@ -4,9 +4,9 @@ import cx from 'classnames';
 import styles from './styles.module.css';
 
 export interface ButtonProps {
+  testID?: string;
   id?: string;
   label: string;
-  testID?: string;
   variant?: 'submit' | 'text' | 'custom';
   disabled?: boolean;
   onClick: (event: any) => void;
@@ -21,7 +21,7 @@ function Button({id, label, testID, variant = 'submit', disabled, onClick, style
     [className]: variant === 'custom',
   });
   return (
-    <button id={id} data-test-id={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
+    <button id={id} data-testid={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
       {label}
     </button>
   );
