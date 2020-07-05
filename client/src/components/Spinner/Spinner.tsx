@@ -20,9 +20,6 @@ interface Props {
   loading: boolean;
 }
 
-function SpinnerComponent({loading}: Props) {
+export function Spinner({loading}: Props) {
   return <>{loading ? <ColorLinearProgress /> : <div style={{height: '5px'}} />}</>;
-  // return <CircularProgress size={20} className={styles.spinner} />;
 }
-
-export {SpinnerComponent};

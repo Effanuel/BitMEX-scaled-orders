@@ -4,7 +4,7 @@ import {Container, Grid} from '@material-ui/core';
 import styles from './styles.module.css';
 import {MAIN_CONTAINER} from '../../data-test-ids';
 
-export interface Props {
+export interface MainContainerProps {
   children: React.ReactNode;
   label: string;
 }

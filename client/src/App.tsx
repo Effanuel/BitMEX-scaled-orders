@@ -1,17 +1,13 @@
 import React from 'react';
-// REDUX
-import { shallowEqual, useSelector } from 'react-redux';
-/// COMPONENTS
-import { ScaledContainer, PreviewContainer, MarketOrderContainer } from 'containers';
-// UTILS
-import { PositionedSnackbar, SpinnerComponent } from 'components';
-import { AppState } from 'redux/models/state';
-// STYLES
+import {shallowEqual, useSelector} from 'react-redux';
+
+import {ScaledContainer, PreviewContainer, MarketOrderContainer} from 'containers';
+import {PositionedSnackbar, Spinner} from './components';
+import {AppState} from 'redux/models/state';
 import 'css/root.module.css';
-// import { order } from "util";
 
 export default function App() {
-  const { showPreview, orderLoading } = useSelector(
+  const {showPreview, orderLoading} = useSelector(
     (state: AppState) => ({
       showPreview: state.preview.showPreview,
       orderLoading: state.preview.loading,
@@ -24,7 +20,7 @@ export default function App() {
   return (
     <>
       <PositionedSnackbar />
-      <SpinnerComponent loading={orderLoading} />
+      <Spinner loading={orderLoading} />
       <MarketOrderContainer />
 
       <ScaledContainer />

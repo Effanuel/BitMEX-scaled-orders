@@ -6,22 +6,7 @@ interface Props {
   color: string;
 }
 
-const SVGIcon = ({icon, size = '22', color = 'color'}: Props) => {
-  const styles = {
-    svg: {
-      verticalAlign: 'middle',
-    },
-    path: {
-      fill: color,
-    },
-    root: {
-      display: 'inline',
-      justify: 'middle',
-      padding: '7px 0',
-      marginRight: '12px',
-    },
-  };
-
+export default function SVGIcon({icon, size = '22', color = 'color'}: Props) {
   return (
     <div style={styles.root}>
       <svg
@@ -32,11 +17,22 @@ const SVGIcon = ({icon, size = '22', color = 'color'}: Props) => {
         viewBox="0 0 24 24"
         xmlnsXlink="http://www.w3.org/1999/xlink"
       >
-        <path style={styles.path} d={icon} />
+        <path style={{fill: color}} d={icon} />
       </svg>
     </div>
   );
+}
+
+const styles = {
+  svg: {
+    verticalAlign: 'middle',
+  },
+  root: {
+    display: 'inline',
+    justify: 'middle',
+    padding: '7px 0',
+    marginRight: '12px',
+  },
 };
 
-export {SVGIcon};
 //Thanks to nishanbajracharya for this code

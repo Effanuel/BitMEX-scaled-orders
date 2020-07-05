@@ -3,11 +3,11 @@ import cx from 'classnames';
 
 import {NotifyType} from 'redux/modules/notify/types';
 
-import {SVGIcon} from '../';
+import SVGIcon from '../SVGIcon/SVGIcon';
 import ICONS from '../SVGIcon/icons';
 import styles from './styles.module.css';
 
-export interface Props {
+export interface NotificationBarProps {
   notificationType: NotifyType;
   message: string;
 }
@@ -19,7 +19,7 @@ const notificationColors: {[key in NotifyType]: string} = {
   '': '',
 };
 
-const NotificationBar = React.memo(({notificationType, message}: Props) => {
+export const NotificationBar = React.memo(({notificationType, message}: NotificationBarProps) => {
   const snackbar_style = cx({
     [styles.error_snackbar]: notificationType === NotifyType.error,
     [styles.success_snackbar]: notificationType === NotifyType.success,
@@ -39,5 +39,3 @@ const NotificationBar = React.memo(({notificationType, message}: Props) => {
     </div>
   );
 });
-
-export {NotificationBar};

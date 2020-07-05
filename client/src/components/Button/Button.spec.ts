@@ -1,5 +1,5 @@
 import {ComponentDriver} from 'react-component-driver';
-import {Button, ButtonProps} from './index';
+import {Button, ButtonProps} from './Button';
 
 describe('ButtonDriver', () => {
   let driver: ButtonDriver;
