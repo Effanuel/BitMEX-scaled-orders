@@ -1,4 +1,4 @@
-type ScaledConfig = Record<'quantity' | 'n_tp' | 'start' | 'end' | 'stop', number> & {[key: string]: number};
+type ScaledConfig = Record<'orderQty' | 'n_tp' | 'start' | 'end' | 'stop', number> & {[key: string]: number};
 
 export function fill() {
   return {

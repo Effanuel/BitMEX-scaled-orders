@@ -10,30 +10,31 @@ import {bestOrderStatus, bestOrderStatusSelector, websocketCurrentPrice} from 'r
 
 import {MainContainer, SelectDropdown, InputField, Button} from 'components';
 import styles from './styles.module.css';
-import {createOrder} from 'util/index';
-import {SYMBOLS} from 'util/BitMEX-types';
+import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
+import {AppState} from 'redux/models/state';
 
 interface State {
   symbol: SYMBOLS;
-  quantity: any;
+  orderQty: number;
 }
 
 const initialState: Readonly<State> = {
   symbol: SYMBOLS.XBTUSD,
-  quantity: 50,
+  orderQty: 50,
 };
 
 const MarketOrderContainer = React.memo(() => {
   const [state, setState] = useState(initialState);
   // REDUX
   const dispatch = useDispatch();
-  const {wsCurrentPrice, status, best_order_status, best_order_price, best_order_side} = useSelector(
-    (state: any) => ({
+  const {wsCurrentPrice, status, best_order_status, best_order_price, best_order_side, best_order_id} = useSelector(
+    (state: AppState) => ({
       wsCurrentPrice: websocketCurrentPrice(state),
       status: bestOrderStatus(state),
       best_order_status: bestOrderStatusSelector(state),
       best_order_price: state.best_price.price,
       best_order_side: state.best_price.side,
+      best_order_id: state.best_price.bestOrderID,
       // check current open orders
 
       // check if connected to websocket
@@ -66,10 +67,10 @@ const MarketOrderContainer = React.memo(() => {
         best_order_side === 'Sell' ? wsCurrentPrice < best_order_price : wsCurrentPrice > best_order_price;
       if (best_order_price && toAmmend) {
         console.log('Amending order: ', wsCurrentPrice, best_order_price);
-        dispatch(amendBestOrder(wsCurrentPrice));
+        amendBestOrder(wsCurrentPrice, best_order_id);
       }
     }
-  }, [wsCurrentPrice]);
+  }, [wsCurrentPrice, best_order_price]);
 
   useEffect(() => {
     if (status === 'Order placed.') {
@@ -78,27 +79,23 @@ const MarketOrderContainer = React.memo(() => {
     }
   }, [dispatch, status]);
 
-  function submitBestOrder(event: any) {
-    const {id: side} = event.target;
-    const payload = createOrder({
+  function submitBestOrder({target: {id: side}}: React.ChangeEvent<HTMLButtonElement>) {
+    const payload = {
       ...state,
       price: wsCurrentPrice || 9200,
-      side,
-      ordType: 'Limit',
+      side: side as SIDE,
+      ordType: ORD_TYPE.Limit,
       text_prefix: 'best_order',
-    });
-    dispatch(createBestOrder(payload));
+    };
+    createBestOrder(payload);
   }
 
-  function submitMarketOrder(event: any) {
-    const {id} = event.target;
-    dispatch(marketOrder({...state, side: id}));
+  function submitMarketOrder({target: {id}}: React.ChangeEvent<HTMLButtonElement>) {
+    marketOrder({...state, side: id});
   }
 
-  function onChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    const {id, value, tagName} = event.target;
+  function onChange({target: {id, value, tagName}}: React.ChangeEvent<HTMLInputElement>): void {
     const updated = tagName === 'INPUT' ? +value : value;
-    // Handles uncontrolled number input to be controlled if its empty
     setState((prevState) => ({...prevState, [id]: updated}));
   }
 
@@ -109,7 +106,7 @@ const MarketOrderContainer = React.memo(() => {
           <SelectDropdown id="symbol" onChange={onChange} label="Instrument" />
         </Grid>
         <Grid item xs={3}>
-          <InputField onChange={onChange} value={state.quantity} label="Quantity" id="quantity" />
+          <InputField onChange={onChange} value={state.orderQty} label="Quantity" id="orderQty" />
         </Grid>
         <Grid item xs={3} className={styles.top_row}>
           <Button
@@ -118,7 +115,7 @@ const MarketOrderContainer = React.memo(() => {
             variant="custom"
             className={styles.button_buy}
             onClick={submitMarketOrder}
-            disabled={!state.quantity || state.quantity > 20e6}
+            disabled={!state.orderQty || state.orderQty > 20e6}
           />
         </Grid>
         <Grid item xs={3} className={styles.top_row}>
@@ -128,7 +125,7 @@ const MarketOrderContainer = React.memo(() => {
             variant="custom"
             className={styles.button_sell}
             onClick={submitMarketOrder}
-            disabled={!state.quantity || state.quantity > 20e6}
+            disabled={!state.orderQty || state.orderQty > 20e6}
           />
         </Grid>
       </>
@@ -151,7 +148,7 @@ const MarketOrderContainer = React.memo(() => {
             variant="custom"
             className={styles.button_buy}
             onClick={submitBestOrder}
-            disabled={!state.quantity || state.quantity > 20e6 || best_order_status === 'New' || !wsCurrentPrice}
+            disabled={!state.orderQty || state.orderQty > 20e6 || best_order_status === 'New' || !wsCurrentPrice}
           />
         </Grid>
         <Grid item xs={3}>
@@ -161,7 +158,7 @@ const MarketOrderContainer = React.memo(() => {
             variant="custom"
             className={styles.button_sell}
             onClick={submitBestOrder}
-            disabled={!state.quantity || state.quantity > 20e6 || best_order_status === 'New' || !wsCurrentPrice}
+            disabled={!state.orderQty || state.orderQty > 20e6 || best_order_status === 'New' || !wsCurrentPrice}
           />
         </Grid>
       </>

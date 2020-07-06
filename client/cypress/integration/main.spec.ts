@@ -7,7 +7,7 @@ const BASE_URL = 'http://localhost:3000/';
 
 describe('Preview container', () => {
   const configWithStop = {
-    quantity: 123,
+    orderQty: 123,
     n_tp: 3,
     start: 555,
     end: 555,

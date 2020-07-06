@@ -1,7 +1,7 @@
 // export type PickEventScaled = Pick<State, keyof State>;
 
 export type Comp = {
-  quantity: any;
+  orderQty: any;
   entry: any;
   target: any;
   stop: any;
