@@ -9,7 +9,7 @@ export interface MainContainerProps {
   label: string;
 }
 
-export const MainContainer = React.memo(({children, label}: Props) => {
+export const MainContainer = React.memo(({children, label}: MainContainerProps) => {
   const [maximized, setMaximized] = useState(true);
 
   const cornerButton = (

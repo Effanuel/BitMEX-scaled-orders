@@ -16,9 +16,9 @@ export interface orderType {
   pegPriceType: pegPriceType;
   currency: string;
   settlCurrency: string;
-  ordType: ordType;
+  ordType: ORD_TYPE;
   timeInForce: timeInForce;
-  execInst: string;
+  execInst: EXEC_INST | string;
   //   contingencyType: string; // Deprecated
   exDestination: string;
   ordStatus: string;
@@ -40,7 +40,24 @@ type pegPriceType = 'LastPeg' | 'MidPricePeg' | 'MarketPeg' | 'PrimaryPeg' | 'Tr
 
 type timeInForce = 'Day' | 'GoodTillCancel' | 'ImmediateOrCancel' | 'FillOrKill';
 
-type ordType = 'Market' | 'Limit' | 'Stop' | 'StopLimit' | 'MarketIfTouched' | 'LimitIfTouched' | 'Pegged';
+export enum ORD_TYPE {
+  Market = 'Market',
+  Limit = 'Limit',
+  Stop = 'Stop',
+  StopLimit = 'StopLimit',
+  MarketIfTouched = 'MarketIfTouched',
+  LimitIfTouched = 'LimitIfTouched',
+  Pegged = 'Pegged',
+}
+
+export enum EXEC_INST {
+  LastPrice = 'LastPrice',
+  Close = 'Close',
+  ParticipateDoNotInitiate = 'ParticipateDoNotInitiate',
+  ReduceOnly = 'ReduceOnly',
+  MarkPrice = 'MarkPrice',
+  IndexPrice = 'IndexPrice',
+}
 
 export enum SYMBOLS {
   XBTUSD = 'XBTUSD',

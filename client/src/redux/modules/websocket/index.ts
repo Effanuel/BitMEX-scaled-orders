@@ -3,7 +3,7 @@ import {
   WebsocketActions,
   WebsocketState,
   ReduxWebsocketMessage,
-  ResponseActions,
+  RESPONSE_ACTIONS,
   FETCH_ORDERS,
   REDUX_WEBSOCKET_BROKEN,
   REDUX_WEBSOCKET_CLOSED,
@@ -23,9 +23,8 @@ import {SUBSCRIPTION_TOPICS, SYMBOLS} from 'util/BitMEX-types';
 
 const initialState: WebsocketState = {
   __keys: {},
-  instrument: {},
-  trade: {},
-  order: {},
+  instrument: [],
+  order: [],
   connected: false,
   loading: false,
   message: 'Websocket is offline.',
@@ -107,23 +106,23 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
       [table]: {...state[table]},
     };
     switch (ws_action) {
-      case ResponseActions.PARTIAL: {
+      case RESPONSE_ACTIONS.PARTIAL: {
         const current_len = Object.keys(tempState[table]).length;
         for (let i = current_len; i < current_len + data.length; ++i) {
           tempState[table][i] = {
             ...tempState[table][i],
-            ...(data[i] as any),
+            ...data[i],
           };
         }
 
         tempState.__keys = {
           ...tempState.__keys,
-          [table]: response['keys'],
+          [table]: response.keys,
         };
 
         return {...state, ...tempState};
       }
-      case ResponseActions.INSERT: {
+      case RESPONSE_ACTIONS.INSERT: {
         const current_len = Object.keys(tempState[table]).length;
         for (let i = current_len; i < current_len + data.length; ++i) {
           tempState[table][i] = {
@@ -133,16 +132,17 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
         }
         return {...state, ...tempState};
       }
-      case ResponseActions.UPDATE: {
+      case RESPONSE_ACTIONS.UPDATE: {
         let item = 0;
-        for (const key_val in data) {
-          item = findItemByKeys(state.__keys[table], state[table], data[key_val]);
+        for (const key_val of data) {
+          item = findItemByKeys(state.__keys[table] as string[], state[table], key_val);
           if (item === -1) continue;
           tempState[table][item] = {
             ...tempState[table][item],
-            ...data[key_val],
+            ...key_val,
           };
-          if (table === 'order' && tempState[table][item]['leavesQty'] <= 0) {
+          const {leavesQty} = tempState[table][item] as any;
+          if (table === 'order' && leavesQty && leavesQty <= 0) {
             console.log('DELETING FILLED ORDER');
             delete tempState[table][item];
           }
@@ -222,7 +222,7 @@ export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async 
   }
 };
 
-function findItemByKeys(keys: any, table: any, matchData: any): number {
+function findItemByKeys(keys: string[], table: any, matchData: Record<string, unknown>): number {
   for (const index in table) {
     if (Object.keys(table[index]).length) {
       let matched = true;

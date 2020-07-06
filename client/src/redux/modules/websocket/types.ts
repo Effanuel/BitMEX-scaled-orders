@@ -36,11 +36,9 @@ export type WebsocketActions =
 export type ReduxWebsocketMessage = CreateAction<typeof REDUX_WEBSOCKET_MESSAGE, any>;
 
 export interface WebsocketState {
-  [key: string]: any;
-
   __keys: Keys;
-  instrument?: Instrument;
-  order?: any;
+  instrument: InstrumentTable;
+  order: OrderTable;
   connected: boolean;
   loading: boolean;
   message?: string;
@@ -48,14 +46,14 @@ export interface WebsocketState {
   symbol: string;
 }
 
-export enum ResponseActions {
+export enum RESPONSE_ACTIONS {
   PARTIAL = 'partial',
   UPDATE = 'update',
   INSERT = 'insert',
   DELETE = 'delete',
 }
 
-type Tables = 'trade' | 'order' | 'instrument';
+type Tables = 'order' | 'instrument';
 
 type Keys = {[key in Tables]?: string[]};
 
@@ -68,9 +66,9 @@ interface WebsocketResponseData {
   // 'update': Update a single row.
   // 'insert': Insert a new row.
   // 'delete': Delete a row.
-  action: ResponseActions;
+  action: RESPONSE_ACTIONS;
   // An array of table rows is emitted here. They are identical in structure to data returned from the REST API.
-  data: Record<string, unknown>[]; //object[]
+  data: Record<string, Instrument | Order>[]; //object[]
   //
   // The below fields define the table and are only sent on a `partial`
   //
@@ -81,7 +79,7 @@ interface WebsocketResponseData {
   keys?: string[];
   // This lists key relationships with other tables.
   // For example, `quote`'s foreign key is {"symbol": "instrument"}
-  foreignKeys?: {[key: string]: string};
+  foreignKeys?: iterobject;
   // This lists the shape of the table. The possible types:
   // "symbol" - In most languages this is equal to "string"
   // "guid"
@@ -91,12 +89,12 @@ interface WebsocketResponseData {
   // "long"
   // "integer"
   // "boolean"
-  types?: {[key: string]: string};
+  types?: iterobject;
   // When multiple subscriptions are active to the same table, use the `filter` to correlate which datagram
   // belongs to which subscription, as the `table` property will not contain the subscription's symbol.
   filter?: {account?: number; symbol?: string};
   // These are internal fields that indicate how responses are sorted and grouped.
-  attributes?: {[key: string]: string};
+  attributes?: iterobject;
 }
 
 interface WebsocketResponseSuccess {
@@ -111,110 +109,148 @@ interface WebsocketResponseError {
 
 export type WebsocketResponse = WebsocketResponseData & WebsocketResponseSuccess & WebsocketResponseError;
 
+type InstrumentTable = Instrument[];
+
 interface Instrument {
-  [key: string]: {
-    symbol: string;
-    rootSymbol: string;
-    state: string;
-    typ: string;
-    listing: any;
-    front: any;
-    expiry: any;
-    settle: any;
-    relistInterval: any;
-    inverseLeg: string;
-    sellLeg: string;
-    buyLeg: string;
-    optionStrikePcnt: number;
-    optionStrikeRound: number;
-    optionStrikePrice: number;
-    optionMultiplier: number;
-    positionCurrency: string;
-    underlying: string;
-    quoteCurrency: string;
-    underlyingSymbol: string;
-    reference: string;
-    referenceSymbol: string;
-    calcInterval: any;
-    publishInterval: any;
-    publishTime: any;
-    maxOrderQty: number;
-    maxPrice: number;
-    lotSize: number;
-    tickSize: number;
-    multiplier: number;
-    settlCurrency: string;
-    underlyingToPositionMultiplier: number;
-    underlyingToSettleMultiplier: number;
-    quoteToSettleMultiplier: number;
-    isQuanto: true;
-    isInverse: true;
-    initMargin: number;
-    maintMargin: number;
-    riskLimit: number;
-    riskStep: number;
-    limit: number;
-    capped: true;
-    taxed: true;
-    deleverage: true;
-    makerFee: number;
-    takerFee: number;
-    settlementFee: number;
-    insuranceFee: number;
-    fundingBaseSymbol: string;
-    fundingQuoteSymbol: string;
-    fundingPremiumSymbol: string;
-    fundingTimestamp: any;
-    fundingInterval: any;
-    fundingRate: number;
-    indicativeFundingRate: number;
-    rebalanceTimestamp: any;
-    rebalanceInterval: any;
-    openingTimestamp: any;
-    closingTimestamp: any;
-    sessionInterval: any;
-    prevClosePrice: number;
-    limitDownPrice: number;
-    limitUpPrice: number;
-    bankruptLimitDownPrice: number;
-    bankruptLimitUpPrice: number;
-    prevTotalVolume: number;
-    totalVolume: number;
-    volume: number;
-    volume24h: number;
-    prevTotalTurnover: number;
-    totalTurnover: number;
-    turnover: number;
-    turnover24h: number;
-    homeNotional24h: number;
-    foreignNotional24h: number;
-    prevPrice24h: number;
-    vwap: number;
-    highPrice: number;
-    lowPrice: number;
-    lastPrice: number;
-    lastPriceProtected: number;
-    lastTickDirection: string;
-    lastChangePcnt: number;
-    bidPrice: number;
-    midPrice: number;
-    askPrice: number;
-    impactBidPrice: number;
-    impactMidPrice: number;
-    impactAskPrice: number;
-    hasLiquidity: true;
-    openInterest: number;
-    openValue: number;
-    fairMethod: string;
-    fairBasisRate: number;
-    fairBasis: number;
-    fairPrice: number;
-    markMethod: string;
-    markPrice: number;
-    indicativeTaxRate: number;
-    indicativeSettlePrice: number;
-    optionUnderlyingPrice: number;
-    settledPrice: number;
-    timestamp: any;
-  };
+  symbol: string;
+  rootSymbol: string;
+  state: string;
+  typ: string;
+  listing: any;
+  front: any;
+  expiry: any;
+  settle: any;
+  relistInterval: any;
+  inverseLeg: string;
+  sellLeg: string;
+  buyLeg: string;
+  optionStrikePcnt: number;
+  optionStrikeRound: number;
+  optionStrikePrice: number;
+  optionMultiplier: number;
+  positionCurrency: string;
+  underlying: string;
+  quoteCurrency: string;
+  underlyingSymbol: string;
+  reference: string;
+  referenceSymbol: string;
+  calcInterval: any;
+  publishInterval: any;
+  publishTime: any;
+  maxOrderQty: number;
+  maxPrice: number;
+  lotSize: number;
+  tickSize: number;
+  multiplier: number;
+  settlCurrency: string;
+  underlyingToPositionMultiplier: number;
+  underlyingToSettleMultiplier: number;
+  quoteToSettleMultiplier: number;
+  isQuanto: true;
+  isInverse: true;
+  initMargin: number;
+  maintMargin: number;
+  riskLimit: number;
+  riskStep: number;
+  limit: number;
+  capped: true;
+  taxed: true;
+  deleverage: true;
+  makerFee: number;
+  takerFee: number;
+  settlementFee: number;
+  insuranceFee: number;
+  fundingBaseSymbol: string;
+  fundingQuoteSymbol: string;
+  fundingPremiumSymbol: string;
+  fundingTimestamp: any;
+  fundingInterval: any;
+  fundingRate: number;
+  indicativeFundingRate: number;
+  rebalanceTimestamp: any;
+  rebalanceInterval: any;
+  openingTimestamp: any;
+  closingTimestamp: any;
+  sessionInterval: any;
+  prevClosePrice: number;
+  limitDownPrice: number;
+  limitUpPrice: number;
+  bankruptLimitDownPrice: number;
+  bankruptLimitUpPrice: number;
+  prevTotalVolume: number;
+  totalVolume: number;
+  volume: number;
+  volume24h: number;
+  prevTotalTurnover: number;
+  totalTurnover: number;
+  turnover: number;
+  turnover24h: number;
+  homeNotional24h: number;
+  foreignNotional24h: number;
+  prevPrice24h: number;
+  vwap: number;
+  highPrice: number;
+  lowPrice: number;
+  lastPrice: number;
+  lastPriceProtected: number;
+  lastTickDirection: string;
+  lastChangePcnt: number;
+  bidPrice: number;
+  midPrice: number;
+  askPrice: number;
+  impactBidPrice: number;
+  impactMidPrice: number;
+  impactAskPrice: number;
+  hasLiquidity: true;
+  openInterest: number;
+  openValue: number;
+  fairMethod: string;
+  fairBasisRate: number;
+  fairBasis: number;
+  fairPrice: number;
+  markMethod: string;
+  markPrice: number;
+  indicativeTaxRate: number;
+  indicativeSettlePrice: number;
+  optionUnderlyingPrice: number;
+  settledPrice: number;
+  timestamp: any;
+}
+
+type OrderTable = Order[];
+
+interface Order {
+  orderID: string;
+  clOrdID: string;
+  clOrdLinkID: string;
+  account: number;
+  symbol: string;
+  side: string;
+  simpleOrderQty: number;
+  orderQty: number;
+  price: number;
+  displayQty: number;
+  stopPx: number;
+  pegOffsetValue: number;
+  pegPriceType: string;
+  currency: string;
+  settlCurrency: string;
+  ordType: string;
+  timeInForce: string;
+  execInst: string;
+  contingencyType: string;
+  exDestination: string;
+  ordStatus: string;
+  triggered: string;
+  workingIndicator: true;
+  ordRejReason: string;
+  simpleLeavesQty: number;
+  leavesQty: number;
+  simpleCumQty: number;
+  cumQty: number;
+  avgPx: number;
+  multiLegReportingType: string;
+  text: string;
+  transactTime: string;
+  timestamp: string;
 }
