@@ -1,11 +1,10 @@
 /* eslint-disable */
 import {BestPriceState, __CLEAR_BEST_ORDER, BEST_POST_ORDER, BEST_PUT_ORDER} from './types';
 
-import axios from 'axios';
-import {amendOrder, Order} from 'util/index';
+import {amendOrder, createOrder} from 'util/index';
 import {Thunk} from '../../models/state';
-import {SIDE} from 'util/BitMEX-types';
-import {SUCCESS, REQUEST, FAILURE} from 'redux/helpers/actionHelpers';
+import {SIDE, ORD_TYPE, SYMBOLS} from 'util/BitMEX-types';
+import {SUCCESS, REQUEST, FAILURE, callAPI} from 'redux/helpers/actionHelpers';
 
 const defaultState: BestPriceState = {
   bestOrderID: '',
@@ -47,43 +46,46 @@ const postOrderReducer = (state = defaultState, action: Action): BestPriceState 
   return {...state, ...response, loading: false, side};
 };
 
-// ACTIONS
-// =====================================
+interface CreateBestOrderPayload {
+  symbol: SYMBOLS;
+  orderQty: number;
+  price: number;
+  side: SIDE;
+  ordType: ORD_TYPE;
+  text_prefix: string;
+}
 
-export const createBestOrder = (payload: Order): Thunk => async (dispatch) => {
-  try {
-    dispatch({type: REQUEST[BEST_POST_ORDER]});
+export const createBestOrder = (props: CreateBestOrderPayload): Thunk => {
+  const order = createOrder(props);
+  const moreData = {side: order.side, from: 'Best Order'};
+  const payload = {order, method: 'POST'};
+  return callAPI(BEST_POST_ORDER, payload, '/bitmex/order', ['orderID', 'price'], moreData);
+};
 
-    const response = await axios.post('/bitmex/order', {payload, method: 'POST'});
-    const {data, success} = response.data;
-    const {text, orderID, price} = JSON.parse(data);
-
-    const params = {success, text, orderID, price, side: payload.side, from: 'Best Order'};
-    dispatch({type: SUCCESS[BEST_POST_ORDER], payload: params});
-  } catch (err) {
-    const payload = err.message.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-    dispatch({type: FAILURE[BEST_POST_ORDER], payload});
-  }
+export const amendBestOrder = (price: number, bestOrderID: string): Thunk => {
+  const order = amendOrder({orderID: bestOrderID, price});
+  const payload = {order, method: 'PUT'};
+  return callAPI(BEST_PUT_ORDER, payload, '/bitmex/order', ['price']);
 };
 
 // TODO
-export const amendBestOrder = (price: number): Thunk => async (dispatch, getState) => {
-  try {
-    dispatch({type: REQUEST[BEST_PUT_ORDER]});
+// export const amendBestOrder = (price: number): Thunk => async (dispatch, getState) => {
+//   try {
+//     dispatch({type: REQUEST[BEST_PUT_ORDER]});
 
-    const {bestOrderID} = getState().best_price;
-    const order = amendOrder({orderID: bestOrderID, price});
+//     const {bestOrderID} = getState().best_price;
+//     const order = amendOrder({orderID: bestOrderID, price});
 
-    const response = await axios.post('/bitmex/order', {order, method: 'PUT'});
-    const {data, success} = response.data;
-    const {text, orderID} = JSON.parse(data);
+//     const response = await axios.post('/bitmex/order', {order, method: 'PUT'});
+//     const {data, success} = response.data;
+//     const {text, orderID} = JSON.parse(data);
 
-    dispatch({type: SUCCESS[BEST_PUT_ORDER], payload: orderID});
-  } catch (err) {
-    console.log(err, 'PUT::ERR');
-    dispatch({type: FAILURE[BEST_PUT_ORDER], payload: {error: 'Error default...'}});
-  }
-};
+//     dispatch({type: SUCCESS[BEST_PUT_ORDER], payload: orderID});
+//   } catch (err) {
+//     console.log(err, 'PUT::ERR');
+//     dispatch({type: FAILURE[BEST_PUT_ORDER], payload: {error: 'Error default...'}});
+//   }
+// };
 
 export const __clearBestOrder = (): Action => ({
   type: __CLEAR_BEST_ORDER,

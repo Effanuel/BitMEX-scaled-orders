@@ -26,16 +26,21 @@ export const REQUEST: ActionMap = Object.assign({}, ...getApiActions(apiActions)
 export const SUCCESS: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiSuccessActions);
 export const FAILURE: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiFailureActions);
 
-export const callAPI = <P>(actionName: ActionMapKey, payload: P, path: string, ...args: string[]): Thunk => async (
-  dispatch,
-) => {
+export const callAPI = <P>(
+  actionName: ActionMapKey,
+  payload: P,
+  path: string,
+  args: string[] = [],
+  moreData = {},
+): Thunk => async (dispatch) => {
   try {
     dispatch({type: REQUEST[actionName]});
+
     const response = await axios.post(path, payload);
     const {data, success} = response.data;
     const extraData = _.pick([...args, 'text'], JSON.parse(data));
 
-    dispatch({type: SUCCESS[actionName], payload: {success, from: 'Scaled_orders', ...extraData}});
+    dispatch({type: SUCCESS[actionName], payload: {success, from: 'Scaled_orders', ...extraData, ...moreData}});
   } catch (err) {
     const payload = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
     dispatch({type: FAILURE[actionName], payload});

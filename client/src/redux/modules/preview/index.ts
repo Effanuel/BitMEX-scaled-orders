@@ -1,4 +1,4 @@
-import {createScaledOrders, ScaledOrdersProps, ScaledOrders, createMarketOrder} from 'util/index';
+import {createScaledOrders, ScaledOrdersProps, ScaledOrders, createMarketOrder, DISTRIBUTIONS} from 'util/index';
 import {SUCCESS, FAILURE, REQUEST, callAPI} from 'redux/helpers/actionHelpers';
 import {SHOW_PREVIEW, SWITCH_PREVIEW, PreviewState, PREVIEW_POST_ORDER, GET_BALANCE} from './types';
 
@@ -61,10 +61,10 @@ export const previewReducer = (state = defaultState, {type, payload}: Action): P
 // Actions
 // ==============================
 
-export const scaledOrders = (ordersProps: ScaledOrdersProps) => {
+export const scaledOrders = (ordersProps: ScaledOrdersProps, distribution: DISTRIBUTIONS) => {
   console.log(ordersProps);
-  const payload = createScaledOrders(ordersProps);
-  if (ordersProps.stop && ordersProps.stop !== '') {
+  const payload = createScaledOrders(ordersProps, distribution);
+  if (ordersProps.stop) {
     payload.orders.push(payload.stop as any);
   }
   return callAPI(PREVIEW_POST_ORDER, payload, '/bitmex/bulkOrders');
@@ -77,9 +77,10 @@ export const marketOrder = (orderProps: any) => {
   return callAPI(PREVIEW_POST_ORDER, payload, '/bitmex/order');
 };
 
-export const getBalance = () => callAPI(GET_BALANCE, undefined, '/bitmex/getBalance', 'walletBalance');
+export const getBalance = () => callAPI(GET_BALANCE, undefined, '/bitmex/getBalance', ['walletBalance']);
 
-export const previewOrders = (payload: ScaledOrdersProps): Action => previewShow(createScaledOrders(payload));
+export const previewOrders = (ordersProps: ScaledOrdersProps, distribution: DISTRIBUTIONS): Action =>
+  previewShow(createScaledOrders(ordersProps, distribution));
 
 export const previewToggle = (): Action => ({
   type: SWITCH_PREVIEW,
