@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {createSelector} from 'reselect';
 import {AppState} from '../models/state';
-import {SYMBOLS, SIDE} from 'util/BitMEX-types';
+import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
 
 export interface CurrentPrice {
   askPrice: number;
@@ -22,16 +22,17 @@ const websocketMessage = ({websocket: {message}}: AppState) => message;
 const websocketConnected = ({websocket: {connected}}: AppState) => connected;
 
 const getBestOrderStatus = ({best_price: {status}}: AppState) => status;
-const getbestOrderID = ({best_price: {bestOrderID}}: AppState) => bestOrderID;
+export const getbestOrderID = ({best_price: {bestOrderID}}: AppState) => bestOrderID;
 export const getBestOrderSide = ({best_price: {side}}: AppState) => side;
 
 export const bestOrderStatusSelector = createSelector([table_order, getbestOrderID], (open_orders, bestOrderID) => {
-  console.log('CALL ORDER STATUS');
-  for (const order in open_orders) {
-    console.log(open_orders[order]?.orderID, bestOrderID);
-    if (open_orders[order]?.orderID === bestOrderID) {
-      console.log(open_orders[order].ordStatus, 'STATATATAATUS');
-      return open_orders[order].ordStatus;
+  console.log('CALL ORDER STATUS', open_orders);
+
+  for (let i = 0; i < open_orders.length; i++) {
+    // console.log(order.orderID, bestOrderID);
+    if (open_orders[i].orderID === bestOrderID) {
+      // console.log(order.ordStatus, 'STATATATAATUS');
+      return open_orders[i].ordStatus;
     }
   }
   return 'Order not placed.';
@@ -61,7 +62,7 @@ export const websocketCurrentPrice = createSelector([websocketBidAskPrices, getB
   return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
 });
 
-export const ordersAveragePriceSelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
+export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
   | number
   | void => {
   if (previewTable && orderObject?.orders?.length) {
@@ -75,31 +76,29 @@ export const ordersAveragePriceSelector = createSelector([getOrders, getShowPrev
 });
 
 export const ordersRiskSelector = createSelector(
-  [getOrders, ordersAveragePriceSelector, getShowPreview],
-  (orderObject: any = {}, averageEntry, previewTable): number | void => {
-    if (previewTable && averageEntry > 0 && averageEntry && orderObject['stop']) {
-      let quantity = orderObject.stop.orderQty;
+  [getOrders, ordersAverageEntrySelector, getShowPreview],
+  (orderObject: any = {}, averageEntry, previewTable): number | null => {
+    if (previewTable && averageEntry > 0 && averageEntry && orderObject.stop) {
+      let {orderQty} = orderObject.stop;
       // 1 contract of ETH is for 0.001 mXBT which is 1e-6 XBT
-      if (orderObject.stop['symbol'] === SYMBOLS.ETHUSD) quantity *= 1e-6 * averageEntry ** 2;
+      if (orderObject.stop.symbol === SYMBOLS.ETHUSD) orderQty *= 1e-6 * averageEntry ** 2;
       // 1 contract of XRPUSD is for 0.0002 XBT which is 2e-4 XBT
-      if (orderObject.stop['symbol'] === SYMBOLS.XRPUSD) quantity *= 2e-4 * averageEntry ** 2;
-      const entryValue = quantity / averageEntry;
-      const exitValue = quantity / orderObject.stop['stopPx']; // || 1
+      if (orderObject.stop.symbol === SYMBOLS.XRPUSD) orderQty *= 2e-4 * averageEntry ** 2;
+      const entryValue = orderQty / averageEntry;
+      const exitValue = orderQty / orderObject.stop.stopPx; // || 1
       return Math.abs(+(entryValue - exitValue).toFixed(5));
     }
+    return null;
   },
 );
 
-export const balanceSelector = createSelector([getBalance], (balance): number | void => {
-  if (balance) {
-    return Math.round((balance / 1e8) * 10000) / 10000;
-  }
+export const balanceSelector = createSelector([getBalance], (balance): number | null => {
+  return balance ? Math.round((balance / 1e8) * 10000) / 10000 : null;
 });
 
 export const ordersRiskPercSelector = createSelector(
   [balanceSelector, ordersRiskSelector],
-  (balance: any, risk: any) => {
-    if (balance !== 0) return +((risk / balance) * 100).toFixed(2);
-    return 0;
+  (balance: number | null, risk: number | null) => {
+    return balance !== 0 && balance !== null && risk !== null ? +((risk / balance) * 100).toFixed(2) : 0;
   },
 );

@@ -1,7 +1,7 @@
 import React from 'react';
 import {useSelector, shallowEqual} from 'react-redux';
 
-import {ordersAveragePriceSelector, ordersRiskSelector, ordersRiskPercSelector} from 'redux/selectors';
+import {ordersAverageEntrySelector, ordersRiskSelector, ordersRiskPercSelector} from 'redux/selectors';
 import {AppState} from 'redux/models/state';
 
 import {formatPrice} from 'general/formatting';
@@ -11,7 +11,7 @@ import {PREVIEW_CONTAINER} from 'data-test-ids';
 export default function DetailsTable() {
   const {averagePrice, riskBTC, riskPerc} = useSelector(
     (state: AppState) => ({
-      averagePrice: ordersAveragePriceSelector(state),
+      averagePrice: ordersAverageEntrySelector(state),
       riskBTC: ordersRiskSelector(state),
       riskPerc: ordersRiskPercSelector(state),
     }),

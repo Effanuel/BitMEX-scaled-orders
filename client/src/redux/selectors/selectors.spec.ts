@@ -2,7 +2,7 @@ import {
   ordersRiskSelector,
   ordersRiskPercSelector,
   getBalance,
-  ordersAveragePriceSelector,
+  ordersAverageEntrySelector,
   getShowPreview,
   getOrders,
   table_instrument,
@@ -118,7 +118,7 @@ describe('Selectors', () => {
       const orders = getOrders(mockState);
       orders.stop['symbol'] = SYMBOLS.XBTUSD;
 
-      const averageEntry = ordersAveragePriceSelector.resultFunc(orders, showPreview);
+      const averageEntry = ordersAverageEntrySelector.resultFunc(orders, showPreview);
 
       result = ordersRiskSelector.resultFunc(orders, averageEntry, showPreview);
       expect(result).toEqual(18.5);
@@ -129,7 +129,7 @@ describe('Selectors', () => {
       const orders = getOrders(mockState);
       orders.stop['symbol'] = SYMBOLS.ETHUSD;
 
-      const averageEntry = ordersAveragePriceSelector.resultFunc(orders, showPreview);
+      const averageEntry = ordersAverageEntrySelector.resultFunc(orders, showPreview);
 
       result = ordersRiskSelector.resultFunc(orders, averageEntry, showPreview);
       expect(result).toEqual(110.95377);
@@ -140,7 +140,7 @@ describe('Selectors', () => {
       const orders = getOrders(mockState);
       orders.stop['symbol'] = SYMBOLS.XRPUSD;
 
-      const averageEntry = ordersAveragePriceSelector.resultFunc(orders, showPreview);
+      const averageEntry = ordersAverageEntrySelector.resultFunc(orders, showPreview);
 
       result = ordersRiskSelector.resultFunc(orders, averageEntry, showPreview);
       expect(result).toEqual(22190.7539);
@@ -171,17 +171,17 @@ describe('Selectors', () => {
       const orders = getOrders(mockState);
       const showPreview = getShowPreview(mockState);
 
-      result = ordersAveragePriceSelector.resultFunc(orders, showPreview);
+      result = ordersAverageEntrySelector.resultFunc(orders, showPreview);
       expect(result).toEqual(2448.9796);
     });
 
     it('returns undefined if (showPreview is false) or (orderList is undefined)', () => {
       const orders = getOrders(mockState);
 
-      result = ordersAveragePriceSelector.resultFunc(orders, false);
+      result = ordersAverageEntrySelector.resultFunc(orders, false);
       expect(result).toEqual(undefined);
 
-      result = ordersAveragePriceSelector.resultFunc({} as ScaledOrders, true);
+      result = ordersAverageEntrySelector.resultFunc({} as ScaledOrders, true);
       expect(result).toEqual(undefined);
     });
   });
