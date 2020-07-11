@@ -13,6 +13,10 @@ import {
   REDUX_WEBSOCKET_SEND,
   REDUX_WEBSOCKET_ERROR,
   REDUX_WEBSOCKET_TICKER,
+  Tables,
+  Instrument,
+  Order,
+  TableData,
 } from './types';
 import axios from 'axios';
 import {connect, disconnect, send} from '@giantmachines/redux-websocket';
@@ -90,68 +94,52 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
   const response: WebsocketResponse = JSON.parse(action.payload.message);
 
   const responseKeys = Object.keys(response);
-  const table = response?.table;
-  const data = response?.data;
-  const ws_action = response?.action;
+  const {table, data, action: ws_action, subscribe} = response;
 
-  if (response?.subscribe) {
+  if (subscribe) {
     const message = response['success'] ? 'Successful subscription.' : 'Error while subscribing...';
     return {...state, message};
   } else if (responseKeys.includes('status')) {
     const message = `Websocket. Status: ${(response as any).status || 'Error'}`;
     return {...state, message};
   } else if (ws_action) {
-    const tempState: WebsocketState = {
-      ...state,
-      [table]: {...state[table]},
-    };
     switch (ws_action) {
       case RESPONSE_ACTIONS.PARTIAL: {
-        const current_len = Object.keys(tempState[table]).length;
-        for (let i = current_len; i < current_len + data.length; ++i) {
-          tempState[table][i] = {
-            ...tempState[table][i],
-            ...data[i],
-          };
-        }
+        const updatedTable = [...state[table], ...data];
+        const updatedKeys = {...state.__keys, [table]: response.keys};
 
-        tempState.__keys = {
-          ...tempState.__keys,
-          [table]: response.keys,
-        };
-
-        return {...state, ...tempState};
+        return {...state, [table]: updatedTable, __keys: updatedKeys};
       }
       case RESPONSE_ACTIONS.INSERT: {
-        const current_len = Object.keys(tempState[table]).length;
-        for (let i = current_len; i < current_len + data.length; ++i) {
-          tempState[table][i] = {
-            ...tempState[table][i],
-            ...data[i],
-          };
-        }
-        return {...state, ...tempState};
+        const updatedTable = [...state[table], ...data];
+
+        return {...state, [table]: updatedTable};
       }
       case RESPONSE_ACTIONS.UPDATE: {
-        let item = 0;
+        let updatedTable: Instrument[] | Order[] = state[table];
         for (const key_val of data) {
-          item = findItemByKeys(state.__keys[table] as string[], state[table], key_val);
-          if (item === -1) continue;
-          tempState[table][item] = {
-            ...tempState[table][item],
-            ...key_val,
-          };
-          const {leavesQty} = tempState[table][item] as any;
-          if (table === 'order' && leavesQty && leavesQty <= 0) {
-            console.log('DELETING FILLED ORDER');
-            delete tempState[table][item];
+          const indexUpdate = findItemByKeys(state.__keys[table] as any, updatedTable, key_val as any);
+          if (indexUpdate === -1) continue;
+          const updatedValue: Instrument | Order = {...state[table][indexUpdate], ...key_val};
+
+          updatedTable = [
+            ...state[table].slice(0, indexUpdate),
+            updatedValue,
+            ...state[table].slice(indexUpdate + 1),
+          ] as Instrument[] | Order[];
+
+          const leavesQty = (updatedValue as Order)?.leavesQty;
+          if (table === 'order' && typeof leavesQty === 'number' && leavesQty <= 0) {
+            updatedTable = state[table].filter((_, i) => i !== indexUpdate);
           }
         }
-        return {...state, ...tempState};
+        return {...state, [table]: updatedTable};
       }
     }
   } else if (responseKeys.includes('unsubscribe')) {
-    delete state.__keys[response.unsubscribe];
+    const {[response.unsubscribe]: _deleted, ...rest} = state.__keys;
+
+    return {...state, __keys: rest};
   }
   return state;
 };
@@ -207,6 +195,7 @@ export const wsDisconnect = (): Thunk => async (dispatch) => {
 
 export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
   try {
+    console.log('subs to ', payload);
     dispatch(send(authKeyExpires('/realtime', 'GET')));
     dispatch(send({op: 'subscribe', args: [payload]}));
   } catch (err) {
@@ -222,17 +211,15 @@ export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async 
   }
 };
 
-function findItemByKeys(keys: string[], table: any, matchData: Record<string, unknown>): number {
-  for (const index in table) {
-    if (Object.keys(table[index]).length) {
-      let matched = true;
-      for (const key of keys) {
-        if (!table[index] || table[index][key] !== matchData[key]) {
-          matched = false;
-        }
+function findItemByKeys(keys: keyof Tables, table: ValueOf<Tables>, matchData: TableData): number {
+  for (let index = 0; index < table.length; index++) {
+    let matched = true;
+    for (const key of keys) {
+      if (table[index][key as keyof TableData] !== matchData[key as keyof TableData]) {
+        matched = false;
       }
-      if (matched) return +index;
     }
+    if (matched) return index;
   }
   return -1;
 }

@@ -10,6 +10,7 @@ import {
   WEBSOCKET_ERROR,
 } from '@giantmachines/redux-websocket';
 
+import {SYMBOLS} from 'util/BitMEX-types';
 export const FETCH_ORDERS = 'websocket/FETCH_ORDERS';
 const WEBSOCKET_PREFIX = 'REDUX_WEBSOCKET';
 export const REDUX_WEBSOCKET_BROKEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_BROKEN}`;
@@ -24,21 +25,12 @@ export const REDUX_WEBSOCKET_TICKER = 'REDUX_WEBSOCKET_TICKER';
 
 export type WebsocketActions =
   | CreateAction<typeof FETCH_ORDERS, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_TICKER, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_CONNECT, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_OPEN, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_BROKEN, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_CLOSED, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_ERROR, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_SEND, any>
-  | ReduxWebsocketMessage;
+  | CreateAction<typeof REDUX_WEBSOCKET_TICKER, SYMBOLS>;
 
 export type ReduxWebsocketMessage = CreateAction<typeof REDUX_WEBSOCKET_MESSAGE, any>;
 
-export interface WebsocketState {
+export interface WebsocketState extends Tables {
   __keys: Keys;
-  instrument: InstrumentTable;
-  order: OrderTable;
   connected: boolean;
   loading: boolean;
   message?: string;
@@ -53,14 +45,19 @@ export enum RESPONSE_ACTIONS {
   DELETE = 'delete',
 }
 
-type Tables = 'order' | 'instrument';
+export interface Tables {
+  instrument: Instrument[];
+  order: Order[];
+}
 
-type Keys = {[key in Tables]?: string[]};
+export type TableData = Instrument | Order;
+
+type Keys = {[key in keyof Tables]?: (keyof Tables)[]};
 
 interface WebsocketResponseData {
   // Table name / Subscription topic.
   // Could be "trade", "order", "instrument", etc.
-  table: Tables;
+  table: keyof Tables;
   // The type of the message. Types:
   // 'partial'; This is a table image, replace your data entirely.
   // 'update': Update a single row.
@@ -68,7 +65,7 @@ interface WebsocketResponseData {
   // 'delete': Delete a row.
   action: RESPONSE_ACTIONS;
   // An array of table rows is emitted here. They are identical in structure to data returned from the REST API.
-  data: Record<string, Instrument | Order>[]; //object[]
+  data: Record<string, keyof Tables>[]; //object[]
   //
   // The below fields define the table and are only sent on a `partial`
   //
@@ -98,8 +95,8 @@ interface WebsocketResponseData {
 }
 
 interface WebsocketResponseSuccess {
-  subscribe: Tables;
-  unsubscribe: Tables;
+  subscribe: keyof Tables;
+  unsubscribe: keyof Tables;
   success: boolean;
 }
 
@@ -109,9 +106,7 @@ interface WebsocketResponseError {
 
 export type WebsocketResponse = WebsocketResponseData & WebsocketResponseSuccess & WebsocketResponseError;
 
-type InstrumentTable = Instrument[];
-
-interface Instrument {
+export interface Instrument {
   symbol: string;
   rootSymbol: string;
   state: string;
@@ -217,9 +212,7 @@ interface Instrument {
   timestamp: any;
 }
 
-type OrderTable = Order[];
-
-interface Order {
+export interface Order {
   orderID: string;
   clOrdID: string;
   clOrdLinkID: string;
