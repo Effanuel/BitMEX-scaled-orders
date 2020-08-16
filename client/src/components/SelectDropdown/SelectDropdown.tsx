@@ -1,5 +1,4 @@
 import React from 'react';
-
 import styles from './styles.module.css';
 
 interface Props {
@@ -8,17 +7,21 @@ interface Props {
   onChange: (event: any) => void;
 }
 
+const availableSymbols = ['XBTUSD', 'ETHUSD', 'XRPUSD'];
+
 function SelectDropdown({id, label, onChange}: Props) {
+  const renderSymbol = (item: string) => (
+    <option key={item} value={item}>
+      {item}
+    </option>
+  );
+
   return (
     <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>
 
       <select className="custom-select" onChange={onChange} id={id}>
-        {['XBTUSD', 'ETHUSD', 'XRPUSD'].map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
+        {availableSymbols.map(renderSymbol)}
       </select>
     </div>
   );

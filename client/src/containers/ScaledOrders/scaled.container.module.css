@@ -1,3 +1,5 @@
+@import '../../css/colors.module.css';
+
 .container__row {
   /* border: 3px solid red; */
   margin: 0px;
@@ -73,8 +75,8 @@ input[type='radio']:checked:after {
 }
 /* Updated with Material*/
 .button:disabled {
-  background-color: rgba(255, 255, 255, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  background-color: var(--white38);
+  border: 1px solid var(--white38);
   cursor: default;
 }
 
@@ -88,7 +90,7 @@ input[type='radio']:checked:after {
   margin-top: 30px;
 }*/
 
-.message {
+.messageStyle {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.6);
+  color: red;
 }

@@ -1,19 +1,12 @@
 import React from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import {withStyles} from '@material-ui/core/styles';
+import styles from './Spinner.module.css';
 
 const ColorLinearProgress = withStyles({
-  root: {
-    height: '5px',
-    width: '600px',
-    margin: '0 auto',
-  },
-  colorPrimary: {
-    backgroundColor: '#b2dfdb',
-  },
-  barColorPrimary: {
-    backgroundColor: '#4caf50',
-  },
+  root: {height: '5px', width: '600px', margin: '0 auto'},
+  colorPrimary: {backgroundColor: '#b2dfdb'},
+  barColorPrimary: {backgroundColor: '#4caf50'},
 })(LinearProgress);
 
 interface Props {
@@ -21,5 +14,5 @@ interface Props {
 }
 
 export function Spinner({loading}: Props) {
-  return <>{loading ? <ColorLinearProgress /> : <div style={{height: '5px'}} />}</>;
+  return <>{loading ? <ColorLinearProgress /> : <div className={styles.spinnerNonLoading} />}</>;
 }

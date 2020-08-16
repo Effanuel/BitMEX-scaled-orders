@@ -1,22 +1,11 @@
 import React from 'react';
-import {useSelector, shallowEqual} from 'react-redux';
-
-import {ordersAverageEntrySelector, ordersRiskSelector, ordersRiskPercSelector} from 'redux/selectors';
-import {AppState} from 'redux/models/state';
-
 import {formatPrice} from 'general/formatting';
 import styles from './details-table.module.css';
 import {PREVIEW_CONTAINER} from 'data-test-ids';
+import {useReduxSelector} from 'redux/helpers/hookHelpers';
 
 export default function DetailsTable() {
-  const {averagePrice, riskBTC, riskPerc} = useSelector(
-    (state: AppState) => ({
-      averagePrice: ordersAverageEntrySelector(state),
-      riskBTC: ordersRiskSelector(state),
-      riskPerc: ordersRiskPercSelector(state),
-    }),
-    shallowEqual,
-  );
+  const {averagePrice, riskBTC, riskPerc} = useReduxSelector('averagePrice', 'riskBTC', 'riskPerc');
 
   function renderPriceSection() {
     return (
@@ -31,6 +20,7 @@ export default function DetailsTable() {
   }
 
   function renderRiskSection() {
+    console.log(riskPerc, 'RISK PERC', !isNaN(riskPerc));
     return riskBTC ? (
       <>
         <tr>
@@ -40,7 +30,7 @@ export default function DetailsTable() {
             <span className={styles.color_accent}> BTC</span>
           </td>
         </tr>
-        {!isNaN(riskPerc) && (
+        {riskPerc !== 0 && (
           <tr data-testid={PREVIEW_CONTAINER.RISK_PERC_ROW}>
             <td>Risk(%):</td>
             <td>

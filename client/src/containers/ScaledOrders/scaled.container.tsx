@@ -1,26 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {Grid, RadioGroup} from '@material-ui/core';
-import {useDispatch, useSelector, shallowEqual} from 'react-redux';
-
-import {previewOrders, previewToggle, getBalance, scaledOrders} from 'redux/modules/preview';
-import {wsConnect, wsDisconnect, wsTickerChange} from 'redux/modules/websocket';
-import {websocketBidAskPrices} from 'redux/selectors';
-import {AppState} from 'redux/models/state';
-
-import {
-  InputField,
-  SelectDropdown,
-  CustomRadioButton,
-  // OrdersPreviewTable,
-  MainContainer,
-  Button,
-} from 'components';
-import DistributionsContainer from './distributions.component';
-
+import React from 'react';
+import {Grid} from '@material-ui/core';
+import {useDispatch} from 'react-redux';
+import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
+import {previewOrders, previewToggle, postScaledOrders} from 'redux/modules/preview';
+import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} from 'components';
+import DistributionsRadioGroup from './DistributionsRadioGroup';
 import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import styles from './styles.module.css';
+import styles from './scaled.container.module.css';
 import {SCALED_CONTAINER} from 'data-test-ids';
+import {useReduxSelector} from 'redux/helpers/hookHelpers';
 
 export interface ScaledContainerState {
   orderQty: null | number;
@@ -46,58 +35,30 @@ const initialState: Readonly<ScaledContainerState> = {
 
 const ScaledContainer = React.memo(() => {
   const dispatch = useDispatch();
-  const {wsCurrentPrice, loading, message, orderError} = useSelector(
-    (state: AppState) => ({
-      wsCurrentPrice: websocketBidAskPrices(state),
-      loading: state.websocket.loading,
-      // orderLoading: state.preview.loading,
-      message: state.websocket.message,
-      orderError: state.preview.error,
-    }),
-    shallowEqual,
-  );
+  const {error: orderError, showPreview} = useReduxSelector('error', 'showPreview');
 
-  const [state, setState] = useState(initialState);
-  const [cache, setCache] = useState(true);
+  const [state, setState] = React.useState(initialState);
+  const [cache, setCache] = React.useState(true);
 
-  useEffect(() => {
-    dispatch(wsConnect());
-    dispatch(getBalance());
-    return () => {
-      dispatch(wsDisconnect());
-    };
-  }, [dispatch]);
-
-  function onChangeDropdown(event: React.ChangeEvent<HTMLInputElement>): void {
-    const {value, id} = event.target;
-    dispatch(wsTickerChange(value as SYMBOLS));
-    setState((prevState) => ({
-      ...prevState,
-      [id]: value,
-      start: null,
-      end: null,
-      stop: null,
-    }));
-    //
-    //
+  function onChangeDropdown({target: {value, id}}: React.ChangeEvent<HTMLInputElement>): void {
+    setState((prevState) => ({...prevState, [id]: value, start: null, end: null, stop: null}));
     setCache(false);
   }
 
-  function onChangeNumber(event: React.ChangeEvent<HTMLInputElement>): void {
-    const {id, value} = event.target;
+  function onChangeNumber({target: {id, value}}: React.ChangeEvent<HTMLInputElement>): void {
     setState((prevState) => ({...prevState, [id]: +value}));
     setCache(false);
   }
 
-  function onChangeRadio(event: React.ChangeEvent<HTMLInputElement>): void {
-    const {value, name} = event.target;
+  function toggleSide({target: {value, name}}: React.ChangeEvent<HTMLInputElement>): void {
     setState((prevState) => ({...prevState, [name]: value}));
     setCache(false);
   }
 
   function onOrderSubmit(): void {
     const {distribution, ...scaledParams} = state as RequiredProperty<ScaledContainerState>;
-    scaledOrders(scaledParams, distribution);
+    dispatch(postScaledOrders(scaledParams, distribution));
+    setState(initialState);
     setCache(false);
   }
 
@@ -117,20 +78,10 @@ const ScaledContainer = React.memo(() => {
         <Grid item xs={3} className={styles.container__col}>
           <SelectDropdown id="symbol" onChange={onChangeDropdown} label="Instrument" />
         </Grid>
-        <Grid item xs={3}>
-          <RadioGroup aria-label="position" name="side" value={state.side} onChange={onChangeRadio}>
-            <CustomRadioButton id="scaled_side_sell" label="Sell" value="Sell" />
-            <CustomRadioButton id="scaled_side_buy" label="Buy" value="Buy" />
-          </RadioGroup>
+        <Grid item xs={2}>
+          <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
         </Grid>
-        <Grid item xs={3}>
-          <div className={styles.text_field}>
-            {loading ? 'Loading...' : wsCurrentPrice?.askPrice}
-
-            {/* {wsCurrentPrice || (loading && <SpinnerComponent />)} */}
-          </div>
-          <div className={styles.message}>{message}</div>
-        </Grid>
+        <Grid item xs={4} />
         <Grid item xs={3}>
           <InputField
             onChange={onChangeNumber}
@@ -139,7 +90,7 @@ const ScaledContainer = React.memo(() => {
             id="stop"
             stop={true}
             t_placement="bottom"
-            tooltip="Price at which to market exit all contracts."
+            tooltip="Price at which to market exit placed contracts."
           />
         </Grid>
       </>
@@ -193,7 +144,7 @@ const ScaledContainer = React.memo(() => {
     return (
       <>
         <Grid item xs={4}>
-          <DistributionsContainer onChange={onChangeRadio} distribution={state.distribution} />
+          <DistributionsRadioGroup onChange={toggleSide} distribution={state.distribution} />
         </Grid>
         <Grid item xs={3} className={styles.myErrorMessage}>
           {orderError}
@@ -211,6 +162,7 @@ const ScaledContainer = React.memo(() => {
           <Button
             testID={SCALED_CONTAINER.SUBMIT_BUTTON}
             label="Submit"
+            variant="buy"
             onClick={onOrderSubmit}
             disabled={isDisabled(state)}
           />
@@ -220,27 +172,29 @@ const ScaledContainer = React.memo(() => {
   }
 
   return (
-    <MainContainer label="ScaledOrders">
-      {renderFirstRow()}
-      {renderSecondRow()}
-      {renderThirdRow()}
-    </MainContainer>
+    <>
+      <MainContainer
+        label="ScaledOrders"
+        description="Place limit orders in a range"
+        renderOutside={showPreview && <OrdersPreviewTable />}
+      >
+        {renderFirstRow()}
+        {renderSecondRow()}
+        {renderThirdRow()}
+      </MainContainer>
+    </>
   );
 });
 export default ScaledContainer;
 
 function isDisabled(state: ScaledContainerState): boolean {
   const {orderQty, n_tp, start, end, stop, side} = state;
-  if (!orderQty || !n_tp || !start || !end || !stop || !side) {
-    return false;
+  if (!orderQty || !n_tp || !start || !end || !side) {
+    return true;
   }
   const validInputs = !(n_tp > 1);
   const validLimits = orderQty > 20e6 || n_tp > 50;
-  return (
-    validInputs ||
-    validLimits ||
-    orderQty < n_tp ||
-    (side === 'Buy' ? stop > start && stop > end : false) ||
-    (side === 'Sell' ? stop < start && stop < end : false)
-  );
+  const validOrdersWithBuyStop = !!stop && (side === 'Buy' ? stop > start && stop > end : false);
+  const validOrdersWithSellStop = !!stop && (side === 'Sell' ? stop < start && stop < end : false);
+  return validInputs || validLimits || orderQty < n_tp || validOrdersWithBuyStop || validOrdersWithSellStop;
 }

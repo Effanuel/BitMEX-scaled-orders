@@ -1,26 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
-import {TextField, makeStyles, FormControl} from '@material-ui/core';
-import {Theme} from '@material-ui/core/styles';
-
+import {TextField, makeStyles, FormControl, Tooltip} from '@material-ui/core';
 import './InputField.module.css';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  label: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: '14px',
-  },
-  stop: {
-    '& .MuiInput-input': {
-      borderColor: '#cf6679',
-      '&:focus': {
-        borderColor: '#cf6679',
-      },
-    },
-  },
-  tooltip: {
-    color: 'red',
-  },
+const useStyles = makeStyles(() => ({
+  label: {color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px'},
+  stop: {'& .MuiInput-input': {borderColor: '#cf6679', '&:focus': {borderColor: '#cf6679'}}},
+  tooltip: {color: 'red'},
 }));
 
 type Props = {
@@ -28,7 +14,7 @@ type Props = {
   label?: string;
   value: any;
   stop?: boolean;
-  tooltip?: any;
+  tooltip?: string;
   placeholder?: string;
   t_placement?: any;
   onChange: (arg0: any) => void;
@@ -36,12 +22,32 @@ type Props = {
 
 function InputField({id, label, value, stop = false, tooltip, placeholder, t_placement = 'top-end', onChange}: Props) {
   const classes = useStyles();
-  const handleFocus = (event: any) => event.target.select();
+  const handleFocus = React.useCallback((event: any) => event.target.select(), []);
+
+  const renderTooltip = () => {
+    return (
+      <>
+        {tooltip ? (
+          <Tooltip
+            title={tooltip}
+            placement={t_placement}
+            enterDelay={500}
+            arrow
+            disableFocusListener
+            disableTouchListener
+          >
+            <label style={{color: 'grey', marginLeft: '5px'}}>?</label>
+          </Tooltip>
+        ) : null}
+      </>
+    );
+  };
   return (
     <FormControl>
-      {/*<Tooltip title={tooltip} placement={t_placement} enterDelay={500} arrow disableFocusListener disableTouchListener>*/}
-      <label className={classes.label}>{label}</label>
-      {/*</Tooltip>*/}
+      <div style={{flexDirection: 'row'}}>
+        <label className={classes.label}>{label}</label>
+        {renderTooltip()}
+      </div>
 
       <TextField
         placeholder={placeholder}
@@ -50,12 +56,8 @@ function InputField({id, label, value, stop = false, tooltip, placeholder, t_pla
         value={value || ''}
         onChange={onChange}
         onFocus={handleFocus}
-        InputProps={{
-          disableUnderline: true,
-        }}
-        className={cx({
-          [classes.stop]: stop,
-        })}
+        InputProps={{disableUnderline: true}}
+        className={cx({[classes.stop]: stop})}
       />
     </FormControl>
   );

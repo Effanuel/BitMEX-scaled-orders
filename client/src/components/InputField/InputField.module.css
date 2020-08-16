@@ -16,7 +16,7 @@ input[type='number'] {
   -moz-appearance: textfield;
   background-color: var(--primaryColor);
   color: rgba(255, 255, 255, 0.87);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--white60);
   border-radius: 2px;
   padding: 5px 5px;
 }
@@ -34,7 +34,7 @@ input[type='number']:focus {
 
 /* Updated with Material */
 /*label {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--white60);
   font-size: calc(0.5em + 0.5vw);
   -webkit-touch-callout: none;
   -webkit-user-select: none;

@@ -1,4 +1,5 @@
 import {ComponentDriver} from 'react-component-driver';
+import React from 'react';
 
 import {MainContainer, MainContainerProps} from './MainContainer';
 import {MAIN_CONTAINER} from '../../data-test-ids';
@@ -30,6 +31,25 @@ describe('MainContainer', () => {
 
     expect(drv.getMaximizedView()).toBeDefined();
     expect(drv.getMinimizedView()).toBeUndefined();
+  });
+
+  it('should render content outside of the container', () => {
+    const inputElement = React.createElement('input', {'data-test-id': 'testidsomething'});
+    const drv = driver.setProps({renderOutside: inputElement}).render();
+
+    const renderedOutsideContent = drv.getByID('testidsomething');
+
+    expect(renderedOutsideContent).toBeDefined();
+  });
+
+  it('should not render outside content when minimized', () => {
+    const inputElement = React.createElement('input', {'data-test-id': 'testidsomething'});
+    const drv = driver.setProps({renderOutside: inputElement}).render();
+
+    drv.pressCornerButton();
+
+    const renderedOutsideContent = drv.getByID('testidsomething');
+    expect(renderedOutsideContent).toBeUndefined();
   });
 });
 

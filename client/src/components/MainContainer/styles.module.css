@@ -11,6 +11,18 @@
   box-shadow: 2px 2px 5px black;
 }
 
+.container_minimized_text {
+  display: flex;
+  color: white;
+  justify-content: space-between;
+  margin-right: 5px;
+  width: 100%;
+}
+
+.description {
+  color: var(--white38);
+}
+
 /*@media only screen and (min-width: 1200px) {
   .container_scaled {
     width: 960px;

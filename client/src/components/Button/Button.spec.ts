@@ -1,5 +1,5 @@
 import {ComponentDriver} from 'react-component-driver';
-import {Button, ButtonProps} from './Button';
+import {Button, ButtonProps, ButtonVariants} from './Button';
 
 describe('ButtonDriver', () => {
   let driver: ButtonDriver;
@@ -8,20 +8,18 @@ describe('ButtonDriver', () => {
     driver = new ButtonDriver();
   });
 
-  it('should use `button` style for `submit` variant button', async () => {
-    const drv = await driver.withDefaultProps({variant: 'submit'}).renderAsync();
-
-    expect(drv.getButtonClassName()).toEqual('button');
+  it.each([
+    ['submit', 'button'],
+    ['text', 'text_button'],
+    ['buy', 'button_buy'],
+    ['sell', 'button_sell'],
+  ])('should return %s className for %s variant', (variant, expectedClassName) => {
+    const drv = driver.withDefaultProps({variant: variant as ButtonVariants}).render();
+    expect(drv.getButtonClassName()).toEqual(expectedClassName);
   });
 
-  it('should use `text_button` style for `text` variant button', async () => {
-    const drv = await driver.withDefaultProps({variant: 'text'}).renderAsync();
-
-    expect(drv.getButtonClassName()).toEqual('text_button');
-  });
-
-  it('should use `className` prop for `custom` variant button', async () => {
-    const drv = await driver.withDefaultProps({variant: 'custom', className: 'abc'}).renderAsync();
+  it('should use `className` prop for `custom` variant button', () => {
+    const drv = driver.withDefaultProps({variant: 'custom', className: 'abc'}).render();
 
     expect(drv.getButtonClassName()).toEqual('abc');
   });

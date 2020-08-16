@@ -1,4 +1,8 @@
-@import '../../css/colors.module.css';
+@import '../../../css/colors.module.css';
+
+.color_accent {
+  color: var(--accentColor);
+}
 
 .table {
   font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
@@ -7,7 +11,6 @@
   width: 100%;
   background-color: var(--secondaryColor);
   color: rgba(255, 255, 255, 0.87);
-  overflow: hidden;
 }
 .table tr {
   height: 15px;
@@ -29,33 +32,4 @@
   text-align: left;
   background-color: #121212; /*#112118*/
   color: rgba(255, 255, 255, 0.87);
-}
-
-.side_color__sell,
-.side_stop__sell {
-  padding-left: 5px;
-  border-left: 6px solid var(--stopColor);
-}
-
-td[id='text'] {
-  background-color: 'red';
-}
-.side_stop__sell {
-  border-top: 1px solid var(--stopColor);
-}
-
-.side__sell {
-  color: var(--stopColor);
-}
-.side__buy {
-  color: var(--accentColor);
-}
-
-.side_color__buy,
-.side_stop__buy {
-  padding-left: 5px;
-  border-left: 6px solid var(--accentColor);
-}
-.side_stop__buy {
-  border-top: 1px solid var(--accentColor);
 }

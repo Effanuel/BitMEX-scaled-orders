@@ -1,0 +1,5 @@
+@import '../../css/colors.module.css';
+
+.white60 {
+  color: var(--white60);
+}

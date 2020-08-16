@@ -1,0 +1,21 @@
+.Toastify__toast-container {
+  z-index: 9999;
+  position: fixed;
+  width: auto;
+  box-sizing: border-box;
+  -webkit-transform: translate3d(0, 0, 9999px);
+  transform: translate3d(0, 0, 9999px);
+}
+.Toastify__toast-container--top-left {
+  top: 1em;
+  left: 1em;
+}
+.Toastify__toast-container--top-center {
+  top: 1em;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.Toastify__toast-container:hover {
+  cursor: pointer;
+}

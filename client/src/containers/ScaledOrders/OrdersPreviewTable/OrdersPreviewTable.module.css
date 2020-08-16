@@ -1,4 +1,4 @@
-@import '../../css/colors.module.css';
+@import '../../../css/colors.module.css';
 
 .preview_container,
 .details_container {
@@ -12,6 +12,6 @@
 }
 
 .main_container {
-  padding: 0;
+  padding: 0px;
   overflow: hidden;
 }
