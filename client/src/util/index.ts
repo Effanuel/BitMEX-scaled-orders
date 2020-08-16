@@ -22,7 +22,7 @@ const INSTRUMENT_PARAMS: InstrumentParams = {
   XRPUSD: {decimal_rounding: 4, ticksize: 10000},
 };
 
-export interface ScaledOrdersProps {
+export interface DistributionProps {
   orderQty: number;
   n_tp: number;
   start: number;
@@ -37,7 +37,12 @@ export interface ScaledOrders {
   stop: Partial<StopLoss>;
 }
 
-export const createScaledOrders = (ordersProps: ScaledOrdersProps, distribution: DISTRIBUTIONS): ScaledOrders => {
+export interface ScaledOrdersProps {
+  ordersProps: DistributionProps;
+  distribution: DISTRIBUTIONS;
+}
+
+export const createScaledOrders = ({ordersProps, distribution}: ScaledOrdersProps): ScaledOrders => {
   switch (distribution) {
     case DISTRIBUTIONS.Positive:
       return Positive(ordersProps);
@@ -51,14 +56,14 @@ export const createScaledOrders = (ordersProps: ScaledOrdersProps, distribution:
   }
 };
 
-const Uniform = (ordersProps: ScaledOrdersProps): ScaledOrders => skewedDistribution(ordersProps, -1, 1, -1, false);
-const Positive = (ordersProps: ScaledOrdersProps): ScaledOrders => skewedDistribution(ordersProps, -1, 1, -1);
-const Negative = (ordersProps: ScaledOrdersProps): ScaledOrders => skewedDistribution(ordersProps, -1, 1, 1);
-const Normal = (ordersProps: ScaledOrdersProps): ScaledOrders => skewedDistribution(ordersProps, -2, 2, 0);
+const Uniform = (distrProps: DistributionProps): ScaledOrders => skewedDistribution(distrProps, -1, 1, -1, false);
+const Positive = (distrProps: DistributionProps): ScaledOrders => skewedDistribution(distrProps, -1, 1, -1);
+const Negative = (distrProps: DistributionProps): ScaledOrders => skewedDistribution(distrProps, -1, 1, 1);
+const Normal = (distrProps: DistributionProps): ScaledOrders => skewedDistribution(distrProps, -2, 2, 0);
 
 /**
  * Order generation based on a distribution
- * @param {object} ordersProps is the inputs of the user
+ * @param {object} distributionProps is the inputs of the user
  * @param {number} START_CFG is a parameter for gaussian()
  * @param {number} END_CFG is a parameter for gaussian()
  * @param {number} mean of placed orders (not average)
@@ -66,13 +71,13 @@ const Normal = (ordersProps: ScaledOrdersProps): ScaledOrders => skewedDistribut
  * @returns {object} Object of orders array and stop(if any)
  */
 const skewedDistribution = (
-  ordersProps: ScaledOrdersProps,
+  distributionProps: DistributionProps,
   START_CFG: number,
   END_CFG: number,
   mean: number,
   isSkewed = true,
 ): ScaledOrders => {
-  const {orderQty, n_tp, start, end, side, symbol, stop} = ordersProps;
+  const {orderQty, n_tp, start, end, side, symbol, stop} = distributionProps;
   const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
 
   const probabilityDistribution = isSkewed
@@ -89,15 +94,16 @@ const skewedDistribution = (
 
   for (let i = 0; i < n_tp; i++) {
     //ROUND
-    totalOrders.orders.push({
-      symbol: symbol,
-      side: side,
-      orderQty: Math.floor((probabilityDistribution[i] / totalProbability) * orderQty),
-      price: parseFloat((start_ + i * incrPrice).toFixed(decimal_rounding)),
-      ordType: ORD_TYPE.Limit,
-      execInst: EXEC_INST.ParticipateDoNotInitiate,
-      text: `order_${i + 1}`,
-    });
+    totalOrders.orders.push(
+      createOrder({
+        symbol: symbol,
+        side: side,
+        orderQty: Math.floor((probabilityDistribution[i] / totalProbability) * orderQty),
+        price: parseFloat((start_ + i * incrPrice).toFixed(decimal_rounding)),
+        ordType: ORD_TYPE.Limit,
+        text: `order_${i + 1}`,
+      }),
+    );
   }
   // Add stop loss order
   if (stop > 0) {
@@ -119,50 +125,26 @@ const skewedDistribution = (
   return totalOrders;
 };
 
-type StopLossProps = Pick<orderType, 'symbol' | 'orderQty' | 'side'> & {text_index?: number; stop: number};
-type StopLoss = Pick<orderType, 'symbol' | 'side' | 'orderQty' | 'stopPx' | 'ordType' | 'execInst' | 'text'>;
+type StopLossProps = Pick<orderType, 'symbol' | 'orderQty' | 'side'> & {stop: number};
+type StopLoss = Pick<orderType, 'symbol' | 'orderQty' | 'side' | 'stopPx' | 'ordType' | 'execInst'>;
 
-const createStopLoss = ({orderQty, stop, symbol, side, text_index = 1}: StopLossProps): StopLoss => {
+const createStopLoss = ({orderQty, stop, symbol, side}: StopLossProps) => {
   const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
-  const price = tickerRound(stop, symbol);
+  const stopPx = parseFloat(tickerRound(stop, symbol).toFixed(decimal_rounding));
+  const execInst = [EXEC_INST.LastPrice, EXEC_INST.ReduceOnly].join(',');
+  const stopSide = side === SIDE.BUY ? SIDE.SELL : SIDE.BUY;
 
-  return {
-    symbol,
-    side: side === SIDE.BUY ? SIDE.SELL : SIDE.BUY,
-    orderQty,
-    stopPx: parseFloat(price.toFixed(decimal_rounding)),
-    ordType: ORD_TYPE.Stop,
-    execInst: EXEC_INST.LastPrice + ',' + EXEC_INST.ReduceOnly,
-    text: `stop_${text_index}`,
-  };
+  return {symbol, side: stopSide, orderQty, stopPx, ordType: ORD_TYPE.Stop, execInst, text: 'stop'};
 };
 
-type MarketOrderProps = Pick<orderType, 'symbol' | 'orderQty' | 'side'>;
-type MarketOrder = Pick<orderType, 'symbol' | 'orderQty' | 'side' | 'ordType'>;
+export type MarketOrderProps = Pick<orderType, 'symbol' | 'orderQty' | 'side'>;
+export const createMarketOrder = (props: MarketOrderProps) => ({...props, ordType: ORD_TYPE.Market});
 
-export const createMarketOrder = ({symbol, orderQty, side}: MarketOrderProps): MarketOrder => {
-  return {symbol, orderQty, side, ordType: ORD_TYPE.Market};
-};
+type Order = Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType' | 'text'>;
+export const createOrder = (props: Order) => ({...props, execInst: EXEC_INST.ParticipateDoNotInitiate});
 
-type OrderText = {text_index?: number; text_prefix?: string};
-type OrderProps = OrderText & Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType'>;
-export type Order = Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType' | 'text' | 'execInst'>;
-
-export const createOrder = (props: OrderProps): Order => {
-  const {symbol, price, orderQty, side, ordType, text_index = 0, text_prefix = 'order'} = props;
-
-  const text = `${text_prefix}_${text_index}`;
-  const execInst = EXEC_INST.ParticipateDoNotInitiate;
-
-  return {symbol, price, orderQty, side, ordType, text, execInst};
-};
-
-type AmendOrderProps = Pick<orderType, 'orderID' | 'price'>;
 type AmendOrder = Pick<orderType, 'orderID' | 'price'>;
-
-export const amendOrder = ({orderID, price}: AmendOrderProps): AmendOrder => {
-  return {orderID, price};
-};
+export const amendOrder = (props: AmendOrder): AmendOrder => ({...props});
 
 const tickerRound = (number: number, symbol: SYMBOLS): number => {
   // Ticksize - 1 divided by this number

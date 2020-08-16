@@ -11,8 +11,5 @@ export const authKeyExpires = (path: string, method: string) => {
     .update(method + path + expires)
     .digest('hex');
 
-  return {
-    op: 'authKeyExpires',
-    args: [api, expires, signature],
-  };
+  return {op: 'authKeyExpires', args: [api, expires, signature]};
 };

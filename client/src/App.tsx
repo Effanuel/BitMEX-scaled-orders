@@ -1,31 +1,42 @@
 import React from 'react';
-import {shallowEqual, useSelector} from 'react-redux';
-
-import {ScaledContainer, PreviewContainer, MarketOrderContainer} from 'containers';
-import {PositionedSnackbar, Spinner} from './components';
-import {AppState} from 'redux/models/state';
+import {useDispatch} from 'react-redux';
+import {ScaledOrders, MarketOrderContainer, TrailingLimitOrder, TickerPricesContainer} from 'containers';
+import {Spinner, ToastContainer} from './components';
+import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import 'css/root.module.css';
+import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket';
+import {getBalance} from 'redux/modules/preview';
 
-export default function App() {
-  const {showPreview, orderLoading} = useSelector(
-    (state: AppState) => ({
-      showPreview: state.preview.showPreview,
-      orderLoading: state.preview.loading,
-      // TODO: ADD GLOBAL wsCurrentPrice
-      // pass to market container and to scaled container
-    }),
-    shallowEqual,
-  );
-  // console.log(test, "LOGOGOGO");
+const App = React.memo(() => {
+  const dispatch = useDispatch();
+  const {previewLoading, connected} = useReduxSelector('previewLoading', 'connected');
+
+  React.useEffect(() => {
+    dispatch(wsConnect());
+
+    return () => {
+      dispatch(wsDisconnect());
+    };
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    if (connected) {
+      dispatch(getBalance());
+      dispatch(wsAuthenticate());
+      dispatch(wsSubscribeTo('order'));
+    }
+  }, [dispatch, connected]);
+
   return (
-    <>
-      <PositionedSnackbar />
-      <Spinner loading={orderLoading} />
+    <div>
+      <ToastContainer />
+      <Spinner loading={previewLoading} />
+      <TickerPricesContainer />
       <MarketOrderContainer />
-
-      <ScaledContainer />
-
-      {showPreview && <PreviewContainer />}
-    </>
+      <TrailingLimitOrder />
+      <ScaledOrders />
+    </div>
   );
-}
+});
+
+export default App;
