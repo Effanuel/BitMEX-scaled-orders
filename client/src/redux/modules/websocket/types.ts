@@ -32,7 +32,7 @@ export type ReduxWebsocketMessage = CreateAction<typeof REDUX_WEBSOCKET_MESSAGE,
 export interface WebsocketState extends Tables {
   __keys: Keys;
   connected: boolean;
-  loading: boolean;
+  wsLoading: boolean;
   message?: string;
   error: string;
   symbol: string;

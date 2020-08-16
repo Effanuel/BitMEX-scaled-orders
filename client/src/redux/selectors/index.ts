@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {createSelector} from 'reselect';
-import {AppState} from '../models/state';
 import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
+import {AppState} from 'redux/store';
+
+interface SymbolPrices {
+  symbol: SYMBOLS;
+  askPrice: number;
+  bidPrice: number;
+}
 
 export interface CurrentPrice {
   askPrice: number;
@@ -10,44 +16,47 @@ export interface CurrentPrice {
 
 export const getShowPreview = ({preview: {showPreview}}: AppState) => showPreview;
 export const getOrders = ({preview: {orders}}: AppState) => orders;
-const getOrderLoading = ({preview: {loading}}: AppState) => loading;
+const getOrderLoading = ({preview: {previewLoading: loading}}: AppState) => loading;
 const getOrderError = ({preview: {error}}: AppState) => error;
 export const getBalance = ({preview: {balance}}: AppState) => balance;
 
 export const getWsSymbol = ({websocket: {symbol}}: AppState) => symbol;
 export const table_instrument = ({websocket: {instrument}}: AppState) => instrument;
 const table_order = ({websocket: {order}}: AppState) => order;
-const websocketLoading = ({websocket: {loading}}: AppState) => loading;
+const websocketLoading = ({websocket: {wsLoading: loading}}: AppState) => loading;
 const websocketMessage = ({websocket: {message}}: AppState) => message;
 const websocketConnected = ({websocket: {connected}}: AppState) => connected;
 
-const getBestOrderStatus = ({best_price: {status}}: AppState) => status;
-export const getbestOrderID = ({best_price: {bestOrderID}}: AppState) => bestOrderID;
-export const getBestOrderSide = ({best_price: {side}}: AppState) => side;
+const getTrailingOrderStatus = ({trailing: {trailOrderStatus}}: AppState) => trailOrderStatus;
+export const getTrailingOrderId = ({trailing: {trailOrderId}}: AppState) => trailOrderId;
+export const getTrailingOrderSide = ({trailing: {trailOrderSide: side}}: AppState) => side;
 
-export const bestOrderStatusSelector = createSelector([table_order, getbestOrderID], (open_orders, bestOrderID) => {
-  console.log('CALL ORDER STATUS', open_orders);
+export const trailingOrderStatusSelector = createSelector(
+  [table_order, getTrailingOrderId],
+  (open_orders, trailingOrderId) => {
+    console.log('CALL ORDER STATUS', open_orders);
 
-  for (let i = 0; i < open_orders.length; i++) {
-    // console.log(order.orderID, bestOrderID);
-    if (open_orders[i].orderID === bestOrderID) {
-      // console.log(order.ordStatus, 'STATATATAATUS');
-      return open_orders[i].ordStatus;
+    for (let i = 0; i < open_orders.length; i++) {
+      if (open_orders[i].orderID === trailingOrderId) {
+        console.log(open_orders[i].ordStatus, 'STATATATAATUS');
+        return open_orders[i].ordStatus;
+      }
     }
-  }
-  return 'Order not placed.';
-});
+    return 'Order not placed.';
+  },
+);
 
-export const bestOrderStatus = createSelector([getBestOrderStatus], (status) => status);
+export const trailingOrderStatus = createSelector([getTrailingOrderStatus], (status) => status);
 
 export const websocketBidAskPrices = createSelector([table_instrument, getWsSymbol], (data, symbol):
   | CurrentPrice
   | undefined => {
-  for (const i in data) {
-    if (data[i].symbol === symbol && data[i].askPrice && data[i].bidPrice) {
+  // console.log(data, 'INCD BID  AASK PRICES DATA');
+  for (const dataRow of data) {
+    if (dataRow.symbol === symbol && dataRow.askPrice && dataRow.bidPrice) {
       return {
-        askPrice: data[i].askPrice,
-        bidPrice: data[i].bidPrice,
+        askPrice: dataRow.askPrice,
+        bidPrice: dataRow.bidPrice,
       };
     }
   }
@@ -56,11 +65,16 @@ export const websocketBidAskPrices = createSelector([table_instrument, getWsSymb
   // return 'Loading...';
 });
 
-export const websocketCurrentPrice = createSelector([websocketBidAskPrices, getBestOrderSide], (bidAskPrices, side):
-  | number
-  | undefined => {
-  return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
+export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined => {
+  return data.map(({symbol, askPrice, bidPrice}) => ({symbol: symbol as SYMBOLS, askPrice, bidPrice}));
 });
+
+export const websocketCurrentPrice = createSelector(
+  [websocketBidAskPrices, getTrailingOrderSide],
+  (bidAskPrices, side): number | undefined => {
+    return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
+  },
+);
 
 export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
   | number
@@ -77,7 +91,7 @@ export const ordersAverageEntrySelector = createSelector([getOrders, getShowPrev
 
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAverageEntrySelector, getShowPreview],
-  (orderObject: any = {}, averageEntry, previewTable): number | null => {
+  (orderObject: any = {}, averageEntry, previewTable): number | undefined => {
     if (previewTable && averageEntry > 0 && averageEntry && orderObject.stop) {
       let {orderQty} = orderObject.stop;
       // 1 contract of ETH is for 0.001 mXBT which is 1e-6 XBT
@@ -88,7 +102,7 @@ export const ordersRiskSelector = createSelector(
       const exitValue = orderQty / orderObject.stop.stopPx; // || 1
       return Math.abs(+(entryValue - exitValue).toFixed(5));
     }
-    return null;
+    return undefined;
   },
 );
 
@@ -98,7 +112,7 @@ export const balanceSelector = createSelector([getBalance], (balance): number | 
 
 export const ordersRiskPercSelector = createSelector(
   [balanceSelector, ordersRiskSelector],
-  (balance: number | null, risk: number | null) => {
-    return balance !== 0 && balance !== null && risk !== null ? +((risk / balance) * 100).toFixed(2) : 0;
+  (balance: number | null, risk: number | undefined): number => {
+    return balance !== 0 && balance !== null && risk !== undefined ? +((risk / balance) * 100).toFixed(2) : 0;
   },
 );

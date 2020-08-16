@@ -5,15 +5,7 @@ import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
 
 const distributionParams = (stop = '8000'): any => {
-  return {
-    orderQty: 500,
-    n_tp: 3,
-    start: 7500,
-    end: 7700,
-    stop: stop,
-    side: SIDE.SELL,
-    symbol: SYMBOLS.XBTUSD,
-  };
+  return {orderQty: 500, n_tp: 3, start: 7500, end: 7700, stop: stop, side: SIDE.SELL, symbol: SYMBOLS.XBTUSD};
 };
 
 describe('Preview actions', () => {

@@ -1,8 +1,8 @@
 import {
   WebsocketResponse,
-  WebsocketActions,
+  // WebsocketActions,
   WebsocketState,
-  ReduxWebsocketMessage,
+  // ReduxWebsocketMessage,
   RESPONSE_ACTIONS,
   FETCH_ORDERS,
   REDUX_WEBSOCKET_BROKEN,
@@ -25,60 +25,33 @@ import {Reducer} from 'redux';
 import {authKeyExpires} from 'util/auth';
 import {SUBSCRIPTION_TOPICS, SYMBOLS} from 'util/BitMEX-types';
 
-const initialState: WebsocketState = {
+export const defaultState: WebsocketState = {
   __keys: {},
   instrument: [],
   order: [],
   connected: false,
-  loading: false,
+  wsLoading: false,
   message: 'Websocket is offline.',
   error: '',
   symbol: SYMBOLS.XBTUSD,
 };
 
-export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
-  state = initialState,
-  action,
-): WebsocketState => {
+export const websocketReducer: Reducer<WebsocketState, any> = (state = defaultState, action): WebsocketState => {
   switch (action.type) {
     case FETCH_ORDERS:
-      return {
-        ...state,
-        order: {...state.order, ...action.payload},
-      };
+      return {...state, order: {...state.order, ...action.payload}};
     case REDUX_WEBSOCKET_TICKER:
-      return {
-        ...state,
-        symbol: action.payload,
-      };
+      return {...state, symbol: action.payload};
     case REDUX_WEBSOCKET_CONNECT:
-      return {
-        ...state,
-        loading: true,
-        message: 'Connecting...',
-      };
-
+      return {...state, wsLoading: true, message: 'Connecting...'};
     case REDUX_WEBSOCKET_OPEN:
-      return {
-        ...state,
-        loading: false,
-        message: 'Websocket opened.',
-        connected: true,
-      };
-
+      return {...state, wsLoading: false, message: 'Websocket opened.', connected: true};
     case REDUX_WEBSOCKET_BROKEN:
     case REDUX_WEBSOCKET_CLOSED:
-      return {
-        ...state,
-        ...initialState,
-        message: 'Websocket closed.',
-      };
+      return {...state, ...defaultState, message: 'Websocket closed.'};
     case REDUX_WEBSOCKET_ERROR:
-      return {
-        ...state,
-        ...initialState,
-        message: 'Error. Too many reloads?',
-      };
+      console.log('REDUX WEBSOCKET ERROR: ', action.payload);
+      return {...state, ...defaultState, message: 'Error. Too many reloads?'};
     case REDUX_WEBSOCKET_MESSAGE:
       return reduxWeboscketMessage(state, action);
     case REDUX_WEBSOCKET_SEND:
@@ -87,10 +60,7 @@ export const websocketReducer: Reducer<WebsocketState, WebsocketActions> = (
   }
 };
 
-const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
-  state = initialState,
-  action,
-): WebsocketState => {
+const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultState, action): WebsocketState => {
   const response: WebsocketResponse = JSON.parse(action.payload.message);
 
   const responseKeys = Object.keys(response);
@@ -100,6 +70,7 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
     const message = response['success'] ? 'Successful subscription.' : 'Error while subscribing...';
     return {...state, message};
   } else if (responseKeys.includes('status')) {
+    console.log('ERROR  RESPONSE', response);
     const message = `Websocket. Status: ${(response as any).status || 'Error'}`;
     return {...state, message};
   } else if (ws_action) {
@@ -138,13 +109,14 @@ const reduxWeboscketMessage: Reducer<WebsocketState, ReduxWebsocketMessage> = (
     }
   } else if (responseKeys.includes('unsubscribe')) {
     const {[response.unsubscribe]: _deleted, ...rest} = state.__keys;
+    console.log('UNSUBSCRIBED', rest, response.unsubscribe);
 
     return {...state, __keys: rest};
   }
   return state;
 };
 
-type Actions = WebsocketActions;
+type Actions = any; //WebsocketActions;
 
 // Actions
 // ==============================
@@ -193,21 +165,28 @@ export const wsDisconnect = (): Thunk => async (dispatch) => {
   }
 };
 
+export const wsAuthenticate = (): Thunk => async (dispatch) => {
+  try {
+    dispatch(send(authKeyExpires('/realtime', 'GET')));
+  } catch (err) {
+    console.log(err.response.data, 'wsAuthenticate error');
+  }
+};
+
 export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
   try {
-    console.log('subs to ', payload);
-    dispatch(send(authKeyExpires('/realtime', 'GET')));
     dispatch(send({op: 'subscribe', args: [payload]}));
   } catch (err) {
-    console.log(err.response.data, 'wsDisconnect Error');
+    console.log(err.response.data, 'wsSubscribe Error');
   }
 };
 
 export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
   try {
+    // TODO DISPATCH LOADER HERE
     dispatch(send({op: 'unsubscribe', args: [payload]}));
   } catch (err) {
-    console.log(err.response.data, 'wsDisconnect Error');
+    console.log(err.response.data, 'wsUnsubscribe Error');
   }
 };
 

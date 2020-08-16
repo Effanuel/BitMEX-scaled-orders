@@ -13,59 +13,22 @@ import {
 } from './index';
 import {ScaledOrders} from '../../util';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
+import {mockInstrumentData, mockWebsocketState, mockPreviewState, mockScaledOrders} from 'tests/mockData/orders';
+import {Instrument} from 'redux/modules/websocket/types';
 
 describe('Selectors', () => {
   const mockState: any = {
-    websocket: {
-      __keys: {},
-      instrument: {
-        0: {
-          symbol: 'XBTUSD',
-          askPrice: 8000,
-          bidPrice: 8001,
-        },
-        1: {
-          symbol: 'ETHUSD',
-          askPrice: 111,
-          bidPrice: 8001,
-        },
-        2: {
-          symbol: 'XRPUSD',
-          askPrice: 0.2,
-          bidPrice: 8001,
-        },
-      },
-      trade: {},
-      order: {},
-      connected: false,
-      loading: false,
-      message: 'Websocket is offline.',
-      symbol: 'XBTUSD',
-    },
-    preview: {
-      orders: {
-        orders: [
-          {orderQty: 10000, price: 1000},
-          {orderQty: 10000, price: 2000},
-          {orderQty: 10000, price: 3000},
-          {orderQty: 10000, price: 4000},
-          {orderQty: 10000, price: 5000},
-          {orderQty: 10000, price: 6000},
-        ],
-        stop: {
-          symbol: 'XBTUSD',
-          stopPx: 10000,
-          orderQty: 60_000,
-        },
-      },
+    websocket: mockWebsocketState({instrument: mockInstrumentData as Instrument[]}),
+    preview: mockPreviewState({
+      orders: mockScaledOrders,
       balance: 12_345_678_993_321,
       showPreview: true,
-    },
-    best_price: {
-      side: SIDE.SELL,
-    },
+    }),
+    trailing: {side: SIDE.SELL},
   };
-  let result;
+
+  let result: unknown;
+
   describe('websocketBidAskPrices', () => {
     it('should return askPrice of current symbol', () => {
       const instrument = table_instrument(mockState);
@@ -88,10 +51,7 @@ describe('Selectors', () => {
   });
 
   describe('wsCurrentPrice', () => {
-    const mockBidPrices = {
-      askPrice: 1234,
-      bidPrice: 4567,
-    };
+    const mockBidPrices = {askPrice: 1234, bidPrice: 4567};
 
     it('should return `askPrice` if side is `Sell`', () => {
       const price = websocketCurrentPrice.resultFunc(mockBidPrices, SIDE.SELL);

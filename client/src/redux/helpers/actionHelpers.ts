@@ -1,48 +1,59 @@
-import axios from 'axios';
-import * as _ from 'lodash/fp';
+import {createAction, ActionCreatorWithPreparedPayload, ActionCreatorWithoutPayload} from '@reduxjs/toolkit';
+import _ from 'lodash/fp';
 import {Thunk} from 'redux/models/state';
-import {preview_apiActions} from 'redux/modules/preview/types';
-import {best_price_apiActions} from 'redux/modules/best-price/types';
+import {ACTIONS_preview, API_ACTIONS_preview} from 'redux/modules/preview/types';
+import {ACTIONS_trailing, POST_TRAILING_ORDER} from 'redux/modules/trailing/types';
 
-const apiActions = [...preview_apiActions, ...best_price_apiActions] as const;
+export const withPayloadType = <T>() => (payload: T) => ({payload});
 
-type ActionMapKey = typeof apiActions[number];
+const actions = [...ACTIONS_preview, ...ACTIONS_trailing] as const;
+const apiActions = [...API_ACTIONS_preview] as const;
 
-type ActionMap = {[key in ActionMapKey]: string};
+type ActionMapKey = typeof actions[number];
+type ApiActionMapKey = typeof apiActions;
 
-const getApiActions = (actions: typeof apiActions) => ({
-  apiRequestActions: actions.map((name) => ({
-    [name]: `${name}_REQUEST`,
+type ActionMap<P> = {
+  [key in ActionMapKey]: [P] extends [never]
+    ? ActionCreatorWithoutPayload<ActionMapKey>
+    : ActionCreatorWithPreparedPayload<[P], P, ActionMapKey>;
+};
+
+const registerAndGetActions = (actionsToCreate: typeof actions) => ({
+  apiRequestActions: actionsToCreate.map((name) => ({
+    [name]: createAction(`${name}_REQUEST`),
+  })) as ActionMap<never>[],
+  apiSuccessActions: actionsToCreate.map((name) => ({
+    [name]: createAction(`${name}_SUCCESS`, withPayloadType<any>()),
   })),
-  apiSuccessActions: actions.map((name) => ({
-    [name]: `${name}_SUCCESS`,
-  })),
-  apiFailureActions: actions.map((name) => ({
-    [name]: `${name}_FAILURE`,
-  })),
+  apiFailureActions: actionsToCreate.map((name) => ({
+    [name]: createAction(`${name}_FAILURE`, withPayloadType<string>()),
+  })) as ActionMap<string>[],
 });
 
-export const REQUEST: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiRequestActions);
-export const SUCCESS: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiSuccessActions);
-export const FAILURE: ActionMap = Object.assign({}, ...getApiActions(apiActions).apiFailureActions);
+const registeredActions = registerAndGetActions(actions);
+export const REQUEST: ActionMap<never> = Object.assign({}, ...registeredActions.apiRequestActions);
+export const SUCCESS: ActionMap<any> = Object.assign({}, ...registeredActions.apiSuccessActions);
+export const FAILURE: ActionMap<string> = Object.assign({}, ...registeredActions.apiFailureActions);
 
-export const callAPI = <P>(
+export const callAPI = <M extends (payload: P) => any, P>(
   actionName: ActionMapKey,
-  payload: P,
-  path: string,
-  args: string[] = [],
+  apiMethod: M,
+  apiPayload: P,
   moreData = {},
 ): Thunk => async (dispatch) => {
+  console.log('SEN', actionName);
   try {
-    dispatch({type: REQUEST[actionName]});
+    console.log('DISPATCH REQUEST');
+    dispatch(REQUEST[actionName]());
 
-    const response = await axios.post(path, payload);
-    const {data, success} = response.data;
-    const extraData = _.pick([...args, 'text'], JSON.parse(data));
+    const data = await apiMethod(apiPayload);
+    const payload = {...data, ...moreData};
+    console.log('DISPATCH AFTER SEND API', payload);
 
-    dispatch({type: SUCCESS[actionName], payload: {success, from: 'Scaled_orders', ...extraData, ...moreData}});
+    dispatch(SUCCESS[actionName](payload));
   } catch (err) {
-    const payload = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-    dispatch({type: FAILURE[actionName], payload});
+    console.log('err: ', err);
+    const payload: string = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
+    dispatch(FAILURE[actionName](payload));
   }
 };
