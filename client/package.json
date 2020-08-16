@@ -82,6 +82,11 @@
     "ts-jest": "^26.1.1",
     "typescript": "^3.9.6"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint . -c .eslintrc --ignore-path .eslintignore --ext .ts,.tsx --max-warnings 200 -f stylish"
