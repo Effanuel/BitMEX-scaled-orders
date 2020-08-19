@@ -6,25 +6,28 @@ import {
   getShowPreview,
   getOrders,
   table_instrument,
-  getWsSymbol,
   websocketBidAskPrices,
   websocketCurrentPrice,
   balanceSelector,
+  getTrailingOrderSymbol,
 } from './index';
 import {ScaledOrders} from '../../util';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import {mockInstrumentData, mockWebsocketState, mockPreviewState, mockScaledOrders} from 'tests/mockData/orders';
+import {
+  mockInstrumentData,
+  mockWebsocketState,
+  mockPreviewState,
+  mockScaledOrders,
+  mockTrailingState,
+} from 'tests/mockData/orders';
 import {Instrument} from 'redux/modules/websocket/types';
+import {AppState} from 'redux/store';
 
 describe('Selectors', () => {
-  const mockState: any = {
+  const mockState: AppState = {
     websocket: mockWebsocketState({instrument: mockInstrumentData as Instrument[]}),
-    preview: mockPreviewState({
-      orders: mockScaledOrders,
-      balance: 12_345_678_993_321,
-      showPreview: true,
-    }),
-    trailing: {side: SIDE.SELL},
+    preview: mockPreviewState({orders: mockScaledOrders, balance: 12_345_678_993_321, showPreview: true}),
+    trailing: mockTrailingState({trailOrderSide: SIDE.SELL, trailOrderSymbol: SYMBOLS.XBTUSD}),
   };
 
   let result: unknown;
@@ -32,19 +35,20 @@ describe('Selectors', () => {
   describe('websocketBidAskPrices', () => {
     it('should return askPrice of current symbol', () => {
       const instrument = table_instrument(mockState);
-      const wsSymbol = getWsSymbol(mockState);
+      const wsSymbol = getTrailingOrderSymbol(mockState);
       const result = websocketBidAskPrices.resultFunc(instrument, wsSymbol);
       expect(result!.askPrice).toEqual(8000);
       expect(result!.bidPrice).toEqual(8001);
     });
 
     it('returns undefined if no data for symbol was found', () => {
-      const payload = {
+      const payload: AppState = {
         ...mockState,
-        websocket: {...mockState.websocket, symbol: 'HELLO'},
+        websocket: {...mockState.websocket},
+        trailing: {...mockState.trailing, trailOrderSymbol: 'HELLO' as SYMBOLS},
       };
       const instrument = table_instrument(payload);
-      const wsSymbol = getWsSymbol(payload);
+      const wsSymbol = getTrailingOrderSymbol(payload);
       const result = websocketBidAskPrices.resultFunc(instrument, wsSymbol);
       expect(result).toEqual(undefined);
     });
