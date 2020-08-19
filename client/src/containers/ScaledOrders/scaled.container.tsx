@@ -40,17 +40,17 @@ const ScaledContainer = React.memo(() => {
   const [state, setState] = React.useState(initialState);
   const [cache, setCache] = React.useState(true);
 
-  function onChangeDropdown({target: {value, id}}: React.ChangeEvent<HTMLInputElement>): void {
+  function onChangeDropdown({target: {value, id}}: InputChange): void {
     setState((prevState) => ({...prevState, [id]: value, start: null, end: null, stop: null}));
     setCache(false);
   }
 
-  function onChangeNumber({target: {id, value}}: React.ChangeEvent<HTMLInputElement>): void {
+  function onChangeNumber({target: {id, value}}: InputChange): void {
     setState((prevState) => ({...prevState, [id]: +value}));
     setCache(false);
   }
 
-  function toggleSide({target: {value, name}}: React.ChangeEvent<HTMLInputElement>): void {
+  function toggleSide({target: {value, name}}: InputChange): void {
     setState((prevState) => ({...prevState, [name]: value}));
     setCache(false);
   }

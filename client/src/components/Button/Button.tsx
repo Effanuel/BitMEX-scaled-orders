@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import styles from './Button.module.css';
 
-export type ButtonVariants = 'submit' | 'text' | 'buy' | 'sell' | 'custom';
+export type ButtonVariants = 'submit' | 'text' | 'buy' | 'sell' | 'custom' | 'textSell';
 
 export interface ButtonProps {
   testID?: string;
@@ -19,6 +19,7 @@ function Button({id, label, testID, variant = 'submit', disabled, onClick, style
   const buttonStyle = cx({
     [styles.button]: variant === 'submit',
     [styles.text_button]: variant === 'text',
+    [styles.text_sell]: variant === 'textSell',
     [styles.button_buy]: variant === 'buy',
     [styles.button_sell]: variant === 'sell',
     [className]: variant === 'custom',

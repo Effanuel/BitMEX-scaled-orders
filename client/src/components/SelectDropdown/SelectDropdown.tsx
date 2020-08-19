@@ -5,11 +5,12 @@ interface Props {
   id: string;
   label: string;
   onChange: (event: any) => void;
+  disabled?: boolean;
 }
 
 const availableSymbols = ['XBTUSD', 'ETHUSD', 'XRPUSD'];
 
-function SelectDropdown({id, label, onChange}: Props) {
+function SelectDropdown({id, label, onChange, disabled = false}: Props) {
   const renderSymbol = (item: string) => (
     <option key={item} value={item}>
       {item}
@@ -20,7 +21,7 @@ function SelectDropdown({id, label, onChange}: Props) {
     <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>
 
-      <select className="custom-select" onChange={onChange} id={id}>
+      <select disabled={disabled} className="custom-select" onChange={onChange} id={id}>
         {availableSymbols.map(renderSymbol)}
       </select>
     </div>

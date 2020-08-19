@@ -10,18 +10,27 @@
   /* align-items: flex-start; */
   width: 120px;
 }
-
+.text_sell,
 .text_button {
-  color: var(--accentColor);
   font-size: 14px;
   background-color: transparent;
   border: none;
 }
 
+.text_button {
+  color: var(--accentColor);
+}
+
+.text_sell {
+  color: var(--stopColor);
+}
+
+.text_sell:disabled,
 .text_button:disabled {
   color: var(--white38);
 }
 
+.text_sell:focus:enabled,
 .text_button:focus:enabled {
   outline: none;
 }
@@ -32,13 +41,17 @@
   color: #41e87a;
 }
 
+.text_sell:hover:enabled {
+  background-color: unset !important;
+  text-decoration: none;
+  color: #ff93a7;
+}
+
 * .button {
   background-color: var(--primaryColor);
   color: white;
-
   border: 1px solid var(--accentColor);
   border-radius: 2px;
-
   padding: 3px 25px;
 }
 

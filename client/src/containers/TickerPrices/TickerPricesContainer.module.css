@@ -3,3 +3,16 @@
 .white60 {
   color: var(--white60);
 }
+
+.listItemContainer {
+  margin-left: 5px;
+  padding: 1px;
+  border: 1px solid grey;
+  color: var(--white60);
+}
+
+.allPricesContainer {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 12px;
+}

@@ -21,11 +21,14 @@ const MarketOrderContainer = React.memo(() => {
 
   const [state, setState] = useState(initialState);
 
-  const submitMarketOrder = React.useCallback(({target: {id}}: React.ChangeEvent<HTMLButtonElement>) => {
-    dispatch(postMarketOrder({...state, side: id as SIDE}));
-  }, []);
+  const submitMarketOrder = React.useCallback(
+    ({target: {id}}: ButtonChange) => {
+      dispatch(postMarketOrder({...state, side: id as SIDE}));
+    },
+    [dispatch, state],
+  );
 
-  function onChange({target: {id, value, tagName}}: React.ChangeEvent<HTMLInputElement>): void {
+  function onChange({target: {id, value, tagName}}: InputChange): void {
     const updated = tagName === 'INPUT' ? +value : value;
     setState((prevState) => ({...prevState, [id]: updated}));
   }

@@ -15,3 +15,6 @@ type PickWithOptional<T, K extends keyof T, O extends keyof T> = {
   [P in K]: T[P];
 } &
   {[P in O]?: T[P]};
+
+type InputChange = React.ChangeEvent<HTMLInputElement>;
+type ButtonChange = React.ChangeEvent<HTMLButtonElement>;

@@ -38,6 +38,11 @@
   border: 1px solid var(--accentColor);
 }
 
+.select_dropdown select:disabled {
+  color: var(--white60);
+  background-color: var(--white38);
+}
+
 select::-ms-expand {
   -webkit-appearance: button;
   -moz-appearance: button;
