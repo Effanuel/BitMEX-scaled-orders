@@ -20,16 +20,16 @@ const getOrderLoading = ({preview: {previewLoading: loading}}: AppState) => load
 const getOrderError = ({preview: {error}}: AppState) => error;
 export const getBalance = ({preview: {balance}}: AppState) => balance;
 
-export const getWsSymbol = ({websocket: {symbol}}: AppState) => symbol;
 export const table_instrument = ({websocket: {instrument}}: AppState) => instrument;
 const table_order = ({websocket: {order}}: AppState) => order;
-const websocketLoading = ({websocket: {wsLoading: loading}}: AppState) => loading;
+const websocketLoading = ({websocket: {wsLoading}}: AppState) => wsLoading;
 const websocketMessage = ({websocket: {message}}: AppState) => message;
 const websocketConnected = ({websocket: {connected}}: AppState) => connected;
 
 const getTrailingOrderStatus = ({trailing: {trailOrderStatus}}: AppState) => trailOrderStatus;
 export const getTrailingOrderId = ({trailing: {trailOrderId}}: AppState) => trailOrderId;
-export const getTrailingOrderSide = ({trailing: {trailOrderSide: side}}: AppState) => side;
+export const getTrailingOrderSide = ({trailing: {trailOrderSide}}: AppState) => trailOrderSide;
+export const getTrailingOrderSymbol = ({trailing: {trailOrderSymbol}}: AppState) => trailOrderSymbol;
 
 export const trailingOrderStatusSelector = createSelector(
   [table_order, getTrailingOrderId],
@@ -48,7 +48,7 @@ export const trailingOrderStatusSelector = createSelector(
 
 export const trailingOrderStatus = createSelector([getTrailingOrderStatus], (status) => status);
 
-export const websocketBidAskPrices = createSelector([table_instrument, getWsSymbol], (data, symbol):
+export const websocketBidAskPrices = createSelector([table_instrument, getTrailingOrderSymbol], (data, symbol):
   | CurrentPrice
   | undefined => {
   // console.log(data, 'INCD BID  AASK PRICES DATA');
@@ -92,7 +92,7 @@ export const ordersAverageEntrySelector = createSelector([getOrders, getShowPrev
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAverageEntrySelector, getShowPreview],
   (orderObject: any = {}, averageEntry, previewTable): number | undefined => {
-    if (previewTable && averageEntry > 0 && averageEntry && orderObject.stop) {
+    if (previewTable && averageEntry > 0 && averageEntry && orderObject.stop && Object.keys(orderObject.stop).length) {
       let {orderQty} = orderObject.stop;
       // 1 contract of ETH is for 0.001 mXBT which is 1e-6 XBT
       if (orderObject.stop.symbol === SYMBOLS.ETHUSD) orderQty *= 1e-6 * averageEntry ** 2;
