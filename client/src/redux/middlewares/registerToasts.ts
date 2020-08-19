@@ -1,7 +1,7 @@
 import {showToast, ToastPreset} from 'components';
 import {SUCCESS, FAILURE} from 'redux/helpers/actionHelpers';
 import {PREVIEW_POST_MARKET_ORDER, PREVIEW_POST_ORDER} from 'redux/modules/preview/types';
-import {POST_TRAILING_ORDER, PUT_TRAILING_ORDER} from 'redux/modules/trailing/types';
+import {POST_TRAILING_ORDER, PUT_TRAILING_ORDER, DELETE_TRAILING_ORDER} from 'redux/modules/trailing/types';
 import {AppState} from 'redux/store';
 import {Store} from 'redux';
 
@@ -33,6 +33,12 @@ export const registeredToasts: RegisteredToasts = {
         : {message: `Trailing Order was cancelled`, preset: 'warning'};
 
     showToast(toastDisplay.message, toastDisplay.preset);
+  },
+  [SUCCESS[DELETE_TRAILING_ORDER].type]: () => {
+    showToast('Trailing Order Canceled', 'success');
+  },
+  [FAILURE[DELETE_TRAILING_ORDER].type]: () => {
+    showToast('Failed to Cancel Trailing Order', 'error');
   },
   [FAILURE[POST_TRAILING_ORDER].type]: () => {
     showToast('Order posting error.', 'error');

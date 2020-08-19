@@ -146,6 +146,9 @@ export const createOrder = (props: Order) => ({...props, execInst: EXEC_INST.Par
 type AmendOrder = Pick<orderType, 'orderID' | 'price'>;
 export const amendOrder = (props: AmendOrder): AmendOrder => ({...props});
 
+type DeleteOrder = Pick<orderType, 'orderID'>;
+export const deleteOrder = (props: DeleteOrder) => ({...props});
+
 const tickerRound = (number: number, symbol: SYMBOLS): number => {
   // Ticksize - 1 divided by this number
   const {ticksize} = INSTRUMENT_PARAMS[symbol];

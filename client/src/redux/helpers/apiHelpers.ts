@@ -7,6 +7,7 @@ import {
   createOrder,
   amendOrder,
   MarketOrderProps,
+  deleteOrder,
 } from 'util/index';
 import {PostTrailingOrderProps} from 'redux/modules/trailing';
 
@@ -15,6 +16,7 @@ export interface BitMEX {
   postMarketOrder: (payload: MarketOrderProps) => any;
   postTrailingOrder: (payload: PostTrailingOrderProps) => any;
   putTrailingOrder: (payload: {orderID: string; price: number}) => any;
+  deleteTrailingOrder: (payload: {orderID: string}) => any;
   postBulkOrders: (payload: ScaledOrdersProps) => any;
 }
 
@@ -55,6 +57,13 @@ export class BitMEX_API implements BitMEX {
     const payload = {order, method: 'PUT'};
 
     return await this.sendRequest('order', payload, ['price']);
+  };
+
+  deleteTrailingOrder = async (props: {orderID: string}) => {
+    const order = deleteOrder(props);
+    const payload = {order, method: 'DELETE'};
+
+    return await this.sendRequest('order', payload);
   };
 
   postMarketOrder = async (orderProps: MarketOrderProps) => {

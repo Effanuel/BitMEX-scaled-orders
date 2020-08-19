@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
-import {postTrailingOrder, __clearTrailingOrder, ammendTrailingOrder} from 'redux/modules/trailing';
+import {
+  postTrailingOrder,
+  __clearTrailingOrder,
+  ammendTrailingOrder,
+  cancelTrailingOrder,
+} from 'redux/modules/trailing';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsTickerChange} from 'redux/modules/websocket';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
@@ -47,73 +52,76 @@ const TrailingLimitOrderContainer = React.memo(() => {
   );
 
   React.useEffect(() => {
-    console.log('AMMEND CURRENT PIRCE', wsCurrentPrice);
     if (wsCurrentPrice) {
       const toAmmend = trailOrderSide === 'Sell' ? wsCurrentPrice < trailOrderPrice : wsCurrentPrice > trailOrderPrice;
-      console.log('TO AMMEENT', toAmmend);
-      console.log('PRICE', trailOrderPrice);
       if (trailOrderPrice && toAmmend) {
-        console.log('Amending order: ', wsCurrentPrice, trailOrderPrice);
         dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsCurrentPrice}));
       }
     }
-  }, [wsCurrentPrice, trailOrderPrice]);
+  }, [dispatch, wsCurrentPrice, trailOrderPrice, trailOrderId, trailOrderSide]);
 
   React.useEffect(() => {
-    console.log('TRAILING  ORDER STATUS', trailOrderStatus, status);
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
     if (statuses.includes(status) && trailOrderStatus !== 'Order not placed.') {
-      // Set a timeout so we can still see a "Canceled" message.
-      setTimeout(async () => {
-        dispatch(__clearTrailingOrder());
-      }, 3000);
+      dispatch(__clearTrailingOrder());
     }
   }, [dispatch, trailOrderStatus, status]);
 
-  // useSubscribeOrder(dispatch, connected, trailOrderStatus);
+  const trailingOrderPrice = React.useMemo(
+    () => (state.side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice),
+    [state.side, wsBidAskPrices],
+  );
 
   function submitTrailingOrder() {
-    // if (wsCurrentPrice) {
-    const trailingOrderPrice = state.side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice;
-    const payload = {
-      ...state,
-      price: trailingOrderPrice || 12000,
-      side: state.side,
-      ordType: ORD_TYPE.Limit,
-      text: 'best_order',
-    };
-    dispatch(postTrailingOrder(payload));
-    // }
+    if (trailingOrderPrice) {
+      const payload = {
+        ...state,
+        price: trailingOrderPrice,
+        side: state.side,
+        ordType: ORD_TYPE.Limit,
+        text: 'best_order',
+      };
+      dispatch(postTrailingOrder(payload));
+    }
   }
 
-  function onChangeNumber({target: {id, value}}: React.ChangeEvent<HTMLInputElement>): void {
+  function cancelOrder() {
+    if (trailOrderId) {
+      dispatch(cancelTrailingOrder({orderID: trailOrderId}));
+    }
+  }
+
+  function onChangeNumber({target: {id, value}}: InputChange): void {
     setState((prevState) => ({...prevState, [id]: +value}));
   }
 
-  const toggleInstrument = React.useCallback(({target: {id, value}}: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(wsTickerChange(value as SYMBOLS));
-    setState((prevState) => ({...prevState, [id]: value}));
-  }, []);
+  const toggleInstrument = React.useCallback(
+    ({target: {id, value}}: InputChange) => {
+      dispatch(wsTickerChange(value as SYMBOLS));
+      setState((prevState) => ({...prevState, [id]: value}));
+    },
+    [dispatch],
+  );
 
-  const toggleSide = React.useCallback(({target: {name, value}}: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleSide = React.useCallback(({target: {name, value}}: InputChange) => {
     setState((prevState) => ({...prevState, [name]: value}));
   }, []);
 
   const buttonLabel = React.useMemo(
-    () =>
-      buildOrderPresenter(
-        connected,
-        state.side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice,
-        status,
-      ),
-    [connected, state.side, wsBidAskPrices],
+    () => buildOrderPresenter(connected, trailingOrderPrice, status, trailOrderStatus),
+    [connected, trailingOrderPrice, status, trailOrderStatus],
   );
 
   function renderFirstRow() {
     return (
       <>
         <Grid item xs={3}>
-          <SelectDropdown id="symbol" onChange={toggleInstrument} label="Instrument" />
+          <SelectDropdown
+            id="symbol"
+            onChange={toggleInstrument}
+            label="Instrument"
+            disabled={!connected || trailOrderStatus === 'Order placed.'}
+          />
         </Grid>
         <Grid item xs={3}>
           <InputField onChange={onChangeNumber} value={state.orderQty} label="Quantity" id="orderQty" />
@@ -123,11 +131,11 @@ const TrailingLimitOrderContainer = React.memo(() => {
         </Grid>
         <Grid item xs={4} className={styles.top_row}>
           <Button
-            label={buttonLabel}
+            label={buttonLabel.label}
             variant={state.side === SIDE.SELL ? 'sell' : 'buy'}
             style={{width: '170px'}}
             onClick={submitTrailingOrder}
-            disabled={!state.orderQty || state.orderQty > 20e6 || !wsCurrentPrice}
+            disabled={!state.orderQty || state.orderQty > 20e6 || !wsCurrentPrice || buttonLabel.disabled}
           />
         </Grid>
       </>
@@ -137,17 +145,23 @@ const TrailingLimitOrderContainer = React.memo(() => {
   function renderSecondRow() {
     return (
       <>
-        <Grid item xs={6}>
-          <div style={{color: 'white'}}>
-            Best order status: <span style={{color: 'green'}}>{trailOrderStatus}</span>
+        <Grid item xs={4}>
+          <div style={{flexDirection: 'column', display: 'flex'}}>
+            <span style={{color: 'white'}}>Best order status: </span>
+            <span style={{color: 'green'}}>{trailOrderStatus}</span>
           </div>
-          {/* <div style={{ color: "green" }}>{status}</div> */}
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           {trailOrderPrice ? (
-            <div style={{color: 'white'}}>
-              Best order price: <span style={{color: 'green'}}>{trailOrderPrice}</span>
+            <div style={{flexDirection: 'column', display: 'flex'}}>
+              <div style={{color: 'white'}}>Best order price: </div>
+              <div style={{color: 'green'}}>{trailOrderPrice}</div>
             </div>
+          ) : null}
+        </Grid>
+        <Grid item xs={4}>
+          {connected && wsCurrentPrice && trailOrderStatus === 'Order placed.' ? (
+            <Button variant="textSell" onClick={cancelOrder} label={'Cancel Trailing Order'} />
           ) : null}
         </Grid>
       </>
