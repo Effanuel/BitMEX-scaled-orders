@@ -61,7 +61,7 @@ export const postScaledOrders = (ordersProps: DistributionProps, distribution: D
 export const postMarketOrder = (orderProps: MarketOrderProps) =>
   callAPI(PREVIEW_POST_MARKET_ORDER, API.postMarketOrder, orderProps, {});
 
-export const getBalance = () => () => callAPI(GET_BALANCE, API.getBalance, undefined, {});
+export const getBalance = () => callAPI(GET_BALANCE, API.getBalance, undefined, {});
 
 export const previewOrders = (ordersProps: DistributionProps, distribution: DISTRIBUTIONS): Action =>
   previewShow(createScaledOrders({ordersProps, distribution}));
