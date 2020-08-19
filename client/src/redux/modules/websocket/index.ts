@@ -1,8 +1,6 @@
 import {
   WebsocketResponse,
-  // WebsocketActions,
   WebsocketState,
-  // ReduxWebsocketMessage,
   RESPONSE_ACTIONS,
   FETCH_ORDERS,
   REDUX_WEBSOCKET_BROKEN,
@@ -12,7 +10,6 @@ import {
   REDUX_WEBSOCKET_OPEN,
   REDUX_WEBSOCKET_SEND,
   REDUX_WEBSOCKET_ERROR,
-  REDUX_WEBSOCKET_TICKER,
   Tables,
   Instrument,
   Order,
@@ -23,7 +20,7 @@ import {connect, disconnect, send} from '@giantmachines/redux-websocket';
 import {Thunk} from '../../models/state';
 import {Reducer} from 'redux';
 import {authKeyExpires} from 'util/auth';
-import {SUBSCRIPTION_TOPICS, SYMBOLS} from 'util/BitMEX-types';
+import {SUBSCRIPTION_TOPICS} from 'util/BitMEX-types';
 
 export const defaultState: WebsocketState = {
   __keys: {},
@@ -33,15 +30,12 @@ export const defaultState: WebsocketState = {
   wsLoading: false,
   message: 'Websocket is offline.',
   error: '',
-  symbol: SYMBOLS.XBTUSD,
 };
 
 export const websocketReducer: Reducer<WebsocketState, any> = (state = defaultState, action): WebsocketState => {
   switch (action.type) {
     case FETCH_ORDERS:
       return {...state, order: {...state.order, ...action.payload}};
-    case REDUX_WEBSOCKET_TICKER:
-      return {...state, symbol: action.payload};
     case REDUX_WEBSOCKET_CONNECT:
       return {...state, wsLoading: true, message: 'Connecting...'};
     case REDUX_WEBSOCKET_OPEN:
@@ -50,7 +44,6 @@ export const websocketReducer: Reducer<WebsocketState, any> = (state = defaultSt
     case REDUX_WEBSOCKET_CLOSED:
       return {...state, ...defaultState, message: 'Websocket closed.'};
     case REDUX_WEBSOCKET_ERROR:
-      console.log('REDUX WEBSOCKET ERROR: ', action.payload);
       return {...state, ...defaultState, message: 'Error. Too many reloads?'};
     case REDUX_WEBSOCKET_MESSAGE:
       return reduxWeboscketMessage(state, action);
@@ -120,11 +113,6 @@ type Actions = any; //WebsocketActions;
 
 // Actions
 // ==============================
-export const wsTickerChange = (payload: SYMBOLS): Actions => ({
-  type: REDUX_WEBSOCKET_TICKER,
-  payload,
-});
-
 export const getOrders = (): Thunk => async (dispatch) => {
   try {
     const response = await axios.post('/bitmex/getOrders');

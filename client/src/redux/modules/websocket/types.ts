@@ -9,8 +9,6 @@ import {
   WEBSOCKET_SEND,
   WEBSOCKET_ERROR,
 } from '@giantmachines/redux-websocket';
-
-import {SYMBOLS} from 'util/BitMEX-types';
 export const FETCH_ORDERS = 'websocket/FETCH_ORDERS';
 const WEBSOCKET_PREFIX = 'REDUX_WEBSOCKET';
 export const REDUX_WEBSOCKET_BROKEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_BROKEN}`;
@@ -21,11 +19,8 @@ export const REDUX_WEBSOCKET_CONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_CONNECT
 export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISCONNECT}`;
 export const REDUX_WEBSOCKET_SEND = `${WEBSOCKET_PREFIX}::${WEBSOCKET_SEND}`;
 export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
-export const REDUX_WEBSOCKET_TICKER = 'REDUX_WEBSOCKET_TICKER';
 
-export type WebsocketActions =
-  | CreateAction<typeof FETCH_ORDERS, any>
-  | CreateAction<typeof REDUX_WEBSOCKET_TICKER, SYMBOLS>;
+export type WebsocketActions = CreateAction<typeof FETCH_ORDERS, any>;
 
 export type ReduxWebsocketMessage = CreateAction<typeof REDUX_WEBSOCKET_MESSAGE, any>;
 
@@ -35,7 +30,6 @@ export interface WebsocketState extends Tables {
   wsLoading: boolean;
   message?: string;
   error: string;
-  symbol: string;
 }
 
 export enum RESPONSE_ACTIONS {

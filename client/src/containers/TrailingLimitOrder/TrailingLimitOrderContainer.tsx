@@ -6,9 +6,9 @@ import {
   __clearTrailingOrder,
   ammendTrailingOrder,
   cancelTrailingOrder,
+  changeTrailingOrderSymbol,
 } from 'redux/modules/trailing';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {wsTickerChange} from 'redux/modules/websocket';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
 import buildOrderPresenter from './place-order-presenter';
@@ -97,7 +97,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
 
   const toggleInstrument = React.useCallback(
     ({target: {id, value}}: InputChange) => {
-      dispatch(wsTickerChange(value as SYMBOLS));
+      dispatch(changeTrailingOrderSymbol(value as SYMBOLS));
       setState((prevState) => ({...prevState, [id]: value}));
     },
     [dispatch],

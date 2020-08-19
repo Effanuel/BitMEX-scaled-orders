@@ -42,6 +42,7 @@ const buildSelectors = (state: AppState): Selectors => {
     trailOrderPrice: trailing.trailOrderPrice,
     trailOrderStatus: trailing.trailOrderStatus,
     trailOrderSide: trailing.trailOrderSide,
+    trailOrderSymbol: trailing.trailOrderSymbol,
     trailLoading: trailing.trailLoading,
 
     orders: preview.orders,
@@ -52,7 +53,6 @@ const buildSelectors = (state: AppState): Selectors => {
 
     __keys: websocket.__keys,
     connected: websocket.connected,
-    symbol: websocket.symbol,
     instrument: websocket.instrument,
     order: websocket.order,
     wsLoading: websocket.wsLoading,

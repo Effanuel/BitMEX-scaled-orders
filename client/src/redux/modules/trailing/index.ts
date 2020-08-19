@@ -1,5 +1,5 @@
 import {createReducer, createAction} from '@reduxjs/toolkit';
-import {SUCCESS, REQUEST, FAILURE, callAPI} from 'redux/helpers/actionHelpers';
+import {SUCCESS, REQUEST, FAILURE, callAPI, withPayloadType} from 'redux/helpers/actionHelpers';
 import {BitMEX_API} from 'redux/helpers/apiHelpers';
 import {SIDE, ORD_TYPE, SYMBOLS} from 'util/BitMEX-types';
 import {
@@ -8,6 +8,7 @@ import {
   POST_TRAILING_ORDER,
   PUT_TRAILING_ORDER,
   DELETE_TRAILING_ORDER,
+  CHANGE_TRAILING_ORDER_SYMBOL,
 } from './types';
 
 export const defaultState: TrailingState = {
@@ -15,10 +16,12 @@ export const defaultState: TrailingState = {
   trailOrderPrice: 0,
   trailOrderStatus: 'Order not placed.',
   trailOrderSide: SIDE.SELL,
+  trailOrderSymbol: SYMBOLS.XBTUSD,
   trailLoading: false,
 };
 
 export const __clearTrailingOrder = createAction(__CLEAR_TRAILING_ORDER);
+export const changeTrailingOrderSymbol = createAction(CHANGE_TRAILING_ORDER_SYMBOL, withPayloadType<SYMBOLS>());
 
 export const trailingReducer = createReducer(defaultState, (builder) =>
   builder
@@ -37,7 +40,10 @@ export const trailingReducer = createReducer(defaultState, (builder) =>
     .addCase(REQUEST[POST_TRAILING_ORDER], (state) => {
       state.trailLoading = true;
     })
-    .addCase(__clearTrailingOrder, () => defaultState),
+    .addCase(__clearTrailingOrder, () => defaultState)
+    .addCase(changeTrailingOrderSymbol, (state, {payload}) => {
+      state.trailOrderSymbol = payload;
+    }),
 );
 
 const postTrailingOrderReducer = (state = defaultState, action: Action): TrailingState => {
