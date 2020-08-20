@@ -2,7 +2,7 @@ import React from 'react';
 import {MainContainer} from 'components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {SYMBOLS} from 'util/BitMEX-types';
-import styles from './TickerPricesContainer.module.css';
+import styles from './TickerPricesContainer.module.scss';
 
 function ListItem({symbol, askPrice}: {symbol: SYMBOLS; askPrice: number | undefined}) {
   return (

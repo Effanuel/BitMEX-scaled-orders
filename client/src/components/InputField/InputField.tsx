@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import {TextField, makeStyles, FormControl, Tooltip} from '@material-ui/core';
-import './InputField.module.css';
+import './InputField.module.scss';
 
 const useStyles = makeStyles(() => ({
   label: {color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px'},

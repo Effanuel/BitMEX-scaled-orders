@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
 import {postMarketOrder} from 'redux/modules/preview';
 import {MainContainer, SelectDropdown, InputField, Button} from 'components';
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 import {SYMBOLS, SIDE} from 'util/BitMEX-types';
 
 interface State {

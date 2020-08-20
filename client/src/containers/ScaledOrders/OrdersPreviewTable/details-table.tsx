@@ -1,6 +1,6 @@
 import React from 'react';
 import {formatPrice} from 'general/formatting';
-import styles from './details-table.module.css';
+import styles from './details-table.module.scss';
 import {PREVIEW_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 

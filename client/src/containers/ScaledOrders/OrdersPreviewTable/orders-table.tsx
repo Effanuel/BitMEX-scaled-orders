@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
-import styles from './orders-table.module.css';
+import styles from './orders-table.module.scss';
 import {PREVIEW_CONTAINER} from 'data-test-ids';
 import {useSingleton} from 'general/hooks';
 

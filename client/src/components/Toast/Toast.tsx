@@ -3,8 +3,8 @@ import cx from 'classnames';
 import {toast, ToastContainer as ToastifyContainer} from 'react-toastify';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import ICONS from '../SVGIcon/icons';
-import styles from './ToastBar.module.css';
-import './ToastContainer.css';
+import styles from './ToastBar.module.scss';
+import './ToastContainer.scss';
 
 export type ToastPreset = 'success' | 'warning' | 'error' | 'general';
 

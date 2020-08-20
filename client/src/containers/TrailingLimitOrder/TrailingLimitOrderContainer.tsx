@@ -12,7 +12,7 @@ import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
 import buildOrderPresenter from './place-order-presenter';
-import styles from './TrailingLimitOrderContainer.module.css';
+import styles from './TrailingLimitOrderContainer.module.scss';
 
 interface State {
   symbol: SYMBOLS;

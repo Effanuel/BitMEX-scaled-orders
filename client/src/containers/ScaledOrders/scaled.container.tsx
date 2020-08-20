@@ -7,7 +7,7 @@ import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} fro
 import DistributionsRadioGroup from './DistributionsRadioGroup';
 import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import styles from './scaled.container.module.css';
+import styles from './scaled.container.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 

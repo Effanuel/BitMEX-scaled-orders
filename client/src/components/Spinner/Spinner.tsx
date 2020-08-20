@@ -1,7 +1,7 @@
 import React from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import {withStyles} from '@material-ui/core/styles';
-import styles from './Spinner.module.css';
+import styles from './Spinner.module.scss';
 
 const ColorLinearProgress = withStyles({
   root: {height: '5px', width: '600px', margin: '0 auto'},

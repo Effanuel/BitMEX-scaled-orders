@@ -2,7 +2,7 @@ import React from 'react';
 import {Container, Grid} from '@material-ui/core';
 import OrdersTable from './orders-table';
 import DetailsTable from './details-table';
-import styles from './OrdersPreviewTable.module.css';
+import styles from './OrdersPreviewTable.module.scss';
 
 export default function OrdersPreviewTable() {
   const {main_container, preview_container, details_container} = styles;

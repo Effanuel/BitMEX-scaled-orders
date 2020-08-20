@@ -5,7 +5,7 @@ import {Spinner, ToastContainer} from './components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket';
 import {getBalance} from 'redux/modules/preview';
-import 'css/root.module.css';
+import 'css/root.module.scss';
 
 const App = React.memo(() => {
   const dispatch = useDispatch();

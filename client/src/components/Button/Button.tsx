@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import styles from './Button.module.css';
+import styles from './Button.module.scss';
 
 export type ButtonVariants = 'submit' | 'text' | 'buy' | 'sell' | 'custom' | 'textSell';
 
