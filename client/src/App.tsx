@@ -3,13 +3,18 @@ import {useDispatch} from 'react-redux';
 import {ScaledOrders, MarketOrderContainer, TrailingLimitOrder, TickerPricesContainer} from 'containers';
 import {Spinner, ToastContainer} from './components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import 'css/root.module.css';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket';
 import {getBalance} from 'redux/modules/preview';
+import 'css/root.module.css';
 
 const App = React.memo(() => {
   const dispatch = useDispatch();
-  const {previewLoading, connected} = useReduxSelector('previewLoading', 'connected');
+  const {previewLoading, trailLoading, wsLoading, connected} = useReduxSelector(
+    'previewLoading',
+    'trailLoading',
+    'wsLoading',
+    'connected',
+  );
 
   React.useEffect(() => {
     dispatch(wsConnect());
@@ -28,9 +33,9 @@ const App = React.memo(() => {
   }, [dispatch, connected]);
 
   return (
-    <div>
+    <div style={{marginTop: '35px'}}>
       <ToastContainer />
-      <Spinner loading={previewLoading} />
+      <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />
       <MarketOrderContainer />
       <TrailingLimitOrder />

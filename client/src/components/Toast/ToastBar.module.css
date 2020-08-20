@@ -5,6 +5,7 @@
   align-items: flex-start;
   border-radius: 4px;
   padding: 6px 16px;
+  margin-bottom: 5px;
   padding-right: 50px;
   box-shadow: 2px 2px 3px black;
 }
@@ -21,6 +22,7 @@
 .success_toast {
   color: var(--accentColor);
   background-color: rgb(7, 17, 7);
+  border: 1px solid #317633;
 }
 
 .warning_toast {

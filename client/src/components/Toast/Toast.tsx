@@ -36,7 +36,7 @@ const ToastBar = React.memo(({toastPreset, message}: ToastBarProps) => {
 });
 
 export const ToastContainer = React.memo(() => {
-  return <ToastifyContainer autoClose={3000} closeButton={false} position={'top-center'} />;
+  return <ToastifyContainer autoClose={3000} closeButton={false} position={'top-center'} pauseOnFocusLoss={false} />;
 });
 
 export function showToast(message: string, preset: ToastPreset = 'success') {

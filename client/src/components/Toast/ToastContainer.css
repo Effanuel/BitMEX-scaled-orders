@@ -19,3 +19,28 @@
 .Toastify__toast-container:hover {
   cursor: pointer;
 }
+
+.Toastify__slide-enter--top-center {
+  animation-name: Toastify__slideInDown;
+}
+@keyframes Toastify__slideInDown {
+  from {
+    transform: translate3d(0, -110%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.Toastify__progress-bar {
+  animation: Toastify__trackProgress linear 1;
+}
+@keyframes Toastify__trackProgress {
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
