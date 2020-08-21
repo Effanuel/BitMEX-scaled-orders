@@ -38,7 +38,7 @@ class ButtonDriver extends ComponentDriver<ButtonProps> {
       variant: 'submit',
       disabled: false,
       onClick: jest.fn(),
-      style: null,
+      style: undefined,
       className: '',
     };
     return this.setProps({...defaultProps, ...props});

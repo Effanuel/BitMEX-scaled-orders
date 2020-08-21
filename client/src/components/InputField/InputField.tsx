@@ -22,11 +22,12 @@ type Props = {
 
 function InputField({id, label, value, stop = false, tooltip, placeholder, t_placement = 'top-end', onChange}: Props) {
   const classes = useStyles();
-  const handleFocus = React.useCallback((event: any) => event.target.select(), []);
+  const onFocus = React.useCallback((event: any) => event.target.select(), []);
 
-  const renderTooltip = () => {
-    return (
-      <>
+  return (
+    <FormControl>
+      <div style={{flexDirection: 'row'}}>
+        <label className={classes.label}>{label}</label>
         {tooltip ? (
           <Tooltip
             title={tooltip}
@@ -39,14 +40,6 @@ function InputField({id, label, value, stop = false, tooltip, placeholder, t_pla
             <label style={{color: 'grey', marginLeft: '5px'}}>?</label>
           </Tooltip>
         ) : null}
-      </>
-    );
-  };
-  return (
-    <FormControl>
-      <div style={{flexDirection: 'row'}}>
-        <label className={classes.label}>{label}</label>
-        {renderTooltip()}
       </div>
 
       <TextField
@@ -55,7 +48,7 @@ function InputField({id, label, value, stop = false, tooltip, placeholder, t_pla
         id={id}
         value={value || ''}
         onChange={onChange}
-        onFocus={handleFocus}
+        onFocus={onFocus}
         InputProps={{disableUnderline: true}}
         className={cx({[classes.stop]: stop})}
       />

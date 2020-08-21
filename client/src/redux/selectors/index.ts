@@ -3,7 +3,7 @@ import {createSelector} from 'reselect';
 import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
 import {AppState} from 'redux/store';
 
-interface SymbolPrices {
+export interface SymbolPrices {
   symbol: SYMBOLS;
   askPrice: number;
   bidPrice: number;
@@ -51,7 +51,6 @@ export const trailingOrderStatus = createSelector([getTrailingOrderStatus], (sta
 export const websocketBidAskPrices = createSelector([table_instrument, getTrailingOrderSymbol], (data, symbol):
   | CurrentPrice
   | undefined => {
-  // console.log(data, 'INCD BID  AASK PRICES DATA');
   for (const dataRow of data) {
     if (dataRow.symbol === symbol && dataRow.askPrice && dataRow.bidPrice) {
       return {
@@ -61,8 +60,6 @@ export const websocketBidAskPrices = createSelector([table_instrument, getTraili
     }
   }
   return undefined;
-
-  // return 'Loading...';
 });
 
 export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined => {

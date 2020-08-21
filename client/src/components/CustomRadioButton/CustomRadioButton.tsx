@@ -12,30 +12,22 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface CustomRadioButtonProps {
-  checked?: boolean;
   id: string;
   value: string;
-  label: any;
-  labelPlacement?: any;
+  label: React.ReactNode;
+  checked?: boolean;
+  labelPlacement?: 'end' | 'start' | 'top' | 'bottom';
 }
 
-export function CustomRadioButton({checked, id, value, label, labelPlacement = 'end'}: CustomRadioButtonProps) {
-  const classes = useStyles();
-  return (
-    <FormControlLabel
-      checked={checked}
-      id={id}
-      value={value}
-      className={classes.root}
-      label={label}
-      labelPlacement={labelPlacement}
-      control={<Radio size="small" />}
-    />
-  );
+export function CustomRadioButton(props: CustomRadioButtonProps) {
+  const {root} = useStyles();
+  const controlButton = React.useMemo(() => <Radio size="small" />, []);
+
+  return <FormControlLabel labelPlacement={'end'} className={root} control={controlButton} {...props} />;
 }
 
 interface SideRadioButtonsProps {
-  onChangeRadio: (event: any) => void;
+  onChangeRadio: (event: InputChange, value: string) => void;
   side: SIDE;
 }
 

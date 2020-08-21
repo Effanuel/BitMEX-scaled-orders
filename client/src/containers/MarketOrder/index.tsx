@@ -22,7 +22,7 @@ const MarketOrderContainer = React.memo(() => {
   const [state, setState] = useState(initialState);
 
   const submitMarketOrder = React.useCallback(
-    ({target: {id}}: ButtonChange) => {
+    ({target: {id}}) => {
       dispatch(postMarketOrder({...state, side: id as SIDE}));
     },
     [dispatch, state],

@@ -18,3 +18,4 @@ type PickWithOptional<T, K extends keyof T, O extends keyof T> = {
 
 type InputChange = React.ChangeEvent<HTMLInputElement>;
 type ButtonChange = React.ChangeEvent<HTMLButtonElement>;
+type MouseChange = React.MouseEvent<HTMLButtonElement>;

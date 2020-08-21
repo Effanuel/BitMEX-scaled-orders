@@ -15,12 +15,12 @@ import {
   Order,
   TableData,
 } from './types';
-import axios from 'axios';
 import {connect, disconnect, send} from '@giantmachines/redux-websocket';
 import {Thunk} from '../../models/state';
 import {Reducer} from 'redux';
 import {authKeyExpires} from 'util/auth';
-import {SUBSCRIPTION_TOPICS} from 'util/BitMEX-types';
+import {SUBSCRIPTION_TOPICS, SYMBOLS} from 'util/BitMEX-types';
+import {websocketBaseUrl, instrumentTopics} from './constants';
 
 export const defaultState: WebsocketState = {
   __keys: {},
@@ -111,34 +111,10 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
 
 type Actions = any; //WebsocketActions;
 
-// Actions
-// ==============================
-export const getOrders = (): Thunk => async (dispatch) => {
-  try {
-    const response = await axios.post('/bitmex/getOrders');
-    const {data} = response.data;
-    console.log(data, 'orders data');
-    // const { text } = JSON.parse(data);
-    dispatch(getSuccess(JSON.parse(data)));
-    // dispatch(postOrderSuccess({ success, from: text }));
-    // dispatch(send(authKeyExpires("/realtime", "GET")));
-    // dispatch(send({ op: "subscribe", args: ["order"] }));
-  } catch (err) {
-    console.log(err, 'ERR');
-  }
-};
-
-export const getSuccess = (payload: any): Actions => ({
-  type: FETCH_ORDERS,
-  payload,
-});
-
 export const wsConnect = (): Thunk => async (dispatch) => {
   try {
-    const url = `wss://${
-      process.env.REACT_APP___TESTNET === 'true' ? 'testnet' : 'www'
-    }.bitmex.com/realtime?subscribe=`;
-    const subscribe = 'instrument:XBTUSD,instrument:ETHUSD,instrument:XRPUSD';
+    const url = websocketBaseUrl();
+    const subscribe = instrumentTopics(SYMBOLS.XBTUSD, SYMBOLS.ETHUSD, SYMBOLS.XRPUSD);
     dispatch(connect(`${url}${subscribe}`));
   } catch (err) {
     console.log(err.response.data, 'wsConnect Error');
@@ -171,7 +147,6 @@ export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dis
 
 export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
   try {
-    // TODO DISPATCH LOADER HERE
     dispatch(send({op: 'unsubscribe', args: [payload]}));
   } catch (err) {
     console.log(err.response.data, 'wsUnsubscribe Error');

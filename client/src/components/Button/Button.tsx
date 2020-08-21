@@ -10,9 +10,9 @@ export interface ButtonProps {
   label: string;
   variant?: ButtonVariants;
   disabled?: boolean;
-  onClick: (event: any) => void;
-  style?: any;
-  className?: any;
+  onClick: (event: MouseChange) => void;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
 function Button({id, label, testID, variant = 'submit', disabled, onClick, style, className = ''}: ButtonProps) {
