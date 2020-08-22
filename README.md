@@ -1,6 +1,7 @@
 <p align="center">
-  <img src='assets/presentation_scaled_v5.gif'>
+  <img src="assets/app_4.png">
 </p>
+
 
 ## Table of Contents
 
@@ -15,37 +16,54 @@
 - [License](#license)
 - [Useful material](#useful-material)
 
-<p align="center">
-  <img src="assets/interface_range_tool_v6.png">
-</p>
 
-# BitMEX scaled orders tool
+# BitMEX trading tool
 
 This project is a trading tool based on **BitMEX API** to help you place orders in a range (It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load)).
-_(In the next major update, I'll try to include custom order placement with a stepping stop-loss)_
 
 ### Current Features
 
 - **Scaled orders:**
+  
   - Place up to 30 orders in a range at once _(small order sizes will cause a **spam warning**)_;
-  - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section).
-- **Shows current price:**
+  
+  - **Uniform, Normal, Positive or Negative** order placing distributions; (see [Distributions](#distributions) section);
+  
+  - (Optional) You can also add a stop-loss;
+  
+  - "Preview" displays your scaled order, average entry and possible risk if stop-loss is provided.
+  
+    <p align="center">
+      <img src='assets/scaled.gif'>
+    </p>
+  
+- **Shows current prices:**
+  
   - Based on the latest ask price;
   - Fetched via **Websocket**;
-  - BTC and ETH _(currently)_.
-- **Details table:**
-  - Average entry of scaled orders;
-  - Risk in BTC;
-  - Risk of account balance.
+  - BTC, ETH and XRP (currently)
+  
+- **Market Order:**
+
+  - Place a sell or buy market order;
+  - Faster over using the website.
+
+- **Trailing Order:**
+
+  - Places a trailing limit order near market price
+
+  - The order is ammended automatically, so the order moves with the price if  it doesn't get filled
+
+  - You can use it to get your fills without doing a market order and paying fees, or 
+    you can place push markets *(more advanced)*.
+
+    <p align="center">
+      <img src="assets/trailing-order.gif">
+    </p>
 
 ### Built With
 
-The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap**. _(CCXT is no longer a dependency since v1.2)_
-
-- [Node](https://nodejs.org/en/) + [Express](https://expressjs.com/)
-- [React](https://reactjs.org/) + [Redux](https://redux.js.org/)
-- [React Bootstrap](https://react-bootstrap.github.io/)
-  <!-- GETTING STARTED -->
+The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **React Bootstrap** and **Material UI**.
 
 ## Getting Started
 
@@ -69,21 +87,23 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
-cd Bitmex-scaled-orders-master/api
+cd Bitmex-scaled-orders-master/client
 ```
 
-2. Install NPM packages for client and server:
+2. Enter your API keys in `.env` _(no quotes are needed)_:
 
 ```sh
+REACT_APP___API_KEY = 
+REACT_APP___API_SECRET = 
+REACT_APP___TESTNET = false
+REACT_APP___LOG_LEVEL = info
+```
+
+3.  Install NPM packages for client and server:
+
+```sh
+cd ../api
 npm run init:packages
-```
-
-3. Enter your API keys in `.env` _(no quotes are needed)_:
-
-```
-API_KEY = <API_KEY>
-API_SECRET = <API_SECRET_KEY>
-TESTNET = false
 ```
 
 _**Disclaimer:** You need to set API keys **before building the application**. If you make a typo and only notice after a build, do_</br>
@@ -103,12 +123,13 @@ npm run build
 
 ```sh
 git clone https://github.com/Effanuel/Bitmex-scaled-orders.git
-cd Bitmex-scaled-orders/api
+cd Bitmex-scaled-orders/client
 ```
 
 - Put API keys in `.env`
 
 ```sh
+cd ../api
 npm run init:packages
 npm run build
 npm run prod
@@ -127,7 +148,7 @@ npm run prod
 
 ```sh
 cd Bitmex-scaled-orders/client
-npm test
+npm run unit
 ```
 
 ## Distributions
@@ -142,16 +163,13 @@ This is the formula used to calculate distributions:
 
 ![formula](https://wikimedia.org/api/rest_v1/media/math/render/svg/4abaca87a10ecfa77b5a205056523706fe6c9c3f)
 
-_(The chart representations are symbolic)_ </br>
-_(You can view the code in `client/src/util/index.ts` file)_
+_(Chart representations are symbolic)_ </br>
 
 ## Roadmap
 
-* **Chasing price** for limit orders;
 * **Faster price update**;
 * Stepping stop-loss;
 * Custom order/profit target placement;
-* Market Orders;
 * Bitfinex/Binance API;
 * Easier API setup;
 * Multiple accounts for every platform;
