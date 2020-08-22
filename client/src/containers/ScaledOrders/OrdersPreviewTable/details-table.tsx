@@ -20,7 +20,6 @@ export default function DetailsTable() {
   }
 
   function renderRiskSection() {
-    console.log(riskPerc, 'RISK PERC', !isNaN(riskPerc));
     return riskBTC ? (
       <>
         <tr>

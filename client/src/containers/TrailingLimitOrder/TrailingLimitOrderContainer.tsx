@@ -16,13 +16,13 @@ import styles from './TrailingLimitOrderContainer.module.scss';
 
 interface State {
   symbol: SYMBOLS;
-  orderQty: number;
+  orderQty: number | null;
   side: SIDE;
 }
 
 const initialState: Readonly<State> = {
   symbol: SYMBOLS.XBTUSD,
-  orderQty: 50,
+  orderQty: null,
   side: SIDE.SELL,
 };
 
@@ -32,6 +32,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
   const [state, setState] = useState(initialState);
 
   const {
+    wsTrailingPrice,
     wsCurrentPrice,
     wsBidAskPrices,
     trailOrderId,
@@ -41,6 +42,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
     status,
     connected,
   } = useReduxSelector(
+    'wsTrailingPrice',
     'wsCurrentPrice',
     'wsBidAskPrices',
     'trailOrderId',
@@ -52,13 +54,15 @@ const TrailingLimitOrderContainer = React.memo(() => {
   );
 
   React.useEffect(() => {
-    if (wsCurrentPrice) {
-      const toAmmend = trailOrderSide === 'Sell' ? wsCurrentPrice < trailOrderPrice : wsCurrentPrice > trailOrderPrice;
-      if (trailOrderPrice && toAmmend) {
-        dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsCurrentPrice}));
+    const statuses = ['Filled', 'Canceled', 'Order not placed.'];
+
+    if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
+      const toAmmend = wsTrailingPrice !== trailOrderPrice;
+      if (toAmmend) {
+        dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice}));
       }
     }
-  }, [dispatch, wsCurrentPrice, trailOrderPrice, trailOrderId, trailOrderSide]);
+  }, [dispatch, trailOrderPrice, trailOrderId, trailOrderSide, status, wsTrailingPrice]);
 
   React.useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
@@ -73,9 +77,10 @@ const TrailingLimitOrderContainer = React.memo(() => {
   );
 
   function submitTrailingOrder() {
-    if (trailingOrderPrice) {
+    if (trailingOrderPrice && state.orderQty) {
       const payload = {
         ...state,
+        orderQty: state.orderQty,
         price: trailingOrderPrice,
         side: state.side,
         ordType: ORD_TYPE.Limit,

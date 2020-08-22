@@ -2,6 +2,8 @@
 import {createSelector} from 'reselect';
 import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
 import {AppState} from 'redux/store';
+import {INSTRUMENT_PARAMS} from 'util/index';
+import {parseNumber} from 'general/formatting';
 
 export interface SymbolPrices {
   symbol: SYMBOLS;
@@ -34,11 +36,8 @@ export const getTrailingOrderSymbol = ({trailing: {trailOrderSymbol}}: AppState)
 export const trailingOrderStatusSelector = createSelector(
   [table_order, getTrailingOrderId],
   (open_orders, trailingOrderId) => {
-    console.log('CALL ORDER STATUS', open_orders);
-
     for (let i = 0; i < open_orders.length; i++) {
       if (open_orders[i].orderID === trailingOrderId) {
-        console.log(open_orders[i].ordStatus, 'STATATATAATUS');
         return open_orders[i].ordStatus;
       }
     }
@@ -70,6 +69,20 @@ export const websocketCurrentPrice = createSelector(
   [websocketBidAskPrices, getTrailingOrderSide],
   (bidAskPrices, side): number | undefined => {
     return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
+  },
+);
+
+export const websocketTrailingPriceSelector = createSelector(
+  [websocketBidAskPrices, getTrailingOrderSide, getTrailingOrderSymbol],
+  (bidAskPrices, side, symbol): number | undefined => {
+    if (bidAskPrices?.bidPrice && bidAskPrices.askPrice) {
+      const {decimal_rounding, ticksize} = INSTRUMENT_PARAMS[symbol];
+      const tick = 1 / ticksize;
+      return side === SIDE.SELL
+        ? parseNumber(bidAskPrices.bidPrice + tick, decimal_rounding)
+        : parseNumber(bidAskPrices.askPrice - tick, decimal_rounding);
+    }
+    return undefined;
   },
 );
 

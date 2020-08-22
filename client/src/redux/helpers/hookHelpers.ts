@@ -7,6 +7,7 @@ import {
   trailingOrderStatusSelector,
   websocketBidAskPrices,
   allWebsocketBidAskPrices,
+  websocketTrailingPriceSelector,
 } from 'redux/selectors';
 import {TrailingState} from 'redux/modules/trailing/types';
 import {PreviewState} from 'redux/modules/preview/types';
@@ -17,6 +18,7 @@ type States = TrailingState & PreviewState & WebsocketState;
 
 interface Selectors extends States {
   wsCurrentPrice: ReturnType<typeof websocketCurrentPrice>;
+  wsTrailingPrice: ReturnType<typeof websocketTrailingPriceSelector>;
   wsBidAskPrices: ReturnType<typeof websocketBidAskPrices>;
   allPrices: ReturnType<typeof allWebsocketBidAskPrices>;
   averagePrice: ReturnType<typeof ordersAverageEntrySelector>;
@@ -31,6 +33,7 @@ const buildSelectors = (state: AppState): Selectors => {
   const {trailing, preview, websocket} = state;
   return {
     wsCurrentPrice: websocketCurrentPrice(state),
+    wsTrailingPrice: websocketTrailingPriceSelector(state),
     wsBidAskPrices: websocketBidAskPrices(state),
     allPrices: allWebsocketBidAskPrices(state),
     averagePrice: ordersAverageEntrySelector(state),

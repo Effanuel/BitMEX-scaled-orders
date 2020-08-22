@@ -10,6 +10,7 @@ import {
   websocketCurrentPrice,
   balanceSelector,
   getTrailingOrderSymbol,
+  websocketTrailingPriceSelector,
 } from './index';
 import {ScaledOrders} from '../../util';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
@@ -37,7 +38,7 @@ describe('Selectors', () => {
       const instrument = table_instrument(mockState);
       const wsSymbol = getTrailingOrderSymbol(mockState);
       const result = websocketBidAskPrices.resultFunc(instrument, wsSymbol);
-      expect(result!.askPrice).toEqual(8000);
+      expect(result!.askPrice).toEqual(8011);
       expect(result!.bidPrice).toEqual(8001);
     });
 
@@ -76,8 +77,27 @@ describe('Selectors', () => {
     });
   });
 
+  describe('websocketTrailingPriceSelector', () => {
+    function validateTrailingPrice(symbol: SYMBOLS, side: SIDE) {
+      const instrument = table_instrument(mockState);
+      const bidAskPrices = websocketBidAskPrices.resultFunc(instrument, symbol);
+      return websocketTrailingPriceSelector.resultFunc(bidAskPrices, side, symbol);
+    }
+    it('should calculate with sell side', () => {
+      expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.SELL)).toEqual(8001.5);
+      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.SELL)).toEqual(111.2);
+      expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.SELL)).toEqual(0.1989);
+    });
+
+    it('should calculate with buy side', () => {
+      expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.BUY)).toEqual(8010.5);
+      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.BUY)).toEqual(221.95);
+      expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.BUY)).toEqual(0.237);
+    });
+  });
+
   describe('ordersRiskSelector', () => {
-    it('calculates risk based on average entry for XBTUSD', () => {
+    it('should calculate risk based on average entry for XBTUSD', () => {
       const showPreview = getShowPreview(mockState);
       const orders = getOrders(mockState);
       orders.stop['symbol'] = SYMBOLS.XBTUSD;
