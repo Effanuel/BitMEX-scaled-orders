@@ -90,7 +90,7 @@ const ScaledContainer = React.memo(() => {
             id="stop"
             stop={true}
             t_placement="bottom"
-            tooltip="Price at which to market exit placed contracts."
+            tooltip="(Optional) Price at which to market exit placed contracts."
           />
         </Grid>
       </>

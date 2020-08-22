@@ -13,14 +13,14 @@ export const registeredToasts: RegisteredToasts = {
   [SUCCESS[PREVIEW_POST_MARKET_ORDER].type]: () => {
     showToast('Submitted Market Order');
   },
-  [FAILURE[PREVIEW_POST_MARKET_ORDER].type]: () => {
-    showToast('Error Submitting Market Order', 'error');
+  [FAILURE[PREVIEW_POST_MARKET_ORDER].type]: (store: Store<AppState>, action: Action) => {
+    showToast(`Market order: ${action.payload}`, 'error');
   },
   [SUCCESS[PREVIEW_POST_ORDER].type]: () => {
     showToast('Submitted Scaled Orders');
   },
-  [FAILURE[PREVIEW_POST_ORDER].type]: () => {
-    showToast('Error Submitting Scaled Orders', 'error');
+  [FAILURE[PREVIEW_POST_ORDER].type]: (store: Store<AppState>, action: Action) => {
+    showToast(`Scaled orders: ${action.payload}`, 'error');
   },
   [SUCCESS[POST_TRAILING_ORDER].type]: (store: Store<AppState>, action: Action) => {
     const {text, price, success} = action.payload;
@@ -30,7 +30,7 @@ export const registeredToasts: RegisteredToasts = {
     const toastDisplay: {message: string; preset: ToastPreset} =
       isOrderSubmitted && isOrderPlaced
         ? {message: `Trailing Order placed  at ${price}`, preset: 'success'}
-        : {message: `Trailing Order was cancelled`, preset: 'warning'};
+        : {message: `Trailing order: Post only - order cancelled.`, preset: 'warning'};
 
     showToast(toastDisplay.message, toastDisplay.preset);
   },
@@ -45,5 +45,8 @@ export const registeredToasts: RegisteredToasts = {
   },
   [FAILURE[PUT_TRAILING_ORDER].type]: () => {
     showToast('Order ammending error.', 'error');
+  },
+  [FAILURE[PREVIEW_POST_ORDER].type]: (store: Store<AppState>, action: Action) => {
+    showToast(action.payload, 'error');
   },
 };

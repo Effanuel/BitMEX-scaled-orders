@@ -8,12 +8,12 @@ import {SYMBOLS, SIDE} from 'util/BitMEX-types';
 
 interface State {
   symbol: SYMBOLS;
-  orderQty: number;
+  orderQty: number | null;
 }
 
 const initialState: Readonly<State> = {
   symbol: SYMBOLS.XBTUSD,
-  orderQty: 50,
+  orderQty: null,
 };
 
 const MarketOrderContainer = React.memo(() => {
@@ -23,7 +23,9 @@ const MarketOrderContainer = React.memo(() => {
 
   const submitMarketOrder = React.useCallback(
     ({target: {id}}) => {
-      dispatch(postMarketOrder({...state, side: id as SIDE}));
+      if (state.orderQty) {
+        dispatch(postMarketOrder({symbol: state.symbol, orderQty: state.orderQty, side: id as SIDE}));
+      }
     },
     [dispatch, state],
   );

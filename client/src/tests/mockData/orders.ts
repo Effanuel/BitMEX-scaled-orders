@@ -20,9 +20,9 @@ export const mockCreateOrder = (overrides?: Partial<Order>): Order => ({
 });
 
 export const mockInstrumentData: Partial<Instrument>[] = [
-  {symbol: 'XBTUSD', askPrice: 8000, bidPrice: 8001},
-  {symbol: 'ETHUSD', askPrice: 111, bidPrice: 8001},
-  {symbol: 'XRPUSD', askPrice: 0.2, bidPrice: 8001},
+  {symbol: 'XBTUSD', askPrice: 8011, bidPrice: 8001},
+  {symbol: 'ETHUSD', askPrice: 222, bidPrice: 111.15},
+  {symbol: 'XRPUSD', askPrice: 0.2371, bidPrice: 0.1988},
 ];
 
 export const mockScaledOrders: ScaledOrders = {

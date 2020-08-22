@@ -3,11 +3,13 @@ import {logger} from './logger';
 const error_400_handler = (error: any): string => {
   const response_error = JSON.parse(error).error;
   const response_message = response_error ? response_error.message.toLowerCase() : '';
+  console.warn('Error handler response message: ', response_message);
   const error_messages: {[key: string]: string} = {
     'duplicate clordid': 'Duplicate order.',
     'insufficient available balance': 'Insufficient funds.',
     'missing api key': 'Missing API key.',
     spam: 'Spam: quantity is too low.',
+    'invalid orderqty': 'Invalid quantity.',
     'immediate liquidation': 'Executing would lead to immediate liquidation.',
     'order price is below': 'Order price is out of range of liquidation price.',
     'order price is above': 'Order price is out of range of liquidation price.',

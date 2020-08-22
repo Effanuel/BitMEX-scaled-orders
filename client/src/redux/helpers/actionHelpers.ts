@@ -1,8 +1,7 @@
 import {createAction, ActionCreatorWithPreparedPayload, ActionCreatorWithoutPayload} from '@reduxjs/toolkit';
-import _ from 'lodash/fp';
 import {Thunk} from 'redux/models/state';
 import {ACTIONS_preview, API_ACTIONS_preview} from 'redux/modules/preview/types';
-import {ACTIONS_trailing, POST_TRAILING_ORDER} from 'redux/modules/trailing/types';
+import {ACTIONS_trailing} from 'redux/modules/trailing/types';
 
 export const withPayloadType = <T>() => (payload: T) => ({payload});
 
@@ -41,18 +40,14 @@ export const callAPI = <M extends (payload: P) => any, P>(
   apiPayload: P,
   moreData = {},
 ): Thunk => async (dispatch) => {
-  console.log('SEN', actionName);
   try {
-    console.log('DISPATCH REQUEST');
     dispatch(REQUEST[actionName]());
 
     const data = await apiMethod(apiPayload);
     const payload = {...data, ...moreData};
-    console.log('DISPATCH AFTER SEND API', payload);
 
     dispatch(SUCCESS[actionName](payload));
   } catch (err) {
-    console.log('err: ', err);
     const payload: string = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
     dispatch(FAILURE[actionName](payload));
   }

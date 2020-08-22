@@ -1,7 +1,7 @@
 import * as _ from 'lodash/fp';
 import {orderType, SYMBOLS, SIDE, ORD_TYPE, EXEC_INST} from './BitMEX-types';
 import {skewedProbabilityMap, uniformProbabilityMap} from './mathHelpers';
-import {tickerRound} from '../general/formatting';
+import {tickerRound, parseNumber} from '../general/formatting';
 
 type InstrumentParams = {
   [key in SYMBOLS]: {
@@ -18,8 +18,8 @@ export enum DISTRIBUTIONS {
 }
 
 export const INSTRUMENT_PARAMS: InstrumentParams = {
-  XBTUSD: {decimal_rounding: 3, ticksize: 2},
-  ETHUSD: {decimal_rounding: 3, ticksize: 20},
+  XBTUSD: {decimal_rounding: 1, ticksize: 2},
+  ETHUSD: {decimal_rounding: 2, ticksize: 20},
   XRPUSD: {decimal_rounding: 4, ticksize: 10000},
 };
 
@@ -69,7 +69,7 @@ const Normal = (distrProps: DistributionProps): ScaledOrders => skewedDistributi
  * @param {number} END_CFG is a parameter for gaussian()
  * @param {number} mean of placed orders (not average)
  * @param {boolean} isSkewed indicates if its Uniform or not
- * @returns {object} Object of orders array and stop(if any)
+ * @returns {object} Object of orders array and optional stop
  */
 const skewedDistribution = (
   distributionProps: DistributionProps,
@@ -94,13 +94,12 @@ const skewedDistribution = (
   const totalOrders: ScaledOrders = {orders: [], stop: {}};
 
   for (let i = 0; i < n_tp; i++) {
-    //ROUND
     totalOrders.orders.push(
       createOrder({
         symbol: symbol,
         side: side,
         orderQty: Math.floor((probabilityDistribution[i] / totalProbability) * orderQty),
-        price: parseFloat((start_ + i * incrPrice).toFixed(decimal_rounding)),
+        price: parseNumber(start_ + i * incrPrice, decimal_rounding),
         ordType: ORD_TYPE.Limit,
         text: `order_${i + 1}`,
       }),
@@ -131,7 +130,7 @@ type StopLoss = Pick<orderType, 'symbol' | 'orderQty' | 'side' | 'stopPx' | 'ord
 
 const createStopLoss = ({orderQty, stop, symbol, side}: StopLossProps) => {
   const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
-  const stopPx = parseFloat(tickerRound(stop, symbol).toFixed(decimal_rounding));
+  const stopPx = parseNumber(tickerRound(stop, symbol), decimal_rounding);
   const execInst = [EXEC_INST.LastPrice, EXEC_INST.ReduceOnly].join(',');
   const stopSide = side === SIDE.BUY ? SIDE.SELL : SIDE.BUY;
 

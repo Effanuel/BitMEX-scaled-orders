@@ -63,7 +63,8 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
     const message = response['success'] ? 'Successful subscription.' : 'Error while subscribing...';
     return {...state, message};
   } else if (responseKeys.includes('status')) {
-    console.log('ERROR  RESPONSE', response);
+    // eslint-disable-next-line no-console
+    console.warn('Websocket error response: ', response);
     const message = `Websocket. Status: ${(response as any).status || 'Error'}`;
     return {...state, message};
   } else if (ws_action) {
@@ -102,7 +103,8 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
     }
   } else if (responseKeys.includes('unsubscribe')) {
     const {[response.unsubscribe]: _deleted, ...rest} = state.__keys;
-    console.log('UNSUBSCRIBED', rest, response.unsubscribe);
+    // eslint-disable-next-line no-console
+    console.warn('UNSUBSCRIBED: ', rest, response.unsubscribe);
 
     return {...state, __keys: rest};
   }
@@ -117,6 +119,7 @@ export const wsConnect = (): Thunk => async (dispatch) => {
     const subscribe = instrumentTopics(SYMBOLS.XBTUSD, SYMBOLS.ETHUSD, SYMBOLS.XRPUSD);
     dispatch(connect(`${url}${subscribe}`));
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err.response.data, 'wsConnect Error');
   }
 };
@@ -125,6 +128,7 @@ export const wsDisconnect = (): Thunk => async (dispatch) => {
   try {
     dispatch(disconnect());
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err.response.data, 'wsDisconnect Error');
   }
 };
@@ -133,6 +137,7 @@ export const wsAuthenticate = (): Thunk => async (dispatch) => {
   try {
     dispatch(send(authKeyExpires('/realtime', 'GET')));
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err.response.data, 'wsAuthenticate error');
   }
 };
@@ -141,6 +146,7 @@ export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dis
   try {
     dispatch(send({op: 'subscribe', args: [payload]}));
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err.response.data, 'wsSubscribe Error');
   }
 };
@@ -149,6 +155,7 @@ export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async 
   try {
     dispatch(send({op: 'unsubscribe', args: [payload]}));
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err.response.data, 'wsUnsubscribe Error');
   }
 };

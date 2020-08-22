@@ -1,5 +1,6 @@
 import * as formatting from './formatting';
 import {SYMBOLS} from '../util/BitMEX-types';
+import {INSTRUMENT_PARAMS} from 'util/index';
 
 describe('formatPrice()', () => {
   const {formatPrice} = formatting;
@@ -36,5 +37,34 @@ describe('tickerRound()', () => {
     expect(tickerRound(2.1234599, symbol)).toEqual(2.1235);
     expect(tickerRound(3.4234099, symbol)).toEqual(3.4234);
     expect(tickerRound(4.7234599, symbol)).toEqual(4.7235);
+  });
+});
+
+describe('parseNumber()', () => {
+  const {parseNumber} = formatting;
+  it('should format XBTUSD', () => {
+    const symbol = SYMBOLS.XBTUSD;
+    const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
+
+    expect(parseNumber(1_111.18999, decimal_rounding)).toEqual(1111.2);
+    expect(parseNumber(2_222.49999, decimal_rounding)).toEqual(2222.5);
+    expect(parseNumber(3_333.79999, decimal_rounding)).toEqual(3333.8);
+  });
+
+  it('should format ETHUSD', () => {
+    const symbol = SYMBOLS.ETHUSD;
+    const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
+    expect(parseNumber(111.19399, decimal_rounding)).toEqual(111.19);
+    expect(parseNumber(222.40999, decimal_rounding)).toEqual(222.41);
+    expect(parseNumber(333.7111, decimal_rounding)).toEqual(333.71);
+  });
+
+  it('should format XRPUSD', () => {
+    const symbol = SYMBOLS.XRPUSD;
+    const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
+
+    expect(parseNumber(2.1234599, decimal_rounding)).toEqual(2.1235);
+    expect(parseNumber(3.4234099, decimal_rounding)).toEqual(3.4234);
+    expect(parseNumber(4.7234599, decimal_rounding)).toEqual(4.7235);
   });
 });
