@@ -1,9 +1,10 @@
 import * as _ from 'lodash/fp';
 import {orderType, SYMBOLS, SIDE, ORD_TYPE, EXEC_INST} from './BitMEX-types';
 import {skewedProbabilityMap, uniformProbabilityMap} from './mathHelpers';
+import {tickerRound} from '../general/formatting';
 
 type InstrumentParams = {
-  [K in SYMBOLS]: {
+  [key in SYMBOLS]: {
     decimal_rounding: number;
     ticksize: number;
   };
@@ -16,7 +17,7 @@ export enum DISTRIBUTIONS {
   Negative = 'Negative',
 }
 
-const INSTRUMENT_PARAMS: InstrumentParams = {
+export const INSTRUMENT_PARAMS: InstrumentParams = {
   XBTUSD: {decimal_rounding: 3, ticksize: 2},
   ETHUSD: {decimal_rounding: 3, ticksize: 20},
   XRPUSD: {decimal_rounding: 4, ticksize: 10000},
@@ -148,9 +149,3 @@ export const amendOrder = (props: AmendOrder): AmendOrder => ({...props});
 
 type DeleteOrder = Pick<orderType, 'orderID'>;
 export const deleteOrder = (props: DeleteOrder) => ({...props});
-
-const tickerRound = (number: number, symbol: SYMBOLS): number => {
-  // Ticksize - 1 divided by this number
-  const {ticksize} = INSTRUMENT_PARAMS[symbol];
-  return Math.round(number * ticksize) / ticksize;
-};
