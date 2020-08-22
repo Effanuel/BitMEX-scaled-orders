@@ -152,14 +152,14 @@ const TrailingLimitOrderContainer = React.memo(() => {
       <>
         <Grid item xs={4}>
           <div style={{flexDirection: 'column', display: 'flex'}}>
-            <span style={{color: 'white'}}>Best order status: </span>
+            <span style={{color: 'white'}}>Trail order status: </span>
             <span style={{color: 'green'}}>{trailOrderStatus}</span>
           </div>
         </Grid>
         <Grid item xs={4}>
           {trailOrderPrice ? (
             <div style={{flexDirection: 'column', display: 'flex'}}>
-              <div style={{color: 'white'}}>Best order price: </div>
+              <div style={{color: 'white'}}>Trail order price: </div>
               <div style={{color: 'green'}}>{trailOrderPrice}</div>
             </div>
           ) : null}
