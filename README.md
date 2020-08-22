@@ -34,7 +34,7 @@ This project is a trading tool based on **BitMEX API** to help you place orders 
   - "Preview" displays your scaled order, average entry and possible risk if stop-loss is provided.
   
     <p align="center">
-      <img src='assets/scaled.gif'>
+      <img src='assets/place-scaled.gif'>
     </p>
   
 - **Shows current prices:**
