@@ -19,7 +19,7 @@
 
 # BitMEX trading tool
 
-This project is a trading tool based on **BitMEX API** to help you place orders in a range (It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load)).
+This project is a trading tool based on **BitMEX API** (It can also be used to overcome the overload feature on the website (although sometimes API's also get suspended due to high load)). This project has a long way to go before becoming an actual usable tool. If you notice any bugs, open an issue.
 
 ### Current Features
 
