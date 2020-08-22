@@ -1,0 +1,51 @@
+@import '../../scss/root.module.scss';
+@import '../../scss/colors.module.scss';
+
+.select_dropdown label {
+  color: var(--white60); /*grey*/
+  /*  font-size: calc(0.5em + 0.5vw);*/
+  font-size: 14px;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.select_dropdown select {
+  background-color: var(--primaryColor);
+  color: rgba(255, 255, 255, 0.87);
+
+  border: 1px solid var(--white60);
+  border-radius: 2px;
+  height: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  outline: none;
+  /* this is must */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.select_dropdown select:focus {
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  border: 1px solid var(--accentColor);
+}
+
+.select_dropdown select:disabled {
+  color: var(--white60);
+  background-color: var(--white38);
+}
+
+select::-ms-expand {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}

@@ -1,0 +1,37 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "parser": "@typescript-eslint/parser",
+
+  "plugins": ["@typescript-eslint", "jest"],
+  "extends": ["prettier", "plugin:@typescript-eslint/recommended", "plugin:jest/recommended"],
+  "rules": {
+    "no-const-assign": "error",
+    "semi": "error",
+    "eol-last": "error",
+    "jest/no-focused-tests": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "args": "none", "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
+    ]
+  },
+  "env": {
+    "jest": true,
+    "node": true
+  }
+  //   "globals": {
+  //     "sinon": true,
+  //     "expect": true
+  //   }
+}

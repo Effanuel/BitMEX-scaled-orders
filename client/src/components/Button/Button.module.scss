@@ -1,0 +1,113 @@
+.button,
+.button_sell,
+.button_buy {
+  font-size: 14px;
+
+  color: white;
+  background-color: var(--primaryColor);
+  border-radius: 2px;
+  padding: 5px 5px;
+  /* align-items: flex-start; */
+  width: 120px;
+}
+.text_sell,
+.text_button {
+  font-size: 14px;
+  background-color: transparent;
+  border: none;
+}
+
+.text_button {
+  color: var(--accentColor);
+}
+
+.text_sell {
+  color: var(--stopColor);
+}
+
+.text_sell:disabled,
+.text_button:disabled {
+  color: var(--white38);
+}
+
+.text_sell:focus:enabled,
+.text_button:focus:enabled {
+  outline: none;
+}
+
+.text_button:hover:enabled {
+  background-color: unset !important;
+  text-decoration: none;
+  color: #41e87a;
+}
+
+.text_sell:hover:enabled {
+  background-color: unset !important;
+  text-decoration: none;
+  color: #ff93a7;
+}
+
+* .button {
+  background-color: var(--primaryColor);
+  color: white;
+  border: 1px solid var(--accentColor);
+  border-radius: 2px;
+  padding: 3px 25px;
+}
+
+.button:focus:enabled {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.button:hover:enabled {
+  background-color: #203821;
+}
+
+.button:disabled {
+  color: var(--white60);
+  background-color: var(--white38);
+  border: 1px solid var(--white38);
+  cursor: default;
+}
+
+/**/
+.button_sell {
+  border: 1px solid rgb(245, 157, 172);
+}
+
+.button_buy {
+  border: 1px solid var(--accentColor);
+}
+
+.button_sell:focus:enabled,
+.button_buy:focus:enabled {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.button_buy:hover:enabled {
+  background-color: #203821;
+}
+.button_sell:hover:enabled {
+  background-color: var(--stopColor);
+}
+
+.button:disabled,
+.button_sell:disabled,
+.button_buy:disabled {
+  color: var(--white60);
+  background-color: var(--white38);
+  border: 1px solid var(--white38);
+  cursor: default;
+}
+
+@media only screen and (max-width: 600px) {
+  .button,
+  .button_sell,
+  .button_buy {
+    font-size: 12px;
+  }
+}

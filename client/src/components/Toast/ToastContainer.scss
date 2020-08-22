@@ -1,0 +1,46 @@
+.Toastify__toast-container {
+  z-index: 9999;
+  position: fixed;
+  width: auto;
+  box-sizing: border-box;
+  -webkit-transform: translate3d(0, 0, 9999px);
+  transform: translate3d(0, 0, 9999px);
+}
+.Toastify__toast-container--top-left {
+  top: 1em;
+  left: 1em;
+}
+.Toastify__toast-container--top-center {
+  top: 1em;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.Toastify__toast-container:hover {
+  cursor: pointer;
+}
+
+.Toastify__slide-enter--top-center {
+  animation-name: Toastify__slideInDown;
+}
+@keyframes Toastify__slideInDown {
+  from {
+    transform: translate3d(0, -110%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.Toastify__progress-bar {
+  animation: Toastify__trackProgress linear 1;
+}
+@keyframes Toastify__trackProgress {
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}

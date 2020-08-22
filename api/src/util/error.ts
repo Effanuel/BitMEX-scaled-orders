@@ -1,64 +1,46 @@
-import { logger } from "./logger";
+import {logger} from './logger';
 
-export const ErrorHandler = (error: any) => {
-  logger.debug(error.message);
+const error_400_handler = (error: any): string => {
+  const response_error = JSON.parse(error).error;
+  const response_message = response_error ? response_error.message.toLowerCase() : '';
+  console.warn('Error handler response message: ', response_message);
+  const error_messages: {[key: string]: string} = {
+    'duplicate clordid': 'Duplicate order.',
+    'insufficient available balance': 'Insufficient funds.',
+    'missing api key': 'Missing API key.',
+    spam: 'Spam: quantity is too low.',
+    'invalid orderqty': 'Invalid quantity.',
+    'immediate liquidation': 'Executing would lead to immediate liquidation.',
+    'order price is below': 'Order price is out of range of liquidation price.',
+    'order price is above': 'Order price is out of range of liquidation price.',
+  };
+  for (const match in error_messages) {
+    if (response_message.includes(match)) {
+      // startswith TODO
+      return error_messages[match];
+    }
+  }
+  return 'Unhandled Error';
+};
+
+export const ErrorHandler = ({message, statusCode, error}: any) => {
+  logger.debug(message);
   const errorMessage = ((statusCode: number): string => {
     switch (statusCode) {
       case 401:
-        return "API Key or Secret incorrect, please check and restart.";
+        return 'API Key or Secret incorrect, please check and restart.';
       case 404:
-        return "Unable to contact the BitMEX API (404).";
+        return 'Unable to contact the BitMEX API (404).';
       case 429:
-        return "Ratelimited on current request";
+        return 'Ratelimited on current request';
       case 503:
-        return "Unable to contact BitMEX";
+        return 'Unable to contact BitMEX';
       case 400:
-        const response_error = JSON.parse(error.error).error;
-        const response_message = response_error
-          ? response_error.message.toLowerCase()
-          : "";
-        if (response_message.includes("duplicate clordid")) {
-          return "Duplicate order";
-        } else if (
-          response_message.includes("insufficient available balance")
-        ) {
-          return "Insufficient funds.";
-        } else if (response_message.includes("missing api key")) {
-          return "Missing API key.";
-        } else if (response_message.includes("spam")){
-          return "Spam: quantity is too low.";
-        }
-
+        return error_400_handler(error);
       default:
-        return "Error::Default";
+        return 'Error::Default';
     }
-  })(error.statusCode);
-  logger.log("error", errorMessage);
+  })(statusCode);
+  logger.log('error', errorMessage);
   return errorMessage;
 };
-
-// if (error.statusCode == 401) {
-//     throw "API Key or Secret incorrect, please check and restart.";
-//   } else if (error.statusCode == 404) {
-//     if (verb == "DELETE") {
-//       throw "Order to delete not found";
-//     }
-//     throw "Unable to contact the BitMEX API (404).";
-//   } else if (error.statusCode == 429) {
-//     throw "Ratelimited on current request";
-//   } else if (error.statusCode == 503) {
-//     throw "Unable to contact BitMEX";
-//   } else if (error.statusCode == 400) {
-//     const response_error = JSON.parse(error.error).error;
-//     const response_message = response_error
-//       ? response_error.message.toLowerCase()
-//       : "";
-//     if (response_message.includes("duplicate clordid")) {
-//       throw "Duplicate";
-//     } else if (response_message.includes("insufficient available balance")) {
-//       throw "insufficient funds";
-//     }
-//     console.log(error);
-
-//     throw "Error";
-//   }

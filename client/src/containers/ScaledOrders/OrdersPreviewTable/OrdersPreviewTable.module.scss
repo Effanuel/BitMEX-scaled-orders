@@ -1,0 +1,17 @@
+@import '../../../scss/colors.module.scss';
+
+.preview_container,
+.details_container {
+  border: 1px solid grey;
+  border-radius: 2px;
+  box-shadow: 3px 3px 5px black;
+}
+
+.details_container {
+  height: 100%;
+}
+
+.main_container {
+  padding: 0px;
+  overflow: hidden;
+}

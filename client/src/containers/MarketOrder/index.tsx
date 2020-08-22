@@ -1,90 +1,68 @@
-import React from "react";
-// REDUX
-import { marketOrder } from "../../redux/modules/preview/preview";
-import { useDispatch } from "react-redux";
-// COMPONENTS
-import {
-  MainContainer,
-  SelectDropdown,
-  InputField,
-  Button
-} from "../../components";
-import Grid from "@material-ui/core/Grid";
-// STYLES
-import styles from "./styles.module.css";
+import React, {useState} from 'react';
+import Grid from '@material-ui/core/Grid';
+import {useDispatch} from 'react-redux';
+import {postMarketOrder} from 'redux/modules/preview';
+import {MainContainer, SelectDropdown, InputField, Button} from 'components';
+import styles from './styles.module.scss';
+import {SYMBOLS, SIDE} from 'util/BitMEX-types';
 
-export interface Props {}
+interface State {
+  symbol: SYMBOLS;
+  orderQty: number | null;
+}
 
-const initialState = Object.freeze({
-  symbol: "XBTUSD",
-  quantity: ""
-});
+const initialState: Readonly<State> = {
+  symbol: SYMBOLS.XBTUSD,
+  orderQty: null,
+};
 
-function MarketOrderContainer(props: Props) {
+const MarketOrderContainer = React.memo(() => {
   const dispatch = useDispatch();
 
-  const [state, setState] = React.useState(initialState);
+  const [state, setState] = useState(initialState);
 
-  function submitMarketOrder(event: any) {
-    dispatch(marketOrder({ ...state, side: event.target.id }));
+  const submitMarketOrder = React.useCallback(
+    ({target: {id}}) => {
+      if (state.orderQty) {
+        dispatch(postMarketOrder({symbol: state.symbol, orderQty: state.orderQty, side: id as SIDE}));
+      }
+    },
+    [dispatch, state],
+  );
+
+  function onChange({target: {id, value, tagName}}: InputChange): void {
+    const updated = tagName === 'INPUT' ? +value : value;
+    setState((prevState) => ({...prevState, [id]: updated}));
   }
 
-  function handleOnChangeNumber(
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void {
-    const { id, value } = event.target;
-    setState(prevState => ({ ...prevState, [id]: parseFloat(value) }));
-  }
-  function handleOnChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    const { value, id } = event.target;
-    setState(prevState => ({
-      ...prevState,
-      [id]: value
-    }));
-  }
   return (
-    <MainContainer label="MarkerOrder">
-      <Grid container spacing={2} justify="center" alignItems="center">
-        <Grid item xs={3}>
-          <SelectDropdown
-            instruments={["XBTUSD", "ETHUSD", "XRPUSD"]}
-            id="symbol"
-            onChange={handleOnChange}
-            label="Instrument"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <InputField
-            onChange={handleOnChangeNumber}
-            value={state.quantity}
-            label="Quantity"
-            id="quantity"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <Button
-            id="Buy"
-            variant="custom"
-            className={styles.button_buy}
-            onClick={submitMarketOrder}
-            disabled={!state.quantity}
-          >
-            MARKET Buy
-          </Button>
-        </Grid>
-        <Grid item xs={3}>
-          <Button
-            id="Sell"
-            variant="custom"
-            className={styles.button_sell}
-            onClick={submitMarketOrder}
-            disabled={!state.quantity}
-          >
-            MARKET Sell
-          </Button>
-        </Grid>
+    <MainContainer label="MarkerOrder" description="Place a market order">
+      <Grid item xs={3}>
+        <SelectDropdown id="symbol" onChange={onChange} label="Instrument" />
+      </Grid>
+      <Grid item xs={3}>
+        <InputField onChange={onChange} value={state.orderQty} label="Quantity" id="orderQty" />
+      </Grid>
+      <Grid item xs={3} className={styles.top_row}>
+        <Button
+          id="Buy"
+          label="MARKET Buy"
+          variant="buy"
+          onClick={submitMarketOrder}
+          disabled={!state.orderQty || state.orderQty > 20e6}
+        />
+      </Grid>
+      <Grid item xs={3} className={styles.top_row}>
+        <Button
+          id="Sell"
+          label="MARKET Sell"
+          variant="sell"
+          onClick={submitMarketOrder}
+          disabled={!state.orderQty || state.orderQty > 20e6}
+        />
       </Grid>
     </MainContainer>
   );
-}
-export { MarketOrderContainer };
+});
+
+export default MarketOrderContainer;
