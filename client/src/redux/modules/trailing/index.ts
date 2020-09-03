@@ -1,6 +1,5 @@
 import {createReducer, createAction} from '@reduxjs/toolkit';
-import {SUCCESS, REQUEST, FAILURE, callAPI, withPayloadType} from 'redux/helpers/actionHelpers';
-import {BitMEX_API} from 'redux/helpers/apiHelpers';
+import {withPayloadType, createThunk} from 'redux/helpers/actionHelpers';
 import {SIDE, ORD_TYPE, SYMBOLS} from 'util/BitMEX-types';
 import {
   TrailingState,
@@ -21,25 +20,34 @@ export const defaultState: TrailingState = {
 };
 
 export const __clearTrailingOrder = createAction(__CLEAR_TRAILING_ORDER);
+
 export const changeTrailingOrderSymbol = createAction(CHANGE_TRAILING_ORDER_SYMBOL, withPayloadType<SYMBOLS>());
+
+export const postTrailingOrder = createThunk(POST_TRAILING_ORDER, 'postTrailingOrder'); // TODO ADD {side: rposp.side}
+
+type AmmendTrailingOrderProps = {orderID: string; price: number};
+export const ammendTrailingOrder = createThunk<AmmendTrailingOrderProps>(PUT_TRAILING_ORDER, 'putTrailingOrder');
+
+export const cancelTrailingOrder = createThunk<{orderID: string}>(DELETE_TRAILING_ORDER, 'deleteTrailingOrder');
 
 export const trailingReducer = createReducer(defaultState, (builder) =>
   builder
-    .addCase(SUCCESS[POST_TRAILING_ORDER], (state, action) => postTrailingOrderReducer(state, action))
-    .addCase(SUCCESS[PUT_TRAILING_ORDER], (state, {payload}) => {
-      return {...state, trailLoading: false, trailOrderPrice: payload.price};
-    })
-    .addCase(SUCCESS[DELETE_TRAILING_ORDER], () => defaultState)
-    .addCase(FAILURE[POST_TRAILING_ORDER], (state) => {
+    .addCase(postTrailingOrder.fulfilled.type, (state, action) => postTrailingOrderReducer(state, action))
+    .addCase(postTrailingOrder.rejected.type, (state) => {
       return {...state, trailLoading: false, trailOrderStatus: 'Order posting error.'};
     })
-    .addCase(FAILURE[PUT_TRAILING_ORDER], (state) => {
-      return {...state, trailLoading: false, trailOrderStatus: 'Order ammending error'};
-    })
-    .addCase(FAILURE[DELETE_TRAILING_ORDER], () => defaultState)
-    .addCase(REQUEST[POST_TRAILING_ORDER], (state) => {
+    .addCase(postTrailingOrder.pending.type, (state) => {
       state.trailLoading = true;
     })
+    .addCase(ammendTrailingOrder.fulfilled.type, (state, {payload}: any) => {
+      return {...state, trailLoading: false, trailOrderPrice: payload.price};
+    })
+
+    .addCase(ammendTrailingOrder.rejected.type, (state) => {
+      return {...state, trailLoading: false, trailOrderStatus: 'Order ammending error'};
+    })
+    .addCase(cancelTrailingOrder.fulfilled.type, () => defaultState)
+    .addCase(cancelTrailingOrder.rejected.type, () => defaultState)
     .addCase(__clearTrailingOrder, () => defaultState)
     .addCase(changeTrailingOrderSymbol, (state, {payload}) => {
       state.trailOrderSymbol = payload;
@@ -56,8 +64,6 @@ const postTrailingOrderReducer = (state = defaultState, action: Action): Trailin
   return {...state, ...response, trailLoading: false, trailOrderSide: side};
 };
 
-const API = new BitMEX_API();
-
 export interface PostTrailingOrderProps {
   symbol: SYMBOLS;
   orderQty: number;
@@ -66,12 +72,3 @@ export interface PostTrailingOrderProps {
   ordType: ORD_TYPE;
   text: string;
 }
-
-export const postTrailingOrder = (props: PostTrailingOrderProps) =>
-  callAPI(POST_TRAILING_ORDER, API.postTrailingOrder, props, {side: props.side});
-
-export const ammendTrailingOrder = (props: {orderID: string; price: number}) =>
-  callAPI(PUT_TRAILING_ORDER, API.putTrailingOrder, props, {});
-
-export const cancelTrailingOrder = (props: {orderID: string}) =>
-  callAPI(DELETE_TRAILING_ORDER, API.deleteTrailingOrder, props, {});
