@@ -189,4 +189,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - [BitMEX Survival Guide](https://www.crypto-simplified.com/wp-content/uploads/2018/09/BitMEX-Survival-Guide-v1.5.pdf)
 - [Crypto news](https://cointelegraph.com/)
 - [BitMEX position calculator](https://blockchainwhispers.com/bitmex-position-calculator/)
-- [Crypto sentiment/statistics tool](https://thetie.io/)
+
