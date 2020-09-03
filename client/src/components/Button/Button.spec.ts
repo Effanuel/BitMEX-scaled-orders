@@ -1,5 +1,5 @@
-import {ComponentDriver} from 'react-component-driver';
 import {Button, ButtonProps, ButtonVariants} from './Button';
+import {ComponentDriver} from 'tests/driver';
 
 describe('ButtonDriver', () => {
   let driver: ButtonDriver;
@@ -13,6 +13,7 @@ describe('ButtonDriver', () => {
     ['text', 'text_button'],
     ['buy', 'button_buy'],
     ['sell', 'button_sell'],
+    ['textSell', 'text_sell'],
   ])('should return %s className for %s variant', (variant, expectedClassName) => {
     const drv = driver.withDefaultProps({variant: variant as ButtonVariants}).render();
     expect(drv.getButtonClassName()).toEqual(expectedClassName);
@@ -23,9 +24,18 @@ describe('ButtonDriver', () => {
 
     expect(drv.getButtonClassName()).toEqual('abc');
   });
+
+  it('should pass id on button click', () => {
+    const onClick = jest.fn();
+    const drv = driver.withDefaultProps({onClick}).render();
+
+    drv.pressButton();
+    expect(onClick).toHaveBeenCalledWith({target: {id: 'default:id'}});
+  });
 });
 
-class ButtonDriver extends ComponentDriver<ButtonProps> {
+// eslint-disable-next-line jest/no-export
+export class ButtonDriver extends ComponentDriver<ButtonProps> {
   constructor() {
     super(Button);
   }
@@ -44,12 +54,17 @@ class ButtonDriver extends ComponentDriver<ButtonProps> {
     return this.setProps({...defaultProps, ...props});
   }
 
-  getButton() {
-    if (this.props.testID) return this.getByID(this.props!.testID);
-    return null;
+  pressButton() {
+    const node: any = this.getComponent();
+    if (node) {
+      node.props.onClick({target: {id: this.props.id}});
+      return this;
+    }
+
+    throw new Error('Cant find button');
   }
 
   getButtonClassName() {
-    return this.getButton()?.props.className;
+    return (this.getComponent() as any).props.className;
   }
 }

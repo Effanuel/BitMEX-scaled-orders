@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './styles.module.scss';
+import {COMPONENTS} from 'data-test-ids';
 
-interface Props {
+export interface Props {
   id: string;
   label: string;
   onChange: (event: any) => void;
@@ -21,7 +22,13 @@ function SelectDropdown({id, label, onChange, disabled = false}: Props) {
     <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>
 
-      <select disabled={disabled} className="custom-select" onChange={onChange} id={id}>
+      <select
+        data-test-id={COMPONENTS.SELECT_DROPDOWN}
+        disabled={disabled}
+        className="custom-select"
+        onChange={onChange}
+        id={id}
+      >
         {availableSymbols.map(renderSymbol)}
       </select>
     </div>

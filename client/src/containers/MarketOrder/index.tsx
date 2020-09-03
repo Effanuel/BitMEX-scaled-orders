@@ -5,6 +5,7 @@ import {postMarketOrder} from 'redux/modules/preview';
 import {MainContainer, SelectDropdown, InputField, Button} from 'components';
 import styles from './styles.module.scss';
 import {SYMBOLS, SIDE} from 'util/BitMEX-types';
+import {MARKET_CONTAINER} from 'data-test-ids';
 
 interface State {
   symbol: SYMBOLS;
@@ -41,10 +42,17 @@ const MarketOrderContainer = React.memo(() => {
         <SelectDropdown id="symbol" onChange={onChange} label="Instrument" />
       </Grid>
       <Grid item xs={3}>
-        <InputField onChange={onChange} value={state.orderQty} label="Quantity" id="orderQty" />
+        <InputField
+          data-test-id={MARKET_CONTAINER.INPUT}
+          onChange={onChange}
+          value={state.orderQty}
+          label="Quantity"
+          id="orderQty"
+        />
       </Grid>
       <Grid item xs={3} className={styles.top_row}>
         <Button
+          testID={MARKET_CONTAINER.BUY_BUTTON}
           id="Buy"
           label="MARKET Buy"
           variant="buy"
@@ -54,6 +62,7 @@ const MarketOrderContainer = React.memo(() => {
       </Grid>
       <Grid item xs={3} className={styles.top_row}>
         <Button
+          testID={MARKET_CONTAINER.SELL_BUTTON}
           id="Sell"
           label="MARKET Sell"
           variant="sell"

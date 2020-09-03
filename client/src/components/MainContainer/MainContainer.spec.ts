@@ -1,8 +1,8 @@
-import {ComponentDriver} from 'react-component-driver';
 import React from 'react';
 
 import {MainContainer, MainContainerProps} from './MainContainer';
 import {MAIN_CONTAINER} from '../../data-test-ids';
+import {ComponentDriver} from 'tests/driver';
 
 describe('MainContainer', () => {
   let driver: MainContainerDriver;
@@ -67,13 +67,8 @@ class MainContainerDriver extends ComponentDriver<MainContainerProps> {
   }
 
   pressCornerButton() {
-    const cornerButton = this.getByID(MAIN_CONTAINER.CORNER_BUTTON);
-
-    if (cornerButton) {
-      cornerButton.props.onClick();
-      return this;
-    }
-
-    throw Error('Corner button error');
+    const cornerButton = this.getElement(MAIN_CONTAINER.CORNER_BUTTON);
+    cornerButton.props.onClick();
+    return this;
   }
 }

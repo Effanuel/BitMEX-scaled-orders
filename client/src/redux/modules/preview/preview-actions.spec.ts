@@ -1,4 +1,4 @@
-import {store} from '../../store';
+import {createStore} from '../../store';
 import mockOrders from './test-orders-data';
 import {previewOrders} from 'redux/modules/preview';
 import {DISTRIBUTIONS} from 'util/index';
@@ -9,8 +9,8 @@ const distributionParams = (stop = '8000'): any => {
 };
 
 describe('Preview actions', () => {
+  const store = createStore();
   it('should generate orders on preview', () => {
-    // Action tested: previewOrders
     const {orders_uniform, orders_normal, orders_positive, orders_negative} = mockOrders();
 
     expect(store.getState().preview.showPreview).toEqual(false);
