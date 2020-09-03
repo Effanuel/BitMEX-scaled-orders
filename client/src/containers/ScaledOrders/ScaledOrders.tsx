@@ -7,7 +7,7 @@ import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} fro
 import DistributionsRadioGroup from './DistributionsRadioGroup';
 import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import styles from './scaled.container.module.scss';
+import styles from './ScaledOrders.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 
@@ -56,8 +56,8 @@ const ScaledContainer = React.memo(() => {
   }
 
   function onOrderSubmit(): void {
-    const {distribution, ...scaledParams} = state as RequiredProperty<ScaledContainerState>;
-    dispatch(postScaledOrders(scaledParams, distribution));
+    const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
+    dispatch(postScaledOrders({ordersProps, distribution}));
     setState(initialState);
     setCache(false);
   }
@@ -84,6 +84,7 @@ const ScaledContainer = React.memo(() => {
         <Grid item xs={4} />
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.STOP_LOSS_INPUT}
             onChange={onChangeNumber}
             value={state.stop}
             label="Stop-Loss"
@@ -102,6 +103,7 @@ const ScaledContainer = React.memo(() => {
       <>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.QUANTITY_INPUT}
             onChange={onChangeNumber}
             value={state.orderQty}
             label="Quantity"
@@ -111,6 +113,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.ORDER_COUNT_INPUT}
             onChange={onChangeNumber}
             value={state.n_tp}
             label="Order count"
@@ -120,6 +123,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.RANGE_START_INPUT}
             onChange={onChangeNumber}
             value={state.start}
             label="Range start"
@@ -129,6 +133,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.RANGE_END_INPUT}
             onChange={onChangeNumber}
             value={state.end}
             label="Range end"
@@ -151,7 +156,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={2} className="text-right">
           <Button
-            testID={SCALED_CONTAINER.PREVIEW_BUTTON}
+            data-test-id={SCALED_CONTAINER.PREVIEW_BUTTON}
             label="Preview"
             onClick={onPreviewOrders}
             variant="text"
@@ -171,13 +176,11 @@ const ScaledContainer = React.memo(() => {
     );
   }
 
+  const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
+
   return (
     <>
-      <MainContainer
-        label="ScaledOrders"
-        description="Place limit orders in a range"
-        renderOutside={showPreview && <OrdersPreviewTable />}
-      >
+      <MainContainer label="ScaledOrders" description="Place limit orders in a range" renderOutside={renderOutside}>
         {renderFirstRow()}
         {renderSecondRow()}
         {renderThirdRow()}
