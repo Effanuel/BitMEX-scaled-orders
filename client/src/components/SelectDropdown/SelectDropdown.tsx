@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles.module.scss';
 import {COMPONENTS} from 'data-test-ids';
 
-export interface Props {
+export interface SelectDropDownProps {
   id: string;
   label: string;
   onChange: (event: any) => void;
@@ -11,7 +11,7 @@ export interface Props {
 
 const availableSymbols = ['XBTUSD', 'ETHUSD', 'XRPUSD'];
 
-function SelectDropdown({id, label, onChange, disabled = false}: Props) {
+function SelectDropdown({id, label, onChange, disabled = false}: SelectDropDownProps) {
   const renderSymbol = (item: string) => (
     <option key={item} value={item}>
       {item}

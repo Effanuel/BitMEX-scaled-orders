@@ -7,12 +7,13 @@ import {
   ammendTrailingOrder,
   cancelTrailingOrder,
   changeTrailingOrderSymbol,
-} from 'redux/modules/trailing';
+} from 'redux/modules/trailing/trailingModule';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
 import buildOrderPresenter from './place-order-presenter';
 import styles from './TrailingLimitOrderContainer.module.scss';
+import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 
 interface State {
   symbol: SYMBOLS;
@@ -55,7 +56,6 @@ const TrailingLimitOrderContainer = React.memo(() => {
 
   React.useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
-
     if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
       const toAmmend = wsTrailingPrice !== trailOrderPrice;
       if (toAmmend) {
@@ -129,13 +129,20 @@ const TrailingLimitOrderContainer = React.memo(() => {
           />
         </Grid>
         <Grid item xs={3}>
-          <InputField onChange={onChangeNumber} value={state.orderQty} label="Quantity" id="orderQty" />
+          <InputField
+            data-test-id={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
+            onChange={onChangeNumber}
+            value={state.orderQty}
+            label="Quantity"
+            id="orderQty"
+          />
         </Grid>
         <Grid item xs={2}>
           <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
         </Grid>
         <Grid item xs={4} className={styles.top_row}>
           <Button
+            testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
             label={buttonLabel.label}
             variant={state.side === SIDE.SELL ? 'sell' : 'buy'}
             style={{width: '170px'}}

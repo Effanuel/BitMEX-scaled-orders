@@ -1,20 +1,30 @@
-import MarketOrderContainer from './index';
-import {createStore, AppState} from 'redux/store';
-import {ReduxComponentDriver} from 'tests/driver';
-import {MARKET_CONTAINER, COMPONENTS} from 'data-test-ids';
-import {MockBitMEX_API} from '../../tests/mockAPI';
-import {ButtonDriver} from 'components/Button/Button.spec';
-import {SelectDropdownDriver} from 'components/SelectDropdown/SelectDropdown.spec';
+import {act} from 'react-test-renderer';
 import {EnhancedStore} from '@reduxjs/toolkit';
-import InputFieldDriver from 'components/InputField/InputField.spec';
+import MarketOrderContainer from './index';
+import {MARKET_CONTAINER} from 'data-test-ids';
+import {MockBitMEX_API} from '../../tests/mockAPI';
+import {AppState} from 'redux/models/state';
+import {AppDriver} from 'tests/app-driver';
 
-describe('ButtonDriver', () => {
-  let driver: MarketOrderContainerDriver;
+async function flushPromises(ms: any) {
+  await new Promise((resolve) => {
+    setTimeout(resolve);
+    if (setTimeout.mock) {
+      if (ms !== undefined) {
+        jest.runTimersToTime(ms);
+      } else {
+        jest.runAllTimers();
+      }
+    }
+  });
+}
+
+describe('MarketOrder', () => {
+  let driver: AppDriver<typeof MarketOrderContainer>;
   let sendRequestSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    const store = createStore({}, new MockBitMEX_API());
-    driver = new MarketOrderContainerDriver(store);
+    driver = createAppDriver();
     sendRequestSpy = jest.spyOn(MockBitMEX_API.prototype, 'sendRequest');
   });
 
@@ -30,8 +40,8 @@ describe('ButtonDriver', () => {
   });
 
   it('should submit a market buy order request on button click', async () => {
-    driver.getInput().setInputValue('1113');
-    driver.getSubmitButton(MARKET_CONTAINER.BUY_BUTTON).pressButton();
+    driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('1113');
+    driver.getButton(MARKET_CONTAINER.BUY_BUTTON).pressButton();
 
     expect(sendRequestSpy).toHaveBeenCalledWith(
       'order',
@@ -41,8 +51,15 @@ describe('ButtonDriver', () => {
   });
 
   it('should submit a market sell order request on button click', async () => {
-    driver.getInput().setInputValue('111');
-    driver.getSubmitButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();
+    driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('111');
+    driver.getButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();
+
+    await act(flushPromises);
+
+    expect(driver.getActionTypes()).toEqual([
+      'preview/POST_MARKET_ORDER/pending',
+      'preview/POST_MARKET_ORDER/fulfilled',
+    ]);
 
     expect(sendRequestSpy).toHaveBeenCalledWith(
       'order',
@@ -54,8 +71,8 @@ describe('ButtonDriver', () => {
   it('should submit an order with a selected ticker', async () => {
     // const component = driver.render();
     driver.getDropdown().selectOption('ETHUSD');
-    driver.getInput().setInputValue('111');
-    driver.getSubmitButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();
+    driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('111');
+    driver.getButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();
 
     expect(sendRequestSpy).toHaveBeenCalledWith(
       'order',
@@ -65,20 +82,6 @@ describe('ButtonDriver', () => {
   });
 });
 
-class MarketOrderContainerDriver extends ReduxComponentDriver<typeof MarketOrderContainer> {
-  constructor(props: EnhancedStore<AppState>) {
-    super(MarketOrderContainer, props);
-  }
-
-  getInput() {
-    return new InputFieldDriver().attachTo(this.getElement(MARKET_CONTAINER.INPUT));
-  }
-
-  getSubmitButton(testID: string) {
-    return new ButtonDriver().attachTo(this.getElement(testID));
-  }
-
-  getDropdown() {
-    return new SelectDropdownDriver().attachTo(this.getElement(COMPONENTS.SELECT_DROPDOWN));
-  }
+function createAppDriver(state?: EnhancedStore<AppState>) {
+  return new AppDriver(MarketOrderContainer, state);
 }

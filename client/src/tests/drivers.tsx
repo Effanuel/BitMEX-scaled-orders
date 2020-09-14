@@ -4,7 +4,29 @@ import {Store, EnhancedStore} from '@reduxjs/toolkit';
 import {Provider} from 'react-redux';
 import {Action} from 'redux';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import {AppState, createStore} from 'redux/store';
+import {AppState} from 'redux/models/state';
+
+type InferProps<T> = T extends React.ComponentType<infer Props> ? Props : never;
+export type ReduxComponent<T> = React.ComponentType<Readonly<InferProps<T>>>;
+
+export function withStore<C extends ReduxComponent<C>, S, A extends Action<any>>(
+  WrappedComponent: ReduxComponent<C>,
+  store: Store<S, A>,
+) {
+  // const TypeAdjustedWrappedComponent = WrappedComponent as ReduxComponent<C>;
+
+  class WithStore extends React.PureComponent<InferProps<C>> {
+    render() {
+      return (
+        <Provider store={store}>
+          <WrappedComponent {...this.props} />
+        </Provider>
+      );
+    }
+  }
+
+  return hoistNonReactStatics(WithStore, WrappedComponent) as C;
+}
 
 export class ComponentDriver<Props> extends ReactComponentDriver<Props> {
   constructor(component: React.ComponentType<Props>) {
@@ -26,32 +48,14 @@ export class ComponentDriver<Props> extends ReactComponentDriver<Props> {
   }
 }
 
-type InferProps<T> = T extends React.ComponentType<infer Props> ? Props : never;
-type ReduxComponent<T> = React.ComponentType<Readonly<InferProps<T>>>;
-
-export function withStore<C extends ReduxComponent<C>, S, A extends Action<any>>(
-  WrappedComponent: C,
-  store: Store<S, A>,
-) {
-  const TypeAdjustedWrappedComponent = WrappedComponent as ReduxComponent<C>;
-
-  class WithStore extends React.PureComponent<InferProps<C>> {
-    render() {
-      return (
-        <Provider store={store}>
-          <TypeAdjustedWrappedComponent {...this.props} />
-        </Provider>
-      );
-    }
-  }
-
-  return hoistNonReactStatics(WithStore, WrappedComponent) as C;
-}
-
 export class ReduxComponentDriver<C extends ReduxComponent<C>> extends ComponentDriver<InferProps<C>> {
-  store: EnhancedStore<AppState>;
-  constructor(component: C, store = createStore()) {
+  store: EnhancedStore<AppState> & {getActions: []};
+  constructor(component: C, store: any) {
     super(withStore(component, store));
     this.store = store;
+  }
+
+  getActionTypes() {
+    return (this.store as any).getActions().map((action: any) => action.type);
   }
 }

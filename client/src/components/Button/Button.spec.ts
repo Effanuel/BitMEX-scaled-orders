@@ -1,5 +1,5 @@
-import {Button, ButtonProps, ButtonVariants} from './Button';
-import {ComponentDriver} from 'tests/driver';
+import {ButtonVariants} from './Button';
+import {ButtonDriver} from './Button.driver';
 
 describe('ButtonDriver', () => {
   let driver: ButtonDriver;
@@ -33,38 +33,3 @@ describe('ButtonDriver', () => {
     expect(onClick).toHaveBeenCalledWith({target: {id: 'default:id'}});
   });
 });
-
-// eslint-disable-next-line jest/no-export
-export class ButtonDriver extends ComponentDriver<ButtonProps> {
-  constructor() {
-    super(Button);
-  }
-
-  withDefaultProps(props: Partial<ButtonProps>) {
-    const defaultProps: ButtonProps = {
-      id: 'default:id',
-      label: 'default:label',
-      testID: 'default:testID',
-      variant: 'submit',
-      disabled: false,
-      onClick: jest.fn(),
-      style: undefined,
-      className: '',
-    };
-    return this.setProps({...defaultProps, ...props});
-  }
-
-  pressButton() {
-    const node: any = this.getComponent();
-    if (node) {
-      node.props.onClick({target: {id: this.props.id}});
-      return this;
-    }
-
-    throw new Error('Cant find button');
-  }
-
-  getButtonClassName() {
-    return (this.getComponent() as any).props.className;
-  }
-}

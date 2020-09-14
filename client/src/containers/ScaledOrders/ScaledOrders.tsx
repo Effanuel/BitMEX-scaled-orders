@@ -2,7 +2,7 @@ import React from 'react';
 import {Grid} from '@material-ui/core';
 import {useDispatch} from 'react-redux';
 import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
-import {previewOrders, previewToggle, postScaledOrders} from 'redux/modules/preview';
+import {previewOrders, previewToggle, postScaledOrders} from 'redux/modules/preview/previewModule';
 import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} from 'components';
 import DistributionsRadioGroup from './DistributionsRadioGroup';
 import {DISTRIBUTIONS} from 'util/index';
@@ -156,7 +156,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={2} className="text-right">
           <Button
-            data-test-id={SCALED_CONTAINER.PREVIEW_BUTTON}
+            testID={SCALED_CONTAINER.PREVIEW_BUTTON}
             label="Preview"
             onClick={onPreviewOrders}
             variant="text"

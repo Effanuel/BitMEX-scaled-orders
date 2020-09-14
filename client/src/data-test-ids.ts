@@ -23,17 +23,24 @@ export const SCALED_CONTAINER = {
   RANGE_END_INPUT: getTestID('ScaledContainer')('rangeEndInput'),
   PREVIEW_BUTTON: getTestID('ScaledContainer')('previewButton'),
   SUBMIT_BUTTON: getTestID('ScaledContainer')('submitButton'),
-};
-
-export const GLOBAL = {
-  SNACKBAR: getTestID('Global')('SnackBar'),
-  TOAST: getTestID('Global')('toast'),
+  PREVIEW_TABLE: getTestID('ScaledContainer')('previewTable'),
+  ORDER_ROW: getTestID('ScaledContainer')('orderRow'),
 };
 
 export const MARKET_CONTAINER = {
   BUY_BUTTON: getTestID('MarketContainer')('buyButton'),
   SELL_BUTTON: getTestID('MarketContainer')('sellButton'),
   INPUT: getTestID('MarketContainer')('input'),
+};
+
+export const TRAILING_LIMIT_CONTAINER = {
+  SUBMIT_TRAILING_ORDER: getTestID('TrailingLimitContainer')('submitTrailingOrder'),
+  QUANTITY_INPUT: getTestID('TrailingLimitContainer')('quantityInput'),
+};
+
+export const GLOBAL = {
+  SNACKBAR: getTestID('Global')('SnackBar'),
+  TOAST: getTestID('Global')('toast'),
 };
 
 export const COMPONENTS = {
