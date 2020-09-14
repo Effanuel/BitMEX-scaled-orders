@@ -13,8 +13,6 @@ export function withStore<C extends ReduxComponent<C>, S, A extends Action<any>>
   WrappedComponent: ReduxComponent<C>,
   store: Store<S, A>,
 ) {
-  // const TypeAdjustedWrappedComponent = WrappedComponent as ReduxComponent<C>;
-
   class WithStore extends React.PureComponent<InferProps<C>> {
     render() {
       return (

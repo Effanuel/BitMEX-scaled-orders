@@ -44,10 +44,10 @@ const MarketOrderContainer = React.memo(() => {
       <Grid item xs={3}>
         <InputField
           data-test-id={MARKET_CONTAINER.INPUT}
+          id="orderQty"
           onChange={onChange}
           value={state.orderQty}
           label="Quantity"
-          id="orderQty"
         />
       </Grid>
       <Grid item xs={3} className={styles.top_row}>

@@ -23,7 +23,7 @@ export const __clearTrailingOrder = createAction(__CLEAR_TRAILING_ORDER);
 
 export const changeTrailingOrderSymbol = createAction(CHANGE_TRAILING_ORDER_SYMBOL, withPayloadType<SYMBOLS>());
 
-export const postTrailingOrder = createThunk(POST_TRAILING_ORDER, 'postTrailingOrder'); // TODO ADD {side: rposp.side}
+export const postTrailingOrder = createThunk(POST_TRAILING_ORDER, 'postTrailingOrder'); // TODO ADD {side: props.side}
 
 type AmmendTrailingOrderProps = {orderID: string; price: number};
 export const ammendTrailingOrder = createThunk<AmmendTrailingOrderProps>(PUT_TRAILING_ORDER, 'putTrailingOrder');

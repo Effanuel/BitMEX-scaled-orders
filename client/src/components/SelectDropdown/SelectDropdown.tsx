@@ -23,11 +23,11 @@ function SelectDropdown({id, label, onChange, disabled = false}: SelectDropDownP
       <label htmlFor={label}>{label}</label>
 
       <select
+        id={id}
         data-test-id={COMPONENTS.SELECT_DROPDOWN}
         disabled={disabled}
         className="custom-select"
         onChange={onChange}
-        id={id}
       >
         {availableSymbols.map(renderSymbol)}
       </select>

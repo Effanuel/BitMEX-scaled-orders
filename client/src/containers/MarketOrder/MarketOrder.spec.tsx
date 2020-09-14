@@ -69,7 +69,6 @@ describe('MarketOrder', () => {
   });
 
   it('should submit an order with a selected ticker', async () => {
-    // const component = driver.render();
     driver.getDropdown().selectOption('ETHUSD');
     driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('111');
     driver.getButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();

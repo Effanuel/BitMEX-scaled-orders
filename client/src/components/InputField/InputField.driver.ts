@@ -1,5 +1,5 @@
 import {ComponentDriver} from 'tests/drivers';
-import {InputField, Props as InputFieldProps} from './InputField';
+import {InputField, InputFieldProps} from './InputField';
 
 export default class InputFieldDriver extends ComponentDriver<InputFieldProps> {
   constructor() {

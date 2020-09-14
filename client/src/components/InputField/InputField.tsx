@@ -9,7 +9,7 @@ const useStyles = makeStyles(() => ({
   tooltip: {color: 'red'},
 }));
 
-export type Props = {
+export type InputFieldProps = {
   ['data-test-id']?: string;
   id: string;
   label?: string;
@@ -21,7 +21,7 @@ export type Props = {
   onChange: (arg0: any) => void;
 };
 
-function InputField(props: Props) {
+function InputField(props: InputFieldProps) {
   const {id, label, value, stop = false, tooltip, placeholder, t_placement = 'top-end', onChange} = props;
 
   const classes = useStyles();

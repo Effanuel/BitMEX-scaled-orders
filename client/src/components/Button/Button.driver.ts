@@ -1,7 +1,6 @@
 import {Button, ButtonProps} from 'components';
 import {ComponentDriver} from 'react-component-driver';
 
-// eslint-disable-next-line jest/no-export
 export class ButtonDriver extends ComponentDriver<ButtonProps> {
   constructor() {
     super(Button);

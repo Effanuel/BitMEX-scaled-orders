@@ -131,10 +131,10 @@ const TrailingLimitOrderContainer = React.memo(() => {
         <Grid item xs={3}>
           <InputField
             data-test-id={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
+            id="orderQty"
             onChange={onChangeNumber}
             value={state.orderQty}
             label="Quantity"
-            id="orderQty"
           />
         </Grid>
         <Grid item xs={2}>

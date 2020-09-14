@@ -13,6 +13,6 @@ describe('TextFieldComponent', () => {
 
     comp.setInputValue(value);
 
-    expect(comp.getInputValue()).toEqual(value);
+    expect(comp.getInputValue()).toEqual('111');
   });
 });

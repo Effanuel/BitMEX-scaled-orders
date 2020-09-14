@@ -51,7 +51,7 @@ describe('TrailingLimitContainer', () => {
       instrument: [{symbol: SYMBOLS.XBTUSD, askPrice: 501, bidPrice: 500}],
     });
     const store = createMockedStore({websocket});
-    driver = createAppDriver(store); //new TrailingLimitOrderContainerDriver(store);
+    driver = createAppDriver(store);
 
     const component = driver.render();
 
@@ -89,7 +89,6 @@ describe('TrailingLimitContainer', () => {
 
     const component = driver.render();
 
-    // Connect to websocket
     act(() => {
       driver.store.dispatch({type: REDUX_WEBSOCKET_OPEN});
       const data = JSON.stringify(partialInstrument);
