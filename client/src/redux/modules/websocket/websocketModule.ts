@@ -55,7 +55,6 @@ export const websocketReducer: Reducer<WebsocketState, any> = (state = defaultSt
 
 const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultState, action): WebsocketState => {
   const response: WebsocketResponse = JSON.parse(action.payload.message);
-
   const responseKeys = Object.keys(response);
   const {table, data, action: ws_action, subscribe} = response;
 
@@ -110,8 +109,6 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
   }
   return state;
 };
-
-type Actions = any; //WebsocketActions;
 
 export const wsConnect = (): Thunk => async (dispatch) => {
   try {

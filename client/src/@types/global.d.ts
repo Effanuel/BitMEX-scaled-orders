@@ -3,6 +3,8 @@ interface Action {
   readonly payload?: any;
 }
 
+type obj = Record<string, unknown>;
+
 type unnull = undefined | null;
 
 type iterobject<T = string> = {[key: string]: T};

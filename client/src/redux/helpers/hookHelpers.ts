@@ -12,7 +12,7 @@ import {
 import {TrailingState} from 'redux/modules/trailing/types';
 import {PreviewState} from 'redux/modules/preview/types';
 import {WebsocketState} from 'redux/modules/websocket/types';
-import {AppState} from 'redux/store';
+import {AppState} from 'redux/models/state';
 
 type States = TrailingState & PreviewState & WebsocketState;
 

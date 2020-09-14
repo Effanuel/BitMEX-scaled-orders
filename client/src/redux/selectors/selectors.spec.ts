@@ -22,7 +22,7 @@ import {
   mockTrailingState,
 } from 'tests/mockData/orders';
 import {Instrument} from 'redux/modules/websocket/types';
-import {AppState} from 'redux/store';
+import {AppState} from 'redux/models/state';
 
 describe('Selectors', () => {
   const mockState: AppState = {

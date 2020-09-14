@@ -5,6 +5,7 @@ import SVGIcon from '../SVGIcon/SVGIcon';
 import ICONS from '../SVGIcon/icons';
 import styles from './ToastBar.module.scss';
 import './ToastContainer.scss';
+import {GLOBAL} from 'data-test-ids';
 
 export type ToastPreset = 'success' | 'warning' | 'error' | 'general';
 
@@ -28,7 +29,7 @@ const ToastBar = React.memo(({toastPreset, message}: ToastBarProps) => {
   });
 
   return (
-    <div className={toast_style}>
+    <div className={toast_style} data-test-id={GLOBAL.TOAST}>
       <SVGIcon color={toastColors[toastPreset]} icon={ICONS[toastPreset?.toUpperCase()]} />
       <span className={styles.toast_text}>{message}</span>
     </div>

@@ -9,34 +9,42 @@ import {
   MarketOrderProps,
   deleteOrder,
 } from 'util/index';
-import {PostTrailingOrderProps} from 'redux/modules/trailing';
+import {PostTrailingOrderProps} from 'redux/modules/trailing/trailingModule';
+
+type RequestPayload<T> = {method?: string} & T;
+
+export type AxiosData = {[key: string]: any};
+
+export type Routes = 'bulkOrders' | 'order' | 'getBalance' | 'getOrders';
+export type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export interface BitMEX {
-  getBalance: () => any;
-  postMarketOrder: (payload: MarketOrderProps) => any;
-  postTrailingOrder: (payload: PostTrailingOrderProps) => any;
-  putTrailingOrder: (payload: {orderID: string; price: number}) => any;
-  deleteTrailingOrder: (payload: {orderID: string}) => any;
-  postBulkOrders: (payload: ScaledOrdersProps) => any;
+  sendRequest: <P>(path: Routes, payload: RequestPayload<P> | undefined) => Promise<any>;
+  getBalance: () => Promise<any>;
+  postMarketOrder: (payload: MarketOrderProps) => Promise<any>;
+  postTrailingOrder: (payload: PostTrailingOrderProps) => Promise<any>;
+  putTrailingOrder: (payload: {orderID: string; price: number}) => Promise<any>;
+  deleteTrailingOrder: (payload: {orderID: string}) => Promise<any>;
+  postBulkOrders: (payload: ScaledOrdersProps) => Promise<any>;
 }
 
 export class BitMEX_API implements BitMEX {
-  private exchange = '/bitmex/';
+  protected exchange = '/bitmex/';
 
-  private async _makeRequest<P>(path: string, payload: P) {
+  async _makeRequest<P>(path: Routes, payload: RequestPayload<P> | undefined): Promise<AxiosData> {
     const response = await axios.post(path, payload);
     const {data, success} = response.data;
     return {data, success};
   }
 
-  private _parseData(data: any, args: string[] = []) {
-    const parsedData = JSON.parse(data);
+  _parseData(data: any, args: string[] = []) {
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
     const dataElement = !Array.isArray(parsedData) ? parsedData : parsedData[0];
     return _.pick([...args, 'text'], dataElement);
   }
 
-  private async sendRequest<P>(path: string, props: P, getData: string[] = []) {
-    const {data, success} = await this._makeRequest(this.exchange + path, props);
+  async sendRequest<P>(path: string, props: RequestPayload<P> | undefined, getData: string[] = []) {
+    const {data, success} = await this._makeRequest((this.exchange + path) as Routes, props);
 
     return {...this._parseData(data, getData), success};
   }
