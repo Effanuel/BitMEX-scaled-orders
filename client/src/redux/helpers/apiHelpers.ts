@@ -9,7 +9,7 @@ import {
   MarketOrderProps,
   deleteOrder,
 } from 'util/index';
-import {PostTrailingOrderProps} from 'redux/modules/trailing';
+import {PostTrailingOrderProps} from 'redux/modules/trailing/trailingModule';
 
 type RequestPayload<T> = {method?: string} & T;
 
@@ -19,7 +19,7 @@ export type Routes = 'bulkOrders' | 'order' | 'getBalance' | 'getOrders';
 export type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export interface BitMEX {
-  sendRequest: (path: Routes, payload: RequestPayload<P> | undefined) => Promise<any>;
+  sendRequest: <P>(path: Routes, payload: RequestPayload<P> | undefined) => Promise<any>;
   getBalance: () => Promise<any>;
   postMarketOrder: (payload: MarketOrderProps) => Promise<any>;
   postTrailingOrder: (payload: PostTrailingOrderProps) => Promise<any>;
@@ -38,7 +38,7 @@ export class BitMEX_API implements BitMEX {
   }
 
   _parseData(data: any, args: string[] = []) {
-    const parsedData = JSON.parse(data);
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
     const dataElement = !Array.isArray(parsedData) ? parsedData : parsedData[0];
     return _.pick([...args, 'text'], dataElement);
   }

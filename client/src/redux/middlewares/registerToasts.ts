@@ -1,9 +1,9 @@
 import {showToast, ToastPreset} from 'components';
-import {AppState} from 'redux/store';
 import {Store} from 'redux';
-import {postMarketOrder, postScaledOrders} from 'redux/modules/preview';
-import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing';
+import {postMarketOrder, postScaledOrders} from 'redux/modules/preview/previewModule';
+import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
 import {AsyncThunk} from '@reduxjs/toolkit';
+import {AppState} from 'redux/models/state';
 
 interface RegisteredToasts {
   [key: string]: (store: Store<AppState>, action: Action) => void;

@@ -140,7 +140,7 @@ const createStopLoss = ({orderQty, stop, symbol, side}: StopLossProps) => {
 export type MarketOrderProps = Pick<orderType, 'symbol' | 'orderQty' | 'side'>;
 export const createMarketOrder = (props: MarketOrderProps) => ({...props, ordType: ORD_TYPE.Market});
 
-type Order = Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType' | 'text'>;
+export type Order = Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType' | 'text'>;
 export const createOrder = (props: Order) => ({...props, execInst: EXEC_INST.ParticipateDoNotInitiate});
 
 type AmendOrder = Pick<orderType, 'orderID' | 'price'>;

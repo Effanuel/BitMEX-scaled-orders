@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {createSelector} from 'reselect';
 import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
-import {AppState} from 'redux/store';
+import {AppState} from 'redux/models/state';
 import {INSTRUMENT_PARAMS} from 'util/index';
 import {parseNumber} from 'general/formatting';
 

@@ -20,7 +20,7 @@ type ActionMap<P> = {
 export function createThunk<P>(actionName: ActionMapKey, apiMethod: keyof BitMEX, moreData = {}) {
   return createAsyncThunk(actionName, async (payload: P, {rejectWithValue, extra: API}) => {
     try {
-      // TODO: Don't know a good way to get a proper type
+      // TODO: add a proper type
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       //@ts-ignore
       const response = await (API as BitMEX)[apiMethod](payload);

@@ -3,8 +3,8 @@ import {useDispatch} from 'react-redux';
 import {ScaledOrders, MarketOrderContainer, TrailingLimitOrder, TickerPricesContainer} from 'containers';
 import {Spinner, ToastContainer} from './components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket';
-import {getBalance} from 'redux/modules/preview';
+import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
+import {getBalance} from 'redux/modules/preview/previewModule';
 import 'scss/root.module.scss';
 
 const App = React.memo(() => {
@@ -26,7 +26,7 @@ const App = React.memo(() => {
 
   React.useEffect(() => {
     if (connected) {
-      dispatch(getBalance());
+      dispatch(getBalance(undefined));
       dispatch(wsAuthenticate());
       dispatch(wsSubscribeTo('order'));
     }
