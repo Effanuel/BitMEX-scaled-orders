@@ -1,13 +1,15 @@
-import {defaultState as websocketDefaultState} from 'redux/modules/websocket';
-import {defaultState as previewDefaultState} from 'redux/modules/preview';
-import {defaultState as trailingDefaultState} from 'redux/modules/trailing';
+import {defaultState as websocketDefaultState} from 'redux/modules/websocket/websocketModule';
+import {defaultState as previewDefaultState} from 'redux/modules/preview/previewModule';
+import {defaultState as trailingDefaultState} from 'redux/modules/trailing/trailingModule';
 import {WebsocketState, Instrument} from 'redux/modules/websocket/types';
 import {PreviewState} from 'redux/modules/preview/types';
 import {TrailingState} from 'redux/modules/trailing/types';
-import {orderType, SYMBOLS, SIDE, ORD_TYPE} from 'util/BitMEX-types';
-import {ScaledOrders} from 'util/index';
+import {SYMBOLS, SIDE, ORD_TYPE} from 'util/BitMEX-types';
+import {Order, ScaledOrders} from 'util/index';
 
-type Order = Pick<orderType, 'symbol' | 'price' | 'orderQty' | 'side' | 'ordType' | 'text'>;
+export const mockWebsocketState = (overrides?: Partial<WebsocketState>) => ({...websocketDefaultState, ...overrides});
+export const mockPreviewState = (overrides?: Partial<PreviewState>) => ({...previewDefaultState, ...overrides});
+export const mockTrailingState = (overrides?: Partial<TrailingState>) => ({...trailingDefaultState, ...overrides});
 
 export const mockCreateOrder = (overrides?: Partial<Order>): Order => ({
   symbol: SYMBOLS.XBTUSD,
@@ -37,6 +39,55 @@ export const mockScaledOrders: ScaledOrders = {
   stop: {symbol: SYMBOLS.XBTUSD, stopPx: 10000, orderQty: 60_000},
 };
 
-export const mockWebsocketState = (overrides?: Partial<WebsocketState>) => ({...websocketDefaultState, ...overrides});
-export const mockPreviewState = (overrides?: Partial<PreviewState>) => ({...previewDefaultState, ...overrides});
-export const mockTrailingState = (overrides?: Partial<TrailingState>) => ({...trailingDefaultState, ...overrides});
+const orderStop = {
+  execInst: 'LastPrice,ReduceOnly',
+  ordType: 'Stop',
+  orderQty: 500,
+  side: 'Buy',
+  stopPx: 8000,
+  symbol: 'XBTUSD',
+  text: 'stop',
+};
+
+export default function mockDistributionOrders(stop: any = orderStop) {
+  const orderData = (uniqueFields: Partial<Order> = {}) => {
+    const execInst = 'ParticipateDoNotInitiate';
+    const commonFields = {execInst, ordType: ORD_TYPE.Limit, side: SIDE.SELL, symbol: SYMBOLS.XBTUSD};
+    return mockCreateOrder({...commonFields, ...uniqueFields});
+  };
+
+  return {
+    orders_uniform: {
+      orders: [
+        orderData({orderQty: 166, price: 7500, text: 'order_1'}),
+        orderData({orderQty: 166, price: 7600, text: 'order_2'}),
+        orderData({orderQty: 168, price: 7700, text: 'order_3'}),
+      ],
+      stop,
+    },
+    orders_normal: {
+      orders: [
+        orderData({orderQty: 53, price: 7500, text: 'order_1'}),
+        orderData({orderQty: 393, price: 7600, text: 'order_2'}),
+        orderData({orderQty: 54, price: 7700, text: 'order_3'}),
+      ],
+      stop,
+    },
+    orders_positive: {
+      orders: [
+        orderData({orderQty: 287, price: 7500, text: 'order_1'}),
+        orderData({orderQty: 174, price: 7600, text: 'order_2'}),
+        orderData({orderQty: 39, price: 7700, text: 'order_3'}),
+      ],
+      stop,
+    },
+    orders_negative: {
+      orders: [
+        orderData({orderQty: 38, price: 7500, text: 'order_1'}),
+        orderData({orderQty: 174, price: 7600, text: 'order_2'}),
+        orderData({orderQty: 288, price: 7700, text: 'order_3'}),
+      ],
+      stop,
+    },
+  };
+}

@@ -14,7 +14,7 @@ export const mockResponses: MockResponses = {
   order: {
     POST: {
       data: {
-        data: {orderID: 'randomOrderId', price: 999},
+        data: {orderID: '572fe645-91c8-1a47-5060-18f11630f38a', price: 10321.5, text: 'best_order'}, // TODO SEPARATE RESPONSES
         success: 200,
       },
     },
