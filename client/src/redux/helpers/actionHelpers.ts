@@ -1,11 +1,12 @@
 import {ActionCreatorWithPreparedPayload, ActionCreatorWithoutPayload, createAsyncThunk} from '@reduxjs/toolkit';
+import {ACTIONS_cross} from 'redux/modules/cross/types';
 import {ACTIONS_preview, API_ACTIONS_preview} from 'redux/modules/preview/types';
 import {ACTIONS_trailing} from 'redux/modules/trailing/types';
 import type {BitMEX} from './apiHelpers';
 
 export const withPayloadType = <T>() => (payload: T) => ({payload});
 
-const actions = [...ACTIONS_preview, ...ACTIONS_trailing] as const;
+const actions = [...ACTIONS_preview, ...ACTIONS_trailing, ...ACTIONS_cross] as const;
 const apiActions = [...API_ACTIONS_preview] as const;
 
 type ActionMapKey = typeof actions[number];

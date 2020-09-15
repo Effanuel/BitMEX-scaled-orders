@@ -9,12 +9,9 @@ import {
   allWebsocketBidAskPrices,
   websocketTrailingPriceSelector,
 } from 'redux/selectors';
-import {TrailingState} from 'redux/modules/trailing/types';
-import {PreviewState} from 'redux/modules/preview/types';
-import {WebsocketState} from 'redux/modules/websocket/types';
 import {AppState} from 'redux/models/state';
 
-type States = TrailingState & PreviewState & WebsocketState;
+type States = UnionToIntersection<ValueOf<AppState>>;
 
 interface Selectors extends States {
   wsCurrentPrice: ReturnType<typeof websocketCurrentPrice>;
@@ -30,7 +27,7 @@ interface Selectors extends States {
 }
 
 const buildSelectors = (state: AppState): Selectors => {
-  const {trailing, preview, websocket} = state;
+  const {trailing, preview, websocket, cross} = state;
   return {
     wsCurrentPrice: websocketCurrentPrice(state),
     wsTrailingPrice: websocketTrailingPriceSelector(state),
@@ -47,6 +44,12 @@ const buildSelectors = (state: AppState): Selectors => {
     trailOrderSide: trailing.trailOrderSide,
     trailOrderSymbol: trailing.trailOrderSymbol,
     trailLoading: trailing.trailLoading,
+
+    crossOrderSymbol: cross.crossOrderSymbol,
+    crossOrderQuantity: cross.crossOrderQuantity,
+    crossOrderPrice: cross.crossOrderPrice,
+    crossOrderSide: cross.crossOrderSide,
+    hasPriceCrossedOnce: cross.hasPriceCrossedOnce,
 
     orders: preview.orders,
     balance: preview.balance,

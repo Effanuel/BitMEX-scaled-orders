@@ -1,15 +1,18 @@
 import {defaultState as websocketDefaultState} from 'redux/modules/websocket/websocketModule';
 import {defaultState as previewDefaultState} from 'redux/modules/preview/previewModule';
 import {defaultState as trailingDefaultState} from 'redux/modules/trailing/trailingModule';
+import {defaultState as crossDefaultState} from 'redux/modules/cross/crossModule';
 import {WebsocketState, Instrument} from 'redux/modules/websocket/types';
 import {PreviewState} from 'redux/modules/preview/types';
 import {TrailingState} from 'redux/modules/trailing/types';
 import {SYMBOLS, SIDE, ORD_TYPE} from 'util/BitMEX-types';
 import {Order, ScaledOrders} from 'util/index';
+import {CrossState} from 'redux/modules/cross/types';
 
 export const mockWebsocketState = (overrides?: Partial<WebsocketState>) => ({...websocketDefaultState, ...overrides});
 export const mockPreviewState = (overrides?: Partial<PreviewState>) => ({...previewDefaultState, ...overrides});
 export const mockTrailingState = (overrides?: Partial<TrailingState>) => ({...trailingDefaultState, ...overrides});
+export const mockCrossState = (overrides?: Partial<CrossState>) => ({...crossDefaultState, ...overrides});
 
 export const mockCreateOrder = (overrides?: Partial<Order>): Order => ({
   symbol: SYMBOLS.XBTUSD,

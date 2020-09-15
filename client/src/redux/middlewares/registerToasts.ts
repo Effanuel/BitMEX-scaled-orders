@@ -2,6 +2,7 @@ import {showToast, ToastPreset} from 'components';
 import {Store} from 'redux';
 import {postMarketOrder, postScaledOrders} from 'redux/modules/preview/previewModule';
 import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
+import {postMarketOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
 import {AsyncThunk} from '@reduxjs/toolkit';
 import {AppState} from 'redux/models/state';
 
@@ -32,16 +33,22 @@ function buildThunkToasts<T>(thunk: AsyncThunk<any, T, obj>, requestTypes: Reque
 
 const PostMarketOrderToasts = buildThunkToasts(postMarketOrder, {
   SUCCESS: () => showToast('Submitted Market Order'),
-  FAILURE: (store: Store<AppState>, action: Action) => showToast(`Market order: ${action.payload}`, 'error'),
+  FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+});
+
+//  TODO: MERGE WITH PostMarketOrderToasts
+const CrossPostMarketOrderToasts = buildThunkToasts(crossPostMarketOrder, {
+  SUCCESS: () => showToast('Submitted Market Order'),
+  FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
 });
 
 const PostScaledOrdersToasts = buildThunkToasts(postScaledOrders, {
   SUCCESS: () => showToast('Submitted Scaled Orders'),
-  FAILURE: (store: Store<AppState>, action: Action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
+  FAILURE: (store, action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
 });
 
 const PostTrailingOrderToasts = buildThunkToasts(postTrailingOrder, {
-  SUCCESS: (store: Store<AppState>, action: Action) => {
+  SUCCESS: (store, action) => {
     const {text, price, success} = action.payload;
 
     const isOrderSubmitted = success === 200;
@@ -66,6 +73,7 @@ const AmmendTrailingOrderToasts = buildThunkToasts(ammendTrailingOrder, {
 });
 
 export const registeredToasts: RegisteredToasts = {
+  ...CrossPostMarketOrderToasts,
   ...PostMarketOrderToasts,
   ...PostScaledOrdersToasts,
   ...PostTrailingOrderToasts,

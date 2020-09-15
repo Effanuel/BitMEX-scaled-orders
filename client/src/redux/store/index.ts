@@ -8,8 +8,9 @@ import {AppState} from 'redux/models/state';
 import {previewReducer as preview} from '../modules/preview/previewModule';
 import {websocketReducer as websocket} from '../modules/websocket/websocketModule';
 import {trailingReducer as trailing} from '../modules/trailing/trailingModule';
+import {crossReducer as cross} from '../modules/cross/crossModule';
 
-export const rootReducer = combineReducers({preview, websocket, trailing});
+export const rootReducer = combineReducers({preview, websocket, trailing, cross});
 
 const reduxWebsocketMiddleware = reduxWebsocket();
 
