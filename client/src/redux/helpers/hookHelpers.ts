@@ -8,6 +8,9 @@ import {
   websocketBidAskPrices,
   allWebsocketBidAskPrices,
   websocketTrailingPriceSelector,
+  websocketCrossPriceSelector,
+  hasCrossedOnceSelector,
+  hasCrossedTwiceSelector,
 } from 'redux/selectors';
 import {AppState} from 'redux/models/state';
 
@@ -16,12 +19,15 @@ type States = UnionToIntersection<ValueOf<AppState>>;
 interface Selectors extends States {
   wsCurrentPrice: ReturnType<typeof websocketCurrentPrice>;
   wsTrailingPrice: ReturnType<typeof websocketTrailingPriceSelector>;
+  wsCrossPrice: ReturnType<typeof websocketCrossPriceSelector>;
   wsBidAskPrices: ReturnType<typeof websocketBidAskPrices>;
   allPrices: ReturnType<typeof allWebsocketBidAskPrices>;
   averagePrice: ReturnType<typeof ordersAverageEntrySelector>;
   riskBTC: ReturnType<typeof ordersRiskSelector>;
   riskPerc: ReturnType<typeof ordersRiskPercSelector>;
   status: ReturnType<typeof trailingOrderStatusSelector>;
+  hasCrossedOnce: ReturnType<typeof hasCrossedOnceSelector>;
+  hasCrossedTwice: ReturnType<typeof hasCrossedTwiceSelector>;
   wsLoading: boolean;
   wsMessage: any;
 }
@@ -31,12 +37,15 @@ const buildSelectors = (state: AppState): Selectors => {
   return {
     wsCurrentPrice: websocketCurrentPrice(state),
     wsTrailingPrice: websocketTrailingPriceSelector(state),
+    wsCrossPrice: websocketCrossPriceSelector(state),
     wsBidAskPrices: websocketBidAskPrices(state),
     allPrices: allWebsocketBidAskPrices(state),
     averagePrice: ordersAverageEntrySelector(state),
     riskBTC: ordersRiskSelector(state),
     riskPerc: ordersRiskPercSelector(state),
     status: trailingOrderStatusSelector(state),
+    hasCrossedOnce: hasCrossedOnceSelector(state),
+    hasCrossedTwice: hasCrossedTwiceSelector(state),
 
     trailOrderId: trailing.trailOrderId,
     trailOrderPrice: trailing.trailOrderPrice,

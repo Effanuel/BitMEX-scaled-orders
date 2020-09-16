@@ -33,6 +33,10 @@ export const getTrailingOrderId = ({trailing: {trailOrderId}}: AppState) => trai
 export const getTrailingOrderSide = ({trailing: {trailOrderSide}}: AppState) => trailOrderSide;
 export const getTrailingOrderSymbol = ({trailing: {trailOrderSymbol}}: AppState) => trailOrderSymbol;
 
+const getCrossOrderSide = ({cross: {crossOrderSide}}: AppState) => crossOrderSide;
+const getHasPriceCrossedOnce = ({cross: {hasPriceCrossedOnce}}: AppState) => hasPriceCrossedOnce;
+const getCrossOrderPrice = ({cross: {crossOrderPrice}}: AppState) => crossOrderPrice;
+
 export const trailingOrderStatusSelector = createSelector(
   [table_order, getTrailingOrderId],
   (open_orders, trailingOrderId) => {
@@ -83,6 +87,38 @@ export const websocketTrailingPriceSelector = createSelector(
         : parseNumber(bidAskPrices.askPrice - tick, decimal_rounding);
     }
     return undefined;
+  },
+);
+
+export const websocketCrossPriceSelector = createSelector(
+  [websocketBidAskPrices, getCrossOrderSide, getHasPriceCrossedOnce],
+  (bidAskPrices, side, hasPriceCrossedOnce): number | undefined => {
+    if (!hasPriceCrossedOnce) {
+      return side === SIDE.SELL ? bidAskPrices?.bidPrice : bidAskPrices?.askPrice;
+    } else {
+      return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
+    }
+  },
+);
+
+export const hasCrossedOnceSelector = createSelector(
+  [getCrossOrderPrice, getCrossOrderSide, websocketCrossPriceSelector],
+  (orderPrice, side, currentPrice): boolean => {
+    if (currentPrice && orderPrice > 0) {
+      return side === SIDE.BUY ? currentPrice < orderPrice : currentPrice > orderPrice;
+    }
+    return false;
+  },
+);
+
+export const hasCrossedTwiceSelector = createSelector(
+  [hasCrossedOnceSelector, getCrossOrderSide, getCrossOrderPrice, websocketCrossPriceSelector],
+  (hasCrossedOnce, crossOrderSide, crossOrderPrice, wsCrossPrice): boolean => {
+    return Boolean(
+      hasCrossedOnce &&
+        wsCrossPrice &&
+        (crossOrderSide === SIDE.BUY ? wsCrossPrice >= crossOrderPrice : wsCrossPrice <= crossOrderPrice),
+    );
   },
 );
 

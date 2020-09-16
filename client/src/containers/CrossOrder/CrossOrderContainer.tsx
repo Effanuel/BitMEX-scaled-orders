@@ -30,40 +30,39 @@ const CrossOrderContainer = React.memo(() => {
   const [state, setState] = useState(initialState);
 
   const {
-    wsCurrentPrice, // TODO REPLACE WITH wsCrossPrice
+    wsCrossPrice,
     connected,
     crossOrderPrice,
     crossOrderSide,
     crossOrderQuantity,
     crossOrderSymbol,
     hasPriceCrossedOnce,
+    hasCrossedOnce,
+    hasCrossedTwice,
   } = useReduxSelector(
-    'wsCurrentPrice',
+    'wsCrossPrice',
     'connected',
     'crossOrderPrice',
     'crossOrderSide',
     'crossOrderQuantity',
     'crossOrderSymbol',
     'hasPriceCrossedOnce',
+    'hasCrossedOnce',
+    'hasCrossedTwice',
   );
 
   React.useEffect(() => {
-    if (!hasPriceCrossedOnce && wsCurrentPrice) {
-      const wasPriceCrossed =
-        crossOrderSide === SIDE.BUY ? wsCurrentPrice < crossOrderPrice : wsCurrentPrice > crossOrderPrice;
-
-      if (wasPriceCrossed) {
-        //TODO RENAME
-        dispatch(orderCrossedOnce());
-      }
+    if (!hasPriceCrossedOnce && hasCrossedOnce) {
+      //TODO RENAME
+      dispatch(orderCrossedOnce());
     }
-  }, [dispatch, hasPriceCrossedOnce, crossOrderPrice, wsCurrentPrice, crossOrderSide]);
+  }, [dispatch, hasPriceCrossedOnce, hasCrossedOnce]);
 
   React.useEffect(() => {
-    if (crossOrderPrice) {
+    if (hasCrossedTwice) {
       dispatch(postMarketOrder({symbol: crossOrderSymbol, orderQty: crossOrderQuantity, side: crossOrderSide}));
     }
-  }, [dispatch, crossOrderSymbol, crossOrderQuantity, crossOrderSide, crossOrderPrice]);
+  }, [dispatch, crossOrderSymbol, crossOrderQuantity, crossOrderSide, hasCrossedTwice]);
 
   // TODO: Simplify passing callbacks to components
   const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange) => {
@@ -90,10 +89,10 @@ const CrossOrderContainer = React.memo(() => {
     dispatch(clearCrossOrder());
   }, [dispatch]);
 
-  const buttonLabel = React.useMemo(() => buildOrderPresenter(connected, state.side, wsCurrentPrice, false), [
+  const buttonLabel = React.useMemo(() => buildOrderPresenter(connected, state.side, wsCrossPrice, false), [
     connected,
     state.side,
-    wsCurrentPrice,
+    wsCrossPrice,
   ]);
 
   function renderFirstRow() {
@@ -122,7 +121,7 @@ const CrossOrderContainer = React.memo(() => {
             style={{width: '170px'}}
             onClick={createOrder}
             disabled={
-              !state.orderQty || state.orderQty > 20e6 || !!!state.price || !wsCurrentPrice || buttonLabel.disabled
+              !state.orderQty || state.orderQty > 20e6 || !!!state.price || !wsCrossPrice || buttonLabel.disabled
             }
           />
         </Grid>
