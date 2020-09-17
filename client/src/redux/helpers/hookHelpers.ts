@@ -10,7 +10,7 @@ import {
   websocketTrailingPriceSelector,
   websocketCrossPriceSelector,
   hasCrossedOnceSelector,
-  hasCrossedTwiceSelector,
+  hasCrossedSecondTimeSelector,
 } from 'redux/selectors';
 import {AppState} from 'redux/models/state';
 
@@ -27,7 +27,7 @@ interface Selectors extends States {
   riskPerc: ReturnType<typeof ordersRiskPercSelector>;
   status: ReturnType<typeof trailingOrderStatusSelector>;
   hasCrossedOnce: ReturnType<typeof hasCrossedOnceSelector>;
-  hasCrossedTwice: ReturnType<typeof hasCrossedTwiceSelector>;
+  hasCrossedSecondTime: ReturnType<typeof hasCrossedSecondTimeSelector>;
   wsLoading: boolean;
   wsMessage: any;
 }
@@ -45,7 +45,7 @@ const buildSelectors = (state: AppState): Selectors => {
     riskPerc: ordersRiskPercSelector(state),
     status: trailingOrderStatusSelector(state),
     hasCrossedOnce: hasCrossedOnceSelector(state),
-    hasCrossedTwice: hasCrossedTwiceSelector(state),
+    hasCrossedSecondTime: hasCrossedSecondTimeSelector(state),
 
     trailOrderId: trailing.trailOrderId,
     trailOrderPrice: trailing.trailOrderPrice,

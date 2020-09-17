@@ -6,9 +6,8 @@ import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} fro
 import {SYMBOLS, SIDE} from 'util/BitMEX-types';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import styles from './CrossOrderContainer.module.scss';
-import buildOrderPresenter from './place-order-presenter';
-import {clearCrossOrder, createCrossOrder, orderCrossedOnce} from 'redux/modules/cross/crossModule';
-import {postMarketOrder} from 'redux/modules/preview/previewModule';
+import buildOrderPresenter from '../../presenters/cross-label-presenter';
+import {clearCrossOrder, createCrossOrder, orderCrossedOnce, postMarketOrder} from 'redux/modules/cross/crossModule';
 
 interface State {
   symbol: SYMBOLS;
@@ -38,7 +37,7 @@ const CrossOrderContainer = React.memo(() => {
     crossOrderSymbol,
     hasPriceCrossedOnce,
     hasCrossedOnce,
-    hasCrossedTwice,
+    hasCrossedSecondTime,
   } = useReduxSelector(
     'wsCrossPrice',
     'connected',
@@ -48,7 +47,7 @@ const CrossOrderContainer = React.memo(() => {
     'crossOrderSymbol',
     'hasPriceCrossedOnce',
     'hasCrossedOnce',
-    'hasCrossedTwice',
+    'hasCrossedSecondTime',
   );
 
   React.useEffect(() => {
@@ -59,10 +58,10 @@ const CrossOrderContainer = React.memo(() => {
   }, [dispatch, hasPriceCrossedOnce, hasCrossedOnce]);
 
   React.useEffect(() => {
-    if (hasCrossedTwice) {
+    if (hasPriceCrossedOnce && hasCrossedSecondTime) {
       dispatch(postMarketOrder({symbol: crossOrderSymbol, orderQty: crossOrderQuantity, side: crossOrderSide}));
     }
-  }, [dispatch, crossOrderSymbol, crossOrderQuantity, crossOrderSide, hasCrossedTwice]);
+  }, [dispatch, crossOrderSymbol, crossOrderQuantity, crossOrderSide, hasPriceCrossedOnce, hasCrossedSecondTime]);
 
   // TODO: Simplify passing callbacks to components
   const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange) => {
@@ -89,11 +88,10 @@ const CrossOrderContainer = React.memo(() => {
     dispatch(clearCrossOrder());
   }, [dispatch]);
 
-  const buttonLabel = React.useMemo(() => buildOrderPresenter(connected, state.side, wsCrossPrice, false), [
-    connected,
-    state.side,
-    wsCrossPrice,
-  ]);
+  const buttonLabel = React.useMemo(
+    () => buildOrderPresenter(connected, state.side, wsCrossPrice, crossOrderPrice, !!crossOrderPrice),
+    [connected, crossOrderPrice, state.side, wsCrossPrice],
+  );
 
   function renderFirstRow() {
     return (

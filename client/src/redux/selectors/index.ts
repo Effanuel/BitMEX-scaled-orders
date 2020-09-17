@@ -111,15 +111,10 @@ export const hasCrossedOnceSelector = createSelector(
   },
 );
 
-export const hasCrossedTwiceSelector = createSelector(
-  [hasCrossedOnceSelector, getCrossOrderSide, getCrossOrderPrice, websocketCrossPriceSelector],
-  (hasCrossedOnce, crossOrderSide, crossOrderPrice, wsCrossPrice): boolean => {
-    return Boolean(
-      hasCrossedOnce &&
-        wsCrossPrice &&
-        (crossOrderSide === SIDE.BUY ? wsCrossPrice >= crossOrderPrice : wsCrossPrice <= crossOrderPrice),
-    );
-  },
+export const hasCrossedSecondTimeSelector = createSelector(
+  [getCrossOrderSide, getCrossOrderPrice, websocketCrossPriceSelector],
+  (crossOrderSide, crossOrderPrice, wsCrossPrice): boolean =>
+    !!wsCrossPrice && (crossOrderSide === SIDE.BUY ? wsCrossPrice >= crossOrderPrice : wsCrossPrice <= crossOrderPrice),
 );
 
 export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
