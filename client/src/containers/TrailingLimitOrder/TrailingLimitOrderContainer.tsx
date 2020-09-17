@@ -11,7 +11,7 @@ import {
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
-import buildOrderPresenter from './place-order-presenter';
+import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import styles from './TrailingLimitOrderContainer.module.scss';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 
