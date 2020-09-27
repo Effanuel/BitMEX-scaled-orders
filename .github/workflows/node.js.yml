@@ -18,7 +18,6 @@ jobs:
         node-version: [12.x]
 
     steps:
-      - name: Use v2 actions
       - uses: actions/checkout@v2
 
       - name: Use Node.js ${{ matrix.node-version }}
@@ -27,17 +26,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install client packages
-      - run: npm ci
+        run: npm ci
         working-directory: client
 
       - name: Run linter
-      - run: npm run lint
+        run: npm run lint
         working-directory: client
 
       - name: Run tsc
-      - run: npm run tsc
+        run: npm run tsc
         working-directory: client
 
       - name: Run unit tests
-      - run: npm run unit
+        run: npm run unit
         working-directory: client
