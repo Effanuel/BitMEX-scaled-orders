@@ -5,7 +5,7 @@ import {SIDE, SYMBOLS} from 'util/BitMEX-types';
 import mockDistributionOrders from 'tests/mockData/orders';
 
 describe('Preview actions', () => {
-  const distributionParams = (stop = '8000'): any => {
+  const distributionParams = (stop = 8000) => {
     return {orderQty: 500, n_tp: 3, start: 7500, end: 7700, stop: stop, side: SIDE.SELL, symbol: SYMBOLS.XBTUSD};
   };
 
@@ -32,9 +32,9 @@ describe('Preview actions', () => {
   });
 
   it('should generate orders without stop-loss', () => {
-    const {orders_uniform} = mockDistributionOrders({});
+    const {orders_uniform} = mockDistributionOrders();
 
-    store.dispatch(previewOrders(distributionParams(''), DISTRIBUTIONS.Uniform));
+    store.dispatch(previewOrders(distributionParams('' as any), DISTRIBUTIONS.Uniform));
     expect(store.getState().preview.orders).toEqual(orders_uniform);
   });
 

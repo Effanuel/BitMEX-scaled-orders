@@ -52,7 +52,7 @@ const orderStop = {
   text: 'stop',
 };
 
-export default function mockDistributionOrders(stop: any = orderStop) {
+export default function mockDistributionOrders(stop = orderStop) {
   const orderData = (uniqueFields: Partial<Order> = {}) => {
     const execInst = 'ParticipateDoNotInitiate';
     const commonFields = {execInst, ordType: ORD_TYPE.Limit, side: SIDE.SELL, symbol: SYMBOLS.XBTUSD};

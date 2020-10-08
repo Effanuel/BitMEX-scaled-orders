@@ -105,11 +105,11 @@ export interface Instrument {
   rootSymbol: string;
   state: string;
   typ: string;
-  listing: any;
-  front: any;
-  expiry: any;
-  settle: any;
-  relistInterval: any;
+  listing: unknown;
+  front: unknown;
+  expiry: unknown;
+  settle: unknown;
+  relistInterval: unknown;
   inverseLeg: string;
   sellLeg: string;
   buyLeg: string;
@@ -123,9 +123,9 @@ export interface Instrument {
   underlyingSymbol: string;
   reference: string;
   referenceSymbol: string;
-  calcInterval: any;
-  publishInterval: any;
-  publishTime: any;
+  calcInterval: unknown;
+  publishInterval: unknown;
+  publishTime: unknown;
   maxOrderQty: number;
   maxPrice: number;
   lotSize: number;
@@ -152,15 +152,15 @@ export interface Instrument {
   fundingBaseSymbol: string;
   fundingQuoteSymbol: string;
   fundingPremiumSymbol: string;
-  fundingTimestamp: any;
-  fundingInterval: any;
+  fundingTimestamp: unknown;
+  fundingInterval: unknown;
   fundingRate: number;
   indicativeFundingRate: number;
-  rebalanceTimestamp: any;
-  rebalanceInterval: any;
-  openingTimestamp: any;
-  closingTimestamp: any;
-  sessionInterval: any;
+  rebalanceTimestamp: unknown;
+  rebalanceInterval: unknown;
+  openingTimestamp: unknown;
+  closingTimestamp: unknown;
+  sessionInterval: unknown;
   prevClosePrice: number;
   limitDownPrice: number;
   limitUpPrice: number;
@@ -203,7 +203,7 @@ export interface Instrument {
   indicativeSettlePrice: number;
   optionUnderlyingPrice: number;
   settledPrice: number;
-  timestamp: any;
+  timestamp: unknown;
 }
 
 export interface Order {

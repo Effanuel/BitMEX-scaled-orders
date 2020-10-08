@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
@@ -26,7 +26,7 @@ const initialState: Readonly<State> = {
 const CrossOrderContainer = React.memo(() => {
   const dispatch = useDispatch();
 
-  const [state, setState] = useState(initialState);
+  const [state, setState] = React.useState(initialState);
 
   const {
     wsCrossPrice,
@@ -115,7 +115,7 @@ const CrossOrderContainer = React.memo(() => {
           <Button
             testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
             label={buttonLabel.label}
-            variant={state.side === SIDE.SELL ? 'sell' : 'buy'}
+            variant={SIDE.SELL}
             style={{width: '170px'}}
             onClick={createOrder}
             disabled={

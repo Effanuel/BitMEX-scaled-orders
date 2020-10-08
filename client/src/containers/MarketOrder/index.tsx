@@ -55,7 +55,7 @@ const MarketOrderContainer = React.memo(() => {
           testID={MARKET_CONTAINER.BUY_BUTTON}
           id="Buy"
           label="MARKET Buy"
-          variant="buy"
+          variant={SIDE.BUY}
           onClick={submitMarketOrder}
           disabled={!state.orderQty || state.orderQty > 20e6}
         />
@@ -65,7 +65,7 @@ const MarketOrderContainer = React.memo(() => {
           testID={MARKET_CONTAINER.SELL_BUTTON}
           id="Sell"
           label="MARKET Sell"
-          variant="sell"
+          variant={SIDE.SELL}
           onClick={submitMarketOrder}
           disabled={!state.orderQty || state.orderQty > 20e6}
         />

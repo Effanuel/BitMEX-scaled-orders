@@ -31,8 +31,8 @@ export class ComponentDriver<Props> extends ReactComponentDriver<Props> {
     super(component);
   }
 
-  getElement(testID: string | undefined) {
-    const element = this.getByID(testID!);
+  getElement(testID = '...') {
+    const element = this.getByID(testID);
 
     if (element) {
       return element;

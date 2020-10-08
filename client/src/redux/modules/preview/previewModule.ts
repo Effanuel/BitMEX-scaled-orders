@@ -24,7 +24,7 @@ export const postMarketOrder = createThunk<MarketOrderProps>(PREVIEW_POST_MARKET
 type PostScaledOrdersProps = {ordersProps: DistributionProps; distribution: DISTRIBUTIONS};
 export const postScaledOrders = createThunk<PostScaledOrdersProps>(PREVIEW_POST_ORDER, 'postBulkOrders');
 
-export const getBalance = createThunk(GET_BALANCE, 'getBalance');
+export const getBalance = createThunk<string, {walletBalance: number}>(GET_BALANCE, 'getBalance');
 
 export const previewToggle = createAction(TOGGLE_PREVIEW);
 
@@ -41,8 +41,8 @@ export const previewReducer = createReducer<PreviewState>(defaultState, (builder
     .addCase(postScaledOrders.fulfilled, (state) => {
       return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: ''};
     })
-    .addCase(postScaledOrders.rejected, (state, {payload}: any) => {
-      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: payload};
+    .addCase(postScaledOrders.rejected, (state, {payload}) => {
+      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: payload ?? ''};
     })
     .addCase(postMarketOrder.fulfilled, (state) => {
       return {...state, previewLoading: false, error: ''};
@@ -50,8 +50,8 @@ export const previewReducer = createReducer<PreviewState>(defaultState, (builder
     .addCase(getBalance.fulfilled, (state, {payload}) => {
       return {...state, balance: payload.walletBalance};
     })
-    .addCase(getBalance.rejected, (state, {payload}: any) => {
-      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: payload};
+    .addCase(getBalance.rejected, (state, {payload}) => {
+      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: payload ?? ''};
     })
     .addCase(previewShow, (state, {payload}) => {
       return {...state, orders: payload, showPreview: true, error: ''};

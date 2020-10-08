@@ -26,33 +26,12 @@ export const changeTrailingOrderSymbol = createAction(CHANGE_TRAILING_ORDER_SYMB
 export const postTrailingOrder = createThunk(POST_TRAILING_ORDER, 'postTrailingOrder'); // TODO ADD {side: props.side}
 
 type AmmendTrailingOrderProps = {orderID: string; price: number};
-export const ammendTrailingOrder = createThunk<AmmendTrailingOrderProps>(PUT_TRAILING_ORDER, 'putTrailingOrder');
+export const ammendTrailingOrder = createThunk<AmmendTrailingOrderProps, {price: number}>(
+  PUT_TRAILING_ORDER,
+  'putTrailingOrder',
+);
 
 export const cancelTrailingOrder = createThunk<{orderID: string}>(DELETE_TRAILING_ORDER, 'deleteTrailingOrder');
-
-export const trailingReducer = createReducer(defaultState, (builder) =>
-  builder
-    .addCase(postTrailingOrder.fulfilled.type, (state, action) => postTrailingOrderReducer(state, action))
-    .addCase(postTrailingOrder.rejected.type, (state) => {
-      return {...state, trailLoading: false, trailOrderStatus: 'Order posting error.'};
-    })
-    .addCase(postTrailingOrder.pending.type, (state) => {
-      state.trailLoading = true;
-    })
-    .addCase(ammendTrailingOrder.fulfilled.type, (state, {payload}: any) => {
-      return {...state, trailLoading: false, trailOrderPrice: payload.price};
-    })
-
-    .addCase(ammendTrailingOrder.rejected.type, (state) => {
-      return {...state, trailLoading: false, trailOrderStatus: 'Order ammending error'};
-    })
-    .addCase(cancelTrailingOrder.fulfilled.type, () => defaultState)
-    .addCase(cancelTrailingOrder.rejected.type, () => defaultState)
-    .addCase(__clearTrailingOrder, () => defaultState)
-    .addCase(changeTrailingOrderSymbol, (state, {payload}) => {
-      state.trailOrderSymbol = payload;
-    }),
-);
 
 const postTrailingOrderReducer = (state = defaultState, action: Action): TrailingState => {
   const {text, orderID, price, success, side} = action.payload;
@@ -63,6 +42,29 @@ const postTrailingOrderReducer = (state = defaultState, action: Action): Trailin
     : {trailrderId: '', trailOrderStatus: 'Order cancelled.'};
   return {...state, ...response, trailLoading: false, trailOrderSide: side};
 };
+
+export const trailingReducer = createReducer(defaultState, (builder) =>
+  builder
+    .addCase(postTrailingOrder.fulfilled, postTrailingOrderReducer)
+    .addCase(postTrailingOrder.rejected, (state) => {
+      return {...state, trailLoading: false, trailOrderStatus: 'Order posting error.'};
+    })
+    .addCase(postTrailingOrder.pending.type, (state) => {
+      state.trailLoading = true;
+    })
+    .addCase(ammendTrailingOrder.fulfilled, (state, {payload}) => {
+      return {...state, trailLoading: false, trailOrderPrice: payload.price};
+    })
+    .addCase(ammendTrailingOrder.rejected, (state) => {
+      return {...state, trailLoading: false, trailOrderStatus: 'Order ammending error'};
+    })
+    .addCase(cancelTrailingOrder.fulfilled, () => defaultState)
+    .addCase(cancelTrailingOrder.rejected, () => defaultState)
+    .addCase(__clearTrailingOrder, () => defaultState)
+    .addCase(changeTrailingOrderSymbol, (state, {payload}) => {
+      state.trailOrderSymbol = payload;
+    }),
+);
 
 export interface PostTrailingOrderProps {
   symbol: SYMBOLS;

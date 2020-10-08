@@ -1,9 +1,9 @@
-import {showToast, ToastPreset} from 'components';
+import {AsyncThunk} from '@reduxjs/toolkit';
 import {Store} from 'redux';
+import {showToast, ToastPreset} from 'components';
 import {postMarketOrder, postScaledOrders} from 'redux/modules/preview/previewModule';
 import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
 import {postMarketOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
-import {AsyncThunk} from '@reduxjs/toolkit';
 import {AppState} from 'redux/models/state';
 
 interface RegisteredToasts {
@@ -20,8 +20,7 @@ interface ThunkToasts {
   [key: string]: (store: Store<AppState>, action: Action) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function buildThunkToasts<T>(thunk: AsyncThunk<any, T, obj>, requestTypes: RequestTypes): ThunkToasts {
+function buildThunkToasts<R, T, C>(thunk: AsyncThunk<R, T, C>, requestTypes: RequestTypes): ThunkToasts {
   const {REQUEST, SUCCESS, FAILURE} = requestTypes;
 
   const request = REQUEST ? {[thunk.pending.type]: REQUEST} : null;
