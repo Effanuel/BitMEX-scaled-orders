@@ -3,19 +3,7 @@ import {MockBitMEX_API} from 'tests/mockAPI';
 import ScaledContainer from './ScaledOrders';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {AppDriver} from 'tests/app-driver';
-
-async function flushPromises(ms: any) {
-  await new Promise((resolve) => {
-    setTimeout(resolve);
-    if (setTimeout.mock) {
-      if (ms !== undefined) {
-        jest.runTimersToTime(ms);
-      } else {
-        jest.runAllTimers();
-      }
-    }
-  });
-}
+import {flushPromises} from '../../tests/helpers';
 
 interface ScaledInputs {
   orderQty: string;

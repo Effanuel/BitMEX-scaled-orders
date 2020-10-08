@@ -5,19 +5,7 @@ import {MARKET_CONTAINER} from 'data-test-ids';
 import {MockBitMEX_API} from '../../tests/mockAPI';
 import {AppState} from 'redux/models/state';
 import {AppDriver} from 'tests/app-driver';
-
-async function flushPromises(ms: any) {
-  await new Promise((resolve) => {
-    setTimeout(resolve);
-    if (setTimeout.mock) {
-      if (ms !== undefined) {
-        jest.runTimersToTime(ms);
-      } else {
-        jest.runAllTimers();
-      }
-    }
-  });
-}
+import {flushPromises} from '../../tests/helpers';
 
 describe('MarketOrder', () => {
   let driver: AppDriver<typeof MarketOrderContainer>;

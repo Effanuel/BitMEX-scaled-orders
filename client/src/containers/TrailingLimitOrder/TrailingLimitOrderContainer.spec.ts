@@ -6,22 +6,10 @@ import {mockWebsocketState} from 'tests/mockData/orders';
 import {SYMBOLS} from 'util/BitMEX-types';
 import {AppDriver} from 'tests/app-driver';
 import {createMockedStore} from 'tests/mockStore';
-import {REDUX_WEBSOCKET_MESSAGE, REDUX_WEBSOCKET_OPEN} from 'redux/modules/websocket/types';
+import {Instrument, REDUX_WEBSOCKET_MESSAGE, REDUX_WEBSOCKET_OPEN} from 'redux/modules/websocket/types';
 import {partialInstrument} from 'tests/websocketData/instrument';
 import {partialOrder} from 'tests/websocketData/order';
-
-async function flushPromises(ms?: any) {
-  await new Promise((resolve) => {
-    setTimeout(resolve);
-    if (setTimeout.mock) {
-      if (ms !== undefined) {
-        jest.runTimersToTime(ms);
-      } else {
-        jest.runAllTimers();
-      }
-    }
-  });
-}
+import {flushPromises} from '../../tests/helpers';
 
 function createAppDriver(state = createMockedStore()) {
   return new AppDriver(TrailingLimitOrderContainer, state);
@@ -48,7 +36,7 @@ describe('TrailingLimitContainer', () => {
   it('should submit a trailing order without placing it', async () => {
     const websocket = mockWebsocketState({
       connected: true,
-      instrument: [{symbol: SYMBOLS.XBTUSD, askPrice: 501, bidPrice: 500}],
+      instrument: [{symbol: SYMBOLS.XBTUSD, askPrice: 501, bidPrice: 500}] as Instrument[],
     });
     const store = createMockedStore({websocket});
     driver = createAppDriver(store);
