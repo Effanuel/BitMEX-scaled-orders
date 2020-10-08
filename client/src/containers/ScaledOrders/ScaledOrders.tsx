@@ -167,7 +167,7 @@ const ScaledContainer = React.memo(() => {
           <Button
             testID={SCALED_CONTAINER.SUBMIT_BUTTON}
             label="Submit"
-            variant="buy"
+            variant={SIDE.BUY}
             onClick={onOrderSubmit}
             disabled={isDisabled(state)}
           />

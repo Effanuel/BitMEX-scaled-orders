@@ -21,6 +21,7 @@ export class ButtonDriver extends ComponentDriver<ButtonProps> {
   }
 
   pressButton() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const node: any = this.getComponent();
 
     if (node.props.disabled) {
@@ -35,6 +36,7 @@ export class ButtonDriver extends ComponentDriver<ButtonProps> {
   }
 
   getButtonClassName() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this.getComponent() as any).props.className;
   }
 }

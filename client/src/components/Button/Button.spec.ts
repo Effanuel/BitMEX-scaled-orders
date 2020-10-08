@@ -1,3 +1,4 @@
+import {SIDE} from 'util/BitMEX-types';
 import {ButtonVariants} from './Button';
 import {ButtonDriver} from './Button.driver';
 
@@ -11,8 +12,8 @@ describe('ButtonDriver', () => {
   it.each([
     ['submit', 'button'],
     ['text', 'text_button'],
-    ['buy', 'button_buy'],
-    ['sell', 'button_sell'],
+    [SIDE.BUY, 'button_buy'],
+    [SIDE.SELL, 'button_sell'],
     ['textSell', 'text_sell'],
   ])('should return %s className for %s variant', (variant, expectedClassName) => {
     const drv = driver.withDefaultProps({variant: variant as ButtonVariants}).render();
