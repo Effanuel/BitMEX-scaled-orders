@@ -18,7 +18,7 @@ export interface CurrentPrice {
 
 export const getShowPreview = ({preview: {showPreview}}: AppState) => showPreview;
 export const getOrders = ({preview: {orders}}: AppState) => orders;
-const getOrderLoading = ({preview: {previewLoading: loading}}: AppState) => loading;
+const getOrderLoading = ({preview: {previewLoading}}: AppState) => previewLoading;
 const getOrderError = ({preview: {error}}: AppState) => error;
 export const getBalance = ({preview: {balance}}: AppState) => balance;
 
@@ -65,15 +65,13 @@ export const websocketBidAskPrices = createSelector([table_instrument, getTraili
   return undefined;
 });
 
-export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined => {
-  return data.map(({symbol, askPrice, bidPrice}) => ({symbol: symbol as SYMBOLS, askPrice, bidPrice}));
-});
+export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined =>
+  data.map(({symbol, askPrice, bidPrice}) => ({symbol: symbol as SYMBOLS, askPrice, bidPrice})),
+);
 
 export const websocketCurrentPrice = createSelector(
   [websocketBidAskPrices, getTrailingOrderSide],
-  (bidAskPrices, side): number | undefined => {
-    return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
-  },
+  (bidAskPrices, side): number | undefined => (side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice),
 );
 
 export const websocketTrailingPriceSelector = createSelector(
@@ -147,13 +145,12 @@ export const ordersRiskSelector = createSelector(
   },
 );
 
-export const balanceSelector = createSelector([getBalance], (balance): number | null => {
-  return balance ? Math.round((balance / 1e8) * 10000) / 10000 : null;
-});
+export const balanceSelector = createSelector([getBalance], (balance): number | null =>
+  balance ? Math.round((balance / 1e8) * 10000) / 10000 : null,
+);
 
 export const ordersRiskPercSelector = createSelector(
   [balanceSelector, ordersRiskSelector],
-  (balance: number | null, risk: number | undefined): number => {
-    return balance !== 0 && balance !== null && risk !== undefined ? +((risk / balance) * 100).toFixed(2) : 0;
-  },
+  (balance: number | null, risk: number | undefined): number =>
+    balance !== 0 && balance !== null && risk !== undefined ? +((risk / balance) * 100).toFixed(2) : 0,
 );

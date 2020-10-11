@@ -20,6 +20,7 @@ import {
   mockPreviewState,
   mockScaledOrders,
   mockTrailingState,
+  mockCrossState,
 } from 'tests/mockData/orders';
 import {Instrument} from 'redux/modules/websocket/types';
 import {AppState} from 'redux/models/state';
@@ -29,6 +30,7 @@ describe('Selectors', () => {
     websocket: mockWebsocketState({instrument: mockInstrumentData as Instrument[]}),
     preview: mockPreviewState({orders: mockScaledOrders, balance: 12_345_678_993_321, showPreview: true}),
     trailing: mockTrailingState({trailOrderSide: SIDE.SELL, trailOrderSymbol: SYMBOLS.XBTUSD}),
+    cross: mockCrossState({}),
   };
 
   let result: unknown;

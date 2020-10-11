@@ -21,9 +21,6 @@ export const orderCrossedOnce = createAction(ORDER_CROSSED_ONCE);
 
 export const postMarketOrder = createThunk<MarketOrderProps>(CROSS_POST_MARKET_ORDER, 'postMarketOrder');
 
-// cross over buy
-// cross under sell
-
 export const crossReducer = createReducer<CrossState>(defaultState, (builder) =>
   builder
     .addCase(postMarketOrder.fulfilled, () => defaultState)
