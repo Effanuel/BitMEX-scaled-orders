@@ -55,16 +55,15 @@ export const websocketReducer: Reducer<WebsocketState, any> = (state = defaultSt
 
 const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultState, action): WebsocketState => {
   const response: WebsocketResponse = JSON.parse(action.payload.message);
-  const responseKeys = Object.keys(response);
-  const {table, data, action: ws_action, subscribe} = response;
+  const {table, data, action: ws_action, subscribe, status} = response;
 
   if (subscribe) {
     const message = response['success'] ? 'Successful subscription.' : 'Error while subscribing...';
     return {...state, message};
-  } else if (responseKeys.includes('status')) {
+  } else if (!!status) {
     // eslint-disable-next-line no-console
     console.warn('Websocket error response: ', response);
-    const message = `Websocket. Status: ${(response as any).status || 'Error'}`;
+    const message = `Websocket. Status: ${response.status || 'Error'}`;
     return {...state, message};
   } else if (ws_action) {
     switch (ws_action) {
@@ -100,7 +99,7 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
         return {...state, [table]: updatedTable};
       }
     }
-  } else if (responseKeys.includes('unsubscribe')) {
+  } else if (!!response?.unsubscribe) {
     const {[response.unsubscribe]: _deleted, ...rest} = state.__keys;
     // eslint-disable-next-line no-console
     console.warn('UNSUBSCRIBED: ', rest, response.unsubscribe);

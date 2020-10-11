@@ -32,9 +32,6 @@ const CrossOrderContainer = React.memo(() => {
     wsCrossPrice,
     connected,
     crossOrderPrice,
-    crossOrderSide,
-    crossOrderQuantity,
-    crossOrderSymbol,
     hasPriceCrossedOnce,
     hasCrossedOnce,
     hasCrossedSecondTime,
@@ -42,9 +39,6 @@ const CrossOrderContainer = React.memo(() => {
     'wsCrossPrice',
     'connected',
     'crossOrderPrice',
-    'crossOrderSide',
-    'crossOrderQuantity',
-    'crossOrderSymbol',
     'hasPriceCrossedOnce',
     'hasCrossedOnce',
     'hasCrossedSecondTime',
@@ -59,9 +53,9 @@ const CrossOrderContainer = React.memo(() => {
 
   React.useEffect(() => {
     if (hasPriceCrossedOnce && hasCrossedSecondTime) {
-      dispatch(postMarketOrder({symbol: crossOrderSymbol, orderQty: crossOrderQuantity, side: crossOrderSide}));
+      dispatch(postMarketOrder(''));
     }
-  }, [dispatch, crossOrderSymbol, crossOrderQuantity, crossOrderSide, hasPriceCrossedOnce, hasCrossedSecondTime]);
+  }, [dispatch, hasPriceCrossedOnce, hasCrossedSecondTime]);
 
   // TODO: Simplify passing callbacks to components
   const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange) => {

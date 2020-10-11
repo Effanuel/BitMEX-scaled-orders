@@ -102,7 +102,7 @@ export const websocketCrossPriceSelector = createSelector(
 export const hasCrossedOnceSelector = createSelector(
   [getCrossOrderPrice, getCrossOrderSide, websocketCrossPriceSelector],
   (orderPrice, side, currentPrice): boolean => {
-    if (currentPrice && orderPrice > 0) {
+    if (currentPrice) {
       return side === SIDE.BUY ? currentPrice < orderPrice : currentPrice > orderPrice;
     }
     return false;
@@ -111,8 +111,8 @@ export const hasCrossedOnceSelector = createSelector(
 
 export const hasCrossedSecondTimeSelector = createSelector(
   [getCrossOrderSide, getCrossOrderPrice, websocketCrossPriceSelector],
-  (crossOrderSide, crossOrderPrice, wsCrossPrice): boolean =>
-    !!wsCrossPrice && (crossOrderSide === SIDE.BUY ? wsCrossPrice >= crossOrderPrice : wsCrossPrice <= crossOrderPrice),
+  (crossOrderSide, orderPrice, currentPrice): boolean =>
+    !!currentPrice && (crossOrderSide === SIDE.BUY ? currentPrice >= orderPrice : currentPrice <= orderPrice),
 );
 
 export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):

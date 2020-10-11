@@ -1,8 +1,7 @@
-import {withPayloadType, createThunk} from 'redux/helpers/actionHelpers';
-import {createAction, createReducer} from '@reduxjs/toolkit';
+import {withPayloadType, ThunkApiConfig} from 'redux/helpers/actionHelpers';
+import {AsyncThunk, createAction, createAsyncThunk, createReducer} from '@reduxjs/toolkit';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
 import {CrossState, CREATE_CROSS_ORDER, CLEAR_CROSS_ORDER, CROSS_POST_MARKET_ORDER, ORDER_CROSSED_ONCE} from './types';
-import {MarketOrderProps} from 'util/index';
 
 export const defaultState: CrossState = {
   crossOrderSymbol: SYMBOLS.XBTUSD,
@@ -19,7 +18,21 @@ export const clearCrossOrder = createAction(CLEAR_CROSS_ORDER);
 
 export const orderCrossedOnce = createAction(ORDER_CROSSED_ONCE);
 
-export const postMarketOrder = createThunk<MarketOrderProps>(CROSS_POST_MARKET_ORDER, 'postMarketOrder');
+export const postMarketOrder: AsyncThunk<any, any, ThunkApiConfig> = createAsyncThunk(
+  CROSS_POST_MARKET_ORDER,
+  async (_payload, {rejectWithValue, extra: API, getState}) => {
+    try {
+      const apiMethod = 'postMarketOrder';
+      const {crossOrderSymbol, crossOrderQuantity, crossOrderSide} = getState().cross;
+      const payload = {symbol: crossOrderSymbol, orderQty: crossOrderQuantity, side: crossOrderSide};
+
+      return await API[apiMethod](payload);
+    } catch (err) {
+      const payload: string = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
+      return rejectWithValue(payload);
+    }
+  },
+);
 
 export const crossReducer = createReducer<CrossState>(defaultState, (builder) =>
   builder

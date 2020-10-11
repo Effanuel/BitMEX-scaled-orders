@@ -91,6 +91,7 @@ interface WebsocketResponseData {
 interface WebsocketResponseSuccess {
   subscribe: keyof Tables;
   unsubscribe: keyof Tables;
+  status: unknown;
   success: boolean;
 }
 
@@ -98,7 +99,9 @@ interface WebsocketResponseError {
   error: string;
 }
 
-export type WebsocketResponse = WebsocketResponseData & WebsocketResponseSuccess & WebsocketResponseError;
+export type WebsocketResponse = WebsocketResponseData &
+  Partial<WebsocketResponseSuccess> &
+  Partial<WebsocketResponseError>;
 
 export interface Instrument {
   symbol: string;
