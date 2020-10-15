@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, SIDE} from 'util/BitMEX-types';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import styles from './CrossOrderContainer.module.scss';
 import buildOrderPresenter from '../../presenters/cross-label-presenter';
-import {clearCrossOrder, createCrossOrder, orderCrossedOnce, postMarketOrder} from 'redux/modules/cross/crossModule';
+import {clearCrossOrder, createCrossOrder} from 'redux/modules/cross/crossModule';
+import {useHooks} from './useHooks';
 
 interface State {
   symbol: SYMBOLS;
@@ -28,34 +28,7 @@ const CrossOrderContainer = React.memo(() => {
 
   const [state, setState] = React.useState(initialState);
 
-  const {
-    wsCrossPrice,
-    connected,
-    crossOrderPrice,
-    hasPriceCrossedOnce,
-    hasCrossedOnce,
-    hasCrossedSecondTime,
-  } = useReduxSelector(
-    'wsCrossPrice',
-    'connected',
-    'crossOrderPrice',
-    'hasPriceCrossedOnce',
-    'hasCrossedOnce',
-    'hasCrossedSecondTime',
-  );
-
-  React.useEffect(() => {
-    if (!hasPriceCrossedOnce && hasCrossedOnce) {
-      //TODO RENAME
-      dispatch(orderCrossedOnce());
-    }
-  }, [dispatch, hasPriceCrossedOnce, hasCrossedOnce]);
-
-  React.useEffect(() => {
-    if (hasPriceCrossedOnce && hasCrossedSecondTime) {
-      dispatch(postMarketOrder(''));
-    }
-  }, [dispatch, hasPriceCrossedOnce, hasCrossedSecondTime]);
+  const {wsCrossPrice, connected, crossOrderPrice} = useHooks();
 
   // TODO: Simplify passing callbacks to components
   const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange) => {

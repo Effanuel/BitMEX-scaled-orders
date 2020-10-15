@@ -4,16 +4,15 @@ import {useDispatch} from 'react-redux';
 import {
   postTrailingOrder,
   __clearTrailingOrder,
-  ammendTrailingOrder,
   cancelTrailingOrder,
   changeTrailingOrderSymbol,
 } from 'redux/modules/trailing/trailingModule';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
 import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import styles from './TrailingLimitOrderContainer.module.scss';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
+import {useHooks} from './useHooks';
 
 interface State {
   symbol: SYMBOLS;
@@ -33,43 +32,14 @@ const TrailingLimitOrderContainer = React.memo(() => {
   const [state, setState] = useState(initialState);
 
   const {
-    wsTrailingPrice,
     wsCurrentPrice,
     wsBidAskPrices,
     trailOrderId,
     trailOrderStatus,
     trailOrderPrice,
-    trailOrderSide,
     status,
     connected,
-  } = useReduxSelector(
-    'wsTrailingPrice',
-    'wsCurrentPrice',
-    'wsBidAskPrices',
-    'trailOrderId',
-    'trailOrderStatus',
-    'trailOrderPrice',
-    'trailOrderSide',
-    'status',
-    'connected',
-  );
-
-  React.useEffect(() => {
-    const statuses = ['Filled', 'Canceled', 'Order not placed.'];
-    if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
-      const toAmmend = wsTrailingPrice !== trailOrderPrice;
-      if (toAmmend) {
-        dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice}));
-      }
-    }
-  }, [dispatch, trailOrderPrice, trailOrderId, trailOrderSide, status, wsTrailingPrice]);
-
-  React.useEffect(() => {
-    const statuses = ['Filled', 'Canceled', 'Order not placed.'];
-    if (statuses.includes(status) && trailOrderStatus !== 'Order not placed.') {
-      dispatch(__clearTrailingOrder());
-    }
-  }, [dispatch, trailOrderStatus, status]);
+  } = useHooks();
 
   const trailingOrderPrice = React.useMemo(
     () => (state.side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice),
