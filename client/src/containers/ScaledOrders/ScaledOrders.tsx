@@ -40,29 +40,29 @@ const ScaledContainer = React.memo(() => {
   const [state, setState] = React.useState(initialState);
   const [cache, setCache] = React.useState(true);
 
-  function onChangeDropdown({target: {value, id}}: InputChange): void {
+  const onChangeDropdown = React.useCallback(({target: {value, id}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: value, start: null, end: null, stop: null}));
     setCache(false);
-  }
+  }, []);
 
-  function onChangeNumber({target: {id, value}}: InputChange): void {
+  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
     setCache(false);
-  }
+  }, []);
 
-  function toggleSide({target: {value, name}}: InputChange): void {
+  const toggleSide = React.useCallback(({target: {value, name}}: InputChange): void => {
     setState((prevState) => ({...prevState, [name]: value}));
     setCache(false);
-  }
+  }, []);
 
-  function onOrderSubmit(): void {
+  const onOrderSubmit = React.useCallback((): void => {
     const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
     dispatch(postScaledOrders({ordersProps, distribution}));
     setState(initialState);
     setCache(false);
-  }
+  }, [dispatch, state]);
 
-  function onPreviewOrders(): void {
+  const onPreviewOrders = React.useCallback((): void => {
     if (cache) {
       dispatch(previewToggle());
     } else {
@@ -70,7 +70,7 @@ const ScaledContainer = React.memo(() => {
       const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
       dispatch(previewOrders(ordersProps, distribution));
     }
-  }
+  }, [dispatch, state, cache]);
 
   function renderFirstRow() {
     return (
