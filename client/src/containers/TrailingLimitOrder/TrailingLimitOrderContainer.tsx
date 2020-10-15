@@ -114,7 +114,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
           <Button
             testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
             label={buttonLabel.label}
-            variant={SIDE.SELL}
+            variant={state.side}
             style={{width: '170px'}}
             onClick={submitTrailingOrder}
             disabled={!state.orderQty || state.orderQty > 20e6 || !wsCurrentPrice || buttonLabel.disabled}

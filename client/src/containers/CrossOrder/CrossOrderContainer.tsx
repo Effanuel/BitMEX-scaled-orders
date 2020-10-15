@@ -82,7 +82,7 @@ const CrossOrderContainer = React.memo(() => {
           <Button
             testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
             label={buttonLabel.label}
-            variant={SIDE.SELL}
+            variant={state.side}
             style={{width: '170px'}}
             onClick={createOrder}
             disabled={
