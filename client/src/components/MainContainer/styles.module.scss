@@ -11,6 +11,11 @@
   box-shadow: 2px 2px 5px black;
 }
 
+.dim {
+  filter: grayscale(100%);
+  // pointer-events: none;
+}
+
 .container_minimized_text {
   display: flex;
   color: white;
