@@ -91,9 +91,11 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
             ...state[table].slice(indexUpdate + 1),
           ] as Instrument[] | Order[];
 
-          const leavesQty = (updatedValue as Order)?.leavesQty;
-          if (table === 'order' && typeof leavesQty === 'number' && leavesQty <= 0) {
-            updatedTable = state[table].filter((_, i) => i !== indexUpdate);
+          if (table === 'order') {
+            const leavesQty = (updatedValue as Order)?.leavesQty;
+            if (typeof leavesQty === 'number' && leavesQty <= 0) {
+              updatedTable = state[table].filter((_, i) => i !== indexUpdate);
+            }
           }
         }
         return {...state, [table]: updatedTable};
