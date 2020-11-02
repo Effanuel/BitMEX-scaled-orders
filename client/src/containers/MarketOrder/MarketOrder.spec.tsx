@@ -5,7 +5,6 @@ import {MARKET_CONTAINER} from 'data-test-ids';
 import {MockBitMEX_API} from '../../tests/mockAPI';
 import {AppState} from 'redux/models/state';
 import {AppDriver} from 'tests/app-driver';
-import {flushPromises} from '../../tests/helpers';
 
 describe('MarketOrder', () => {
   let driver: AppDriver<typeof MarketOrderContainer>;

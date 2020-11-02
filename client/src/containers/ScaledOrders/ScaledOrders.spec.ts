@@ -1,9 +1,8 @@
 import {act} from 'react-test-renderer';
-import {MockBitMEX_API} from 'tests/mockAPI';
+import {MockBitMEX_API} from '../../tests/mockAPI';
 import ScaledContainer from './ScaledOrders';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {AppDriver} from 'tests/app-driver';
-import {flushPromises} from '../../tests/helpers';
 
 interface ScaledInputs {
   orderQty: string;
@@ -57,6 +56,8 @@ describe('ScaledOrders', () => {
 
     expect(ordersSubmitted).toHaveLength(2);
     expect(stopLossSubmitted).toEqual({});
+
+    expect(driver.getToastCalls()).toEqual({toasts: [{message: 'Scaled orders: error', toastPreset: 'error'}]});
   });
 
   it('should submit scaled orders with stoploss', async () => {
@@ -65,12 +66,16 @@ describe('ScaledOrders', () => {
     driver.getButton(SCALED_CONTAINER.SUBMIT_BUTTON).pressButton();
     await act(flushPromises);
 
+    expect(driver.getActionTypes()).toEqual(['preview/POST_ORDER/pending', 'preview/POST_ORDER/rejected']);
+
     const spyCalls = sendRequestSpy.mock.calls[0][1];
     const ordersSubmitted = spyCalls.orders;
     const stopLossSubmitted = spyCalls.stop;
 
     expect(ordersSubmitted).toHaveLength(3);
     expect(stopLossSubmitted).toEqual(expect.objectContaining({text: 'stop'}));
+
+    expect(driver.getToastCalls()).toEqual({toasts: [{message: 'Scaled orders: error', toastPreset: 'error'}]});
   });
 
   it('should open preview table', async () => {
@@ -83,5 +88,26 @@ describe('ScaledOrders', () => {
 
     expect(driver.getByID(SCALED_CONTAINER.PREVIEW_TABLE)).toBeDefined();
     expect(driver.getByID(SCALED_CONTAINER.ORDER_ROW)?.children).toHaveLength(6);
+  });
+
+  it.skip('should close preview table on order submit', async () => {
+    driver.apply(fillInputs({orderQty: '1000', n_tp: '2', start: '1000', end: '2000', stop: '5000'}));
+
+    driver.getButton(SCALED_CONTAINER.PREVIEW_BUTTON).pressButton();
+    await act(flushPromises);
+
+    expect(driver.getByID(SCALED_CONTAINER.PREVIEW_TABLE)).toBeDefined();
+    driver.getButton(SCALED_CONTAINER.SUBMIT_BUTTON).pressButton();
+    await act(flushPromises);
+    expect(driver.getByID(SCALED_CONTAINER.PREVIEW_TABLE)).toBeUndefined();
+
+    expect(driver.getActionTypes()).toEqual(['preview/SHOW_PREVIEW']);
+
+    // const spyCalls = sendRequestSpy.mock.calls[0][1];
+    // const ordersSubmitted = spyCalls.orders;
+    // const stopLossSubmitted = spyCalls.stop;
+
+    // expect(ordersSubmitted).toHaveLength(3);
+    // expect(stopLossSubmitted).toEqual(expect.objectContaining({text: 'stop'}));
   });
 });

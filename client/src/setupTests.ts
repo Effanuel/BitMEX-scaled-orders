@@ -1,6 +1,6 @@
 jest.mock('axios');
 
-async function flushPromises(ms) {
+async function flushPromises(ms?: number) {
   await new Promise((resolve) => {
     setTimeout(resolve);
     if (setTimeout.mock) {
@@ -12,5 +12,11 @@ async function flushPromises(ms) {
     }
   });
 }
+
+jest.mock('react-toastify', () => {
+  const actual = jest.requireActual('react-toastify');
+  Object.assign(actual, {toast: jest.fn()});
+  return actual;
+});
 
 global.flushPromises = flushPromises;
