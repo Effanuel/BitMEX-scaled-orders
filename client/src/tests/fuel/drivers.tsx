@@ -5,7 +5,6 @@ import {Provider} from 'react-redux';
 import {Action} from 'redux';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import {AppState} from 'redux/models/state';
-import {toast} from 'react-toastify';
 
 type InferProps<T> = T extends React.ComponentType<infer Props> ? Props : never;
 export type ReduxComponent<T> = React.ComponentType<Readonly<InferProps<T>>>;
@@ -49,19 +48,12 @@ export class ComponentDriver<Props> extends ReactComponentDriver<Props> {
 
 export class ReduxComponentDriver<C extends ReduxComponent<C>> extends ComponentDriver<InferProps<C>> {
   store: EnhancedStore<AppState> & {getActions: []};
-  toasts: any;
   constructor(component: C, store: any) {
     super(withStore(component, store));
     this.store = store;
-    this.toasts = [];
-    (toast as any).mockImplementation((val: any) => this.toasts.push(val.props));
   }
 
   getActionTypes() {
     return (this.store as any).getActions().map((action: any) => action.type);
-  }
-
-  getToastCalls() {
-    return {toasts: this.toasts};
   }
 }

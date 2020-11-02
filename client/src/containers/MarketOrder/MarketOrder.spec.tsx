@@ -1,73 +1,76 @@
-import {act} from 'react-test-renderer';
-import {EnhancedStore} from '@reduxjs/toolkit';
 import MarketOrderContainer from './index';
 import {MARKET_CONTAINER} from 'data-test-ids';
-import {MockBitMEX_API} from '../../tests/mockAPI';
-import {AppState} from 'redux/models/state';
-import {AppDriver} from 'tests/app-driver';
+import {createEngine} from 'tests/fuel/app-driver';
+import {apiSpyModule, toastSpyModule} from 'tests/spies';
+
+const engine = createEngine(MarketOrderContainer);
 
 describe('MarketOrder', () => {
-  let driver: AppDriver<typeof MarketOrderContainer>;
-  let sendRequestSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    driver = createAppDriver();
-    sendRequestSpy = jest.spyOn(MockBitMEX_API.prototype, 'sendRequest');
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should disable market buy and market sell buttons by default', async () => {
-    const result = await driver.renderAsync();
+    const result = await engine().renderAsync();
 
     expect(result.getByID(MARKET_CONTAINER.BUY_BUTTON)!.props.disabled).toBeTruthy();
     expect(result.getByID(MARKET_CONTAINER.SELL_BUTTON)!.props.disabled).toBeTruthy();
   });
 
   it('should submit a market buy order request on button click', async () => {
-    driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('1113');
-    driver.getButton(MARKET_CONTAINER.BUY_BUTTON).pressButton();
+    const result = await engine()
+      .addModules(toastSpyModule(), apiSpyModule())
+      .inputText(MARKET_CONTAINER.INPUT, '1113')
+      .press(MARKET_CONTAINER.BUY_BUTTON)
+      .burnFuel();
 
-    expect(sendRequestSpy).toHaveBeenCalledWith(
-      'order',
-      {method: 'POST', order: {ordType: 'Market', orderQty: 1113, side: 'Buy', symbol: 'XBTUSD'}},
-      ['orderID', 'price'],
-    );
+    expect(result).toEqual({
+      actions: ['preview/POST_MARKET_ORDER/pending', 'preview/POST_MARKET_ORDER/fulfilled'],
+      api: [
+        [
+          'order',
+          {method: 'POST', order: {ordType: 'Market', orderQty: 1113, side: 'Buy', symbol: 'XBTUSD'}},
+          ['orderID', 'price'],
+        ],
+      ],
+      toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
+    });
   });
 
   it('should submit a market sell order request on button click', async () => {
-    driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('111');
-    driver.getButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();
+    const result = await engine()
+      .addModules(toastSpyModule(), apiSpyModule())
+      .inputText(MARKET_CONTAINER.INPUT, '111')
+      .press(MARKET_CONTAINER.SELL_BUTTON)
+      .burnFuel();
 
-    await act(flushPromises);
-
-    expect(driver.getActionTypes()).toEqual([
-      'preview/POST_MARKET_ORDER/pending',
-      'preview/POST_MARKET_ORDER/fulfilled',
-    ]);
-
-    expect(sendRequestSpy).toHaveBeenCalledWith(
-      'order',
-      {method: 'POST', order: {ordType: 'Market', orderQty: 111, side: 'Sell', symbol: 'XBTUSD'}},
-      ['orderID', 'price'],
-    );
+    expect(result).toEqual({
+      actions: ['preview/POST_MARKET_ORDER/pending', 'preview/POST_MARKET_ORDER/fulfilled'],
+      api: [
+        [
+          'order',
+          {method: 'POST', order: {ordType: 'Market', orderQty: 111, side: 'Sell', symbol: 'XBTUSD'}},
+          ['orderID', 'price'],
+        ],
+      ],
+      toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
+    });
   });
 
   it('should submit an order with a selected ticker', async () => {
-    driver.getDropdown().selectOption('ETHUSD');
-    driver.getInput(MARKET_CONTAINER.INPUT).setInputValue('111');
-    driver.getButton(MARKET_CONTAINER.SELL_BUTTON).pressButton();
+    const result = await engine()
+      .addModules(toastSpyModule(), apiSpyModule())
+      .selectOption('ETHUSD')
+      .inputText(MARKET_CONTAINER.INPUT, '111')
+      .press(MARKET_CONTAINER.SELL_BUTTON)
+      .burnFuel();
 
-    expect(sendRequestSpy).toHaveBeenCalledWith(
-      'order',
-      {method: 'POST', order: {ordType: 'Market', orderQty: 111, side: 'Sell', symbol: 'ETHUSD'}},
-      ['orderID', 'price'],
-    );
+    expect(result).toEqual({
+      actions: ['preview/POST_MARKET_ORDER/pending', 'preview/POST_MARKET_ORDER/fulfilled'],
+      api: [
+        [
+          'order',
+          {method: 'POST', order: {ordType: 'Market', orderQty: 111, side: 'Sell', symbol: 'ETHUSD'}},
+          ['orderID', 'price'],
+        ],
+      ],
+      toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
+    });
   });
 });
-
-function createAppDriver(state?: EnhancedStore<AppState>) {
-  return new AppDriver(MarketOrderContainer, state);
-}
