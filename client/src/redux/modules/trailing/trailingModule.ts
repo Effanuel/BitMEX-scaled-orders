@@ -1,5 +1,5 @@
-import {createReducer, createAction} from '@reduxjs/toolkit';
-import {withPayloadType, createThunk} from 'redux/helpers/actionHelpers';
+import {createReducer, createAction, createAsyncThunk} from '@reduxjs/toolkit';
+import {withPayloadType, createThunk, ThunkApiConfig, formatErrorMessage} from 'redux/helpers/actionHelpers';
 import {SIDE, ORD_TYPE, SYMBOLS} from 'util/BitMEX-types';
 import {
   TrailingState,
@@ -23,7 +23,19 @@ export const __clearTrailingOrder = createAction(__CLEAR_TRAILING_ORDER);
 
 export const changeTrailingOrderSymbol = createAction(CHANGE_TRAILING_ORDER_SYMBOL, withPayloadType<SYMBOLS>());
 
-export const postTrailingOrder = createThunk(POST_TRAILING_ORDER, 'postTrailingOrder'); // TODO ADD {side: props.side}
+// @TODO: move to createThunk
+export const postTrailingOrder = createAsyncThunk<any, PostTrailingOrderProps, ThunkApiConfig>(
+  POST_TRAILING_ORDER,
+  async (payload, {rejectWithValue, extra: API}) => {
+    try {
+      //@ts-ignore
+      const response = await API['postTrailingOrder'](payload);
+      return {...response, side: payload.side};
+    } catch (err) {
+      return rejectWithValue(formatErrorMessage(err));
+    }
+  },
+);
 
 type AmmendTrailingOrderProps = {orderID: string; price: number};
 export const ammendTrailingOrder = createThunk<AmmendTrailingOrderProps, {price: number}>(
@@ -49,7 +61,7 @@ export const trailingReducer = createReducer(defaultState, (builder) =>
     .addCase(postTrailingOrder.rejected, (state) => {
       return {...state, trailLoading: false, trailOrderStatus: 'Order posting error.'};
     })
-    .addCase(postTrailingOrder.pending.type, (state) => {
+    .addCase(postTrailingOrder.pending, (state) => {
       state.trailLoading = true;
     })
     .addCase(ammendTrailingOrder.fulfilled, (state, {payload}) => {
