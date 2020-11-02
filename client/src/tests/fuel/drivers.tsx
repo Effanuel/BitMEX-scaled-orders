@@ -53,7 +53,7 @@ export class ReduxComponentDriver<C extends ReduxComponent<C>> extends Component
     this.store = store;
   }
 
-  getActionTypes() {
+  protected getActionTypes() {
     return (this.store as any).getActions().map((action: any) => action.type);
   }
 }

@@ -1,4 +1,3 @@
-import {act} from 'react-test-renderer';
 import TrailingLimitOrderContainer from './TrailingLimitOrderContainer';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import {mockWebsocketState} from 'tests/mockData/orders';
@@ -7,8 +6,21 @@ import {createMockedStore} from 'tests/mockStore';
 import {Instrument, REDUX_WEBSOCKET_MESSAGE, REDUX_WEBSOCKET_OPEN} from 'redux/modules/websocket/types';
 import {partialInstrument} from 'tests/websocketData/instrument';
 import {partialOrder} from 'tests/websocketData/order';
-import {createEngine} from 'tests/fuel/app-driver';
+import {AppDriver, createEngine} from 'tests/fuel/app-driver';
 import {toastSpyModule} from 'tests/spies';
+
+function openWebsocket<C>() {
+  return (driver: AppDriver<typeof TrailingLimitOrderContainer>) => {
+    driver.store.dispatch({type: REDUX_WEBSOCKET_OPEN});
+  };
+}
+
+function sendWebsocketMessage<D>(data: D) {
+  return (driver: AppDriver<typeof TrailingLimitOrderContainer>) => {
+    const message = JSON.stringify(data);
+    driver.store.dispatch({type: REDUX_WEBSOCKET_MESSAGE, payload: {message}});
+  };
+}
 
 const engine = createEngine(TrailingLimitOrderContainer, createMockedStore());
 
@@ -26,10 +38,11 @@ describe('TrailingLimitContainer', () => {
     const store = createMockedStore({websocket});
 
     const result = await engine({store})
-      .addModules(toastSpyModule()) // spy on api is missing here
+      .addFuel(toastSpyModule()) // spy on api is missing here
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
       .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
-      .burnFuel();
+      .burnFuel()
+      .halt();
 
     expect(result).toEqual({
       actions: [
@@ -43,25 +56,16 @@ describe('TrailingLimitContainer', () => {
 
   // @TODO: fix spy on api
   it('should submit a trailing sell order', async () => {
-    const driver = engine();
-
-    act(() => {
-      driver.store.dispatch({type: REDUX_WEBSOCKET_OPEN});
-      const data = JSON.stringify(partialInstrument);
-      driver.store.dispatch({type: REDUX_WEBSOCKET_MESSAGE, payload: {message: data}});
-    });
-
-    driver
-      .addModules(toastSpyModule())
+    const result = await engine()
+      .addFuel(toastSpyModule())
+      .applyWithAct(openWebsocket())
+      .applyWithAct(sendWebsocketMessage(partialInstrument))
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
-      .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER);
-
-    act(() => {
-      const data = JSON.stringify(partialOrder);
-      driver.store.dispatch({type: REDUX_WEBSOCKET_MESSAGE, payload: {message: data}});
-    });
-
-    const result = await driver.burnFuel();
+      .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
+      .applyWithAct(sendWebsocketMessage(partialOrder))
+      .burnFuel()
+      .withStore('trailing')
+      .halt();
 
     expect(result).toEqual({
       actions: [
@@ -72,6 +76,14 @@ describe('TrailingLimitContainer', () => {
         'trailing/POST_TRAILING_ORDER/fulfilled',
       ],
       toast: [{message: 'Trailing Order placed  at 10322', toastPreset: 'success'}],
+      trailing: {
+        trailLoading: false,
+        trailOrderId: '572fe645-91c8-1a47-5060-18f11630f38a',
+        trailOrderPrice: 10322,
+        trailOrderSide: 'Sell',
+        trailOrderStatus: 'Order placed.',
+        trailOrderSymbol: 'XBTUSD',
+      },
     });
 
     // expect(sendRequestSpy).toHaveBeenCalledWith(
@@ -90,14 +102,5 @@ describe('TrailingLimitContainer', () => {
     //   },
     //   ['orderID', 'price'],
     // );
-
-    expect(driver.store.getState().trailing).toEqual({
-      trailLoading: false,
-      trailOrderId: '572fe645-91c8-1a47-5060-18f11630f38a',
-      trailOrderPrice: 10322,
-      trailOrderSide: 'Sell',
-      trailOrderStatus: 'Order placed.',
-      trailOrderSymbol: 'XBTUSD',
-    });
   });
 });

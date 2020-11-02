@@ -12,16 +12,38 @@ import {SelectDropdownDriver} from 'components/SelectDropdown/SelectDropdown.dri
 import {Inspector} from './inspectors';
 import {SpyModule} from '../spies';
 
+type Step = () => void | Promise<any>;
+
 export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver<C> {
   interop: unknown[];
   inspections: Record<string, unknown>;
+  steps: Step[];
   constructor(component: C, state: EnhancedStore<AppState> = createMockedStore()) {
     super(component, state);
     this.interop = [];
     this.inspections = {};
+    this.steps = [];
   }
 
-  addModules<K extends any[]>(...modules: SpyModule<K>[]) {
+  applyWithAct(operations: (driver: this) => void) {
+    this.steps.push(() => {
+      act(() => {
+        operations(this);
+      });
+    });
+
+    return this;
+  }
+
+  withStore(reducer: keyof AppState) {
+    this.steps.push(() => {
+      this.inspections[reducer] = this.store.getState()[reducer];
+    });
+
+    return this;
+  }
+
+  addFuel<K extends any[]>(...modules: SpyModule<K>[]) {
     for (const module of modules) {
       const [moduleName, {spy, parser}] = Object.entries(module)?.[0];
       spy.mockImplementation((...args: K) => {
@@ -46,15 +68,19 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
     return this.inspections;
   }
 
-  inspect<T>(inspection: {[key: string]: Inspector<T>}) {
-    for (const [key, value] of Object.entries(inspection)) {
-      this.inspections[key] = value(this);
-    }
+  inspect(inspection: {[key: string]: Inspector<any>}) {
+    this.steps.push(() => {
+      for (const [key, value] of Object.entries(inspection)) {
+        this.inspections[key] = value(this);
+      }
+    });
     return this;
   }
 
   apply(operations: (driver: this) => void) {
-    operations(this);
+    this.steps.push(() => {
+      operations(this);
+    });
     return this;
   }
 
@@ -67,7 +93,9 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
   }
 
   press(testID: string) {
-    this.getButton(testID).pressButton();
+    this.steps.push(() => {
+      this.getButton(testID).pressButton();
+    });
     return this;
   }
 
@@ -81,8 +109,17 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
     return this;
   }
 
-  async burnFuel() {
-    await act(flushPromises);
+  burnFuel() {
+    this.steps.push(async () => {
+      await act(flushPromises);
+    });
+    return this;
+  }
+
+  async halt() {
+    for (const step of this.steps) {
+      await step();
+    }
     const reduxActions = {actions: this.getActionTypes()};
     return {...this.getInspections(), ...this.getInterop(), ...reduxActions};
   }

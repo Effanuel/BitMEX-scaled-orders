@@ -15,10 +15,11 @@ describe('MarketOrder', () => {
 
   it('should submit a market buy order request on button click', async () => {
     const result = await engine()
-      .addModules(toastSpyModule(), apiSpyModule())
+      .addFuel(toastSpyModule(), apiSpyModule())
       .inputText(MARKET_CONTAINER.INPUT, '1113')
       .press(MARKET_CONTAINER.BUY_BUTTON)
-      .burnFuel();
+      .burnFuel()
+      .halt();
 
     expect(result).toEqual({
       actions: ['preview/POST_MARKET_ORDER/pending', 'preview/POST_MARKET_ORDER/fulfilled'],
@@ -35,10 +36,11 @@ describe('MarketOrder', () => {
 
   it('should submit a market sell order request on button click', async () => {
     const result = await engine()
-      .addModules(toastSpyModule(), apiSpyModule())
+      .addFuel(toastSpyModule(), apiSpyModule())
       .inputText(MARKET_CONTAINER.INPUT, '111')
       .press(MARKET_CONTAINER.SELL_BUTTON)
-      .burnFuel();
+      .burnFuel()
+      .halt();
 
     expect(result).toEqual({
       actions: ['preview/POST_MARKET_ORDER/pending', 'preview/POST_MARKET_ORDER/fulfilled'],
@@ -55,11 +57,12 @@ describe('MarketOrder', () => {
 
   it('should submit an order with a selected ticker', async () => {
     const result = await engine()
-      .addModules(toastSpyModule(), apiSpyModule())
+      .addFuel(toastSpyModule(), apiSpyModule())
       .selectOption('ETHUSD')
       .inputText(MARKET_CONTAINER.INPUT, '111')
       .press(MARKET_CONTAINER.SELL_BUTTON)
-      .burnFuel();
+      .burnFuel()
+      .halt();
 
     expect(result).toEqual({
       actions: ['preview/POST_MARKET_ORDER/pending', 'preview/POST_MARKET_ORDER/fulfilled'],

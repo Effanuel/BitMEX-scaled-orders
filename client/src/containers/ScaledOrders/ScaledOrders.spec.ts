@@ -32,10 +32,11 @@ describe('ScaledOrders', () => {
 
   it('should submit scaled orders without stoploss', async () => {
     const result = await engine()
-      .addModules(toastSpyModule(), apiSpyModule())
+      .addFuel(toastSpyModule(), apiSpyModule())
       .apply(fillInputs({orderQty: '1000', n_tp: '2', start: '1000', end: '2000'}))
       .press(SCALED_CONTAINER.SUBMIT_BUTTON)
-      .burnFuel();
+      .burnFuel()
+      .halt();
 
     expect(result).toEqual({
       actions: ['preview/POST_ORDER/pending', 'preview/POST_ORDER/fulfilled'],
@@ -51,10 +52,12 @@ describe('ScaledOrders', () => {
 
   it('should submit scaled orders with stoploss', async () => {
     const result = await engine()
-      .addModules(toastSpyModule(), apiSpyModule())
+      .addFuel(toastSpyModule(), apiSpyModule())
       .apply(fillInputs({orderQty: '1000', n_tp: '2', start: '1000', end: '2000', stop: '5000'}))
       .press(SCALED_CONTAINER.SUBMIT_BUTTON)
-      .burnFuel();
+      .burnFuel()
+
+      .halt();
 
     expect(result).toEqual({
       actions: ['preview/POST_ORDER/pending', 'preview/POST_ORDER/fulfilled'],
@@ -76,19 +79,88 @@ describe('ScaledOrders', () => {
   });
 
   it('should open preview table', async () => {
+    // @TODO REDUCE duplicate insepctions in result
     const result = await engine()
       .apply(fillInputs({orderQty: '1000', n_tp: '5', start: '1000', end: '2000', stop: '3000'}))
       .inspect({previewTableVisibleBefore: exists(SCALED_CONTAINER.PREVIEW_TABLE)})
       .press(SCALED_CONTAINER.PREVIEW_BUTTON)
-      .inspect({previewTableVisibleAfter: exists(SCALED_CONTAINER.PREVIEW_TABLE)})
-      .inspect({orderRowCount: countOf(SCALED_CONTAINER.ORDER_ROW)})
-      .burnFuel();
+      .inspect({
+        previewTableVisibleAfter: exists(SCALED_CONTAINER.PREVIEW_TABLE),
+        orderRowCount: countOf(SCALED_CONTAINER.ORDER_ROW),
+      })
+      .burnFuel()
+      .withStore('preview')
+      .halt();
 
     expect(result).toEqual({
       actions: ['preview/SHOW_PREVIEW'],
       previewTableVisibleBefore: false,
       previewTableVisibleAfter: true,
       orderRowCount: 6,
+      preview: {
+        balance: 0,
+        error: '',
+        orders: {
+          orders: [
+            {
+              execInst: 'ParticipateDoNotInitiate',
+              ordType: 'Limit',
+              orderQty: 200,
+              price: 1000,
+              side: 'Sell',
+              symbol: 'XBTUSD',
+              text: 'order_1',
+            },
+            {
+              execInst: 'ParticipateDoNotInitiate',
+              ordType: 'Limit',
+              orderQty: 200,
+              price: 1250,
+              side: 'Sell',
+              symbol: 'XBTUSD',
+              text: 'order_2',
+            },
+            {
+              execInst: 'ParticipateDoNotInitiate',
+              ordType: 'Limit',
+              orderQty: 200,
+              price: 1500,
+              side: 'Sell',
+              symbol: 'XBTUSD',
+              text: 'order_3',
+            },
+            {
+              execInst: 'ParticipateDoNotInitiate',
+              ordType: 'Limit',
+              orderQty: 200,
+              price: 1750,
+              side: 'Sell',
+              symbol: 'XBTUSD',
+              text: 'order_4',
+            },
+            {
+              execInst: 'ParticipateDoNotInitiate',
+              ordType: 'Limit',
+              orderQty: 200,
+              price: 2000,
+              side: 'Sell',
+              symbol: 'XBTUSD',
+              text: 'order_5',
+            },
+          ],
+          stop: {
+            execInst: 'LastPrice,ReduceOnly',
+            ordType: 'Stop',
+            orderQty: 1000,
+            side: 'Buy',
+            stopPx: 3000,
+            symbol: 'XBTUSD',
+            text: 'stop',
+          },
+        },
+        previewLoading: false,
+        showPreview: true,
+      },
     });
   });
 });
