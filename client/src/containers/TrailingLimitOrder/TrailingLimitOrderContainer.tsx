@@ -20,7 +20,7 @@ interface State {
   side: SIDE;
 }
 
-const initialState: Readonly<State> = {
+const initialState = {
   symbol: SYMBOLS.XBTUSD,
   orderQty: null,
   side: SIDE.SELL,
@@ -29,7 +29,7 @@ const initialState: Readonly<State> = {
 const TrailingLimitOrderContainer = React.memo(() => {
   const dispatch = useDispatch();
 
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState<Readonly<State>>(initialState);
 
   const {
     wsCurrentPrice,
@@ -46,7 +46,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
     [state.side, wsBidAskPrices],
   );
 
-  function submitTrailingOrder() {
+  const submitTrailingOrder = React.useCallback(() => {
     if (trailingOrderPrice && state.orderQty) {
       const payload = {
         ...state,
@@ -58,17 +58,17 @@ const TrailingLimitOrderContainer = React.memo(() => {
       };
       dispatch(postTrailingOrder(payload));
     }
-  }
+  }, [dispatch, state, trailingOrderPrice]);
 
-  function cancelOrder() {
+  const cancelOrder = React.useCallback(() => {
     if (trailOrderId) {
       dispatch(cancelTrailingOrder({orderID: trailOrderId}));
     }
-  }
+  }, [dispatch, trailOrderId]);
 
-  function onChangeNumber({target: {id, value}}: InputChange): void {
+  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
-  }
+  }, []);
 
   const toggleInstrument = React.useCallback(
     ({target: {id, value}}: InputChange) => {
@@ -108,7 +108,11 @@ const TrailingLimitOrderContainer = React.memo(() => {
           />
         </Grid>
         <Grid item xs={2}>
-          <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
+          <SideRadioButtons
+            testID={TRAILING_LIMIT_CONTAINER.SIDE_BUTTONS}
+            onChangeRadio={toggleSide}
+            side={state.side}
+          />
         </Grid>
         <Grid item xs={4} className={styles.top_row}>
           <Button
@@ -151,7 +155,11 @@ const TrailingLimitOrderContainer = React.memo(() => {
   }
 
   return (
-    <MainContainer label="Trailing Limit Order" description="Place a limit order to trail market price">
+    <MainContainer
+      connected={connected}
+      label="Trailing Limit Order"
+      description="Place a limit order to trail market price"
+    >
       {renderFirstRow()}
       {renderSecondRow()}
     </MainContainer>
