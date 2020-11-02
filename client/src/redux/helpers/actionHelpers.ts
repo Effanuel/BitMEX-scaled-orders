@@ -43,8 +43,11 @@ export function createThunk<P, Returned = any>(
       const response = await API[apiMethod](payload);
       return {...response, ...moreData};
     } catch (err) {
-      const payload: string = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-      return rejectWithValue(payload);
+      return rejectWithValue(formatErrorMessage(err));
     }
   });
+}
+
+export function formatErrorMessage(err: any): string {
+  return err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
 }

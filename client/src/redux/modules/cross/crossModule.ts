@@ -1,4 +1,4 @@
-import {withPayloadType, ThunkApiConfig} from 'redux/helpers/actionHelpers';
+import {withPayloadType, ThunkApiConfig, formatErrorMessage} from 'redux/helpers/actionHelpers';
 import {AsyncThunk, createAction, createAsyncThunk, createReducer} from '@reduxjs/toolkit';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
 import {CrossState, CREATE_CROSS_ORDER, CLEAR_CROSS_ORDER, CROSS_POST_MARKET_ORDER, ORDER_CROSSED_ONCE} from './types';
@@ -28,8 +28,7 @@ export const postMarketOrder: AsyncThunk<any, any, ThunkApiConfig> = createAsync
 
       return await API[apiMethod](payload);
     } catch (err) {
-      const payload: string = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-      return rejectWithValue(payload);
+      return rejectWithValue(formatErrorMessage(err));
     }
   },
 );
