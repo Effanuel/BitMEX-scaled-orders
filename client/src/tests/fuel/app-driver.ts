@@ -35,9 +35,10 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
     return this;
   }
 
-  withStore(reducer: keyof AppState) {
+  withStore(reducer: keyof AppState, parser?: string) {
     this.steps.push(() => {
-      this.inspections[reducer] = this.store.getState()[reducer];
+      const tree = this.store.getState()[reducer];
+      this.inspections[reducer] = parser ? collapseTree(tree, parser) : tree;
     });
 
     return this;
@@ -121,6 +122,7 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
       await step();
     }
     const reduxActions = {actions: this.getActionTypes()};
+
     return {...this.getInspections(), ...this.getInterop(), ...reduxActions};
   }
 
@@ -142,4 +144,19 @@ export function createEngine(component: any, initialStore?: EnhancedStore<AppSta
     const reduxStore = store ? store : initialStore;
     return new AppDriver(component, reduxStore);
   };
+}
+
+function collapseTree(tree: unknown, parser?: string) {
+  let accumulator: any = tree;
+
+  parser?.split('.').forEach((access) => {
+    const accessByKey = /^\w+$/g.test(access);
+    const accessByMap = /\[\]{\w+,\w+}/g.test(access);
+    if (accessByKey) {
+      accumulator = accumulator[access];
+    } else if (accessByMap) {
+      accumulator = accumulator.map((item: any) => _.pick(item, access.match(/\w+/g) ?? []));
+    }
+  });
+  return accumulator;
 }
