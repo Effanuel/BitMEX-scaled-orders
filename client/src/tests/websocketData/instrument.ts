@@ -1,10 +1,20 @@
-export const partialInstrument = {
+import {SYMBOLS} from 'util/BitMEX-types';
+
+interface PartialInstrument {
+  symbol: SYMBOLS;
+  askPrice: number;
+  bidPrice: number;
+}
+
+export const partialInstrument = ({askPrice, bidPrice, symbol}: PartialInstrument) => ({
   table: 'instrument',
   action: 'partial',
   keys: ['symbol'],
   data: [
     {
-      symbol: 'XBTUSD',
+      bidPrice,
+      askPrice,
+      symbol,
       rootSymbol: 'XBT',
       state: 'Open',
       typ: 'FFWCSX',
@@ -87,9 +97,8 @@ export const partialInstrument = {
       lastPriceProtected: 10322,
       lastTickDirection: 'ZeroPlusTick',
       lastChangePcnt: -0.0119,
-      bidPrice: 10321.5,
+
       midPrice: 10321.75,
-      askPrice: 10322,
       impactBidPrice: 10272.2137,
       impactMidPrice: 10297.25,
       impactAskPrice: 10322.0479,
@@ -109,4 +118,4 @@ export const partialInstrument = {
       timestamp: '2020-09-13T20:27:10.000Z',
     },
   ],
-};
+});

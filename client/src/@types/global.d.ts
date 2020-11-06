@@ -20,6 +20,14 @@ type PickWithOptional<T, K extends keyof T, O extends keyof T> = {
 } &
   {[P in O]?: T[P]};
 
+type KeysByType<O extends object, T> = {
+  [k in keyof O]-?: O[k] extends T ? k : never;
+}[keyof O];
+
+type FunctionsOnly<O extends object> = Pick<O, KeysByType<O, Function>>;
+
+type ClassMethods<C extends object> = FunctionsOnly<InstanceType<C>>;
+
 type InputChange = React.ChangeEvent<HTMLInputElement>;
 type ButtonChange = React.ChangeEvent<HTMLButtonElement>;
 type MouseChange = React.MouseEvent<HTMLButtonElement>;

@@ -1,15 +1,17 @@
-import {BitMEX_API, Routes} from 'redux/helpers/apiHelpers';
-import {mockResponses} from './mockData/requestResponses';
+import {BitMEX_API, Methods, Routes} from '../redux/helpers/apiHelpers';
+import {Response} from './responses';
 
-type RequestPayload<T> = {method?: string} & T;
+type RequestPayload<T> = {method?: Methods} & T;
 
+// @TODO fix async not async type
 export class MockBitMEX_API extends BitMEX_API {
-  constructor() {
+  constructor(private mockResponsesOverride: Response) {
     super();
+    this.mockResponsesOverride = mockResponsesOverride;
   }
 
   async _makeRequest<P>(path: Routes, payload: RequestPayload<P> | undefined) {
-    const response = mockResponses[path]?.[payload?.method || 'GET'];
+    const response = this.mockResponsesOverride[path]?.[payload?.method || 'GET'];
     const {data, success} = response!.data;
     return {data, success};
   }

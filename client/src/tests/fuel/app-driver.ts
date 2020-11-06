@@ -11,6 +11,7 @@ import InputFieldDriver from 'components/InputField/InputField.driver';
 import {SelectDropdownDriver} from 'components/SelectDropdown/SelectDropdown.driver';
 import {Inspector} from './inspectors';
 import {SpyModule} from '../spies';
+import {MockBitMEX_API} from 'tests/mockAPI';
 
 type Step = () => void | Promise<any>;
 
@@ -136,12 +137,14 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
 }
 
 interface Engine {
-  store?: EnhancedStore<AppState>;
+  store?: Partial<AppState>;
+  mocks?: Response[];
 }
 
-export function createEngine(component: any, initialStore?: EnhancedStore<AppState>) {
-  return ({store}: Partial<Engine> = {}) => {
-    const reduxStore = store ? store : initialStore;
+export function createEngine(component: any, initialStore?: Partial<AppState>, initialMocks?: Response) {
+  return ({store, mocks}: Partial<Engine> = {}) => {
+    const redux = store ? store : initialStore;
+    const reduxStore = createMockedStore(redux, new MockBitMEX_API({...(initialMocks ?? {}), ...(mocks ?? {})}));
     return new AppDriver(component, reduxStore);
   };
 }
