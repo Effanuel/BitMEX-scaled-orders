@@ -3,11 +3,12 @@ import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, SIDE} from 'util/BitMEX-types';
-import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
+import {CROSS_ORDER_CONTAINER} from 'data-test-ids';
 import styles from './CrossOrderContainer.module.scss';
 import buildOrderPresenter from '../../presenters/cross-label-presenter';
 import {clearCrossOrder, createCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
+import {useSimpleDispatch, useStateChange} from 'general/hooks';
 
 interface State {
   symbol: SYMBOLS;
@@ -35,13 +36,9 @@ const CrossOrderContainer = React.memo(() => {
     setState((prevState) => ({...prevState, [id]: +value}));
   }, []);
 
-  const toggleInstrument = React.useCallback(({target: {id, value}}: InputChange) => {
-    setState((prevState) => ({...prevState, [id]: value}));
-  }, []);
+  const toggleInstrument = useStateChange(setState, 'id', 'value');
 
-  const toggleSide = React.useCallback(({target: {name, value}}: InputChange) => {
-    setState((prevState) => ({...prevState, [name]: value}));
-  }, []);
+  const toggleSide = useStateChange(setState, 'name', 'value');
 
   const createOrder = React.useCallback(() => {
     const {price, symbol, side, orderQty} = state;
@@ -51,14 +48,14 @@ const CrossOrderContainer = React.memo(() => {
     }
   }, [dispatch, state]);
 
-  const cancelCrossOrder = React.useCallback(() => {
-    dispatch(clearCrossOrder());
-  }, [dispatch]);
+  const cancelCrossOrder = useSimpleDispatch(dispatch, clearCrossOrder);
 
-  const buttonLabel = React.useMemo(
-    () => buildOrderPresenter(connected, state.side, wsCrossPrice, crossOrderPrice, !!crossOrderPrice),
-    [connected, crossOrderPrice, state.side, wsCrossPrice],
-  );
+  const buttonLabel = React.useMemo(() => buildOrderPresenter(connected, state.side, wsCrossPrice, crossOrderPrice), [
+    connected,
+    crossOrderPrice,
+    state.side,
+    wsCrossPrice,
+  ]);
 
   function renderFirstRow() {
     return (
@@ -68,7 +65,7 @@ const CrossOrderContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
-            data-test-id={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
+            data-test-id={CROSS_ORDER_CONTAINER.QUANTITY_INPUT}
             id="orderQty"
             onChange={onChangeNumber}
             value={state.orderQty}
@@ -80,7 +77,7 @@ const CrossOrderContainer = React.memo(() => {
         </Grid>
         <Grid item xs={4} className={styles.top_row}>
           <Button
-            testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
+            testID={CROSS_ORDER_CONTAINER.SUBMIT}
             label={buttonLabel.label}
             variant={state.side}
             style={{width: '170px'}}
@@ -99,7 +96,7 @@ const CrossOrderContainer = React.memo(() => {
       <>
         <Grid item xs={3}>
           <InputField
-            data-test-id={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
+            data-test-id={CROSS_ORDER_CONTAINER.PRICE_INPUT}
             id="price"
             onChange={onChangeNumber}
             value={state.price}
@@ -122,7 +119,12 @@ const CrossOrderContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           {connected && crossOrderPrice ? (
-            <Button variant="textSell" onClick={cancelCrossOrder} label={'Cancel Cross Order'} />
+            <Button
+              testID={CROSS_ORDER_CONTAINER.CANCEL_ORDER}
+              variant="textSell"
+              onClick={cancelCrossOrder}
+              label={'Cancel Cross Order'}
+            />
           ) : null}
         </Grid>
       </>
@@ -130,7 +132,11 @@ const CrossOrderContainer = React.memo(() => {
   }
 
   return (
-    <MainContainer label="Cross Order" description="Place a market order when the price crosses your set price">
+    <MainContainer
+      connected={connected}
+      label="Cross Order"
+      description="Place a market order when the price crosses your set price"
+    >
       {renderFirstRow()}
       {renderSecondRow()}
     </MainContainer>
