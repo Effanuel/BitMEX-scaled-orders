@@ -14,7 +14,7 @@ export const mockedDefaultState: AppState = {
   cross: mockCrossState({}),
 };
 
-export function createMockedStore(overrideState: Partial<AppState> = {}, mockAPI = new MockBitMEX_API()) {
+export function createMockedStore(overrideState: Partial<AppState> = {}, mockAPI = new MockBitMEX_API({})) {
   const preloadedState = {...mockedDefaultState, ...overrideState};
   const middlewares = [thunk.withExtraArgument(mockAPI), notificationMiddleware];
   const enhancer = compose(applyMiddleware(...middlewares));

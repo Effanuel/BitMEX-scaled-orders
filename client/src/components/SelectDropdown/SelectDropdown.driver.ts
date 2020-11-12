@@ -1,5 +1,5 @@
 import {COMPONENTS} from 'data-test-ids';
-import {ComponentDriver} from 'tests/drivers';
+import {ComponentDriver} from 'tests/fuel/drivers';
 import {SelectDropDownProps, SelectDropdown} from './SelectDropdown';
 
 export class SelectDropdownDriver extends ComponentDriver<SelectDropDownProps> {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {MainContainer, MainContainerProps} from './MainContainer';
 import {MAIN_CONTAINER} from '../../data-test-ids';
-import {ComponentDriver} from 'tests/drivers';
+import {ComponentDriver} from 'tests/fuel/drivers';
 
 describe('MainContainer', () => {
   let driver: MainContainerDriver;

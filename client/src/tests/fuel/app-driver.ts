@@ -12,6 +12,7 @@ import {SelectDropdownDriver} from 'components/SelectDropdown/SelectDropdown.dri
 import {Inspector} from './inspectors';
 import {SpyModule} from '../spies';
 import {MockBitMEX_API} from 'tests/mockAPI';
+import {Response} from 'tests/responses';
 
 type Step = () => void | Promise<any>;
 
@@ -36,10 +37,10 @@ export class AppDriver<C extends ReduxComponent<C>> extends ReduxComponentDriver
     return this;
   }
 
-  withStore(reducer: keyof AppState, parser?: string) {
+  withStore(reducer: keyof AppState, parser?: string, as?: {as: string}) {
     this.steps.push(() => {
       const tree = this.store.getState()[reducer];
-      this.inspections[reducer] = parser ? collapseTree(tree, parser) : tree;
+      this.inspections[as?.as ?? reducer] = parser ? collapseTree(tree, parser) : tree;
     });
 
     return this;
