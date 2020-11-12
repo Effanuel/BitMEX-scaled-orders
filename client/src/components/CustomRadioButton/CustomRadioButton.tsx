@@ -19,21 +19,31 @@ interface CustomRadioButtonProps {
   labelPlacement?: 'end' | 'start' | 'top' | 'bottom';
 }
 
+const controlButton = <Radio size="small" />;
+
 export function CustomRadioButton(props: CustomRadioButtonProps) {
   const {root} = useStyles();
-  const controlButton = React.useMemo(() => <Radio size="small" />, []);
 
   return <FormControlLabel labelPlacement={'end'} className={root} control={controlButton} {...props} />;
 }
 
-interface SideRadioButtonsProps {
+export interface SideRadioButtonsProps {
+  testID?: string;
   onChangeRadio: (event: InputChange, value: string) => void;
   side: SIDE;
 }
 
-export function SideRadioButtons({onChangeRadio, side}: SideRadioButtonsProps) {
+export function SideRadioButtons({onChangeRadio, side, testID}: SideRadioButtonsProps) {
   return (
-    <RadioGroup aria-label="position" name="side" value={side} onChange={onChangeRadio} style={{marginTop: '15px'}}>
+    <RadioGroup
+      data-test-id={testID}
+      aria-label="position"
+      name="side"
+      value={side}
+      onChange={onChangeRadio}
+      style={{marginTop: '15px'}}
+      // inputProps={{'data-test-id': testID}}
+    >
       <CustomRadioButton id="scaled_side_sell" label="Sell" value="Sell" />
       <CustomRadioButton id="scaled_side_buy" label="Buy" value="Buy" />
     </RadioGroup>
