@@ -54,7 +54,7 @@ const PostTrailingOrderToasts = buildThunkToasts(postTrailingOrder, {
     const isOrderPlaced = text === 'best_order';
     const toastDisplay: {message: string; preset: ToastPreset} =
       isOrderSubmitted && isOrderPlaced
-        ? {message: `Trailing Order placed  at ${price}`, preset: 'success'}
+        ? {message: `Trailing Order placed at ${price}`, preset: 'success'}
         : {message: `Trailing order: Post only - order cancelled.`, preset: 'warning'};
 
     showToast(toastDisplay.message, toastDisplay.preset);

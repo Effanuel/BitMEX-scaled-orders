@@ -25,26 +25,26 @@ describe('Trailing Label presenter', () => {
 describe('Cross Label presenter', () => {
   const crossOrderPrice = 999;
   it('should match label when - not connected or current price is undefined', () => {
-    const test1 = buildCrossLabel(false, SIDE.SELL, 300, crossOrderPrice, false);
+    const test1 = buildCrossLabel(false, SIDE.SELL, 300, 0);
     expect(test1.label).toEqual('Not subscribed to order');
 
-    const test2 = buildCrossLabel(false, SIDE.SELL, undefined, crossOrderPrice, false);
+    const test2 = buildCrossLabel(false, SIDE.SELL, undefined, 0);
     expect(test2.label).toEqual('Not subscribed to order');
   });
 
   it('should match label when - connected and order is created', () => {
-    const test1 = buildCrossLabel(true, SIDE.SELL, 300, crossOrderPrice, true);
+    const test1 = buildCrossLabel(true, SIDE.SELL, 300, crossOrderPrice);
     expect(test1.label).toEqual('Cross order is already placed at 999.00');
 
-    const test2 = buildCrossLabel(true, SIDE.SELL, 300, crossOrderPrice, true);
+    const test2 = buildCrossLabel(true, SIDE.SELL, 300, crossOrderPrice);
     expect(test2.label).toEqual('Cross order is already placed at 999.00');
   });
 
   it('should match label when - order is not placed', () => {
-    const test1 = buildCrossLabel(true, SIDE.SELL, 300, crossOrderPrice, false);
+    const test1 = buildCrossLabel(true, SIDE.SELL, 300, 0);
     expect(test1.label).toEqual('Place a crossunder-market sell order');
 
-    const test2 = buildCrossLabel(true, SIDE.BUY, 300, crossOrderPrice, false);
+    const test2 = buildCrossLabel(true, SIDE.BUY, 300, 0);
     expect(test2.label).toEqual('Place a crossover-market buy order');
   });
 });

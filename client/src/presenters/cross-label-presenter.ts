@@ -6,13 +6,12 @@ export default function buildOrderPresenter(
   side: SIDE,
   wsCurrentPrice: number | undefined,
   crossOrderPrice: number,
-  isOrderCreated: boolean,
 ) {
   if (!connected || !!!wsCurrentPrice) {
     return {label: 'Not subscribed to order', disabled: true};
   }
 
-  if (connected && isOrderCreated) {
+  if (connected && !!crossOrderPrice) {
     return {label: `Cross order is already placed at ${formatPrice(crossOrderPrice)}`, disabled: true};
   }
   const label = side === SIDE.SELL ? `Place a crossunder-market sell order` : `Place a crossover-market buy order`;
