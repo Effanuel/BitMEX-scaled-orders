@@ -62,7 +62,7 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
     return {...state, message};
   } else if (!!status) {
     // eslint-disable-next-line no-console
-    console.warn('Websocket error response: ', response);
+
     const message = `Websocket. Status: ${response.status || 'Error'}`;
     return {...state, message};
   } else if (ws_action) {
