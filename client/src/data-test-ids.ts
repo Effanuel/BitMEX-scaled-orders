@@ -36,6 +36,14 @@ export const MARKET_CONTAINER = {
 export const TRAILING_LIMIT_CONTAINER = {
   SUBMIT_TRAILING_ORDER: getTestID('TrailingLimitContainer')('submitTrailingOrder'),
   QUANTITY_INPUT: getTestID('TrailingLimitContainer')('quantityInput'),
+  SIDE_BUTTONS: getTestID('TrailingLimitContainer')('sideButtons'),
+};
+
+export const CROSS_ORDER_CONTAINER = {
+  SUBMIT: getTestID('CrossOrderContainer')('submit'),
+  QUANTITY_INPUT: getTestID('CrossOrderContainer')('quantityInput'),
+  PRICE_INPUT: getTestID('CrossOrderContainer')('priceInput'),
+  CANCEL_ORDER: getTestID('CrossOrderContainer')('cancelOrder'),
 };
 
 export const GLOBAL = {
