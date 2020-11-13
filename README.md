@@ -60,6 +60,15 @@ This project is a trading tool based on **BitMEX API** (It can also be used to o
     <p align="center">
       <img src="assets/trailing-order.gif">
     </p>
+    
+ - **[Cross Market Order:](https://github.com/Effanuel/BitMEX-scaled-orders/pull/26)**
+    
+    - Ability to add a cross order;
+        * if you set a sell cross price below current price, it will trigger a market sell order as soon as the price crosses your cross order price;
+        * if you set a buy cross price above current price, it will trigger a market  buy order as soon as the price crosses your cross order price;
+        * if you set a sell cross order price above current price, it will trigger a market sell order when the current price crosses up and then down of the set cross price;
+        * if you set a buy cross order price below current price, it will trigger a market buy order when the current price crosses down and then up of the set cross price.
+
 
 ### Built With
 
