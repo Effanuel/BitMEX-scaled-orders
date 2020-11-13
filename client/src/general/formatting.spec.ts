@@ -54,9 +54,9 @@ describe('parseNumber()', () => {
   it('should format ETHUSD', () => {
     const symbol = SYMBOLS.ETHUSD;
     const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
-    expect(parseNumber(111.19399, decimal_rounding)).toEqual(111.19);
-    expect(parseNumber(222.40999, decimal_rounding)).toEqual(222.41);
-    expect(parseNumber(333.7111, decimal_rounding)).toEqual(333.71);
+    expect(parseNumber(111.19399, decimal_rounding)).toEqual(111.2);
+    expect(parseNumber(222.40999, decimal_rounding)).toEqual(222.4);
+    expect(parseNumber(333.7111, decimal_rounding)).toEqual(333.7);
   });
 
   it('should format XRPUSD', () => {

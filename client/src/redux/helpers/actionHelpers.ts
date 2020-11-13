@@ -1,11 +1,18 @@
-import {createAction, ActionCreatorWithPreparedPayload, ActionCreatorWithoutPayload} from '@reduxjs/toolkit';
-import {Thunk} from 'redux/models/state';
+import {
+  ActionCreatorWithPreparedPayload,
+  ActionCreatorWithoutPayload,
+  createAsyncThunk,
+  AsyncThunk,
+} from '@reduxjs/toolkit';
+import {AppState} from 'redux/models/state';
+import {ACTIONS_cross} from 'redux/modules/cross/types';
 import {ACTIONS_preview, API_ACTIONS_preview} from 'redux/modules/preview/types';
 import {ACTIONS_trailing} from 'redux/modules/trailing/types';
+import type {BitMEX} from './apiHelpers';
 
 export const withPayloadType = <T>() => (payload: T) => ({payload});
 
-const actions = [...ACTIONS_preview, ...ACTIONS_trailing] as const;
+const actions = [...ACTIONS_preview, ...ACTIONS_trailing, ...ACTIONS_cross] as const;
 const apiActions = [...API_ACTIONS_preview] as const;
 
 type ActionMapKey = typeof actions[number];
@@ -17,38 +24,31 @@ type ActionMap<P> = {
     : ActionCreatorWithPreparedPayload<[P], P, ActionMapKey>;
 };
 
-const registerAndGetActions = (actionsToCreate: typeof actions) => ({
-  apiRequestActions: actionsToCreate.map((name) => ({
-    [name]: createAction(`${name}_REQUEST`),
-  })) as ActionMap<never>[],
-  apiSuccessActions: actionsToCreate.map((name) => ({
-    [name]: createAction(`${name}_SUCCESS`, withPayloadType<any>()),
-  })),
-  apiFailureActions: actionsToCreate.map((name) => ({
-    [name]: createAction(`${name}_FAILURE`, withPayloadType<string>()),
-  })) as ActionMap<string>[],
-});
+export interface ThunkApiConfig {
+  rejected: string;
+  extra: BitMEX;
+  rejectValue: string;
+  state: AppState;
+}
 
-const registeredActions = registerAndGetActions(actions);
-export const REQUEST: ActionMap<never> = Object.assign({}, ...registeredActions.apiRequestActions);
-export const SUCCESS: ActionMap<any> = Object.assign({}, ...registeredActions.apiSuccessActions);
-export const FAILURE: ActionMap<string> = Object.assign({}, ...registeredActions.apiFailureActions);
-
-export const callAPI = <M extends (payload: P) => any, P>(
+export function createThunk<P, Returned = any>(
   actionName: ActionMapKey,
-  apiMethod: M,
-  apiPayload: P,
+  apiMethod: keyof BitMEX,
   moreData = {},
-): Thunk => async (dispatch) => {
-  try {
-    dispatch(REQUEST[actionName]());
+): AsyncThunk<Returned, P, ThunkApiConfig> {
+  //@ts-ignore
+  return createAsyncThunk(actionName, async (payload: P, {rejectWithValue, extra: API}) => {
+    try {
+      // TODO: add a proper type
+      //@ts-ignore
+      const response = await API[apiMethod](payload);
+      return {...response, ...moreData};
+    } catch (err) {
+      return rejectWithValue(formatErrorMessage(err));
+    }
+  });
+}
 
-    const data = await apiMethod(apiPayload);
-    const payload = {...data, ...moreData};
-
-    dispatch(SUCCESS[actionName](payload));
-  } catch (err) {
-    const payload: string = err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
-    dispatch(FAILURE[actionName](payload));
-  }
-};
+export function formatErrorMessage(err: any): string {
+  return err.message?.includes('500') ? 'Server is offline' : err.response?.data?.error || 'error';
+}

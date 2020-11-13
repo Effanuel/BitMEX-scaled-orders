@@ -9,10 +9,6 @@ const ColorLinearProgress = withStyles({
   barColorPrimary: {backgroundColor: '#4caf50'},
 })(LinearProgress);
 
-interface Props {
-  loading: boolean;
-}
-
-export function Spinner({loading}: Props) {
+export function Spinner({loading}: {loading: boolean}) {
   return <>{loading ? <ColorLinearProgress /> : <div className={styles.spinnerNonLoading} />}</>;
 }

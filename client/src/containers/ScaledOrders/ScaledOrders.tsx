@@ -2,12 +2,12 @@ import React from 'react';
 import {Grid} from '@material-ui/core';
 import {useDispatch} from 'react-redux';
 import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
-import {previewOrders, previewToggle, postScaledOrders} from 'redux/modules/preview';
+import {previewOrders, previewToggle, postScaledOrders} from 'redux/modules/preview/previewModule';
 import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} from 'components';
 import DistributionsRadioGroup from './DistributionsRadioGroup';
 import {DISTRIBUTIONS} from 'util/index';
 import {SIDE, SYMBOLS} from 'util/BitMEX-types';
-import styles from './scaled.container.module.scss';
+import styles from './ScaledOrders.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 
@@ -40,29 +40,29 @@ const ScaledContainer = React.memo(() => {
   const [state, setState] = React.useState(initialState);
   const [cache, setCache] = React.useState(true);
 
-  function onChangeDropdown({target: {value, id}}: InputChange): void {
+  const onChangeDropdown = React.useCallback(({target: {value, id}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: value, start: null, end: null, stop: null}));
     setCache(false);
-  }
+  }, []);
 
-  function onChangeNumber({target: {id, value}}: InputChange): void {
+  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
     setCache(false);
-  }
+  }, []);
 
-  function toggleSide({target: {value, name}}: InputChange): void {
+  const toggleSide = React.useCallback(({target: {value, name}}: InputChange): void => {
     setState((prevState) => ({...prevState, [name]: value}));
     setCache(false);
-  }
+  }, []);
 
-  function onOrderSubmit(): void {
-    const {distribution, ...scaledParams} = state as RequiredProperty<ScaledContainerState>;
-    dispatch(postScaledOrders(scaledParams, distribution));
+  const onOrderSubmit = React.useCallback((): void => {
+    const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
+    dispatch(postScaledOrders({ordersProps, distribution}));
     setState(initialState);
     setCache(false);
-  }
+  }, [dispatch, state]);
 
-  function onPreviewOrders(): void {
+  const onPreviewOrders = React.useCallback((): void => {
     if (cache) {
       dispatch(previewToggle());
     } else {
@@ -70,9 +70,9 @@ const ScaledContainer = React.memo(() => {
       const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
       dispatch(previewOrders(ordersProps, distribution));
     }
-  }
+  }, [dispatch, state, cache]);
 
-  function renderFirstRow() {
+  const renderFirstRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3} className={styles.container__col}>
@@ -84,6 +84,7 @@ const ScaledContainer = React.memo(() => {
         <Grid item xs={4} />
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.STOP_LOSS_INPUT}
             onChange={onChangeNumber}
             value={state.stop}
             label="Stop-Loss"
@@ -95,13 +96,14 @@ const ScaledContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [onChangeNumber, onChangeDropdown, toggleSide, state.side, state.stop]);
 
-  function renderSecondRow() {
+  const renderSecondRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.QUANTITY_INPUT}
             onChange={onChangeNumber}
             value={state.orderQty}
             label="Quantity"
@@ -111,6 +113,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.ORDER_COUNT_INPUT}
             onChange={onChangeNumber}
             value={state.n_tp}
             label="Order count"
@@ -120,6 +123,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.RANGE_START_INPUT}
             onChange={onChangeNumber}
             value={state.start}
             label="Range start"
@@ -129,6 +133,7 @@ const ScaledContainer = React.memo(() => {
         </Grid>
         <Grid item xs={3}>
           <InputField
+            data-test-id={SCALED_CONTAINER.RANGE_END_INPUT}
             onChange={onChangeNumber}
             value={state.end}
             label="Range end"
@@ -138,9 +143,9 @@ const ScaledContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [onChangeNumber, state]);
 
-  function renderThirdRow() {
+  const renderThirdRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={4}>
@@ -162,27 +167,23 @@ const ScaledContainer = React.memo(() => {
           <Button
             testID={SCALED_CONTAINER.SUBMIT_BUTTON}
             label="Submit"
-            variant="buy"
+            variant={SIDE.BUY}
             onClick={onOrderSubmit}
             disabled={isDisabled(state)}
           />
         </Grid>
       </>
     );
-  }
+  }, [toggleSide, onOrderSubmit, onPreviewOrders, orderError, state]);
+
+  const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
 
   return (
-    <>
-      <MainContainer
-        label="ScaledOrders"
-        description="Place limit orders in a range"
-        renderOutside={showPreview && <OrdersPreviewTable />}
-      >
-        {renderFirstRow()}
-        {renderSecondRow()}
-        {renderThirdRow()}
-      </MainContainer>
-    </>
+    <MainContainer label="ScaledOrders" description="Place limit orders in a range" renderOutside={renderOutside}>
+      {renderFirstRow}
+      {renderSecondRow}
+      {renderThirdRow}
+    </MainContainer>
   );
 });
 export default ScaledContainer;

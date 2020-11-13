@@ -3,7 +3,7 @@ import cx from 'classnames';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
 import styles from './orders-table.module.scss';
-import {PREVIEW_CONTAINER} from 'data-test-ids';
+import {PREVIEW_CONTAINER, SCALED_CONTAINER} from 'data-test-ids';
 import {useSingleton} from 'general/hooks';
 
 const generateSideColorStyles = (xSide: boolean) => ({
@@ -51,7 +51,7 @@ export default function OrdersTable() {
           <th>Price</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-test-id={SCALED_CONTAINER.ORDER_ROW}>
         {renderOrders}
         {renderStop}
       </tbody>

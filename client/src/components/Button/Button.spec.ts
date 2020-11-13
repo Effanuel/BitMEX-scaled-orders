@@ -1,5 +1,6 @@
-import {ComponentDriver} from 'react-component-driver';
-import {Button, ButtonProps, ButtonVariants} from './Button';
+import {SIDE} from 'util/BitMEX-types';
+import {ButtonVariants} from './Button';
+import {ButtonDriver} from './Button.driver';
 
 describe('ButtonDriver', () => {
   let driver: ButtonDriver;
@@ -11,8 +12,9 @@ describe('ButtonDriver', () => {
   it.each([
     ['submit', 'button'],
     ['text', 'text_button'],
-    ['buy', 'button_buy'],
-    ['sell', 'button_sell'],
+    [SIDE.BUY, 'button_buy'],
+    [SIDE.SELL, 'button_sell'],
+    ['textSell', 'text_sell'],
   ])('should return %s className for %s variant', (variant, expectedClassName) => {
     const drv = driver.withDefaultProps({variant: variant as ButtonVariants}).render();
     expect(drv.getButtonClassName()).toEqual(expectedClassName);
@@ -23,33 +25,12 @@ describe('ButtonDriver', () => {
 
     expect(drv.getButtonClassName()).toEqual('abc');
   });
+
+  it('should pass id on button click', () => {
+    const onClick = jest.fn();
+    const drv = driver.withDefaultProps({onClick}).render();
+
+    drv.pressButton();
+    expect(onClick).toHaveBeenCalledWith({target: {id: 'default:id'}});
+  });
 });
-
-class ButtonDriver extends ComponentDriver<ButtonProps> {
-  constructor() {
-    super(Button);
-  }
-
-  withDefaultProps(props: Partial<ButtonProps>) {
-    const defaultProps: ButtonProps = {
-      id: 'default:id',
-      label: 'default:label',
-      testID: 'default:testID',
-      variant: 'submit',
-      disabled: false,
-      onClick: jest.fn(),
-      style: undefined,
-      className: '',
-    };
-    return this.setProps({...defaultProps, ...props});
-  }
-
-  getButton() {
-    if (this.props.testID) return this.getByID(this.props!.testID);
-    return null;
-  }
-
-  getButtonClassName() {
-    return this.getButton()?.props.className;
-  }
-}

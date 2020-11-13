@@ -4,15 +4,15 @@ import {useDispatch} from 'react-redux';
 import {
   postTrailingOrder,
   __clearTrailingOrder,
-  ammendTrailingOrder,
   cancelTrailingOrder,
   changeTrailingOrderSymbol,
-} from 'redux/modules/trailing';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
+} from 'redux/modules/trailing/trailingModule';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
 import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
-import buildOrderPresenter from './place-order-presenter';
+import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import styles from './TrailingLimitOrderContainer.module.scss';
+import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
+import {useHooks} from './useHooks';
 
 interface State {
   symbol: SYMBOLS;
@@ -20,7 +20,7 @@ interface State {
   side: SIDE;
 }
 
-const initialState: Readonly<State> = {
+const initialState = {
   symbol: SYMBOLS.XBTUSD,
   orderQty: null,
   side: SIDE.SELL,
@@ -29,54 +29,24 @@ const initialState: Readonly<State> = {
 const TrailingLimitOrderContainer = React.memo(() => {
   const dispatch = useDispatch();
 
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState<Readonly<State>>(initialState);
 
   const {
-    wsTrailingPrice,
     wsCurrentPrice,
     wsBidAskPrices,
     trailOrderId,
     trailOrderStatus,
     trailOrderPrice,
-    trailOrderSide,
     status,
     connected,
-  } = useReduxSelector(
-    'wsTrailingPrice',
-    'wsCurrentPrice',
-    'wsBidAskPrices',
-    'trailOrderId',
-    'trailOrderStatus',
-    'trailOrderPrice',
-    'trailOrderSide',
-    'status',
-    'connected',
-  );
-
-  React.useEffect(() => {
-    const statuses = ['Filled', 'Canceled', 'Order not placed.'];
-
-    if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
-      const toAmmend = wsTrailingPrice !== trailOrderPrice;
-      if (toAmmend) {
-        dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice}));
-      }
-    }
-  }, [dispatch, trailOrderPrice, trailOrderId, trailOrderSide, status, wsTrailingPrice]);
-
-  React.useEffect(() => {
-    const statuses = ['Filled', 'Canceled', 'Order not placed.'];
-    if (statuses.includes(status) && trailOrderStatus !== 'Order not placed.') {
-      dispatch(__clearTrailingOrder());
-    }
-  }, [dispatch, trailOrderStatus, status]);
+  } = useHooks();
 
   const trailingOrderPrice = React.useMemo(
     () => (state.side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice),
     [state.side, wsBidAskPrices],
   );
 
-  function submitTrailingOrder() {
+  const submitTrailingOrder = React.useCallback(() => {
     if (trailingOrderPrice && state.orderQty) {
       const payload = {
         ...state,
@@ -88,17 +58,17 @@ const TrailingLimitOrderContainer = React.memo(() => {
       };
       dispatch(postTrailingOrder(payload));
     }
-  }
+  }, [dispatch, state, trailingOrderPrice]);
 
-  function cancelOrder() {
+  const cancelOrder = React.useCallback(() => {
     if (trailOrderId) {
       dispatch(cancelTrailingOrder({orderID: trailOrderId}));
     }
-  }
+  }, [dispatch, trailOrderId]);
 
-  function onChangeNumber({target: {id, value}}: InputChange): void {
+  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
-  }
+  }, []);
 
   const toggleInstrument = React.useCallback(
     ({target: {id, value}}: InputChange) => {
@@ -117,7 +87,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
     [connected, trailingOrderPrice, status, trailOrderStatus],
   );
 
-  function renderFirstRow() {
+  const renderFirstRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3}>
@@ -129,15 +99,26 @@ const TrailingLimitOrderContainer = React.memo(() => {
           />
         </Grid>
         <Grid item xs={3}>
-          <InputField onChange={onChangeNumber} value={state.orderQty} label="Quantity" id="orderQty" />
+          <InputField
+            data-test-id={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
+            id="orderQty"
+            onChange={onChangeNumber}
+            value={state.orderQty}
+            label="Quantity"
+          />
         </Grid>
         <Grid item xs={2}>
-          <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
+          <SideRadioButtons
+            testID={TRAILING_LIMIT_CONTAINER.SIDE_BUTTONS}
+            onChangeRadio={toggleSide}
+            side={state.side}
+          />
         </Grid>
         <Grid item xs={4} className={styles.top_row}>
           <Button
+            testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
             label={buttonLabel.label}
-            variant={state.side === SIDE.SELL ? 'sell' : 'buy'}
+            variant={state.side}
             style={{width: '170px'}}
             onClick={submitTrailingOrder}
             disabled={!state.orderQty || state.orderQty > 20e6 || !wsCurrentPrice || buttonLabel.disabled}
@@ -145,9 +126,19 @@ const TrailingLimitOrderContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [
+    onChangeNumber,
+    connected,
+    submitTrailingOrder,
+    state,
+    trailOrderStatus,
+    wsCurrentPrice,
+    toggleSide,
+    toggleInstrument,
+    buttonLabel,
+  ]);
 
-  function renderSecondRow() {
+  const renderSecondRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={4}>
@@ -171,12 +162,16 @@ const TrailingLimitOrderContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [connected, cancelOrder, trailOrderPrice, trailOrderStatus, wsCurrentPrice]);
 
   return (
-    <MainContainer label="Trailing Limit Order" description="Place a limit order to trail market price">
-      {renderFirstRow()}
-      {renderSecondRow()}
+    <MainContainer
+      connected={connected}
+      label="Trailing Limit Order"
+      description="Place a limit order to trail market price"
+    >
+      {renderFirstRow}
+      {renderSecondRow}
     </MainContainer>
   );
 });

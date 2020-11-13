@@ -1,10 +1,16 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
-import {ScaledOrders, MarketOrderContainer, TrailingLimitOrder, TickerPricesContainer} from 'containers';
+import {
+  ScaledOrders,
+  MarketOrderContainer,
+  TrailingLimitOrder,
+  TickerPricesContainer,
+  CrossOrderContainer,
+} from 'containers';
 import {Spinner, ToastContainer} from './components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket';
-import {getBalance} from 'redux/modules/preview';
+import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
+import {getBalance} from 'redux/modules/preview/previewModule';
 import 'scss/root.module.scss';
 
 const App = React.memo(() => {
@@ -26,7 +32,8 @@ const App = React.memo(() => {
 
   React.useEffect(() => {
     if (connected) {
-      dispatch(getBalance());
+      //TODO: fix argument
+      dispatch(getBalance(''));
       dispatch(wsAuthenticate());
       dispatch(wsSubscribeTo('order'));
     }
@@ -37,6 +44,7 @@ const App = React.memo(() => {
       <ToastContainer />
       <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />
+      <CrossOrderContainer />
       <MarketOrderContainer />
       <TrailingLimitOrder />
       <ScaledOrders />

@@ -8,9 +8,12 @@ export interface MainContainerProps {
   label: string;
   description?: string;
   renderOutside?: React.ReactNode;
+  connected?: boolean;
 }
 
-export const MainContainer = React.memo(({children, label, description = '', renderOutside}: MainContainerProps) => {
+export const MainContainer = React.memo((props: MainContainerProps) => {
+  const {children, label, description = '', renderOutside, connected = true} = props;
+
   const [isViewMaximized, setViewMaximized] = useState<boolean>(true);
 
   const maximizeContainer = React.useCallback(() => setViewMaximized(!isViewMaximized), [isViewMaximized]);
@@ -51,11 +54,11 @@ export const MainContainer = React.memo(({children, label, description = '', ren
   }
 
   return (
-    <>
+    <div className={!connected ? styles.dim : undefined}>
       <Container data-testid={label} fixed maxWidth="sm" className={styles.container_scaled} style={{padding: '0px'}}>
         {isViewMaximized ? maximizedView() : minimizedView()}
       </Container>
       {isViewMaximized ? renderOutside : null}
-    </>
+    </div>
   );
 });

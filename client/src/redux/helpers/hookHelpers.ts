@@ -8,38 +8,44 @@ import {
   websocketBidAskPrices,
   allWebsocketBidAskPrices,
   websocketTrailingPriceSelector,
+  websocketCrossPriceSelector,
+  hasCrossedOnceSelector,
+  hasCrossedSecondTimeSelector,
 } from 'redux/selectors';
-import {TrailingState} from 'redux/modules/trailing/types';
-import {PreviewState} from 'redux/modules/preview/types';
-import {WebsocketState} from 'redux/modules/websocket/types';
-import {AppState} from 'redux/store';
+import {AppState} from 'redux/models/state';
 
-type States = TrailingState & PreviewState & WebsocketState;
+type States = UnionToIntersection<ValueOf<AppState>>;
 
 interface Selectors extends States {
   wsCurrentPrice: ReturnType<typeof websocketCurrentPrice>;
   wsTrailingPrice: ReturnType<typeof websocketTrailingPriceSelector>;
+  wsCrossPrice: ReturnType<typeof websocketCrossPriceSelector>;
   wsBidAskPrices: ReturnType<typeof websocketBidAskPrices>;
   allPrices: ReturnType<typeof allWebsocketBidAskPrices>;
   averagePrice: ReturnType<typeof ordersAverageEntrySelector>;
   riskBTC: ReturnType<typeof ordersRiskSelector>;
   riskPerc: ReturnType<typeof ordersRiskPercSelector>;
   status: ReturnType<typeof trailingOrderStatusSelector>;
+  hasCrossedOnce: ReturnType<typeof hasCrossedOnceSelector>;
+  hasCrossedSecondTime: ReturnType<typeof hasCrossedSecondTimeSelector>;
   wsLoading: boolean;
   wsMessage: any;
 }
 
 const buildSelectors = (state: AppState): Selectors => {
-  const {trailing, preview, websocket} = state;
+  const {trailing, preview, websocket, cross} = state;
   return {
     wsCurrentPrice: websocketCurrentPrice(state),
     wsTrailingPrice: websocketTrailingPriceSelector(state),
+    wsCrossPrice: websocketCrossPriceSelector(state),
     wsBidAskPrices: websocketBidAskPrices(state),
     allPrices: allWebsocketBidAskPrices(state),
     averagePrice: ordersAverageEntrySelector(state),
     riskBTC: ordersRiskSelector(state),
     riskPerc: ordersRiskPercSelector(state),
     status: trailingOrderStatusSelector(state),
+    hasCrossedOnce: hasCrossedOnceSelector(state),
+    hasCrossedSecondTime: hasCrossedSecondTimeSelector(state),
 
     trailOrderId: trailing.trailOrderId,
     trailOrderPrice: trailing.trailOrderPrice,
@@ -47,6 +53,12 @@ const buildSelectors = (state: AppState): Selectors => {
     trailOrderSide: trailing.trailOrderSide,
     trailOrderSymbol: trailing.trailOrderSymbol,
     trailLoading: trailing.trailLoading,
+
+    crossOrderSymbol: cross.crossOrderSymbol,
+    crossOrderQuantity: cross.crossOrderQuantity,
+    crossOrderPrice: cross.crossOrderPrice,
+    crossOrderSide: cross.crossOrderSide,
+    hasPriceCrossedOnce: cross.hasPriceCrossedOnce,
 
     orders: preview.orders,
     balance: preview.balance,
@@ -67,10 +79,10 @@ export function useReduxSelector<K extends keyof Selectors>(...keys: K[]): Pick<
   const selector = useSelector((state: AppState) => {
     const builtSelectors = buildSelectors(state);
     return keys.reduce(
-      (availableSelectors: any, selectorKey: keyof Selectors) => (
+      (availableSelectors: Pick<Selectors, K>, selectorKey: K) => (
         (availableSelectors[selectorKey] = builtSelectors[selectorKey]), availableSelectors
       ),
-      {},
+      {} as Selectors,
     );
   }, shallowEqual);
   return selector;

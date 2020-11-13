@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
-import {postMarketOrder} from 'redux/modules/preview';
+import {postMarketOrder} from 'redux/modules/preview/previewModule';
 import {MainContainer, SelectDropdown, InputField, Button} from 'components';
 import styles from './styles.module.scss';
 import {SYMBOLS, SIDE} from 'util/BitMEX-types';
+import {MARKET_CONTAINER} from 'data-test-ids';
 
 interface State {
   symbol: SYMBOLS;
@@ -30,10 +31,10 @@ const MarketOrderContainer = React.memo(() => {
     [dispatch, state],
   );
 
-  function onChange({target: {id, value, tagName}}: InputChange): void {
+  const onChange = React.useCallback(({target: {id, value, tagName}}: InputChange): void => {
     const updated = tagName === 'INPUT' ? +value : value;
     setState((prevState) => ({...prevState, [id]: updated}));
-  }
+  }, []);
 
   return (
     <MainContainer label="MarkerOrder" description="Place a market order">
@@ -41,22 +42,30 @@ const MarketOrderContainer = React.memo(() => {
         <SelectDropdown id="symbol" onChange={onChange} label="Instrument" />
       </Grid>
       <Grid item xs={3}>
-        <InputField onChange={onChange} value={state.orderQty} label="Quantity" id="orderQty" />
+        <InputField
+          data-test-id={MARKET_CONTAINER.INPUT}
+          id="orderQty"
+          onChange={onChange}
+          value={state.orderQty}
+          label="Quantity"
+        />
       </Grid>
       <Grid item xs={3} className={styles.top_row}>
         <Button
+          testID={MARKET_CONTAINER.BUY_BUTTON}
           id="Buy"
           label="MARKET Buy"
-          variant="buy"
+          variant={SIDE.BUY}
           onClick={submitMarketOrder}
           disabled={!state.orderQty || state.orderQty > 20e6}
         />
       </Grid>
       <Grid item xs={3} className={styles.top_row}>
         <Button
+          testID={MARKET_CONTAINER.SELL_BUTTON}
           id="Sell"
           label="MARKET Sell"
-          variant="sell"
+          variant={SIDE.SELL}
           onClick={submitMarketOrder}
           disabled={!state.orderQty || state.orderQty > 20e6}
         />

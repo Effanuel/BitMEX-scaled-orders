@@ -20,15 +20,17 @@ import {
   mockPreviewState,
   mockScaledOrders,
   mockTrailingState,
+  mockCrossState,
 } from 'tests/mockData/orders';
 import {Instrument} from 'redux/modules/websocket/types';
-import {AppState} from 'redux/store';
+import {AppState} from 'redux/models/state';
 
 describe('Selectors', () => {
   const mockState: AppState = {
     websocket: mockWebsocketState({instrument: mockInstrumentData as Instrument[]}),
     preview: mockPreviewState({orders: mockScaledOrders, balance: 12_345_678_993_321, showPreview: true}),
     trailing: mockTrailingState({trailOrderSide: SIDE.SELL, trailOrderSymbol: SYMBOLS.XBTUSD}),
+    cross: mockCrossState({}),
   };
 
   let result: unknown;
@@ -85,13 +87,13 @@ describe('Selectors', () => {
     }
     it('should calculate with sell side', () => {
       expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.SELL)).toEqual(8001.5);
-      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.SELL)).toEqual(111.2);
+      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.SELL)).toEqual(111.3);
       expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.SELL)).toEqual(0.1989);
     });
 
     it('should calculate with buy side', () => {
       expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.BUY)).toEqual(8010.5);
-      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.BUY)).toEqual(221.95);
+      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.BUY)).toEqual(221.9);
       expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.BUY)).toEqual(0.237);
     });
   });

@@ -3,6 +3,7 @@ import cx from 'classnames';
 import {toast, ToastContainer as ToastifyContainer} from 'react-toastify';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import ICONS from '../SVGIcon/icons';
+import {GLOBAL} from 'data-test-ids';
 import styles from './ToastBar.module.scss';
 import './ToastContainer.scss';
 
@@ -28,7 +29,7 @@ const ToastBar = React.memo(({toastPreset, message}: ToastBarProps) => {
   });
 
   return (
-    <div className={toast_style}>
+    <div className={toast_style} data-test-id={GLOBAL.TOAST}>
       <SVGIcon color={toastColors[toastPreset]} icon={ICONS[toastPreset?.toUpperCase()]} />
       <span className={styles.toast_text}>{message}</span>
     </div>

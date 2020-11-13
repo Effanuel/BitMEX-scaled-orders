@@ -3,6 +3,8 @@ interface Action {
   readonly payload?: any;
 }
 
+type obj = Record<string, unknown>;
+
 type unnull = undefined | null;
 
 type iterobject<T = string> = {[key: string]: T};
@@ -11,10 +13,21 @@ type RequiredProperty<T> = {[P in keyof T]: Required<NonNullable<T[P]>>};
 
 type ValueOf<T> = T[keyof T];
 
+type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+
 type PickWithOptional<T, K extends keyof T, O extends keyof T> = {
   [P in K]: T[P];
 } &
   {[P in O]?: T[P]};
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+type KeysByType<O extends object, T> = {
+  [k in keyof O]-?: O[k] extends T ? k : never;
+}[keyof O];
+// eslint-disable-next-line @typescript-eslint/ban-types
+type FunctionsOnly<O extends object> = Pick<O, KeysByType<O, Function>>;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type ClassMethods<C extends object> = FunctionsOnly<InstanceType<C>>;
 
 type InputChange = React.ChangeEvent<HTMLInputElement>;
 type ButtonChange = React.ChangeEvent<HTMLButtonElement>;

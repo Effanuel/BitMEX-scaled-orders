@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {createSelector} from 'reselect';
 import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
-import {AppState} from 'redux/store';
+import {AppState} from 'redux/models/state';
 import {INSTRUMENT_PARAMS} from 'util/index';
 import {parseNumber} from 'general/formatting';
 
@@ -18,7 +18,7 @@ export interface CurrentPrice {
 
 export const getShowPreview = ({preview: {showPreview}}: AppState) => showPreview;
 export const getOrders = ({preview: {orders}}: AppState) => orders;
-const getOrderLoading = ({preview: {previewLoading: loading}}: AppState) => loading;
+const getOrderLoading = ({preview: {previewLoading}}: AppState) => previewLoading;
 const getOrderError = ({preview: {error}}: AppState) => error;
 export const getBalance = ({preview: {balance}}: AppState) => balance;
 
@@ -32,6 +32,10 @@ const getTrailingOrderStatus = ({trailing: {trailOrderStatus}}: AppState) => tra
 export const getTrailingOrderId = ({trailing: {trailOrderId}}: AppState) => trailOrderId;
 export const getTrailingOrderSide = ({trailing: {trailOrderSide}}: AppState) => trailOrderSide;
 export const getTrailingOrderSymbol = ({trailing: {trailOrderSymbol}}: AppState) => trailOrderSymbol;
+
+const getCrossOrderSide = ({cross: {crossOrderSide}}: AppState) => crossOrderSide;
+const getHasPriceCrossedOnce = ({cross: {hasPriceCrossedOnce}}: AppState) => hasPriceCrossedOnce;
+const getCrossOrderPrice = ({cross: {crossOrderPrice}}: AppState) => crossOrderPrice;
 
 export const trailingOrderStatusSelector = createSelector(
   [table_order, getTrailingOrderId],
@@ -61,15 +65,13 @@ export const websocketBidAskPrices = createSelector([table_instrument, getTraili
   return undefined;
 });
 
-export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined => {
-  return data.map(({symbol, askPrice, bidPrice}) => ({symbol: symbol as SYMBOLS, askPrice, bidPrice}));
-});
+export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined =>
+  data.map(({symbol, askPrice, bidPrice}) => ({symbol: symbol as SYMBOLS, askPrice, bidPrice})),
+);
 
 export const websocketCurrentPrice = createSelector(
   [websocketBidAskPrices, getTrailingOrderSide],
-  (bidAskPrices, side): number | undefined => {
-    return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
-  },
+  (bidAskPrices, side): number | undefined => (side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice),
 );
 
 export const websocketTrailingPriceSelector = createSelector(
@@ -84,6 +86,35 @@ export const websocketTrailingPriceSelector = createSelector(
     }
     return undefined;
   },
+);
+
+export const websocketCrossPriceSelector = createSelector(
+  [websocketBidAskPrices, getCrossOrderSide, getHasPriceCrossedOnce],
+  (bidAskPrices, side, hasPriceCrossedOnce): number | undefined => {
+    if (!hasPriceCrossedOnce) {
+      return side === SIDE.SELL ? bidAskPrices?.bidPrice : bidAskPrices?.askPrice;
+    } else {
+      return side === SIDE.SELL ? bidAskPrices?.askPrice : bidAskPrices?.bidPrice;
+    }
+  },
+);
+
+export const hasCrossedOnceSelector = createSelector(
+  [getCrossOrderPrice, getCrossOrderSide, websocketCrossPriceSelector],
+  (orderPrice, side, currentPrice): boolean => {
+    if (currentPrice && !!orderPrice) {
+      return side === SIDE.BUY ? currentPrice < orderPrice : currentPrice > orderPrice;
+    }
+    return false;
+  },
+);
+
+export const hasCrossedSecondTimeSelector = createSelector(
+  [getHasPriceCrossedOnce, getCrossOrderSide, getCrossOrderPrice, websocketCrossPriceSelector],
+  (hasPriceCrossedOnce, crossOrderSide, orderPrice, currentPrice): boolean =>
+    hasPriceCrossedOnce &&
+    !!currentPrice &&
+    (crossOrderSide === SIDE.BUY ? currentPrice >= orderPrice : currentPrice <= orderPrice),
 );
 
 export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
@@ -116,13 +147,12 @@ export const ordersRiskSelector = createSelector(
   },
 );
 
-export const balanceSelector = createSelector([getBalance], (balance): number | null => {
-  return balance ? Math.round((balance / 1e8) * 10000) / 10000 : null;
-});
+export const balanceSelector = createSelector([getBalance], (balance): number | null =>
+  balance ? Math.round((balance / 1e8) * 10000) / 10000 : null,
+);
 
 export const ordersRiskPercSelector = createSelector(
   [balanceSelector, ordersRiskSelector],
-  (balance: number | null, risk: number | undefined): number => {
-    return balance !== 0 && balance !== null && risk !== undefined ? +((risk / balance) * 100).toFixed(2) : 0;
-  },
+  (balance: number | null, risk: number | undefined): number =>
+    balance !== 0 && balance !== null && risk !== undefined ? +((risk / balance) * 100).toFixed(2) : 0,
 );

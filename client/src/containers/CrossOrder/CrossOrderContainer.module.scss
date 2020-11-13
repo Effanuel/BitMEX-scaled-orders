@@ -1,0 +1,14 @@
+.button,
+.button_sell,
+.button_buy {
+  font-size: 14px;
+  color: white;
+  background-color: var(--primaryColor);
+  border-radius: 2px;
+  padding: 5px 5px;
+  width: 120px;
+}
+
+.top_row > button {
+  margin-top: 28px;
+}

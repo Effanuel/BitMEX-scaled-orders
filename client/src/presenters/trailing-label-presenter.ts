@@ -13,5 +13,5 @@ export default function buildOrderPresenter(
   if (connected && wsCurrentPrice && trailOrderStatus === 'Order placed.') {
     return {label: 'Order is already placed', disabled: true};
   }
-  return {label: `Place a trailing order at ${formatPrice(wsCurrentPrice)}`, disabled: false};
+  return {label: `Place a trailing limit order at ${formatPrice(wsCurrentPrice)}`, disabled: false};
 }
