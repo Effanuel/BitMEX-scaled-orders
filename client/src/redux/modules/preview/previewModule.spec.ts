@@ -32,9 +32,9 @@ describe('Preview actions', () => {
   });
 
   it('should generate orders without stop-loss', () => {
-    const {orders_uniform} = mockDistributionOrders();
+    const {orders_uniform} = mockDistributionOrders({});
 
-    store.dispatch(previewOrders(distributionParams('' as any), DISTRIBUTIONS.Uniform));
+    store.dispatch(previewOrders(distributionParams(0), DISTRIBUTIONS.Uniform));
     expect(store.getState().preview.orders).toEqual(orders_uniform);
   });
 
