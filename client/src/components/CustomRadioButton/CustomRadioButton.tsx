@@ -9,6 +9,9 @@ const useStyles = makeStyles(() => ({
     '& .MuiIconButton-root': {color: '#4caf50', padding: '2px'},
     margin: '0px',
   },
+  radioGroup: {
+    marginTop: '15px',
+  },
 }));
 
 interface CustomRadioButtonProps {
@@ -34,6 +37,7 @@ export interface SideRadioButtonsProps {
 }
 
 export function SideRadioButtons({onChangeRadio, side, testID}: SideRadioButtonsProps) {
+  const {radioGroup} = useStyles();
   return (
     <RadioGroup
       data-test-id={testID}
@@ -41,8 +45,7 @@ export function SideRadioButtons({onChangeRadio, side, testID}: SideRadioButtons
       name="side"
       value={side}
       onChange={onChangeRadio}
-      style={{marginTop: '15px'}}
-      // inputProps={{'data-test-id': testID}}
+      className={radioGroup}
     >
       <CustomRadioButton id="scaled_side_sell" label="Sell" value="Sell" />
       <CustomRadioButton id="scaled_side_buy" label="Buy" value="Buy" />

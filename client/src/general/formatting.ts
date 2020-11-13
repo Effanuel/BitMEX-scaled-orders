@@ -1,6 +1,7 @@
 import {INSTRUMENT_PARAMS} from '../util/index';
 import {SYMBOLS} from '../util/BitMEX-types';
 
+// @TODO: parse price as string
 export function formatPrice(price: number | unnull): string {
   if (!price) {
     return '';

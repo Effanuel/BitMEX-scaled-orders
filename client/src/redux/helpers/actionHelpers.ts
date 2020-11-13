@@ -36,6 +36,7 @@ export function createThunk<P, Returned = any>(
   apiMethod: keyof BitMEX,
   moreData = {},
 ): AsyncThunk<Returned, P, ThunkApiConfig> {
+  //@ts-ignore
   return createAsyncThunk(actionName, async (payload: P, {rejectWithValue, extra: API}) => {
     try {
       // TODO: add a proper type

@@ -31,10 +31,10 @@ const MarketOrderContainer = React.memo(() => {
     [dispatch, state],
   );
 
-  function onChange({target: {id, value, tagName}}: InputChange): void {
+  const onChange = React.useCallback(({target: {id, value, tagName}}: InputChange): void => {
     const updated = tagName === 'INPUT' ? +value : value;
     setState((prevState) => ({...prevState, [id]: updated}));
-  }
+  }, []);
 
   return (
     <MainContainer label="MarkerOrder" description="Place a market order">

@@ -72,7 +72,7 @@ const ScaledContainer = React.memo(() => {
     }
   }, [dispatch, state, cache]);
 
-  function renderFirstRow() {
+  const renderFirstRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3} className={styles.container__col}>
@@ -96,9 +96,9 @@ const ScaledContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [onChangeNumber, onChangeDropdown, toggleSide, state.side, state.stop]);
 
-  function renderSecondRow() {
+  const renderSecondRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3}>
@@ -143,9 +143,9 @@ const ScaledContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [onChangeNumber, state]);
 
-  function renderThirdRow() {
+  const renderThirdRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={4}>
@@ -174,18 +174,16 @@ const ScaledContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [toggleSide, onOrderSubmit, onPreviewOrders, orderError, state]);
 
   const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
 
   return (
-    <>
-      <MainContainer label="ScaledOrders" description="Place limit orders in a range" renderOutside={renderOutside}>
-        {renderFirstRow()}
-        {renderSecondRow()}
-        {renderThirdRow()}
-      </MainContainer>
-    </>
+    <MainContainer label="ScaledOrders" description="Place limit orders in a range" renderOutside={renderOutside}>
+      {renderFirstRow}
+      {renderSecondRow}
+      {renderThirdRow}
+    </MainContainer>
   );
 });
 export default ScaledContainer;

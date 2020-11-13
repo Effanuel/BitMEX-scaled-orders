@@ -79,10 +79,10 @@ export function useReduxSelector<K extends keyof Selectors>(...keys: K[]): Pick<
   const selector = useSelector((state: AppState) => {
     const builtSelectors = buildSelectors(state);
     return keys.reduce(
-      (availableSelectors: any, selectorKey: keyof Selectors) => (
+      (availableSelectors: Pick<Selectors, K>, selectorKey: K) => (
         (availableSelectors[selectorKey] = builtSelectors[selectorKey]), availableSelectors
       ),
-      {},
+      {} as Selectors,
     );
   }, shallowEqual);
   return selector;

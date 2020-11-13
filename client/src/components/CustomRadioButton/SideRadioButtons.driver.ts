@@ -14,23 +14,4 @@ export default class SideRadioButtonsDriver extends ComponentDriver<SideRadioBut
     };
     return this.setProps({...defaultProps, ...props});
   }
-
-  getInputValue() {
-    const testID = this.props.testID;
-    console.log(this.props);
-    // console.log(this.getByID(this.props.testID!));
-    if (testID) {
-      console.log(this.getByID(testID)!.props, '-==-=-=-=-=');
-      //   return
-    }
-  }
-
-  setInputValue(value: string) {
-    console.log(this.props);
-    // const node = this.getElement(this.props!['data-test-id']!);
-    // node.props.onChange({target: {value, name: 'side'}});
-    // node.props.value = value;
-    //   node.props.value = value;
-    // return this;
-  }
 }

@@ -7,7 +7,7 @@ import {useReduxSelector} from 'redux/helpers/hookHelpers';
 export default function DetailsTable() {
   const {averagePrice, riskBTC, riskPerc} = useReduxSelector('averagePrice', 'riskBTC', 'riskPerc');
 
-  function renderPriceSection() {
+  const renderPriceSection = React.useMemo(() => {
     return (
       <tr>
         <td>Average price:</td>
@@ -17,9 +17,9 @@ export default function DetailsTable() {
         </td>
       </tr>
     );
-  }
+  }, [averagePrice]);
 
-  function renderRiskSection() {
+  const renderRiskSection = React.useMemo(() => {
     return riskBTC ? (
       <>
         <tr>
@@ -40,7 +40,7 @@ export default function DetailsTable() {
         )}
       </>
     ) : null;
-  }
+  }, [riskBTC, riskPerc]);
 
   return (
     <table className={styles.table}>
@@ -51,8 +51,8 @@ export default function DetailsTable() {
         </tr>
       </thead>
       <tbody>
-        {renderPriceSection()}
-        {renderRiskSection()}
+        {renderPriceSection}
+        {renderRiskSection}
       </tbody>
     </table>
   );

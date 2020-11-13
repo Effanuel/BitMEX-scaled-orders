@@ -57,7 +57,10 @@ const CrossOrderContainer = React.memo(() => {
     wsCrossPrice,
   ]);
 
-  function renderFirstRow() {
+  const renderFirstRow = React.useMemo(() => {
+    const isSubmitButtonDisabled =
+      !state.orderQty || state.orderQty > 20e6 || !!!state.price || !wsCrossPrice || buttonLabel.disabled;
+
     return (
       <>
         <Grid item xs={3}>
@@ -82,16 +85,14 @@ const CrossOrderContainer = React.memo(() => {
             variant={state.side}
             style={{width: '170px'}}
             onClick={createOrder}
-            disabled={
-              !state.orderQty || state.orderQty > 20e6 || !!!state.price || !wsCrossPrice || buttonLabel.disabled
-            }
+            disabled={isSubmitButtonDisabled}
           />
         </Grid>
       </>
     );
-  }
+  }, [onChangeNumber, createOrder, wsCrossPrice, toggleInstrument, toggleSide, buttonLabel, state]);
 
-  function renderSecondRow() {
+  const renderSecondRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3}>
@@ -129,7 +130,7 @@ const CrossOrderContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [cancelCrossOrder, connected, crossOrderPrice, onChangeNumber, state.price]);
 
   return (
     <MainContainer
@@ -137,8 +138,8 @@ const CrossOrderContainer = React.memo(() => {
       label="Cross Order"
       description="Place a market order when the price crosses your set price"
     >
-      {renderFirstRow()}
-      {renderSecondRow()}
+      {renderFirstRow}
+      {renderSecondRow}
     </MainContainer>
   );
 });

@@ -10,8 +10,8 @@ import CrossOrderContainer from './CrossOrderContainer';
 
 const orderID = 'OrderId';
 
-const mocks = new ResponseBuilder().postTrailingOrder(orderID, 10322).build();
-const engine = createEngine(CrossOrderContainer, {}, mocks);
+const INITIAL_MOCKS = new ResponseBuilder().postTrailingOrder(orderID, 10322).build();
+const engine = createEngine(CrossOrderContainer, {}, INITIAL_MOCKS);
 
 describe('CrossOrderContainer', () => {
   it('should render submit button as disabled when not subscribed to ws', async () => {

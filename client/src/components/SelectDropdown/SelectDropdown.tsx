@@ -12,11 +12,13 @@ export interface SelectDropDownProps {
 const availableSymbols = ['XBTUSD', 'ETHUSD', 'XRPUSD'];
 
 function SelectDropdown({id, label, onChange, disabled = false}: SelectDropDownProps) {
-  const renderSymbol = (item: string) => (
-    <option key={item} value={item}>
-      {item}
-    </option>
-  );
+  const renderSymbol = React.useCallback((item: string) => {
+    return (
+      <option key={item} value={item}>
+        {item}
+      </option>
+    );
+  }, []);
 
   return (
     <div className={styles.select_dropdown}>

@@ -3,9 +3,9 @@ import cx from 'classnames';
 import {toast, ToastContainer as ToastifyContainer} from 'react-toastify';
 import SVGIcon from '../SVGIcon/SVGIcon';
 import ICONS from '../SVGIcon/icons';
+import {GLOBAL} from 'data-test-ids';
 import styles from './ToastBar.module.scss';
 import './ToastContainer.scss';
-import {GLOBAL} from 'data-test-ids';
 
 export type ToastPreset = 'success' | 'warning' | 'error' | 'general';
 

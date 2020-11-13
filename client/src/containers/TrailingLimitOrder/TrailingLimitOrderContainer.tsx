@@ -87,7 +87,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
     [connected, trailingOrderPrice, status, trailOrderStatus],
   );
 
-  function renderFirstRow() {
+  const renderFirstRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={3}>
@@ -126,9 +126,19 @@ const TrailingLimitOrderContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [
+    onChangeNumber,
+    connected,
+    submitTrailingOrder,
+    state,
+    trailOrderStatus,
+    wsCurrentPrice,
+    toggleSide,
+    toggleInstrument,
+    buttonLabel,
+  ]);
 
-  function renderSecondRow() {
+  const renderSecondRow = React.useMemo(() => {
     return (
       <>
         <Grid item xs={4}>
@@ -152,7 +162,7 @@ const TrailingLimitOrderContainer = React.memo(() => {
         </Grid>
       </>
     );
-  }
+  }, [connected, cancelOrder, trailOrderPrice, trailOrderStatus, wsCurrentPrice]);
 
   return (
     <MainContainer
@@ -160,8 +170,8 @@ const TrailingLimitOrderContainer = React.memo(() => {
       label="Trailing Limit Order"
       description="Place a limit order to trail market price"
     >
-      {renderFirstRow()}
-      {renderSecondRow()}
+      {renderFirstRow}
+      {renderSecondRow}
     </MainContainer>
   );
 });
