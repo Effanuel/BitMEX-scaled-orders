@@ -87,13 +87,13 @@ describe('Selectors', () => {
     }
     it('should calculate with sell side', () => {
       expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.SELL)).toEqual(8001.5);
-      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.SELL)).toEqual(111.2);
+      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.SELL)).toEqual(111.3);
       expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.SELL)).toEqual(0.1989);
     });
 
     it('should calculate with buy side', () => {
       expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.BUY)).toEqual(8010.5);
-      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.BUY)).toEqual(221.95);
+      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.BUY)).toEqual(221.9);
       expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.BUY)).toEqual(0.237);
     });
   });

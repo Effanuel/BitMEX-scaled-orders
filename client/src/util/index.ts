@@ -19,7 +19,7 @@ export enum DISTRIBUTIONS {
 
 export const INSTRUMENT_PARAMS: InstrumentParams = {
   XBTUSD: {decimal_rounding: 1, ticksize: 2},
-  ETHUSD: {decimal_rounding: 2, ticksize: 20},
+  ETHUSD: {decimal_rounding: 1, ticksize: 10},
   XRPUSD: {decimal_rounding: 4, ticksize: 10000},
 };
 
