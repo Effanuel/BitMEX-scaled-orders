@@ -20,12 +20,13 @@ type PickWithOptional<T, K extends keyof T, O extends keyof T> = {
 } &
   {[P in O]?: T[P]};
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type KeysByType<O extends object, T> = {
   [k in keyof O]-?: O[k] extends T ? k : never;
 }[keyof O];
-
+// eslint-disable-next-line @typescript-eslint/ban-types
 type FunctionsOnly<O extends object> = Pick<O, KeysByType<O, Function>>;
-
+// eslint-disable-next-line @typescript-eslint/ban-types
 type ClassMethods<C extends object> = FunctionsOnly<InstanceType<C>>;
 
 type InputChange = React.ChangeEvent<HTMLInputElement>;

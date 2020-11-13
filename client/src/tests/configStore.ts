@@ -1,6 +1,7 @@
 import {isPlainObject} from 'lodash/fp';
 import {Reducer, Store, StoreEnhancer} from 'redux';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default function createStore<S, A extends Action, Ext = {}, StateExt = never>(
   reducer: Reducer<S, A>,
   preloadedState?: Partial<S>,
@@ -8,6 +9,7 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
 ): Store<S, A> & Ext {
   if (
     (typeof preloadedState === 'function' && typeof enhancer === 'function') ||
+    // eslint-disable-next-line prefer-rest-params
     (typeof enhancer === 'function' && typeof arguments[3] === 'function')
   ) {
     throw new Error(
