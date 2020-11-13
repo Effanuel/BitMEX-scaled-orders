@@ -24,7 +24,7 @@ type KeysByType<O extends object, T> = {
   [k in keyof O]-?: O[k] extends T ? k : never;
 }[keyof O];
 
-type FunctionsOnly<O extends object> = Pick<O, KeysByType<O, () => T>>;
+type FunctionsOnly<O extends object> = Pick<O, KeysByType<O, Function>>;
 
 type ClassMethods<C extends object> = FunctionsOnly<InstanceType<C>>;
 
