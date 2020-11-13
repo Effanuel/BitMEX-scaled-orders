@@ -78,7 +78,7 @@ The Backend was built using **Node + Express** and the Frontend, **React + Redux
 
 - Create a [BitMEX](https://www.bitmex.com) account;
 
-  _(If you are **new** to BitMEX, consider using my [affiliate link](https://www.bitmex.com/register/o8ILy1) to get **10% off** the fees for 6 months.)_
+  _(If you are **new** to BitMEX, consider using my [affiliate link](https://www.bitmex.com/register/o8ILy1) to get **10% off** the fees for 6 months. If you are someone who doesn't gets his orders filled with market orders, getting the 10% discount also reduces the money you get back for limit orders. So it is not recommended)_
 
 * Get API keys:
   - Account > API keys > Create API key;
