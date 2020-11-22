@@ -2,12 +2,11 @@ import axios from 'axios';
 import _ from 'lodash/fp';
 import {
   createMarketOrder,
-  createScaledOrders,
-  ScaledOrdersProps,
   createOrder,
   amendOrder,
   MarketOrderProps,
   deleteOrder,
+  ScaledOrders,
 } from '../../util/index';
 import {PostTrailingOrderProps} from 'redux/modules/trailing/trailingModule';
 
@@ -73,12 +72,7 @@ export class BitMEX_API implements BitMEX {
     return await this.sendRequest('order', payload, ['orderID', 'price']);
   }
 
-  async postBulkOrders(payload: ScaledOrdersProps) {
-    const scaledOrders = createScaledOrders(payload);
-    if (payload.ordersProps.stop) {
-      scaledOrders.orders.push(scaledOrders.stop as any);
-    }
-
+  async postBulkOrders(scaledOrders: ScaledOrders) {
     return await this.sendRequest('bulkOrders', scaledOrders);
   }
 }

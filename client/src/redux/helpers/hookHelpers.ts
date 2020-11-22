@@ -65,6 +65,7 @@ const buildSelectors = (state: AppState): Selectors => {
     error: preview.error,
     showPreview: preview.showPreview,
     previewLoading: preview.previewLoading,
+    profitTargets: preview.profitTargets,
 
     __keys: websocket.__keys,
     connected: websocket.connected,

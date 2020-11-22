@@ -148,3 +148,13 @@ export const amendOrder = (props: AmendOrder): AmendOrder => ({...props});
 
 type DeleteOrder = Pick<orderType, 'orderID'>;
 export const deleteOrder = (props: DeleteOrder) => ({...props});
+
+export type ProfitTargetProps = Pick<orderType, 'symbol' | 'orderQty' | 'side' | 'price'> & {stop: number};
+export type ProfitTarget = ReturnType<typeof createProfitTarget>;
+export const createProfitTarget = ({orderQty, symbol, stop, price, side}: ProfitTargetProps) => {
+  const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
+  const stopPx = parseNumber(tickerRound(stop, symbol), decimal_rounding);
+  const stopSide = side === SIDE.BUY ? SIDE.SELL : SIDE.BUY;
+
+  return {symbol, orderQty, stopPx, price, side: stopSide, ordType: ORD_TYPE.StopLimit, text: 'profit-target'};
+};

@@ -59,3 +59,19 @@ td[id='text'] {
 .side_stop__buy {
   border-top: 1px solid var(--accentColor);
 }
+
+.add-profit-target {
+  &:hover {
+    color: var(--accentColor);
+    cursor: pointer;
+    transition: 0.25s;
+  }
+}
+
+.remove-profit-target {
+  &:hover {
+    color: var(--stopColor);
+    cursor: pointer;
+    transition: 0.25s;
+  }
+}
