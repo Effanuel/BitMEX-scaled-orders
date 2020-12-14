@@ -6,76 +6,68 @@ import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux
 import {postMarketOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
 import {AppState} from 'redux/models/state';
 
-interface RegisteredToasts {
-  [key: string]: (store: Store<AppState>, action: Action) => void;
-}
+type RequestFunction = (store: Store<AppState>, action: Action) => void;
 
 interface RequestTypes {
-  REQUEST?: (store: Store<AppState>, action: Action) => void;
-  SUCCESS?: (store: Store<AppState>, action: Action) => void;
-  FAILURE?: (store: Store<AppState>, action: Action) => void;
+  REQUEST?: RequestFunction;
+  SUCCESS?: RequestFunction;
+  FAILURE?: RequestFunction;
 }
 
-interface ThunkToasts {
-  [key: string]: (store: Store<AppState>, action: Action) => void;
-}
-
-function buildThunkToasts<R, T, C>(thunk: AsyncThunk<R, T, C>, requestTypes: RequestTypes): ThunkToasts {
+function buildThunkToasts<R, T, C>(
+  thunk: AsyncThunk<R, T, C>,
+  requestTypes: RequestTypes,
+): {[key: string]: RequestFunction} {
   const {REQUEST, SUCCESS, FAILURE} = requestTypes;
 
-  const request = REQUEST ? {[thunk.pending.type]: REQUEST} : null;
-  const success = SUCCESS ? {[thunk.fulfilled.type]: SUCCESS} : null;
-  const failure = FAILURE ? {[thunk.rejected.type]: FAILURE} : null;
+  const request = REQUEST ? {[thunk.pending.type]: REQUEST} : {};
+  const success = SUCCESS ? {[thunk.fulfilled.type]: SUCCESS} : {};
+  const failure = FAILURE ? {[thunk.rejected.type]: FAILURE} : {};
 
   return {...request, ...success, ...failure};
 }
 
-const PostMarketOrderToasts = buildThunkToasts(postMarketOrder, {
-  SUCCESS: () => showToast('Submitted Market Order'),
-  FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
-});
+const PostTrailingOrderSuccess = (store: Store<AppState>, action: Action) => {
+  const {text, price, success} = action.payload;
 
-//  TODO: MERGE WITH PostMarketOrderToasts
-const CrossPostMarketOrderToasts = buildThunkToasts(crossPostMarketOrder, {
-  SUCCESS: () => showToast('Submitted Market Order'),
-  FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
-});
+  const isOrderSubmitted = success === 200;
+  const isOrderPlaced = text === 'best_order';
+  const toastDisplay: {message: string; preset: ToastPreset} =
+    isOrderSubmitted && isOrderPlaced
+      ? {message: `Trailing Order placed at ${price}`, preset: 'success'}
+      : {message: `Trailing order: Post only - order cancelled.`, preset: 'warning'};
 
-const PostScaledOrdersToasts = buildThunkToasts(postScaledOrders, {
-  SUCCESS: () => showToast('Submitted Scaled Orders'),
-  FAILURE: (store, action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
-});
+  showToast(toastDisplay.message, toastDisplay.preset);
+};
 
-const PostTrailingOrderToasts = buildThunkToasts(postTrailingOrder, {
-  SUCCESS: (store, action) => {
-    const {text, price, success} = action.payload;
-
-    const isOrderSubmitted = success === 200;
-    const isOrderPlaced = text === 'best_order';
-    const toastDisplay: {message: string; preset: ToastPreset} =
-      isOrderSubmitted && isOrderPlaced
-        ? {message: `Trailing Order placed at ${price}`, preset: 'success'}
-        : {message: `Trailing order: Post only - order cancelled.`, preset: 'warning'};
-
-    showToast(toastDisplay.message, toastDisplay.preset);
-  },
-  FAILURE: () => showToast('Order posting error.', 'error'),
-});
-
-const CancelTrailingOrderToasts = buildThunkToasts(cancelTrailingOrder, {
-  SUCCESS: () => showToast('Trailing Order Canceled', 'success'),
-  FAILURE: () => showToast('Failed to Cancel Trailing Order', 'error'),
-});
-
-const AmmendTrailingOrderToasts = buildThunkToasts(ammendTrailingOrder, {
-  FAILURE: () => showToast('Order ammending error.', 'error'),
-});
+type RegisteredToasts = {[key: string]: (store: Store<AppState>, action: Action) => void};
 
 export const registeredToasts: RegisteredToasts = {
-  ...CrossPostMarketOrderToasts,
-  ...PostMarketOrderToasts,
-  ...PostScaledOrdersToasts,
-  ...PostTrailingOrderToasts,
-  ...CancelTrailingOrderToasts,
-  ...AmmendTrailingOrderToasts,
+  ...buildThunkToasts(crossPostMarketOrder, {
+    SUCCESS: () => showToast('Submitted Market Order'),
+    FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+  }),
+  ...buildThunkToasts(crossPostMarketOrder, {
+    SUCCESS: () => showToast('Submitted Market Order'),
+    FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+  }),
+  ...buildThunkToasts(postScaledOrders, {
+    SUCCESS: () => showToast('Submitted Scaled Orders'),
+    FAILURE: (store, action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
+  }),
+  ...buildThunkToasts(postTrailingOrder, {
+    SUCCESS: PostTrailingOrderSuccess,
+    FAILURE: () => showToast('Order posting error.', 'error'),
+  }),
+  ...buildThunkToasts(cancelTrailingOrder, {
+    SUCCESS: () => showToast('Trailing Order Canceled', 'success'),
+    FAILURE: () => showToast('Failed to Cancel Trailing Order', 'error'),
+  }),
+  ...buildThunkToasts(postMarketOrder, {
+    SUCCESS: () => showToast('Submitted Market Order'),
+    FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+  }),
+  ...buildThunkToasts(ammendTrailingOrder, {
+    FAILURE: () => showToast('Order ammending error.', 'error'),
+  }),
 };
