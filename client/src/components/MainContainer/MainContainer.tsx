@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Container, Grid} from '@material-ui/core';
+import {Collapse, Container, Fade, Grid} from '@material-ui/core';
 import styles from './styles.module.scss';
 import {MAIN_CONTAINER} from '../../data-test-ids';
 
@@ -28,35 +28,34 @@ export const MainContainer = React.memo((props: MainContainerProps) => {
     </div>
   );
 
-  function maximizedView() {
-    return (
-      <Grid item xs container direction="row" style={{paddingBottom: '10px'}} data-test-id={MAIN_CONTAINER.MAX_VIEW}>
-        <Grid item>{cornerButton()}</Grid>
-        <Grid item container xs style={{paddingRight: '20px', paddingTop: '5px'}}>
-          <Grid container spacing={2} justify="center" alignItems="center">
-            {children}
-          </Grid>
-        </Grid>
-      </Grid>
-    );
-  }
-
-  function minimizedView() {
-    return (
-      <div className={styles.container__row__minimized} data-test-id={MAIN_CONTAINER.MIN_VIEW}>
-        {cornerButton()}
-        <div className={styles.container_minimized_text}>
-          <span>{label}</span>
-          <span className={styles.description}>{description}</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={!connected ? styles.dim : undefined}>
       <Container data-testid={label} fixed maxWidth="sm" className={styles.container_scaled} style={{padding: '0px'}}>
-        {isViewMaximized ? maximizedView() : minimizedView()}
+        <div className={styles.container__row__minimized} data-test-id={MAIN_CONTAINER.MIN_VIEW}>
+          {cornerButton()}
+          <div className={styles.container_minimized_text}>
+            <span>{label}</span>
+            <Fade in={!isViewMaximized}>
+              <span className={styles.description}>{description}</span>
+            </Fade>
+          </div>
+        </div>
+        <Collapse in={isViewMaximized}>
+          <Grid
+            item
+            xs
+            container
+            direction="row"
+            style={{paddingBottom: '10px'}}
+            data-test-id={MAIN_CONTAINER.MAX_VIEW}
+          >
+            <Grid item container xs style={{paddingRight: '5px', paddingLeft: '20px'}}>
+              <Grid container spacing={2} justify="center" alignItems="center">
+                {children}
+              </Grid>
+            </Grid>
+          </Grid>
+        </Collapse>
       </Container>
       {isViewMaximized ? renderOutside : null}
     </div>
