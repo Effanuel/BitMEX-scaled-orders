@@ -1,7 +1,4 @@
-.toast,
-.error_toast,
-.success_toast,
-.warning_toast {
+%toastTemplate {
   align-items: flex-start;
   border-radius: 4px;
   padding: 6px 16px;
@@ -10,22 +7,29 @@
   box-shadow: 2px 2px 3px black;
 }
 
+.toast {
+  @extend %toastTemplate;
+}
+
 .toast_none {
   display: none;
 }
 
 .error_toast {
+  @extend %toastTemplate;
   color: pink;
   background-color: #180605;
 }
 
 .success_toast {
+  @extend %toastTemplate;
   color: var(--accentColor);
   background-color: rgb(7, 17, 7);
   border: 1px solid #317633;
 }
 
 .warning_toast {
+  @extend %toastTemplate;
   color: rgb(255, 213, 153);
   background-color: rgb(25, 15, 0);
 }

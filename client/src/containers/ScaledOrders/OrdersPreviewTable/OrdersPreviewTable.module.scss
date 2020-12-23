@@ -1,13 +1,15 @@
-@import '../../../scss/colors.module.scss';
-
-.preview_container,
-.details_container {
+%container {
   border: 1px solid grey;
   border-radius: 2px;
   box-shadow: 3px 3px 5px black;
 }
 
+.preview_container {
+  @extend %container;
+}
+
 .details_container {
+  @extend %container;
   height: 100%;
 }
 
