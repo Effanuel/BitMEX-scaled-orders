@@ -1,12 +1,13 @@
 import React from 'react';
-import {Grid} from '@material-ui/core';
 import {useDispatch} from 'react-redux';
+import {Grid} from '@material-ui/core';
+import {Text} from '@chakra-ui/react';
 import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
-import {previewOrders, previewToggle, postScaledOrders} from 'redux/modules/preview/previewModule';
+import {previewOrders, previewToggle, postOrderBulk} from 'redux/modules/preview/previewModule';
 import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} from 'components';
 import DistributionsRadioGroup from './DistributionsRadioGroup';
-import {DISTRIBUTIONS} from 'util/index';
-import {SIDE, SYMBOLS} from 'util/BitMEX-types';
+import {createScaledOrders, DISTRIBUTIONS} from 'util/index';
+import {SIDE, SYMBOLS} from 'redux/api/bitmex/types';
 import styles from './ScaledOrders.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
@@ -33,67 +34,61 @@ const initialState: Readonly<ScaledContainerState> = {
   symbol: SYMBOLS.XBTUSD,
 };
 
-const ScaledContainer = React.memo(() => {
+export default React.memo(function ScaledContainer() {
   const dispatch = useDispatch();
-  const {error: orderError, showPreview} = useReduxSelector('error', 'showPreview');
+  const {error, showPreview, previewLoading} = useReduxSelector('error', 'showPreview', 'previewLoading');
 
   const [state, setState] = React.useState(initialState);
-  const [cache, setCache] = React.useState(true);
+  const [isDirty, setDirty] = React.useState(false);
 
   const onChangeDropdown = React.useCallback(({target: {value, id}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: value, start: null, end: null, stop: null}));
-    setCache(false);
+    setDirty(true);
   }, []);
 
   const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
-    setCache(false);
+    setDirty(true);
   }, []);
 
   const toggleSide = React.useCallback(({target: {value, name}}: InputChange): void => {
     setState((prevState) => ({...prevState, [name]: value}));
-    setCache(false);
+    setDirty(true);
   }, []);
 
   const onOrderSubmit = React.useCallback((): void => {
     const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
-    dispatch(postScaledOrders({ordersProps, distribution}));
+    dispatch(postOrderBulk(createScaledOrders({ordersProps, distribution})));
     setState(initialState);
-    setCache(false);
+    setDirty(true);
   }, [dispatch, state]);
 
   const onPreviewOrders = React.useCallback((): void => {
-    if (cache) {
+    if (!isDirty) {
       dispatch(previewToggle());
     } else {
-      setCache(true);
+      setDirty(false);
       const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
       dispatch(previewOrders(ordersProps, distribution));
     }
-  }, [dispatch, state, cache]);
+  }, [dispatch, state, isDirty]);
 
   const renderFirstRow = React.useMemo(() => {
     return (
       <>
-        <Grid item xs={3} className={styles.container__col}>
-          <SelectDropdown id="symbol" onChange={onChangeDropdown} label="Instrument" />
-        </Grid>
-        <Grid item xs={2}>
-          <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
-        </Grid>
-        <Grid item xs={4} />
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={SCALED_CONTAINER.STOP_LOSS_INPUT}
-            onChange={onChangeNumber}
-            value={state.stop}
-            label="Stop-Loss"
-            id="stop"
-            stop={true}
-            t_placement="bottom"
-            tooltip="(Optional) Price at which to market exit placed contracts."
-          />
-        </Grid>
+        <SelectDropdown id="symbol" onChange={onChangeDropdown} label="Instrument" />
+        <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
+        <Grid item xs={6} />
+        <InputField
+          data-test-id={SCALED_CONTAINER.STOP_LOSS_INPUT}
+          onChange={onChangeNumber}
+          value={state.stop}
+          label="Stop-Loss"
+          id="stop"
+          stop={true}
+          t_placement="bottom"
+          tooltip="(Optional) Price at which to market exit placed contracts."
+        />
       </>
     );
   }, [onChangeNumber, onChangeDropdown, toggleSide, state.side, state.stop]);
@@ -101,46 +96,38 @@ const ScaledContainer = React.memo(() => {
   const renderSecondRow = React.useMemo(() => {
     return (
       <>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={SCALED_CONTAINER.QUANTITY_INPUT}
-            onChange={onChangeNumber}
-            value={state.orderQty}
-            label="Quantity"
-            id="orderQty"
-            tooltip="Number of contracts"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={SCALED_CONTAINER.ORDER_COUNT_INPUT}
-            onChange={onChangeNumber}
-            value={state.n_tp}
-            label="Order count"
-            id="n_tp"
-            tooltip="Number of individual orders"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={SCALED_CONTAINER.RANGE_START_INPUT}
-            onChange={onChangeNumber}
-            value={state.start}
-            label="Range start"
-            id="start"
-            tooltip="First placed order's price"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={SCALED_CONTAINER.RANGE_END_INPUT}
-            onChange={onChangeNumber}
-            value={state.end}
-            label="Range end"
-            id="end"
-            tooltip="Last placed order's price"
-          />
-        </Grid>
+        <InputField
+          data-test-id={SCALED_CONTAINER.QUANTITY_INPUT}
+          onChange={onChangeNumber}
+          value={state.orderQty}
+          label="Quantity"
+          id="orderQty"
+          tooltip="Number of contracts"
+        />
+        <InputField
+          data-test-id={SCALED_CONTAINER.ORDER_COUNT_INPUT}
+          onChange={onChangeNumber}
+          value={state.n_tp}
+          label="Order count"
+          id="n_tp"
+          tooltip="Number of individual orders"
+        />
+        <InputField
+          data-test-id={SCALED_CONTAINER.RANGE_START_INPUT}
+          onChange={onChangeNumber}
+          value={state.start}
+          label="Range start"
+          id="start"
+          tooltip="First placed order's price"
+        />
+        <InputField
+          data-test-id={SCALED_CONTAINER.RANGE_END_INPUT}
+          onChange={onChangeNumber}
+          value={state.end}
+          label="Range end"
+          id="end"
+          tooltip="Last placed order's price"
+        />
       </>
     );
   }, [onChangeNumber, state]);
@@ -148,51 +135,48 @@ const ScaledContainer = React.memo(() => {
   const renderThirdRow = React.useMemo(() => {
     return (
       <>
-        <Grid item xs={4}>
-          <DistributionsRadioGroup onChange={toggleSide} distribution={state.distribution} />
+        <DistributionsRadioGroup onChange={toggleSide} distribution={state.distribution} />
+        <Grid item xs={6} className={styles.myErrorMessage}>
+          {error}
         </Grid>
-        <Grid item xs={3} className={styles.myErrorMessage}>
-          {orderError}
-        </Grid>
-        <Grid item xs={2} className="text-right">
-          <Button
-            testID={SCALED_CONTAINER.PREVIEW_BUTTON}
-            label="Preview"
-            onClick={onPreviewOrders}
-            variant="text"
-            disabled={isDisabled(state)}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <Button
-            testID={SCALED_CONTAINER.SUBMIT_BUTTON}
-            label="Submit"
-            variant={SIDE.BUY}
-            onClick={onOrderSubmit}
-            disabled={isDisabled(state)}
-          />
-        </Grid>
+        <Text
+          data-testid={SCALED_CONTAINER.PREVIEW_BUTTON}
+          textStyle="regular"
+          onClick={onPreviewOrders}
+          aria-disabled={isDisabled(state)}
+        >
+          Preview
+        </Text>
+        <Button
+          testID={SCALED_CONTAINER.SUBMIT_BUTTON}
+          label="Submit"
+          isLoading={previewLoading}
+          variant={SIDE.BUY}
+          onClick={onOrderSubmit}
+          disabled={isDisabled(state)}
+        />
       </>
     );
-  }, [toggleSide, onOrderSubmit, onPreviewOrders, orderError, state]);
+  }, [toggleSide, onOrderSubmit, onPreviewOrders, error, state, previewLoading]);
 
-  const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
+  const renderOutside = React.useMemo(
+    () => showPreview && <OrdersPreviewTable {...(state as RequiredProperty<ScaledContainerState>)} />,
+    [showPreview, state],
+  );
 
   return (
-    <MainContainer label="ScaledOrders" description="Place limit orders in a range" renderOutside={renderOutside}>
+    <MainContainer label="Scaled Orders" description="Place limit orders in a range" renderOutside={renderOutside}>
       {renderFirstRow}
       {renderSecondRow}
       {renderThirdRow}
     </MainContainer>
   );
 });
-export default ScaledContainer;
 
 function isDisabled(state: ScaledContainerState): boolean {
   const {orderQty, n_tp, start, end, stop, side} = state;
-  if (!orderQty || !n_tp || !start || !end || !side) {
-    return true;
-  }
+  if (!orderQty || !n_tp || !start || !end || !side) return true;
+
   const validInputs = !(n_tp > 1);
   const validLimits = orderQty > 20e6 || n_tp > 50;
   const validOrdersWithBuyStop = !!stop && (side === 'Buy' ? stop > start && stop > end : false);

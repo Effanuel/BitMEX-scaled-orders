@@ -2,8 +2,9 @@ import React, {Ref} from 'react';
 import {useDispatch} from 'react-redux';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core';
 import {Button, InputField} from 'components';
-import {SIDE, SYMBOLS} from 'util/BitMEX-types';
+import {SIDE, SYMBOLS} from 'redux/api/bitmex/types';
 import {addProfitTarget} from 'redux/modules/preview/previewModule';
+import {createProfitTarget} from 'util/index';
 
 interface State {
   price: null | number;
@@ -37,9 +38,7 @@ const ProfitTargetDialog = React.forwardRef(({}, ref: Ref<RefProps>) => {
     },
   }));
 
-  const closeDialog = React.useCallback(() => {
-    setOpen(false);
-  }, []);
+  const closeDialog = React.useCallback(() => setOpen(false), []);
 
   const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
@@ -49,13 +48,15 @@ const ProfitTargetDialog = React.forwardRef(({}, ref: Ref<RefProps>) => {
     setOpen(false);
     setState(initialState);
     dispatch(
-      addProfitTarget({
-        side: state.side,
-        orderQty: state.quantity as number,
-        price: state.price as number,
-        stop: state.triggerPrice,
-        symbol: state.symbol,
-      }),
+      addProfitTarget(
+        createProfitTarget({
+          side: state.side,
+          orderQty: state.quantity as number,
+          price: state.price as number,
+          stop: state.triggerPrice,
+          symbol: state.symbol,
+        }),
+      ),
     );
   }, [dispatch, state]);
 
@@ -73,12 +74,24 @@ const ProfitTargetDialog = React.forwardRef(({}, ref: Ref<RefProps>) => {
     >
       <DialogTitle id="form-dialog-title">Add a profit target</DialogTitle>
       <DialogContent style={{display: 'flex', flexDirection: 'column'}}>
-        <InputField id="price" value={state.price} label="Profit Target Price" onChange={onChangeNumber} />
-        <InputField id="quantity" value={state.quantity} label="Quantity" onChange={onChangeNumber} />
+        <InputField
+          data-test-id="333"
+          id="price"
+          value={state.price}
+          label="Profit Target Price"
+          onChange={onChangeNumber}
+        />
+        <InputField
+          data-test-id="444"
+          id="quantity"
+          value={state.quantity}
+          label="Quantity"
+          onChange={onChangeNumber}
+        />
       </DialogContent>
       <DialogActions>
         <Button variant="text" label="Cancel" onClick={closeDialog} />
-        <Button disabled={disabled} variant="text" label="Confirm" onClick={addTarget} />
+        <Button testID={'ccc'} disabled={disabled} variant="text" label="Confirm" onClick={addTarget} />
       </DialogActions>
     </Dialog>
   );

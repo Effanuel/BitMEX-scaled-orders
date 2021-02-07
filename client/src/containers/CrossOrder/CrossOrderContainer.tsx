@@ -1,10 +1,8 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
 import {useDispatch} from 'react-redux';
 import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
-import {SYMBOLS, SIDE} from 'util/BitMEX-types';
+import {SYMBOLS, SIDE} from 'redux/api/bitmex/types';
 import {CROSS_ORDER_CONTAINER} from 'data-test-ids';
-import styles from './CrossOrderContainer.module.scss';
 import buildOrderPresenter from '../../presenters/cross-label-presenter';
 import {clearCrossOrder, createCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
@@ -63,31 +61,23 @@ const CrossOrderContainer = React.memo(() => {
 
     return (
       <>
-        <Grid item xs={3}>
-          <SelectDropdown id="symbol" onChange={toggleInstrument} label="Instrument" disabled={buttonLabel.disabled} />
-        </Grid>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={CROSS_ORDER_CONTAINER.QUANTITY_INPUT}
-            id="orderQty"
-            onChange={onChangeNumber}
-            value={state.orderQty}
-            label="Quantity"
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
-        </Grid>
-        <Grid item xs={4} className={styles.top_row}>
-          <Button
-            testID={CROSS_ORDER_CONTAINER.SUBMIT}
-            label={buttonLabel.label}
-            variant={state.side}
-            style={{width: '170px'}}
-            onClick={createOrder}
-            disabled={isSubmitButtonDisabled}
-          />
-        </Grid>
+        <SelectDropdown id="symbol" onChange={toggleInstrument} label="Instrument" disabled={buttonLabel.disabled} />
+        <InputField
+          data-test-id={CROSS_ORDER_CONTAINER.QUANTITY_INPUT}
+          id="orderQty"
+          onChange={onChangeNumber}
+          value={state.orderQty}
+          label="Quantity"
+        />
+        <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
+        <Button
+          testID={CROSS_ORDER_CONTAINER.SUBMIT}
+          label={buttonLabel.label}
+          variant={state.side}
+          style={{width: '170px'}}
+          onClick={createOrder}
+          disabled={isSubmitButtonDisabled}
+        />
       </>
     );
   }, [onChangeNumber, createOrder, wsCrossPrice, toggleInstrument, toggleSide, buttonLabel, state]);
@@ -95,39 +85,31 @@ const CrossOrderContainer = React.memo(() => {
   const renderSecondRow = React.useMemo(() => {
     return (
       <>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={CROSS_ORDER_CONTAINER.PRICE_INPUT}
-            id="price"
-            onChange={onChangeNumber}
-            value={state.price}
-            label="Price"
-          />
-        </Grid>
-        <Grid item xs={3}>
+        <InputField
+          data-test-id={CROSS_ORDER_CONTAINER.PRICE_INPUT}
+          id="price"
+          onChange={onChangeNumber}
+          value={state.price}
+          label="Price"
+        />
+        <div style={{flexDirection: 'column', display: 'flex'}}>
+          <span style={{color: 'white'}}>Cross order status: </span>
+          <span style={{color: 'green'}}>{crossOrderPrice ? 'Order is placed' : 'Order not placed.'}</span>
+        </div>
+        {crossOrderPrice ? (
           <div style={{flexDirection: 'column', display: 'flex'}}>
-            <span style={{color: 'white'}}>Cross order status: </span>
-            <span style={{color: 'green'}}>{crossOrderPrice ? 'Order is placed' : 'Order not placed.'}</span>
+            <div style={{color: 'white'}}>Cross order price: </div>
+            <div style={{color: 'green'}}>{crossOrderPrice}</div>
           </div>
-        </Grid>
-        <Grid item xs={3}>
-          {crossOrderPrice ? (
-            <div style={{flexDirection: 'column', display: 'flex'}}>
-              <div style={{color: 'white'}}>Cross order price: </div>
-              <div style={{color: 'green'}}>{crossOrderPrice}</div>
-            </div>
-          ) : null}
-        </Grid>
-        <Grid item xs={3}>
-          {connected && crossOrderPrice ? (
-            <Button
-              testID={CROSS_ORDER_CONTAINER.CANCEL_ORDER}
-              variant="textSell"
-              onClick={cancelCrossOrder}
-              label={'Cancel Cross Order'}
-            />
-          ) : null}
-        </Grid>
+        ) : null}
+        {connected && crossOrderPrice ? (
+          <Button
+            testID={CROSS_ORDER_CONTAINER.CANCEL_ORDER}
+            variant="textSell"
+            onClick={cancelCrossOrder}
+            label={'Cancel Cross Order'}
+          />
+        ) : null}
       </>
     );
   }, [cancelCrossOrder, connected, crossOrderPrice, onChangeNumber, state.price]);

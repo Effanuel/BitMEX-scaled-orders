@@ -1,25 +1,19 @@
 @import '../../scss/colors.module.scss';
 
-.white60 {
-  color: var(--white60);
-}
-
-.listItemContainer {
-  margin-left: 5px;
-  padding: 1px;
-  border: 1px solid grey;
-  color: var(--white60);
-}
-
 .allPricesContainer {
   display: flex;
+  flex: 1;
   flex-direction: row;
   margin-bottom: 6px;
   margin-top: 6px;
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   justify-content: center;
+  align-items: center;
   text-align: center;
   margin-top: 12px;
 }

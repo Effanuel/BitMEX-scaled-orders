@@ -52,8 +52,9 @@ function InputField(props: InputFieldProps) {
         onChange={onChange}
         onFocus={onFocus}
         InputProps={{disableUnderline: true}}
-        inputProps={{id, 'data-test-id': props['data-test-id']}}
+        inputProps={{id, 'data-testid': props['data-test-id']}}
         className={cx({[classes.stop]: stop})}
+        style={{height: '30px'}}
       />
     </FormControl>
   );

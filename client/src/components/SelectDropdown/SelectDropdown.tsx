@@ -26,7 +26,7 @@ function SelectDropdown({id, label, onChange, disabled = false}: SelectDropDownP
 
       <select
         id={id}
-        data-test-id={COMPONENTS.SELECT_DROPDOWN}
+        data-testid={COMPONENTS.SELECT_DROPDOWN}
         disabled={disabled}
         className="custom-select"
         onChange={onChange}

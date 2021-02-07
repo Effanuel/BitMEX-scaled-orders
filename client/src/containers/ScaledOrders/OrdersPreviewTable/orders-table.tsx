@@ -1,15 +1,16 @@
 import React from 'react';
+import _ from 'lodash/fp';
 import cx from 'classnames';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
 import {PREVIEW_CONTAINER, SCALED_CONTAINER} from 'data-test-ids';
 import {useSingleton} from 'general/hooks';
-import {SIDE, SYMBOLS} from 'util/BitMEX-types';
+import {SIDE, SYMBOLS} from 'redux/api/bitmex/types';
 import styles from './orders-table.module.scss';
 import ProfitTargetDialog, {RefProps} from './ProfitTargetDialog';
-import _ from 'lodash';
 import {useDispatch} from 'react-redux';
 import {removeProfitTarget} from 'redux/modules/preview/previewModule';
+import {RegularOrder, ScaledOrder, StopLoss} from '../../../util';
 
 const OrderTypePresenter: Readonly<{[key in SIDE]: string}> = {
   [SIDE.SELL]: 'Limit-Sell',
@@ -28,17 +29,23 @@ const generateSideColorStyles = (xSide: boolean) => ({
   textY: cx({[styles.side__sell]: !xSide, [styles.side__buy]: xSide}),
 });
 
-export default function OrdersTable() {
+interface Props {
+  orders?: ScaledOrder[];
+}
+
+export default function OrdersTable({orders}: Props) {
   const dispatch = useDispatch();
   const ref = React.createRef<RefProps>();
-  const {orders, profitTargets} = useReduxSelector('orders', 'profitTargets');
+  const {profitTargets} = useReduxSelector('profitTargets');
 
-  const xSide = useSingleton(orders?.orders?.[0].side === 'Sell');
-  const ySide = useSingleton(xSide ? 'Buy' : 'Sell');
+  const xSide = orders?.[0].side === 'Sell';
+  const ySide = xSide ? 'Buy' : 'Sell';
   const {normal, stop, textX, textY} = useSingleton(generateSideColorStyles(xSide));
 
   const openProfitTargetDialog = React.useCallback(
     (price: number, side: SIDE, symbol: SYMBOLS) => () => {
+      // console.log(ref?.current);
+      console.log('OPEN');
       ref.current?.openDialog(price, side, symbol);
     },
     [ref],
@@ -51,9 +58,14 @@ export default function OrdersTable() {
     [dispatch],
   );
 
+  const [stopOrders, regularOrders] = _.partition((item) => 'stopPx' in item, orders) as [
+    StopLoss[] | undefined,
+    RegularOrder[],
+  ];
+
   const renderOrders = React.useMemo(
     () =>
-      orders?.orders.map(({orderQty, side, price, symbol}, i) => (
+      regularOrders.map(({orderQty, side, price, symbol}, i) => (
         <tr key={`${i}`} className={normal}>
           <td key={i + 'a'}>{formatPrice(orderQty)}</td>
           <td key={i + 'b'} className={textX}>
@@ -67,6 +79,7 @@ export default function OrdersTable() {
           ) : (
             <td
               key={i + 'd'}
+              data-testid={'datatest'}
               className={styles['add-profit-target']}
               onClick={openProfitTargetDialog(price, side, symbol)}
             >
@@ -75,17 +88,7 @@ export default function OrdersTable() {
           )}
         </tr>
       )),
-    [profitTargets, orders?.orders, normal, openProfitTargetDialog, textX, removeTarget],
-  );
-
-  const renderStop = useSingleton(
-    orders?.stop.stopPx ? (
-      <tr data-testid={PREVIEW_CONTAINER.STOP_ORDER_ROW} className={stop}>
-        <td>{formatPrice(orders.stop.orderQty)}</td>
-        <td className={textY}>{StopOrderTypePresenter[ySide]}</td>
-        <td>{formatPrice(orders.stop.stopPx)}</td>
-      </tr>
-    ) : null,
+    [profitTargets, normal, openProfitTargetDialog, textX, removeTarget, regularOrders],
   );
 
   return (
@@ -100,9 +103,15 @@ export default function OrdersTable() {
             <th>Profit Target</th>
           </tr>
         </thead>
-        <tbody data-test-id={SCALED_CONTAINER.ORDER_ROW}>
+        <tbody data-testid={SCALED_CONTAINER.ORDER_ROW}>
           {renderOrders}
-          {renderStop}
+          {stopOrders?.[0] ? (
+            <tr data-testid={PREVIEW_CONTAINER.STOP_ORDER_ROW} className={stop}>
+              <td>{formatPrice(stopOrders[0].orderQty)}</td>
+              <td className={textY}>{StopOrderTypePresenter[ySide]}</td>
+              <td>{formatPrice(stopOrders[0].stopPx)}</td>
+            </tr>
+          ) : null}
         </tbody>
       </table>
     </>

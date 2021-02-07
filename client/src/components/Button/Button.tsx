@@ -1,13 +1,20 @@
 import React from 'react';
 import cx from 'classnames';
 import styles from './Button.module.scss';
-import {SIDE} from 'util/BitMEX-types';
+import {SIDE} from 'redux/api/bitmex/types';
+import {CircularProgress, makeStyles} from '@material-ui/core';
+import {COMPONENTS} from 'data-test-ids';
+
+const useStyles = makeStyles(() => ({
+  spinner: {padding: 0, color: 'grey', justifyContent: 'center', verticalAlign: 'middle'},
+}));
 
 export type ButtonVariants = 'submit' | 'text' | 'custom' | 'textSell' | SIDE;
 
 export interface ButtonProps {
   testID?: string;
   id?: string;
+  isLoading?: boolean;
   label: string;
   variant?: ButtonVariants;
   disabled?: boolean;
@@ -16,7 +23,18 @@ export interface ButtonProps {
   className?: string;
 }
 
-function Button({id, label, testID, variant = 'submit', disabled, onClick, style, className = ''}: ButtonProps) {
+function Button({
+  id,
+  label,
+  isLoading,
+  testID,
+  variant = 'submit',
+  disabled,
+  onClick,
+  style,
+  className = '',
+}: ButtonProps) {
+  const classes = useStyles();
   const buttonStyle = cx({
     [styles.button]: variant === 'submit',
     [styles.text_button]: variant === 'text',
@@ -27,8 +45,8 @@ function Button({id, label, testID, variant = 'submit', disabled, onClick, style
   });
 
   return (
-    <button id={id} data-test-id={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
-      {label}
+    <button id={id} data-testid={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
+      {isLoading ? <CircularProgress data-testid={COMPONENTS.SPINNER} size={18} className={classes.spinner} /> : label}
     </button>
   );
 }

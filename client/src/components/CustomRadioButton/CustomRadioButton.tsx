@@ -1,7 +1,7 @@
 import React from 'react';
 import {Radio, FormControlLabel, RadioGroup} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
-import {SIDE} from 'util/BitMEX-types';
+import {SIDE} from 'redux/api/bitmex/types';
 
 const useStyles = makeStyles(() => ({
   root: {
