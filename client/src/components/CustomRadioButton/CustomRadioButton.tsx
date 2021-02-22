@@ -30,21 +30,22 @@ export function CustomRadioButton(props: CustomRadioButtonProps) {
   return <FormControlLabel labelPlacement={'end'} className={root} control={controlButton} {...props} />;
 }
 
-export interface SideRadioButtonsProps {
+interface SideRadioButtonsProps {
   testID?: string;
-  onChangeRadio: (event: InputChange, value: string) => void;
+  onChangeRadio: (value: SIDE) => void;
   side: SIDE;
 }
 
 export function SideRadioButtons({onChangeRadio, side, testID}: SideRadioButtonsProps) {
   const {radioGroup} = useStyles();
+  const emitRadioChange = React.useCallback((_, value: string) => onChangeRadio(value as SIDE), [onChangeRadio]);
   return (
     <RadioGroup
       data-test-id={testID}
       aria-label="position"
       name="side"
       value={side}
-      onChange={onChangeRadio}
+      onChange={emitRadioChange}
       className={radioGroup}
     >
       <CustomRadioButton id="scaled_side_sell" label="Sell" value="Sell" />

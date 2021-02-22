@@ -9,7 +9,7 @@ const useStyles = makeStyles(() => ({
   tooltip: {color: 'red'},
 }));
 
-export type InputFieldProps = {
+type InputFieldProps = {
   ['data-test-id']?: string;
   id: string;
   label?: string;
@@ -18,14 +18,16 @@ export type InputFieldProps = {
   tooltip?: string;
   placeholder?: string;
   t_placement?: any;
-  onChange: (arg0: any) => void;
+  onChange: (value: string, id: string) => void;
 };
 
 function InputField(props: InputFieldProps) {
   const {id, label, value, stop = false, tooltip, placeholder, t_placement = 'top-end', onChange} = props;
 
   const classes = useStyles();
-  const onFocus = React.useCallback((event: any) => event.target.select(), []);
+
+  const invokeFocus = React.useCallback((event: any) => event.target.select(), []);
+  const invokeValueChange = React.useCallback(({target}: any) => onChange(target.value, target.id), [onChange]);
 
   return (
     <FormControl>
@@ -49,8 +51,8 @@ function InputField(props: InputFieldProps) {
         placeholder={placeholder}
         type="number"
         value={value || ''}
-        onChange={onChange}
-        onFocus={onFocus}
+        onChange={invokeValueChange}
+        onFocus={invokeFocus}
         InputProps={{disableUnderline: true}}
         inputProps={{id, 'data-testid': props['data-test-id']}}
         className={cx({[classes.stop]: stop})}

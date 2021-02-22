@@ -1,29 +1,25 @@
 import React from 'react';
+import {Spinner} from '@chakra-ui/react';
 import cx from 'classnames';
-import styles from './Button.module.scss';
 import {SIDE} from 'redux/api/bitmex/types';
-import {CircularProgress, makeStyles} from '@material-ui/core';
 import {COMPONENTS} from 'data-test-ids';
-
-const useStyles = makeStyles(() => ({
-  spinner: {padding: 0, color: 'grey', justifyContent: 'center', verticalAlign: 'middle'},
-}));
+import styles from './Button.module.scss';
 
 export type ButtonVariants = 'submit' | 'text' | 'custom' | 'textSell' | SIDE;
 
-export interface ButtonProps {
+interface Props<T> {
   testID?: string;
-  id?: string;
+  id?: T;
   isLoading?: boolean;
   label: string;
   variant?: ButtonVariants;
   disabled?: boolean;
-  onClick: (event: MouseChange) => void;
+  onClick: (id: T) => void;
   style?: React.CSSProperties;
   className?: string;
 }
 
-function Button({
+export function Button<T extends string>({
   id,
   label,
   isLoading,
@@ -33,8 +29,7 @@ function Button({
   onClick,
   style,
   className = '',
-}: ButtonProps) {
-  const classes = useStyles();
+}: Props<T>) {
   const buttonStyle = cx({
     [styles.button]: variant === 'submit',
     [styles.text_button]: variant === 'text',
@@ -44,11 +39,30 @@ function Button({
     [className]: variant === 'custom',
   });
 
+  const invokeClick = React.useCallback(({target}: any) => onClick(target.id), [onClick]);
+
   return (
-    <button id={id} data-testid={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
-      {isLoading ? <CircularProgress data-testid={COMPONENTS.SPINNER} size={18} className={classes.spinner} /> : label}
+    <button
+      id={id}
+      data-testid={testID}
+      className={buttonStyle}
+      style={style}
+      disabled={disabled}
+      onClick={invokeClick}
+    >
+      {isLoading ? (
+        <Spinner
+          data-testid={COMPONENTS.SPINNER}
+          padding={0}
+          speed="0.6s"
+          color="green.500"
+          size="sm"
+          justifyContent="center"
+          verticalAlign="center"
+        />
+      ) : (
+        label
+      )}
     </button>
   );
 }
-
-export {Button};
