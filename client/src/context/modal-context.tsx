@@ -1,24 +1,18 @@
 import React from 'react';
 import _ from 'lodash';
-import {ShowModalArgs, showRegisteredModal} from './registerModals';
-
-export enum ModalType {
-  CANCEL_ORDER = 'CancelOrder',
-  CANCEL_ALL_ORDERS = 'CancelAllOrders',
-  ADD_PROFIT_TARGET = 'AddProfitTarget',
-}
+import {ModalType, ShowModalArgs, showRegisteredModal} from './registerModals';
+import {createModals, Modals} from './modals';
 
 interface ModalContext {
-  modal: ModalType | null;
-  showModal(arg: ShowModalArgs): void;
-  hideModal(): void;
+  modals: Modals;
+  showModal: (arg: ShowModalArgs) => void;
+  hideModal: () => void;
 }
 
-const initialValues: ModalContext = {
-  modal: null,
+const initialValues = {
   showModal: _.noop,
   hideModal: _.noop,
-};
+} as ModalContext;
 
 export const ModalContext = React.createContext<ModalContext>(initialValues);
 
@@ -36,12 +30,14 @@ export const ModalProvider = ({children}: {children: React.ReactNode}) => {
     setModal(null);
   }, []);
 
+  const modals = React.useMemo(() => createModals(showModal), [showModal]);
+
   const renderModal = React.useMemo(() => {
-    return !modal ? null : showRegisteredModal(modal, modalProps, hideModal);
-  }, [modal, hideModal, modalProps]);
+    return modal ? showRegisteredModal(modal, modalProps) : null;
+  }, [modal, modalProps]);
 
   return (
-    <ModalContext.Provider value={{modal, showModal, hideModal}}>
+    <ModalContext.Provider value={{modals, showModal, hideModal}}>
       {children}
       {renderModal}
     </ModalContext.Provider>

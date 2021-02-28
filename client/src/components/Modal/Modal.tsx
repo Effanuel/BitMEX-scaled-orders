@@ -2,23 +2,25 @@ import React from 'react';
 import {Modal as ChakraModal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay} from '@chakra-ui/react';
 import {Button} from 'components';
 import {SIDE} from 'redux/api/bitmex/types';
+import {useModal} from 'general/hooks';
 
 interface Props {
-  onClose: () => void;
   onConfirm: () => void;
   isConfirmButtonDisabled?: boolean;
   children: React.ReactNode;
   title: string;
 }
 
-export function Modal({onClose, children, title, onConfirm, isConfirmButtonDisabled}: Props) {
+export function Modal({children, title, onConfirm, isConfirmButtonDisabled}: Props) {
+  const {hideModal} = useModal();
+
   const confirmDialog = React.useCallback(() => {
     onConfirm();
-    onClose();
-  }, [onConfirm, onClose]);
+    hideModal();
+  }, [onConfirm, hideModal]);
 
   return (
-    <ChakraModal size="sm" isOpen={true} onClose={onClose} isCentered>
+    <ChakraModal size="sm" isOpen={true} onClose={hideModal} isCentered>
       <ModalOverlay />
       <ModalContent p={0} m={0} bg="#121212" border="1px solid green">
         <ModalHeader color="white">{title}</ModalHeader>
@@ -27,7 +29,7 @@ export function Modal({onClose, children, title, onConfirm, isConfirmButtonDisab
         </ModalBody>
         <ModalFooter>
           <Button disabled={isConfirmButtonDisabled} style={{marginRight: 4}} onClick={confirmDialog} label="Confirm" />
-          <Button variant={SIDE.SELL} onClick={onClose} label="Dismiss" />
+          <Button variant={SIDE.SELL} onClick={hideModal} label="Dismiss" />
         </ModalFooter>
       </ModalContent>
     </ChakraModal>

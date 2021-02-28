@@ -1,57 +1,50 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
-import {Modal} from 'components';
+import {Modal, InputField} from 'components';
 import {addProfitTarget} from 'redux/modules/orders/ordersModule';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
-import {ModalType} from 'context/modal-context';
-import {InputField} from 'components/InputField/InputField';
+import {ModalType} from 'context/registerModals';
 
 export interface AddProfitTargetModalProps {
   type: ModalType.ADD_PROFIT_TARGET;
-  props: {
-    symbol: SYMBOL;
-    side: SIDE;
-    price: number;
-    quantity: number;
-    orderID: string;
-  };
+  props: Props;
 }
 
 interface Props {
-  onClose: () => void;
   symbol: SYMBOL;
   side: SIDE;
   price: number;
-  quantity: number;
   orderID: string;
 }
 
-export function AddProfitTargetModal({onClose, symbol, price, quantity, orderID, side}: Props) {
-  const [value, setValue] = React.useState('');
-
+export function AddProfitTargetModal({symbol, price: stop, orderID, side}: Props) {
   const dispatch = useDispatch();
+  const [price, setPrice] = React.useState('');
+  const [quantity, setQuantity] = React.useState('');
 
-  const cancel = React.useCallback(() => {
-    dispatch(addProfitTarget({orderID, side, symbol, stop: price, price: parseInt(value), orderQty: quantity}));
-  }, [dispatch, orderID, side, symbol, price, quantity, value]);
+  const addTarget = React.useCallback(() => {
+    dispatch(addProfitTarget({orderID, side, symbol, stop, price: parseInt(price), orderQty: parseInt(quantity)}));
+  }, [dispatch, orderID, side, symbol, stop, quantity, price]);
 
   const isConfirmButtonDisabled =
-    !parseInt(value) || !(side === SIDE.SELL ? parseInt(value) < price : parseInt(value) > price);
+    !parseInt(price) || !(side === SIDE.SELL ? parseInt(price) < stop : parseInt(price) > stop) || !parseInt(quantity);
   const profitTargetSide = side === SIDE.BUY ? 'Sell' : 'Buy';
 
   return (
-    <Modal
-      title="Add profit target"
-      onClose={onClose}
-      onConfirm={cancel}
-      isConfirmButtonDisabled={isConfirmButtonDisabled}
-    >
+    <Modal title="Add profit target" onConfirm={addTarget} isConfirmButtonDisabled={isConfirmButtonDisabled}>
       <InputField
-        id="profit-target"
+        id="profit-target-price"
         label="Add the price of the limit order price that will be placed after open order price is reached"
-        value={value || ''}
+        value={price || ''}
         placeholder={`Limit ${profitTargetSide} order target price`}
-        onChange={setValue}
+        onChange={setPrice}
+      />
+      <InputField
+        id="profit-target-quantity"
+        label="Quantity"
+        value={quantity || ''}
+        placeholder={'Profit target quantity'}
+        onChange={setQuantity}
       />
     </Modal>
   );
