@@ -1,17 +1,13 @@
-import _path from 'path';
+import path from 'path';
 import dotenv from 'dotenv';
-dotenv.config({path: _path.join(__dirname, '../../client/.env')});
+dotenv.config({path: path.join(__dirname, '../../client/.env')});
 
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import bodyParser = require('body-parser');
 import morgan from 'morgan';
 import {logger} from './util/logger';
-
 import Router from './routes/bitmex';
-
-import path = require('path');
 
 const app: express.Application = express();
 
@@ -22,8 +18,8 @@ app.use(helmet());
 app.use(cors());
 app.disable('etag').disable('x-powered-by');
 
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 app.use('/bitmex', Router);
 
 if (process.env.NODE_ENV != 'development') {
