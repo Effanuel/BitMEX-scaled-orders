@@ -1,73 +1,43 @@
+import {exists, textOf} from 'tests/wrench/inspectors';
+import {MainContainer} from 'components';
+import {createRenderer} from 'tests/wrench/Wrench';
+import {MAIN_CONTAINER} from 'data-test-ids';
 import React from 'react';
-import {MainContainer, MainContainerProps} from './MainContainer';
-import {MAIN_CONTAINER} from '../../data-test-ids';
-import {ComponentDriver} from 'tests/fuel/drivers';
 
-describe('MainContainer', () => {
-  let driver: MainContainerDriver;
-
-  beforeEach(() => {
-    driver = new MainContainerDriver();
-  });
-
-  it('should display maximized view by default', async () => {
-    const drv = await driver.renderAsync();
-
-    expect(drv.getMaximizedView()).toBeDefined();
-    expect(drv.getMinimizedView()).toBeUndefined();
-  });
-
-  it('should toggle views on corner button press', async () => {
-    const drv = await driver.renderAsync();
-    expect(drv.getMinimizedView()).toBeUndefined();
-
-    drv.pressCornerButton();
-
-    expect(drv.getMaximizedView()).toBeUndefined();
-    expect(drv.getMinimizedView()).toBeDefined();
-
-    drv.pressCornerButton();
-
-    expect(drv.getMaximizedView()).toBeDefined();
-    expect(drv.getMinimizedView()).toBeUndefined();
-  });
-
-  it('should render content outside of the container', () => {
-    const inputElement = React.createElement('input', {'data-test-id': 'testidsomething'});
-    const drv = driver.setProps({renderOutside: inputElement}).render();
-
-    const renderedOutsideContent = drv.getByID('testidsomething');
-
-    expect(renderedOutsideContent).toBeDefined();
-  });
-
-  it('should not render outside content when minimized', () => {
-    const inputElement = React.createElement('input', {'data-test-id': 'testidsomething'});
-    const drv = driver.setProps({renderOutside: inputElement}).render();
-
-    drv.pressCornerButton();
-
-    const renderedOutsideContent = drv.getByID('testidsomething');
-    expect(renderedOutsideContent).toBeUndefined();
-  });
+const render = createRenderer(MainContainer, {
+  props: {label: 'LABEL', children: undefined, description: 'Description'},
 });
 
-class MainContainerDriver extends ComponentDriver<MainContainerProps> {
-  constructor() {
-    super(MainContainer);
-  }
+describe('Main Container', () => {
+  it('should render children by default', async () => {
+    const result = await render().inspect({maxViewVisible: exists(MAIN_CONTAINER.CHILDREN_VIEW)});
 
-  getMaximizedView() {
-    return this.getByID(MAIN_CONTAINER.MAX_VIEW);
-  }
+    expect(result).toEqual({maxViewVisible: true});
+  });
 
-  getMinimizedView() {
-    return this.getByID(MAIN_CONTAINER.MIN_VIEW);
-  }
+  it('should hide description after collapsing container', async () => {
+    const result = await render()
+      .inspect({initialDescription: exists(MAIN_CONTAINER.DESCRIPTION)})
+      .press(MAIN_CONTAINER.CORNER_BUTTON)
+      .inspect({afterDescription: textOf(MAIN_CONTAINER.DESCRIPTION)});
 
-  pressCornerButton() {
-    const cornerButton = this.getElement(MAIN_CONTAINER.CORNER_BUTTON);
-    cornerButton.props.onClick();
-    return this;
-  }
-}
+    expect(result).toEqual({initialDescription: false, afterDescription: 'Description'});
+  });
+
+  it('should toggle children rendering on toggle', async () => {
+    const result = await render()
+      .inspect({beforeMaxViewVisible: exists(MAIN_CONTAINER.CHILDREN_VIEW)})
+      .press(MAIN_CONTAINER.CORNER_BUTTON)
+      .inspect({afterMaxViewVisible: exists(MAIN_CONTAINER.CHILDREN_VIEW)});
+
+    expect(result).toEqual({beforeMaxViewVisible: true, afterMaxViewVisible: false});
+  });
+
+  it('should render secondaryState instead of children, if it is defined', async () => {
+    const secondaryState = React.createElement('div', {'data-testid': 'ID'}, 'SecondaryState');
+
+    const result = await render({passProps: {secondaryState}}).inspect({secondaryState: textOf('ID')});
+
+    expect(result).toEqual({secondaryState: 'SecondaryState'});
+  });
+});

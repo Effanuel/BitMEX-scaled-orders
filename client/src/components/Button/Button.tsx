@@ -39,7 +39,7 @@ export function Button<T extends string>({
     [className]: variant === 'custom',
   });
 
-  const invokeClick = React.useCallback(({target}: any) => onClick(target.id), [onClick]);
+  const invokeClick = React.useCallback(() => onClick(id as T), [onClick, id]);
 
   return (
     <button

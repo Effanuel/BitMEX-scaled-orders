@@ -6,3 +6,6 @@ export * from './MainContainer/MainContainer';
 export * from './SVGIcon/SVGIcon';
 export * from './Button/Button';
 export * from './Toast/Toast';
+export * from './Modal/Modal';
+export * from './Row/Row';
+export * from './modals';

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, Flex, Container} from '@chakra-ui/react';
+import {Flex, Container, Box} from '@chakra-ui/react';
 import styles from './styles.module.scss';
 import {MAIN_CONTAINER} from '../../data-test-ids';
 
@@ -9,11 +9,11 @@ interface Props {
   description?: string;
   renderOutside?: React.ReactNode;
   connected?: boolean;
-  padding?: number;
+  secondaryState?: React.ReactNode;
 }
 
 export const MainContainer = React.memo((props: Props) => {
-  const {children, label, description = '', renderOutside = null, connected = true, padding = 3} = props;
+  const {children, label, description = '', renderOutside = null, connected = true, secondaryState} = props;
 
   const [isViewMaximized, setViewMaximized] = React.useState<boolean>(true);
 
@@ -21,8 +21,8 @@ export const MainContainer = React.memo((props: Props) => {
 
   return (
     <div className={!connected ? styles.dim : undefined}>
-      <Container data-testid={label} className={styles.container_scaled} p={0} maxW="660px">
-        <Flex w="100%" className={styles.container__row__minimized} data-test-id={MAIN_CONTAINER.MIN_VIEW}>
+      <Container data-testid={label} className={styles.container_scaled} p={0} maxW="720px">
+        <Flex w="100%" className={styles.container__row__minimized}>
           <Flex className={styles.div_corner} key={label}>
             <Flex
               data-testid={MAIN_CONTAINER.CORNER_BUTTON}
@@ -39,20 +39,11 @@ export const MainContainer = React.memo((props: Props) => {
             )}
           </div>
         </Flex>
-        {isViewMaximized
-          ? React.Children.map(children, (child) => (
-              <Grid
-                display="flex"
-                w="100%"
-                justifyContent="space-between"
-                padding={padding}
-                gap={4}
-                alignItems="flex-end"
-              >
-                {child}
-              </Grid>
-            ))
-          : null}
+        {isViewMaximized ? (
+          <Box width="100%" data-testid={MAIN_CONTAINER.CHILDREN_VIEW}>
+            {secondaryState ?? children}
+          </Box>
+        ) : null}
       </Container>
 
       {isViewMaximized && !!renderOutside ? <>{renderOutside}</> : null}

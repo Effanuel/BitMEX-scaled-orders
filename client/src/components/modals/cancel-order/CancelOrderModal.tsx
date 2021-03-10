@@ -1,10 +1,10 @@
 import React from 'react';
-import {useDispatch} from 'react-redux';
-import {Box, Text} from '@chakra-ui/react';
+import {shallowEqual, useDispatch, useSelector} from 'react-redux';
 import {Modal} from 'components';
 import {cancelOrder} from 'redux/modules/orders/ordersModule';
-import {SYMBOL} from 'redux/api/bitmex/types';
 import {ModalType} from 'context/registerModals';
+import {AppState} from 'redux/models/state';
+import {groupedOrdersSelector, orderSelector} from 'redux/selectors';
 
 export interface CancelOrderModalProps {
   type: ModalType.CANCEL_ORDER;
@@ -12,39 +12,38 @@ export interface CancelOrderModalProps {
 }
 
 interface Props {
-  symbol: SYMBOL;
-  price: number;
-  quantity: number;
   orderID: string;
-  profitOrderIDs: string[];
 }
 
-export function CancelOrderModal({symbol, price, quantity, orderID, profitOrderIDs}: Props) {
+export function CancelOrderModal({orderID}: Props) {
   const dispatch = useDispatch();
 
-  const [shouldCancelProfitOrders, setShouldCancelProfitOrders] = React.useState(true);
+  const {order, groupedOrders} = useSelector(
+    (state: AppState) => ({
+      order: orderSelector(state, {orderID}),
+      groupedOrders: groupedOrdersSelector(state),
+    }),
+    shallowEqual,
+  );
+
+  const profitOrderIDs = React.useMemo(() => {
+    return (groupedOrders?.[orderID] ?? []).map(({orderID}) => orderID);
+  }, [groupedOrders, orderID]);
 
   const emitConfirm = React.useCallback(() => {
-    dispatch(cancelOrder({orderID: [orderID, ...profitOrderIDs]}));
-  }, [dispatch, orderID, profitOrderIDs]);
+    if (order) {
+      dispatch(cancelOrder({orderID: [order.orderID, ...profitOrderIDs]}));
+    }
+  }, [dispatch, profitOrderIDs, order]);
 
-  const toggle = React.useCallback(({target}) => {
-    setShouldCancelProfitOrders(target.checked ? true : false);
-  }, []);
+  if (!order) {
+    return null;
+  }
 
   return (
     <Modal title="Cancel Order" onConfirm={emitConfirm}>
-      {profitOrderIDs.length ? (
-        <Box display="flex" flexDir="row" alignItems="center" marginBottom={4}>
-          <input type="checkbox" checked={shouldCancelProfitOrders} onChange={toggle} />
-          <Text marginLeft={4} fontSize={14}>
-            Should it also include profit targets of this order?
-          </Text>
-        </Box>
-      ) : null}
-
-      {`Cancel ${symbol} order with price $${price} and quantity ${quantity}`}
-      {shouldCancelProfitOrders && profitOrderIDs.length ? `, with ${profitOrderIDs.length} profit orders` : '.'}
+      {`Cancel ${order.symbol} order with price $${order.price} and quantity ${order.orderQty}`}
+      {profitOrderIDs.length ? `, with ${profitOrderIDs.length} profit orders` : '.'}
     </Modal>
   );
 }

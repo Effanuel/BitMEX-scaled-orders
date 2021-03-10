@@ -1,65 +1,47 @@
 import React from 'react';
-import cx from 'classnames';
-import {TextField, makeStyles, FormControl, Tooltip} from '@material-ui/core';
+import {Box, NumberInput, NumberInputField} from '@chakra-ui/react';
 import './InputField.module.scss';
 
-const useStyles = makeStyles(() => ({
-  label: {color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px'},
-  stop: {'& .MuiInput-input': {borderColor: '#cf6679', '&:focus': {borderColor: '#cf6679'}}},
-  tooltip: {color: 'red'},
-}));
-
-type InputFieldProps = {
+interface InputFieldProps {
   ['data-test-id']?: string;
-  id: string;
+  id?: string;
   label?: string;
   value: any;
   stop?: boolean;
-  tooltip?: string;
   placeholder?: string;
-  t_placement?: any;
+  t_placement?: string;
+  tooltip?: string;
   onChange: (value: string, id: string) => void;
-};
-
-function InputField(props: InputFieldProps) {
-  const {id, label, value, stop = false, tooltip, placeholder, t_placement = 'top-end', onChange} = props;
-
-  const classes = useStyles();
-
-  const invokeFocus = React.useCallback((event: any) => event.target.select(), []);
-  const invokeValueChange = React.useCallback(({target}: any) => onChange(target.value, target.id), [onChange]);
-
-  return (
-    <FormControl>
-      <div style={{flexDirection: 'row'}}>
-        <label className={classes.label}>{label}</label>
-        {tooltip ? (
-          <Tooltip
-            title={tooltip}
-            placement={t_placement}
-            enterDelay={500}
-            arrow
-            disableFocusListener
-            disableTouchListener
-          >
-            <label style={{color: 'grey', marginLeft: '5px'}}>?</label>
-          </Tooltip>
-        ) : null}
-      </div>
-
-      <TextField
-        placeholder={placeholder}
-        type="number"
-        value={value || ''}
-        onChange={invokeValueChange}
-        onFocus={invokeFocus}
-        InputProps={{disableUnderline: true}}
-        inputProps={{id, 'data-testid': props['data-test-id']}}
-        className={cx({[classes.stop]: stop})}
-        style={{height: '30px'}}
-      />
-    </FormControl>
-  );
 }
 
-export {InputField};
+export function InputField(props: InputFieldProps) {
+  const {id, label, value, stop = false, placeholder, onChange} = props;
+
+  const invokeValueChange = React.useCallback(({target}) => onChange(target.value, id as string), [onChange, id]);
+
+  return (
+    <Box>
+      <Box color="rgba(255, 255, 255, 0.6)" fontSize="14px" paddingBottom={1}>
+        {label}
+      </Box>
+      <NumberInput size="sm" placeholder={placeholder}>
+        <NumberInputField
+          data-testid={props['data-test-id']}
+          id={id}
+          fontSize={16}
+          padding="5px"
+          focusBorderColor="red.500"
+          borderRadius={2}
+          borderColor={stop ? 'red' : 'rgba(255, 255, 255, 0.6)'}
+          backgroundColor="#121212"
+          color="rgba(255, 255, 255, 0.87)"
+          height="30px"
+          _hover={{borderColor: 'rgba(255, 255, 255, 0.6)'}}
+          _focus={{borderColor: stop ? 'red' : 'green'}}
+          onChange={invokeValueChange}
+          value={value}
+        />
+      </NumberInput>
+    </Box>
+  );
+}

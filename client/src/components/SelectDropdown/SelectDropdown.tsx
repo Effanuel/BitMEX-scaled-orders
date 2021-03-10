@@ -3,6 +3,8 @@ import styles from './styles.module.scss';
 import {COMPONENTS} from 'data-test-ids';
 import {SYMBOL} from 'redux/api/bitmex/types';
 
+const availableSymbols = ['XBTUSD', 'ETHUSD', 'XRPUSD'];
+
 interface Props {
   id: string;
   label: string;
@@ -10,13 +12,12 @@ interface Props {
   disabled?: boolean;
 }
 
-const availableSymbols = ['XBTUSD', 'ETHUSD', 'XRPUSD'];
-
 export function SelectDropdown({id, label, onChange, disabled = false}: Props) {
   const onChangeSymbol = React.useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => onChange(event.target.value as SYMBOL),
+    ({target}: React.ChangeEvent<HTMLSelectElement>) => onChange(target.value as SYMBOL),
     [onChange],
   );
+
   return (
     <div className={styles.select_dropdown}>
       <label htmlFor={label}>{label}</label>

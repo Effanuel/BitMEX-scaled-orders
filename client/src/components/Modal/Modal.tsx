@@ -3,6 +3,7 @@ import {Modal as ChakraModal, ModalBody, ModalContent, ModalFooter, ModalHeader,
 import {Button} from 'components';
 import {SIDE} from 'redux/api/bitmex/types';
 import {useModal} from 'general/hooks';
+import {GLOBAL} from 'data-test-ids';
 
 interface Props {
   onConfirm: () => void;
@@ -28,7 +29,13 @@ export function Modal({children, title, onConfirm, isConfirmButtonDisabled}: Pro
           {children}
         </ModalBody>
         <ModalFooter>
-          <Button disabled={isConfirmButtonDisabled} style={{marginRight: 4}} onClick={confirmDialog} label="Confirm" />
+          <Button
+            testID={GLOBAL.MODAL_CONFIRM}
+            disabled={isConfirmButtonDisabled}
+            style={{marginRight: 4}}
+            onClick={confirmDialog}
+            label="Confirm"
+          />
           <Button variant={SIDE.SELL} onClick={hideModal} label="Dismiss" />
         </ModalFooter>
       </ModalContent>
