@@ -1,6 +1,6 @@
 import {createAsyncThunk, AsyncThunk, Dispatch} from '@reduxjs/toolkit';
 import parseAPIResponse from 'redux/api/parseAPIResponse';
-import {API, APIType} from 'redux/api/testingApiDesign';
+import {API, APIType} from 'redux/api/api';
 import {AppState} from 'redux/models/state';
 
 import {ACTIONS_cross} from 'redux/modules/cross/types';

@@ -8,7 +8,7 @@ import {AppState} from 'redux/models/state';
 import Queue from './Queue';
 import {Constructor, Mixin, MixinConstructors} from './Mixin';
 import {SpyModule} from './modules';
-import {MOCK, MockedMethods} from 'redux/api/testingApiDesign';
+import {MOCK, MockedMethods} from 'redux/api/api';
 
 interface TestConfig<P> {
   passProps?: Partial<P>;
