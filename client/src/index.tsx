@@ -93,6 +93,7 @@ const theme = extendTheme({
         variant: 'striped',
       },
     },
+    //@ts-ignore
     Popover: {
       baseStyle: {
         popper: {
