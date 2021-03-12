@@ -4,24 +4,11 @@ import OrdersTable from './orders-table';
 import DetailsTable from './details-table';
 import styles from './OrdersPreviewTable.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
-import {createScaledOrders, DISTRIBUTION} from 'utils';
-import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
+import {useReduxSelector} from 'redux/helpers/hookHelpers';
 
-interface Props {
-  orderQty: number;
-  n_tp: number;
-  start: number;
-  end: number;
-  stop: number;
-  distribution: DISTRIBUTION;
-  side: SIDE;
-  symbol: SYMBOL;
-}
+export default function OrdersPreviewTable() {
+  const {orders} = useReduxSelector('orders');
 
-export default function OrdersPreviewTable({distribution, ...ordersProps}: Props) {
-  const orders = React.useMemo(() => {
-    return createScaledOrders({ordersProps, distribution});
-  }, [ordersProps, distribution]);
   return (
     <Container
       data-testid={SCALED_CONTAINER.PREVIEW_TABLE}

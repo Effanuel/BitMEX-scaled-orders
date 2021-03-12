@@ -160,10 +160,7 @@ export default React.memo(function ScaledContainer() {
     );
   }, [onOrderSubmit, onPreviewOrders, error, state, previewLoading, onChangeDistribution]);
 
-  const renderOutside = React.useMemo(
-    () => showPreview && <OrdersPreviewTable {...(state as RequiredProperty<ScaledContainerState>)} />,
-    [showPreview, state],
-  );
+  const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
 
   return (
     <MainContainer label="Scaled Orders" description="Place limit orders in a range" renderOutside={renderOutside}>
