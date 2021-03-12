@@ -3,3 +3,4 @@ build/**
 cypress/**
 
 serviceWorker.ts
+src/setupTests.ts
