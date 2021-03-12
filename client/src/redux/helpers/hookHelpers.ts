@@ -11,6 +11,7 @@ import {
   websocketCrossPriceSelector,
   hasCrossedOnceSelector,
   hasCrossedSecondTimeSelector,
+  groupedOrdersSelector,
 } from 'redux/selectors';
 import {AppState} from 'redux/models/state';
 
@@ -28,12 +29,13 @@ interface Selectors extends States {
   status: ReturnType<typeof trailingOrderStatusSelector>;
   hasCrossedOnce: ReturnType<typeof hasCrossedOnceSelector>;
   hasCrossedSecondTime: ReturnType<typeof hasCrossedSecondTimeSelector>;
+  groupedOrders: ReturnType<typeof groupedOrdersSelector>;
   wsLoading: boolean;
   wsMessage: any;
 }
 
 const buildSelectors = (state: AppState): Selectors => {
-  const {trailing, preview, websocket, cross} = state;
+  const {trailing, preview, websocket, cross, orders} = state;
   return {
     wsCurrentPrice: websocketCurrentPrice(state),
     wsTrailingPrice: websocketTrailingPriceSelector(state),
@@ -46,6 +48,7 @@ const buildSelectors = (state: AppState): Selectors => {
     status: trailingOrderStatusSelector(state),
     hasCrossedOnce: hasCrossedOnceSelector(state),
     hasCrossedSecondTime: hasCrossedSecondTimeSelector(state),
+    groupedOrders: groupedOrdersSelector(state),
 
     trailOrderId: trailing.trailOrderId,
     trailOrderPrice: trailing.trailOrderPrice,
@@ -65,7 +68,6 @@ const buildSelectors = (state: AppState): Selectors => {
     error: preview.error,
     showPreview: preview.showPreview,
     previewLoading: preview.previewLoading,
-    profitTargets: preview.profitTargets,
 
     __keys: websocket.__keys,
     connected: websocket.connected,
@@ -73,6 +75,12 @@ const buildSelectors = (state: AppState): Selectors => {
     order: websocket.order,
     wsLoading: websocket.wsLoading,
     wsMessage: websocket.message,
+
+    openOrders: orders.openOrders,
+    ordersError: orders.ordersError,
+    ordersLoading: orders.ordersLoading,
+    profitOrders: orders.profitOrders,
+    profitOrdersInAction: orders.profitOrdersInAction,
   };
 };
 

@@ -11,16 +11,15 @@ import {
   REDUX_WEBSOCKET_SEND,
   REDUX_WEBSOCKET_ERROR,
   Tables,
-  Instrument,
-  Order,
   TableData,
 } from './types';
 import {connect, disconnect, send} from '@giantmachines/redux-websocket';
 import {Thunk} from '../../models/state';
 import {Reducer} from 'redux';
-import {authKeyExpires} from 'util/auth';
-import {SUBSCRIPTION_TOPICS, SYMBOLS} from 'util/BitMEX-types';
+import {authKeyExpires} from 'utils/auth';
+import {SUBSCRIPTION_TOPICS, SYMBOL} from 'redux/api/bitmex/types';
 import {websocketBaseUrl, instrumentTopics} from './constants';
+import {Instrument, Order} from '../../api/bitmex/types';
 
 export const defaultState: WebsocketState = {
   __keys: {},
@@ -61,8 +60,6 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
     const message = response['success'] ? 'Successful subscription.' : 'Error while subscribing...';
     return {...state, message};
   } else if (!!status) {
-    // eslint-disable-next-line no-console
-
     const message = `Websocket. Status: ${response.status || 'Error'}`;
     return {...state, message};
   } else if (ws_action) {
@@ -114,7 +111,7 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
 export const wsConnect = (): Thunk => async (dispatch) => {
   try {
     const url = websocketBaseUrl();
-    const subscribe = instrumentTopics(SYMBOLS.XBTUSD, SYMBOLS.ETHUSD, SYMBOLS.XRPUSD);
+    const subscribe = instrumentTopics(SYMBOL.XBTUSD, SYMBOL.ETHUSD, SYMBOL.XRPUSD);
     dispatch(connect(`${url}${subscribe}`));
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -149,14 +146,14 @@ export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dis
   }
 };
 
-export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
-  try {
-    dispatch(send({op: 'unsubscribe', args: [payload]}));
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err.response.data, 'wsUnsubscribe Error');
-  }
-};
+// export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
+//   try {
+//     dispatch(send({op: 'unsubscribe', args: [payload]}));
+//   } catch (err) {
+//     // eslint-disable-next-line no-console
+//     console.log(err.response.data, 'wsUnsubscribe Error');
+//   }
+// };
 
 function findItemByKeys(keys: keyof Tables, table: ValueOf<Tables>, matchData: TableData): number {
   for (let index = 0; index < table.length; index++) {

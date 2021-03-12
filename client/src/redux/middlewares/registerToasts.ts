@@ -1,12 +1,12 @@
 import {AsyncThunk} from '@reduxjs/toolkit';
-import {Store} from 'redux';
 import {showToast, ToastPreset} from 'components';
-import {postMarketOrder, postScaledOrders} from 'redux/modules/preview/previewModule';
+import {postMarketOrder, postOrderBulk} from 'redux/modules/preview/previewModule';
 import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
-import {postMarketOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
-import {AppState} from 'redux/models/state';
+import {postMarketCrossOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
+import {addProfitTarget, cancelOrder} from 'redux/modules/orders/ordersModule';
 
-type RequestFunction = (store: Store<AppState>, action: Action) => void;
+type RequestFunction = (action: Action) => void;
+type ThunkToasts = {[key: string]: RequestFunction};
 
 interface RequestTypes {
   REQUEST?: RequestFunction;
@@ -14,10 +14,7 @@ interface RequestTypes {
   FAILURE?: RequestFunction;
 }
 
-function buildThunkToasts<R, T, C>(
-  thunk: AsyncThunk<R, T, C>,
-  requestTypes: RequestTypes,
-): {[key: string]: RequestFunction} {
+function buildThunkToasts<R, T, C>(thunk: AsyncThunk<R, T, C>, requestTypes: RequestTypes): ThunkToasts {
   const {REQUEST, SUCCESS, FAILURE} = requestTypes;
 
   const request = REQUEST ? {[thunk.pending.type]: REQUEST} : {};
@@ -27,11 +24,13 @@ function buildThunkToasts<R, T, C>(
   return {...request, ...success, ...failure};
 }
 
-const PostTrailingOrderSuccess = (store: Store<AppState>, action: Action) => {
-  const {text, price, success} = action.payload;
+const PostTrailingOrderSuccess = (action: Action) => {
+  const {statusCode, data} = action.payload;
+  const {text, price} = data;
 
-  const isOrderSubmitted = success === 200;
+  const isOrderSubmitted = statusCode === 200;
   const isOrderPlaced = text === 'best_order';
+
   const toastDisplay: {message: string; preset: ToastPreset} =
     isOrderSubmitted && isOrderPlaced
       ? {message: `Trailing Order placed at ${price}`, preset: 'success'}
@@ -40,20 +39,18 @@ const PostTrailingOrderSuccess = (store: Store<AppState>, action: Action) => {
   showToast(toastDisplay.message, toastDisplay.preset);
 };
 
-type RegisteredToasts = {[key: string]: (store: Store<AppState>, action: Action) => void};
-
-export const registeredToasts: RegisteredToasts = {
+export const registeredToasts: ThunkToasts = {
   ...buildThunkToasts(crossPostMarketOrder, {
     SUCCESS: () => showToast('Submitted Market Order'),
-    FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+    FAILURE: (action) => showToast(`Market order: ${action.payload}`, 'error'),
   }),
   ...buildThunkToasts(crossPostMarketOrder, {
     SUCCESS: () => showToast('Submitted Market Order'),
-    FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+    FAILURE: (action) => showToast(`Market order: ${action.payload}`, 'error'),
   }),
-  ...buildThunkToasts(postScaledOrders, {
+  ...buildThunkToasts(postOrderBulk, {
     SUCCESS: () => showToast('Submitted Scaled Orders'),
-    FAILURE: (store, action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
+    FAILURE: (action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
   }),
   ...buildThunkToasts(postTrailingOrder, {
     SUCCESS: PostTrailingOrderSuccess,
@@ -65,9 +62,17 @@ export const registeredToasts: RegisteredToasts = {
   }),
   ...buildThunkToasts(postMarketOrder, {
     SUCCESS: () => showToast('Submitted Market Order'),
-    FAILURE: (store, action) => showToast(`Market order: ${action.payload}`, 'error'),
+    FAILURE: (action) => showToast(`Market order: ${action.payload}`, 'error'),
   }),
   ...buildThunkToasts(ammendTrailingOrder, {
     FAILURE: () => showToast('Order ammending error.', 'error'),
+  }),
+  ...buildThunkToasts(cancelOrder, {
+    SUCCESS: () => showToast('Order was cancelled.'),
+    FAILURE: (action) => showToast(`Cancel Order: ${action.payload}`, 'warning'),
+  }),
+  ...buildThunkToasts(addProfitTarget, {
+    SUCCESS: (action) => showToast(`Profit target at price ${action.payload.data.price} was placed`),
+    FAILURE: () => showToast(`Failed to add profit target order.`, 'warning'),
   }),
 };

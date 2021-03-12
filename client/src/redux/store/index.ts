@@ -2,19 +2,20 @@ import {combineReducers} from 'redux';
 import {configureStore, getDefaultMiddleware} from '@reduxjs/toolkit';
 import reduxWebsocket from '@giantmachines/redux-websocket';
 import notificationMiddleware from '../middlewares/notification';
-import {BitMEX_API, BitMEX} from 'redux/helpers/apiHelpers';
+import {API, APIType} from 'redux/api/testingApiDesign';
 import {AppState} from 'redux/models/state';
 
 import {previewReducer as preview} from '../modules/preview/previewModule';
 import {websocketReducer as websocket} from '../modules/websocket/websocketModule';
 import {trailingReducer as trailing} from '../modules/trailing/trailingModule';
 import {crossReducer as cross} from '../modules/cross/crossModule';
+import {ordersReducer as orders} from '../modules/orders/ordersModule';
 
-export const rootReducer = combineReducers({preview, websocket, trailing, cross});
+export const rootReducer = combineReducers({preview, websocket, trailing, cross, orders});
 
 const reduxWebsocketMiddleware = reduxWebsocket();
 
-function createStore(preloadedState: Partial<AppState> = {}, api: BitMEX = new BitMEX_API()) {
+function createStore(preloadedState: Partial<AppState> = {}, api: APIType = new API()) {
   return configureStore({
     reducer: rootReducer,
     middleware: getDefaultMiddleware({
@@ -24,7 +25,5 @@ function createStore(preloadedState: Partial<AppState> = {}, api: BitMEX = new B
     preloadedState,
   });
 }
-
-export type AppDispatch = any;
 
 export {createStore};
