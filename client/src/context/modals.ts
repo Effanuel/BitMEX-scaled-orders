@@ -12,8 +12,8 @@ type PickProps<T extends Record<string, any>> = Pick<T, 'props'>['props'];
 
 export interface Modals {
   showCancelOrder: (modalProps: PickProps<CancelOrderModalProps>) => void;
-  showCancelProfitOrder: (modal: PickProps<CancelProfitOrderModalProps>) => void;
-  showCancelAllOrders: (modal: PickProps<CancelAllOrdersModalProps>) => void;
+  showCancelProfitOrder: (modalProps: PickProps<CancelProfitOrderModalProps>) => void;
+  showCancelAllOrders: (modalProps: PickProps<CancelAllOrdersModalProps>) => void;
   showCancelAllProfitOrders: (modalProps: PickProps<CancelAllProfitOrdersModalProps>) => void;
   showAddProfitTarget: (modalProps: PickProps<AddProfitTargetModalProps>) => void;
 }

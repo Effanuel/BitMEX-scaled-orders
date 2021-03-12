@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {createSelector} from 'reselect';
-import {SYMBOLS, SIDE} from '../../util/BitMEX-types';
+import {SYMBOL, SIDE, Order} from '../../redux/api/bitmex/types';
 import {AppState} from 'redux/models/state';
-import {INSTRUMENT_PARAMS} from 'util/index';
+import {INSTRUMENT_PARAMS, RegularOrder, StopLoss} from 'utils';
 import {parseNumber} from 'general/formatting';
 
 export interface SymbolPrices {
-  symbol: SYMBOLS;
+  symbol: SYMBOL;
   askPrice: number;
   bidPrice: number;
 }
 
-export interface CurrentPrice {
+interface CurrentPrice {
   askPrice: number;
   bidPrice: number;
 }
@@ -29,20 +29,23 @@ const websocketMessage = ({websocket: {message}}: AppState) => message;
 const websocketConnected = ({websocket: {connected}}: AppState) => connected;
 
 const getTrailingOrderStatus = ({trailing: {trailOrderStatus}}: AppState) => trailOrderStatus;
-export const getTrailingOrderId = ({trailing: {trailOrderId}}: AppState) => trailOrderId;
-export const getTrailingOrderSide = ({trailing: {trailOrderSide}}: AppState) => trailOrderSide;
+const getTrailingOrderId = ({trailing: {trailOrderId}}: AppState) => trailOrderId;
+const getTrailingOrderSide = ({trailing: {trailOrderSide}}: AppState) => trailOrderSide;
 export const getTrailingOrderSymbol = ({trailing: {trailOrderSymbol}}: AppState) => trailOrderSymbol;
 
 const getCrossOrderSide = ({cross: {crossOrderSide}}: AppState) => crossOrderSide;
 const getHasPriceCrossedOnce = ({cross: {hasPriceCrossedOnce}}: AppState) => hasPriceCrossedOnce;
 const getCrossOrderPrice = ({cross: {crossOrderPrice}}: AppState) => crossOrderPrice;
 
+const getOpenOrders = ({orders: {openOrders}}: AppState) => openOrders;
+const getProfitOrders = ({orders: {profitOrders}}: AppState) => profitOrders;
+
 export const trailingOrderStatusSelector = createSelector(
   [table_order, getTrailingOrderId],
   (open_orders, trailingOrderId) => {
     for (let i = 0; i < open_orders.length; i++) {
       if (open_orders[i].orderID === trailingOrderId) {
-        return open_orders[i].ordStatus;
+        return open_orders[i].ordStatus || '';
       }
     }
     return 'Order not placed.';
@@ -66,7 +69,11 @@ export const websocketBidAskPrices = createSelector([table_instrument, getTraili
 });
 
 export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined =>
-  data.map(({symbol, askPrice, bidPrice}) => ({symbol: symbol as SYMBOLS, askPrice, bidPrice})),
+  data.map(({symbol, askPrice, bidPrice}) => ({
+    symbol: symbol as SYMBOL,
+    askPrice: askPrice as number,
+    bidPrice: bidPrice as number,
+  })),
 );
 
 export const websocketCurrentPrice = createSelector(
@@ -117,14 +124,15 @@ export const hasCrossedSecondTimeSelector = createSelector(
     (crossOrderSide === SIDE.BUY ? currentPrice >= orderPrice : currentPrice <= orderPrice),
 );
 
-export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orderObject, previewTable):
+export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orders, previewTable):
   | number
   | void => {
-  if (previewTable && orderObject?.orders?.length) {
-    const {orders} = orderObject;
+  if (previewTable && orders?.length) {
+    const regularOrders = orders.filter((order) => !('stopPx' in order)) as RegularOrder[];
+    const total_quantity = regularOrders.reduce((total, n) => total + n.orderQty, 0);
 
-    const total_quantity = orders.reduce((total, n) => total + n.orderQty, 0);
-    const contract_value = orders.reduce((total, n) => total + n.orderQty / n.price, 0);
+    const contract_value = regularOrders.reduce((total, n) => total + n.orderQty / n.price, 0);
+    console.log(total_quantity, contract_value);
 
     return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
   }
@@ -132,15 +140,16 @@ export const ordersAverageEntrySelector = createSelector([getOrders, getShowPrev
 
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAverageEntrySelector, getShowPreview],
-  (orderObject: any = {}, averageEntry, previewTable): number | undefined => {
-    if (previewTable && averageEntry > 0 && averageEntry && orderObject.stop && Object.keys(orderObject.stop).length) {
-      let {orderQty} = orderObject.stop;
+  (orderObject = [], averageEntry, previewTable): number | undefined => {
+    const stopOrder = orderObject.find((order) => 'stopPx' in order) as StopLoss;
+    if (previewTable && averageEntry > 0 && averageEntry && stopOrder && Object.keys(stopOrder).length) {
+      let {orderQty} = stopOrder;
       // 1 contract of ETH is for 0.001 mXBT which is 1e-6 XBT
-      if (orderObject.stop.symbol === SYMBOLS.ETHUSD) orderQty *= 1e-6 * averageEntry ** 2;
+      if (stopOrder.symbol === SYMBOL.ETHUSD) orderQty *= 1e-6 * averageEntry ** 2;
       // 1 contract of XRPUSD is for 0.0002 XBT which is 2e-4 XBT
-      if (orderObject.stop.symbol === SYMBOLS.XRPUSD) orderQty *= 2e-4 * averageEntry ** 2;
+      if (stopOrder.symbol === SYMBOL.XRPUSD) orderQty *= 2e-4 * averageEntry ** 2;
       const entryValue = orderQty / averageEntry;
-      const exitValue = orderQty / orderObject.stop.stopPx; // || 1
+      const exitValue = orderQty / stopOrder.stopPx; // || 1
       return Math.abs(+(entryValue - exitValue).toFixed(5));
     }
     return undefined;
@@ -155,4 +164,23 @@ export const ordersRiskPercSelector = createSelector(
   [balanceSelector, ordersRiskSelector],
   (balance: number | null, risk: number | undefined): number =>
     balance !== 0 && balance !== null && risk !== undefined ? +((risk / balance) * 100).toFixed(2) : 0,
+);
+
+export const orderSelector = createSelector(
+  [getOpenOrders, (state: AppState, props: {orderID: string}) => props.orderID],
+  (orders, orderID): Order | undefined => orders.find((order) => order.orderID === orderID),
+);
+
+export const groupedOrdersSelector = createSelector(
+  [getProfitOrders],
+  (orders): Record<string, Order[]> => {
+    const groupedOrders: Record<string, Order[]> = {};
+    // TODO Refactor to use .reduce
+    orders.forEach((order) => {
+      const openOrderId = order.text.split('.')[1];
+      if (!(openOrderId in groupedOrders)) groupedOrders[openOrderId] = [order];
+      else groupedOrders[openOrderId].push(order);
+    });
+    return groupedOrders;
+  },
 );

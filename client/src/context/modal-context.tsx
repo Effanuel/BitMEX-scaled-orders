@@ -3,18 +3,18 @@ import _ from 'lodash';
 import {ModalType, ShowModalArgs, showRegisteredModal} from './registerModals';
 import {createModals, Modals} from './modals';
 
-interface ModalContext {
+export interface ModalContext {
   modals: Modals;
   showModal: (arg: ShowModalArgs) => void;
   hideModal: () => void;
 }
 
-const initialValues = {
+const initialContext = {
   showModal: _.noop,
   hideModal: _.noop,
 } as ModalContext;
 
-export const ModalContext = React.createContext<ModalContext>(initialValues);
+export const ModalContext = React.createContext<ModalContext>(initialContext);
 
 export const ModalProvider = ({children}: {children: React.ReactNode}) => {
   const [modal, setModal] = React.useState<ModalType | null>(null);

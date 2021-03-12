@@ -8,7 +8,7 @@ import {
   CancelProfitOrderModalProps,
   CancelAllProfitOrdersModalProps,
   CancelAllProfitOrdersModal,
-  AddProfitTargetModal,
+  AddProfitOrderModal,
   AddProfitTargetModalProps,
 } from 'components/modals';
 
@@ -27,14 +27,15 @@ export enum ModalType {
   ADD_PROFIT_TARGET = 'AddProfitTarget',
 }
 
-type RegisteredModals = Readonly<{[key in ModalType]: any}>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RegisteredModals = Readonly<{[key in ModalType]: React.ComponentType<any>}>;
 
 const registeredModals: RegisteredModals = {
   [ModalType.CANCEL_ORDER]: CancelOrderModal,
   [ModalType.CANCEL_PROFIT_ORDER]: CancelProfitOrderModal,
   [ModalType.CANCEL_ALL_ORDERS]: CancelAllOrdersModal,
   [ModalType.CANCEL_ALL_PROFIT_ORDERS]: CancelAllProfitOrdersModal,
-  [ModalType.ADD_PROFIT_TARGET]: AddProfitTargetModal,
+  [ModalType.ADD_PROFIT_TARGET]: AddProfitOrderModal,
 };
 
 export function showRegisteredModal<P>(type: ModalType, modalProps: P) {
