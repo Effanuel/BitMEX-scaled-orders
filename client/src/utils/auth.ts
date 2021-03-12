@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 
 export const authKeyExpires = (path: string, method: string) => {
-  //path_leverage = '/api/v1/position/leverage', //POST /position/leverage
   const api = process.env.REACT_APP___API_KEY || '';
   const secret = process.env.REACT_APP___API_SECRET || '';
 
