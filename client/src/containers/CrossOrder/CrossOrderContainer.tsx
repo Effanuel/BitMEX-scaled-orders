@@ -1,97 +1,65 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
-import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
-import {SYMBOLS, SIDE} from 'redux/api/bitmex/types';
+import {SelectDropdown, InputField, Button, SideRadioButtons, Row, MainContainer} from 'components';
+import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
 import {CROSS_ORDER_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/cross-label-presenter';
 import {clearCrossOrder, createCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
-import {useSimpleDispatch, useStateChange} from 'general/hooks';
+import {useSimpleDispatch} from 'general/hooks';
 
-interface State {
-  symbol: SYMBOLS;
-  price: number | null;
-  orderQty: number | null;
-  side: SIDE;
-}
-
-const initialState: Readonly<State> = {
-  symbol: SYMBOLS.XBTUSD,
-  price: null,
-  orderQty: null,
-  side: SIDE.SELL,
-};
-
-const CrossOrderContainer = React.memo(() => {
+export default React.memo(function CrossOrderContainer() {
   const dispatch = useDispatch();
 
-  const [state, setState] = React.useState(initialState);
+  const [symbol, setSymbol] = React.useState(SYMBOL.XBTUSD);
+  const [price, setPrice] = React.useState<string>('');
+  const [quantity, setQuantity] = React.useState<string>('');
+  const [side, setSide] = React.useState<SIDE>(SIDE.SELL);
 
   const {wsCrossPrice, connected, crossOrderPrice} = useHooks();
 
-  // TODO: Simplify passing callbacks to components
-  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange) => {
-    setState((prevState) => ({...prevState, [id]: +value}));
-  }, []);
-
-  const toggleInstrument = useStateChange(setState, 'id', 'value');
-
-  const toggleSide = useStateChange(setState, 'name', 'value');
-
   const createOrder = React.useCallback(() => {
-    const {price, symbol, side, orderQty} = state;
-    if (price && price > 0 && orderQty && orderQty > 0) {
-      dispatch(createCrossOrder({price, symbol, side, orderQty}));
-      setState((prevState) => ({...prevState, price: null, orderQty: null}));
+    if (price && +price > 0 && quantity && +quantity > 0) {
+      dispatch(createCrossOrder({price: +price, symbol, side, orderQty: +quantity}));
+      setPrice('');
+      setQuantity('');
     }
-  }, [dispatch, state]);
+  }, [dispatch, price, quantity, side, symbol]);
 
   const cancelCrossOrder = useSimpleDispatch(dispatch, clearCrossOrder);
 
-  const buttonLabel = React.useMemo(() => buildOrderPresenter(connected, state.side, wsCrossPrice, crossOrderPrice), [
-    connected,
-    crossOrderPrice,
-    state.side,
-    wsCrossPrice,
-  ]);
+  const buttonLabel = React.useMemo(() => {
+    return buildOrderPresenter(connected, side, wsCrossPrice, crossOrderPrice);
+  }, [connected, crossOrderPrice, side, wsCrossPrice]);
 
   const renderFirstRow = React.useMemo(() => {
-    const isSubmitButtonDisabled =
-      !state.orderQty || state.orderQty > 20e6 || !!!state.price || !wsCrossPrice || buttonLabel.disabled;
-
+    const isSubmitButtonDisabled = !quantity || +quantity > 20e6 || !price || !wsCrossPrice || buttonLabel.disabled;
     return (
-      <>
-        <SelectDropdown id="symbol" onChange={toggleInstrument} label="Instrument" disabled={buttonLabel.disabled} />
+      <Row>
+        <SelectDropdown id="symbol" onChange={setSymbol} label="Instrument" disabled={buttonLabel.disabled} />
         <InputField
-          data-test-id={CROSS_ORDER_CONTAINER.QUANTITY_INPUT}
-          id="orderQty"
-          onChange={onChangeNumber}
-          value={state.orderQty}
+          testID={CROSS_ORDER_CONTAINER.QUANTITY_INPUT}
+          onChange={setQuantity}
+          value={quantity}
           label="Quantity"
         />
-        <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
+        <SideRadioButtons testID={CROSS_ORDER_CONTAINER.SIDE} onChangeRadio={setSide} side={side} />
         <Button
           testID={CROSS_ORDER_CONTAINER.SUBMIT}
           label={buttonLabel.label}
-          variant={state.side}
+          variant={side}
           style={{width: '170px'}}
           onClick={createOrder}
           disabled={isSubmitButtonDisabled}
         />
-      </>
+      </Row>
     );
-  }, [onChangeNumber, createOrder, wsCrossPrice, toggleInstrument, toggleSide, buttonLabel, state]);
+  }, [createOrder, wsCrossPrice, buttonLabel, price, quantity, side]);
 
   const renderSecondRow = React.useMemo(() => {
     return (
-      <>
-        <InputField
-          data-test-id={CROSS_ORDER_CONTAINER.PRICE_INPUT}
-          id="price"
-          onChange={onChangeNumber}
-          value={state.price}
-          label="Price"
-        />
+      <Row>
+        <InputField testID={CROSS_ORDER_CONTAINER.PRICE_INPUT} onChange={setPrice} value={price} label="Price" />
         <div style={{flexDirection: 'column', display: 'flex'}}>
           <span style={{color: 'white'}}>Cross order status: </span>
           <span style={{color: 'green'}}>{crossOrderPrice ? 'Order is placed' : 'Order not placed.'}</span>
@@ -110,20 +78,18 @@ const CrossOrderContainer = React.memo(() => {
             label={'Cancel Cross Order'}
           />
         ) : null}
-      </>
+      </Row>
     );
-  }, [cancelCrossOrder, connected, crossOrderPrice, onChangeNumber, state.price]);
+  }, [cancelCrossOrder, connected, crossOrderPrice, price]);
 
   return (
     <MainContainer
-      connected={connected}
       label="Cross Order"
       description="Place a market order when the price crosses your set price"
+      connected={connected}
     >
       {renderFirstRow}
       {renderSecondRow}
     </MainContainer>
   );
 });
-
-export default CrossOrderContainer;

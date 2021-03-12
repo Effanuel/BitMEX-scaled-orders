@@ -1,11 +1,11 @@
 import React from 'react';
-import {Container, Grid} from '@material-ui/core';
+import {Box, Container} from '@chakra-ui/react';
 import OrdersTable from './orders-table';
 import DetailsTable from './details-table';
 import styles from './OrdersPreviewTable.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
-import {createScaledOrders, DISTRIBUTIONS} from '../../../util';
-import {SIDE, SYMBOLS} from 'redux/api/bitmex/types';
+import {createScaledOrders, DISTRIBUTION} from 'utils';
+import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 
 interface Props {
   orderQty: number;
@@ -13,31 +13,30 @@ interface Props {
   start: number;
   end: number;
   stop: number;
-  distribution: DISTRIBUTIONS;
+  distribution: DISTRIBUTION;
   side: SIDE;
-  symbol: SYMBOLS;
+  symbol: SYMBOL;
 }
 
 export default function OrdersPreviewTable({distribution, ...ordersProps}: Props) {
-  const {main_container, preview_container, details_container} = styles;
-
-  const orders = createScaledOrders({ordersProps, distribution});
+  const orders = React.useMemo(() => {
+    return createScaledOrders({ordersProps, distribution});
+  }, [ordersProps, distribution]);
   return (
     <Container
       data-testid={SCALED_CONTAINER.PREVIEW_TABLE}
-      fixed
-      maxWidth="sm"
-      className={main_container}
-      style={{padding: 0}}
+      padding={0}
+      display="flex"
+      flexDirection="row"
+      maxW="720px"
+      w="100%"
     >
-      <Grid item xs container direction="row">
-        <Grid item xs={8} className={preview_container} style={{marginRight: 10}}>
-          <OrdersTable orders={orders} />
-        </Grid>
-        <Grid item xs className={details_container}>
-          <DetailsTable />
-        </Grid>
-      </Grid>
+      <Box className={styles.container} p={0} w={7 / 10} marginRight={2}>
+        <OrdersTable orders={orders} />
+      </Box>
+      <Box className={styles.container} p={0} w={3 / 10}>
+        <DetailsTable />
+      </Box>
     </Container>
   );
 }

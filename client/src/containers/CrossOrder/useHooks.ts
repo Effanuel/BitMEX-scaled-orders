@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from 'react-redux';
 import {AppState} from 'redux/models/state';
-import {orderCrossedOnce, postMarketOrder} from 'redux/modules/cross/crossModule';
+import {orderCrossedOnce, postMarketCrossOrder} from 'redux/modules/cross/crossModule';
 import {hasCrossedOnceSelector, hasCrossedSecondTimeSelector, websocketCrossPriceSelector} from 'redux/selectors';
 
 export function useHooks() {
@@ -27,6 +27,7 @@ export function useHooks() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log(!hasPriceCrossedOnce, hasCrossedOnce, 'USE EFFECT CROSSED ON');
     if (!hasPriceCrossedOnce && hasCrossedOnce) {
       //TODO RENAME
       dispatch(orderCrossedOnce());
@@ -34,8 +35,10 @@ export function useHooks() {
   }, [dispatch, hasPriceCrossedOnce, hasCrossedOnce]);
 
   useEffect(() => {
+    console.log(hasCrossedSecondTime, 'second?');
     if (hasCrossedSecondTime) {
-      dispatch(postMarketOrder(''));
+      //@ts-ignore
+      dispatch(postMarketCrossOrder());
     }
   }, [dispatch, hasCrossedSecondTime]);
 

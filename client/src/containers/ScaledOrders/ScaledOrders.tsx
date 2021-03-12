@@ -1,26 +1,24 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
-import {Grid} from '@material-ui/core';
-import {Text} from '@chakra-ui/react';
+import {Box, Text} from '@chakra-ui/react';
 import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
 import {previewOrders, previewToggle, postOrderBulk} from 'redux/modules/preview/previewModule';
-import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons} from 'components';
+import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons, Row} from 'components';
 import DistributionsRadioGroup from './DistributionsRadioGroup';
-import {createScaledOrders, DISTRIBUTIONS} from 'util/index';
-import {SIDE, SYMBOLS} from 'redux/api/bitmex/types';
-import styles from './ScaledOrders.module.scss';
+import {createScaledOrders, DISTRIBUTION} from 'utils';
+import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 
-export interface ScaledContainerState {
+interface ScaledContainerState {
   orderQty: null | number;
   n_tp: null | number;
   start: null | number;
   end: null | number;
   stop: null | number;
-  distribution: DISTRIBUTIONS;
+  distribution: DISTRIBUTION;
   side: SIDE;
-  symbol: SYMBOLS;
+  symbol: SYMBOL;
 }
 
 const initialState: Readonly<ScaledContainerState> = {
@@ -29,9 +27,9 @@ const initialState: Readonly<ScaledContainerState> = {
   start: null,
   end: null,
   stop: null,
-  distribution: DISTRIBUTIONS.Uniform,
+  distribution: DISTRIBUTION.Uniform,
   side: SIDE.SELL,
-  symbol: SYMBOLS.XBTUSD,
+  symbol: SYMBOL.XBTUSD,
 };
 
 export default React.memo(function ScaledContainer() {
@@ -41,18 +39,23 @@ export default React.memo(function ScaledContainer() {
   const [state, setState] = React.useState(initialState);
   const [isDirty, setDirty] = React.useState(false);
 
-  const onChangeDropdown = React.useCallback(({target: {value, id}}: InputChange): void => {
-    setState((prevState) => ({...prevState, [id]: value, start: null, end: null, stop: null}));
+  const onChangeDropdown = React.useCallback((symbol: SYMBOL): void => {
+    setState((prevState) => ({...prevState, symbol, start: null, end: null, stop: null}));
     setDirty(true);
   }, []);
 
-  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
+  const onChangeNumber = React.useCallback((value: string, id: string): void => {
     setState((prevState) => ({...prevState, [id]: +value}));
     setDirty(true);
   }, []);
 
-  const toggleSide = React.useCallback(({target: {value, name}}: InputChange): void => {
-    setState((prevState) => ({...prevState, [name]: value}));
+  const toggleSide = React.useCallback((value: SIDE): void => {
+    setState((prevState) => ({...prevState, side: value}));
+    setDirty(true);
+  }, []);
+
+  const onChangeDistribution = React.useCallback((value: string): void => {
+    setState((prevState) => ({...prevState, distribution: value as DISTRIBUTION}));
     setDirty(true);
   }, []);
 
@@ -75,70 +78,68 @@ export default React.memo(function ScaledContainer() {
 
   const renderFirstRow = React.useMemo(() => {
     return (
-      <>
+      <Row>
         <SelectDropdown id="symbol" onChange={onChangeDropdown} label="Instrument" />
-        <SideRadioButtons onChangeRadio={toggleSide} side={state.side} />
-        <Grid item xs={6} />
+        <SideRadioButtons testID={SCALED_CONTAINER.SIDE} onChangeRadio={toggleSide} side={state.side} />
+        <Box width="30%" />
         <InputField
-          data-test-id={SCALED_CONTAINER.STOP_LOSS_INPUT}
+          testID={SCALED_CONTAINER.STOP_LOSS_INPUT}
+          id="stop"
           onChange={onChangeNumber}
           value={state.stop}
           label="Stop-Loss"
-          id="stop"
           stop={true}
           t_placement="bottom"
           tooltip="(Optional) Price at which to market exit placed contracts."
         />
-      </>
+      </Row>
     );
   }, [onChangeNumber, onChangeDropdown, toggleSide, state.side, state.stop]);
 
   const renderSecondRow = React.useMemo(() => {
     return (
-      <>
+      <Row>
         <InputField
-          data-test-id={SCALED_CONTAINER.QUANTITY_INPUT}
+          testID={SCALED_CONTAINER.QUANTITY_INPUT}
+          id="orderQty"
           onChange={onChangeNumber}
           value={state.orderQty}
           label="Quantity"
-          id="orderQty"
           tooltip="Number of contracts"
         />
         <InputField
-          data-test-id={SCALED_CONTAINER.ORDER_COUNT_INPUT}
+          testID={SCALED_CONTAINER.ORDER_COUNT_INPUT}
+          id="n_tp"
           onChange={onChangeNumber}
           value={state.n_tp}
           label="Order count"
-          id="n_tp"
           tooltip="Number of individual orders"
         />
         <InputField
-          data-test-id={SCALED_CONTAINER.RANGE_START_INPUT}
+          testID={SCALED_CONTAINER.RANGE_START_INPUT}
+          id="start"
           onChange={onChangeNumber}
           value={state.start}
           label="Range start"
-          id="start"
           tooltip="First placed order's price"
         />
         <InputField
-          data-test-id={SCALED_CONTAINER.RANGE_END_INPUT}
+          testID={SCALED_CONTAINER.RANGE_END_INPUT}
+          id="end"
           onChange={onChangeNumber}
           value={state.end}
           label="Range end"
-          id="end"
           tooltip="Last placed order's price"
         />
-      </>
+      </Row>
     );
   }, [onChangeNumber, state]);
 
   const renderThirdRow = React.useMemo(() => {
     return (
-      <>
-        <DistributionsRadioGroup onChange={toggleSide} distribution={state.distribution} />
-        <Grid item xs={6} className={styles.myErrorMessage}>
-          {error}
-        </Grid>
+      <Row>
+        <DistributionsRadioGroup onChange={onChangeDistribution} distribution={state.distribution} />
+        <Box width="50%">{error}</Box>
         <Text
           data-testid={SCALED_CONTAINER.PREVIEW_BUTTON}
           textStyle="regular"
@@ -155,9 +156,9 @@ export default React.memo(function ScaledContainer() {
           onClick={onOrderSubmit}
           disabled={isDisabled(state)}
         />
-      </>
+      </Row>
     );
-  }, [toggleSide, onOrderSubmit, onPreviewOrders, error, state, previewLoading]);
+  }, [onOrderSubmit, onPreviewOrders, error, state, previewLoading, onChangeDistribution]);
 
   const renderOutside = React.useMemo(
     () => showPreview && <OrdersPreviewTable {...(state as RequiredProperty<ScaledContainerState>)} />,

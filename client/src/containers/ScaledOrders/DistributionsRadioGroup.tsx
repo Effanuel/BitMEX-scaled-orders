@@ -1,20 +1,27 @@
 import React from 'react';
-import {RadioGroup} from '@material-ui/core';
+import {RadioGroup} from '@chakra-ui/react';
 import {CustomRadioButton} from 'components';
-import {DISTRIBUTIONS} from 'util/index';
+import {DISTRIBUTION} from 'utils';
 
 interface Props {
-  onChange: (e: any) => void;
-  distribution: DISTRIBUTIONS;
+  onChange: (value: string) => void;
+  distribution: DISTRIBUTION;
 }
 
 const availableDistributions = ['Uniform', 'Normal', 'Positive', 'Negative'];
 
 export default function DistributionsRadioGroup({onChange, distribution}: Props) {
   return (
-    <RadioGroup aria-label="Distribution" name="distribution" value={distribution} onChange={onChange} row>
+    <RadioGroup
+      flex="display"
+      flexDir="row"
+      aria-label="Distribution"
+      name="distribution"
+      value={distribution}
+      onChange={onChange}
+    >
       {availableDistributions.map((item) => (
-        <CustomRadioButton id={`scaled_distr_${item.toLowerCase()}`} key={item} label={<>{item}</>} value={item} />
+        <CustomRadioButton key={item} label={item} value={item} />
       ))}
     </RadioGroup>
   );

@@ -4,16 +4,6 @@
   box-shadow: 3px 3px 5px black;
 }
 
-.preview_container {
+.container {
   @extend %container;
-}
-
-.details_container {
-  @extend %container;
-  height: 100%;
-}
-
-.main_container {
-  padding: 0px;
-  overflow: hidden;
 }

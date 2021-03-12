@@ -40,6 +40,7 @@ export function useHooks() {
   useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
     if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
+      console.log('22222222222222', wsTrailingPrice, trailOrderPrice);
       const toAmmend = wsTrailingPrice !== trailOrderPrice;
       if (toAmmend) {
         dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice}));
@@ -49,10 +50,11 @@ export function useHooks() {
 
   useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
+    console.log(statuses, trailOrderStatus, status);
     if (statuses.includes(status) && trailOrderStatus !== 'Order not placed.') {
       dispatch(__clearTrailingOrder());
     }
-  }, [dispatch, trailOrderStatus, status]);
+  }, [dispatch, status]);
 
   return {
     wsCurrentPrice,

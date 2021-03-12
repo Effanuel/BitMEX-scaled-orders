@@ -1,75 +1,53 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {useDispatch} from 'react-redux';
 import {postMarketOrder} from 'redux/modules/preview/previewModule';
-import {MainContainer, SelectDropdown, InputField, Button} from 'components';
-import {SYMBOLS, SIDE} from 'redux/api/bitmex/types';
-import {MARKET_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
+import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
+import {MARKET_CONTAINER} from 'data-test-ids';
+import {SelectDropdown, InputField, Button, Row, MainContainer} from 'components';
 
-interface State {
-  symbol: SYMBOLS;
-  orderQty: number | null;
-}
-
-const initialState: Readonly<State> = {
-  symbol: SYMBOLS.XBTUSD,
-  orderQty: null,
-};
-
-const MarketOrderContainer = React.memo(() => {
+export default React.memo(function MarketOrderContainer() {
   const dispatch = useDispatch();
 
-  const [state, setState] = useState(initialState);
+  const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
+  const [quantity, setQuantity] = React.useState<string>('');
 
   const {previewLoading} = useReduxSelector('previewLoading');
 
   const submitMarketOrder = React.useCallback(
-    ({target: {id}}) => {
-      if (state.orderQty) {
-        dispatch(postMarketOrder({symbol: state.symbol, orderQty: state.orderQty, side: id as SIDE}));
+    (id: SIDE) => {
+      if (quantity) {
+        dispatch(postMarketOrder({symbol, orderQty: +quantity, side: id}));
       }
+      setQuantity('');
     },
-    [dispatch, state],
+    [dispatch, symbol, quantity],
   );
 
-  const onChange = React.useCallback(({target: {id, value, tagName}}: InputChange): void => {
-    const updated = tagName === 'INPUT' ? +value : value;
-    setState((prevState) => ({...prevState, [id]: updated}));
-  }, []);
-
   return (
-    <MainContainer label="Marker Order" description="Place a market order">
-      <>
-        <SelectDropdown id="symbol" onChange={onChange} label="Instrument" />
-        <InputField
-          data-test-id={MARKET_CONTAINER.INPUT}
-          id="orderQty"
-          onChange={onChange}
-          value={state.orderQty}
-          label="Quantity"
-        />
+    <MainContainer label="Market Order" description="Place a market order that will execute immediately">
+      <Row>
+        <SelectDropdown id="symbol" onChange={setSymbol} label="Instrument" />
+        <InputField testID={MARKET_CONTAINER.INPUT} label="Quantity" onChange={setQuantity} value={quantity} />
         <Button
           testID={MARKET_CONTAINER.BUY_BUTTON}
-          id="Buy"
-          isLoading={previewLoading}
-          label={'MARKET Buy'}
-          variant={SIDE.BUY}
+          id={SIDE.BUY}
+          label="MARKET Buy"
           onClick={submitMarketOrder}
-          disabled={!state.orderQty || state.orderQty > 20e6}
+          isLoading={previewLoading}
+          variant={SIDE.BUY}
+          disabled={!quantity || +quantity > 20e6}
         />
-
         <Button
           testID={MARKET_CONTAINER.SELL_BUTTON}
-          id="Sell"
-          isLoading={previewLoading}
-          label={'MARKET Sell'}
-          variant={SIDE.SELL}
+          id={SIDE.SELL}
+          label="MARKET Sell"
           onClick={submitMarketOrder}
-          disabled={!state.orderQty || state.orderQty > 20e6}
+          isLoading={previewLoading}
+          variant={SIDE.SELL}
+          disabled={!quantity || +quantity > 20e6}
         />
-      </>
+      </Row>
     </MainContainer>
   );
 });
-
-export default MarketOrderContainer;
