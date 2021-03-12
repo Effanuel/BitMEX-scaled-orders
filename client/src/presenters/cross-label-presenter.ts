@@ -1,5 +1,5 @@
 import {formatPrice} from 'general/formatting';
-import {SIDE} from 'util/BitMEX-types';
+import {SIDE} from 'redux/api/bitmex/types';
 
 export default function buildOrderPresenter(
   connected: boolean,

@@ -1,6 +1,6 @@
 import buildTrailingLabel from './trailing-label-presenter';
 import buildCrossLabel from './cross-label-presenter';
-import {SIDE} from 'util/BitMEX-types';
+import {SIDE} from 'redux/api/bitmex/types';
 
 describe('Trailing Label presenter', () => {
   it('should match label when - not connected or current price is undefined', () => {
