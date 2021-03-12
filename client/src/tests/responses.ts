@@ -1,4 +1,4 @@
-import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
+import {Order} from 'redux/api/bitmex/types';
 import {LimitOrder, MethodNames, MockedMethods, OrderAmend, OrderBulk, OrderCancel} from 'redux/api/api';
 import {createProfitTarget, MarketOrderProps, ProfitTargetProps} from 'utils';
 

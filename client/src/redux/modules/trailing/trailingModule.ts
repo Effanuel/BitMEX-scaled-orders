@@ -40,8 +40,6 @@ const postTrailingOrderReducer = (state = defaultState, action: Action): Trailin
 
   const isSuccess = statusCode === 200 && text === 'best_order';
 
-  console.log(action.payload, 'OPST TRAILING');
-
   const response = isSuccess
     ? {trailOrderId: orderID, trailOrderStatus: 'Order placed.', trailOrderPrice: price}
     : {trailrderId: '', trailOrderStatus: 'Order cancelled.'};

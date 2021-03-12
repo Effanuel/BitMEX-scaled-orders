@@ -53,6 +53,7 @@ describe('CrossOrderContainer', () => {
       .inputText(CROSS_ORDER_CONTAINER.PRICE_INPUT, 10000)
       .toggle(CROSS_ORDER_CONTAINER.SIDE, SIDE.SELL)
       .press(CROSS_ORDER_CONTAINER.SUBMIT)
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       .applyWithAct(() => {})
       .inspect({actions: storeActions(), cross: getState('cross')});
 

@@ -27,7 +27,6 @@ export function useHooks() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(!hasPriceCrossedOnce, hasCrossedOnce, 'USE EFFECT CROSSED ON');
     if (!hasPriceCrossedOnce && hasCrossedOnce) {
       //TODO RENAME
       dispatch(orderCrossedOnce());
@@ -35,7 +34,6 @@ export function useHooks() {
   }, [dispatch, hasPriceCrossedOnce, hasCrossedOnce]);
 
   useEffect(() => {
-    console.log(hasCrossedSecondTime, 'second?');
     if (hasCrossedSecondTime) {
       //@ts-ignore
       dispatch(postMarketCrossOrder());

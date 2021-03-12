@@ -40,7 +40,6 @@ export function useHooks() {
   useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
     if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
-      console.log('22222222222222', wsTrailingPrice, trailOrderPrice);
       const toAmmend = wsTrailingPrice !== trailOrderPrice;
       if (toAmmend) {
         dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice}));
@@ -50,10 +49,13 @@ export function useHooks() {
 
   useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];
-    console.log(statuses, trailOrderStatus, status);
     if (statuses.includes(status) && trailOrderStatus !== 'Order not placed.') {
       dispatch(__clearTrailingOrder());
     }
+    // TODO: handle ammending error in some way
+    // Trailing order ammending error trailing order status change would be ignore,
+    // but right now it wont matter, cause nothing depends on that error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, status]);
 
   return {

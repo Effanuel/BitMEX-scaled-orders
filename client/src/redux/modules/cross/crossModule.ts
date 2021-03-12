@@ -32,7 +32,6 @@ export const crossReducer = createReducer<CrossState>(defaultState, (builder) =>
     })
     .addCase(clearCrossOrder, () => defaultState)
     .addCase(orderCrossedOnce, (state) => {
-      console.log('REDUCER crossed once price');
       state.hasPriceCrossedOnce = true;
     }),
 );

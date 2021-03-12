@@ -132,7 +132,6 @@ export const ordersAverageEntrySelector = createSelector([getOrders, getShowPrev
     const total_quantity = regularOrders.reduce((total, n) => total + n.orderQty, 0);
 
     const contract_value = regularOrders.reduce((total, n) => total + n.orderQty / n.price, 0);
-    console.log(total_quantity, contract_value);
 
     return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
   }

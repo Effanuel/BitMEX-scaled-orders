@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import ScaledContainer from './ScaledOrders';
 import {COMPONENTS, SCALED_CONTAINER} from 'data-test-ids';
 import {toastSpy} from 'tests/spies';
