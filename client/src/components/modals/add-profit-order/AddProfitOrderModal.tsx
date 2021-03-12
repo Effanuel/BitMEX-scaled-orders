@@ -40,14 +40,14 @@ export function AddProfitOrderModal({orderID}: Props) {
   return (
     <Modal title="Add profit target" onConfirm={addTarget} isConfirmButtonDisabled={isConfirmButtonDisabled}>
       <InputField
-        data-test-id={ADD_ORDER_MODAL.PRICE}
+        testID={ADD_ORDER_MODAL.PRICE}
         label="Price of the limit order that will be placed after open order price is reached"
         value={price || ''}
         placeholder={`Limit ${side === SIDE.BUY ? 'Sell' : 'Buy'} order price`}
         onChange={setPrice}
       />
       <InputField
-        data-test-id={ADD_ORDER_MODAL.QUANTITY}
+        testID={ADD_ORDER_MODAL.QUANTITY}
         label="Quantity"
         value={quantity || ''}
         placeholder={'Profit Order Quantity'}

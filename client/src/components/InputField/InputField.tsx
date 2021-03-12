@@ -2,8 +2,8 @@ import React from 'react';
 import {Box, NumberInput, NumberInputField} from '@chakra-ui/react';
 import './InputField.module.scss';
 
-interface InputFieldProps {
-  ['data-test-id']?: string;
+interface Props {
+  testID?: string;
   id?: string;
   label?: string;
   value: any;
@@ -14,8 +14,8 @@ interface InputFieldProps {
   onChange: (value: string, id: string) => void;
 }
 
-export function InputField(props: InputFieldProps) {
-  const {id, label, value, stop = false, placeholder, onChange} = props;
+export function InputField(props: Props) {
+  const {id, label, value, stop = false, placeholder, onChange, testID} = props;
 
   const invokeValueChange = React.useCallback(({target}) => onChange(target.value, id as string), [onChange, id]);
 
@@ -24,13 +24,12 @@ export function InputField(props: InputFieldProps) {
       <Box color="rgba(255, 255, 255, 0.6)" fontSize="14px" paddingBottom={1}>
         {label}
       </Box>
-      <NumberInput size="sm" placeholder={placeholder}>
+      <NumberInput max={20e6} size="sm" placeholder={placeholder} value={value || ''}>
         <NumberInputField
-          data-testid={props['data-test-id']}
+          data-testid={testID}
           id={id}
           fontSize={16}
           padding="5px"
-          focusBorderColor="red.500"
           borderRadius={2}
           borderColor={stop ? 'red' : 'rgba(255, 255, 255, 0.6)'}
           backgroundColor="#121212"
@@ -39,7 +38,6 @@ export function InputField(props: InputFieldProps) {
           _hover={{borderColor: 'rgba(255, 255, 255, 0.6)'}}
           _focus={{borderColor: stop ? 'red' : 'green'}}
           onChange={invokeValueChange}
-          value={value}
         />
       </NumberInput>
     </Box>
