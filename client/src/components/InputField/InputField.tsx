@@ -6,7 +6,7 @@ interface Props {
   testID?: string;
   id?: string;
   label?: string;
-  value: any;
+  value: string;
   stop?: boolean;
   placeholder?: string;
   t_placement?: string;
@@ -17,14 +17,14 @@ interface Props {
 export function InputField(props: Props) {
   const {id, label, value, stop = false, placeholder, onChange, testID} = props;
 
-  const invokeValueChange = React.useCallback(({target}) => onChange(target.value, id as string), [onChange, id]);
+  const invokeValueChange = React.useCallback((value: string) => onChange(value, id as string), [onChange, id]);
 
   return (
     <Box>
       <Box color="rgba(255, 255, 255, 0.6)" fontSize="14px" paddingBottom={1}>
         {label}
       </Box>
-      <NumberInput max={20e6} size="sm" placeholder={placeholder} value={value || ''}>
+      <NumberInput max={20e6} size="sm" placeholder={placeholder} onChange={invokeValueChange} value={value || ''}>
         <NumberInputField
           data-testid={testID}
           id={id}
@@ -37,7 +37,6 @@ export function InputField(props: Props) {
           height="30px"
           _hover={{borderColor: 'rgba(255, 255, 255, 0.6)'}}
           _focus={{borderColor: stop ? 'red' : 'green'}}
-          onChange={invokeValueChange}
         />
       </NumberInput>
     </Box>
