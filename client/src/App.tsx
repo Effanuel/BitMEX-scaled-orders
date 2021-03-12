@@ -6,12 +6,14 @@ import {
   TrailingLimitOrder,
   TickerPricesContainer,
   CrossOrderContainer,
+  OpenOrdersContainer,
 } from 'containers';
-import {Spinner, ToastContainer} from './components';
+import {Spinner, ToastContainer} from 'components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
 import {getBalance} from 'redux/modules/preview/previewModule';
 import 'scss/root.module.scss';
+import {Box} from '@chakra-ui/react';
 
 const App = React.memo(() => {
   const dispatch = useDispatch();
@@ -40,15 +42,16 @@ const App = React.memo(() => {
   }, [dispatch, connected]);
 
   return (
-    <div style={{marginTop: '35px'}}>
+    <Box marginTop="35px">
       <ToastContainer />
       <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />
+      <OpenOrdersContainer />
       <CrossOrderContainer />
       <MarketOrderContainer />
       <TrailingLimitOrder />
       <ScaledOrders />
-    </div>
+    </Box>
   );
 });
 

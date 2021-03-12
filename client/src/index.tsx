@@ -1,14 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import {createStore} from 'redux/store';
-import * as serviceWorker from './serviceWorker';
-import App from './App';
 import {ChakraProvider, extendTheme} from '@chakra-ui/react';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import {createStore} from 'redux/store';
+import App from './App';
 import {ModalProvider} from 'context/modal-context';
 
+import * as serviceWorker from './serviceWorker';
+
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+
 const theme = extendTheme({
+  styles: {
+    global: {
+      body: {
+        fontFamily: 'Helvetica',
+      },
+    },
+  },
   textStyles: {
     bold: {
       fontWeight: '900',
@@ -40,16 +49,31 @@ const theme = extendTheme({
         cursor: 'pointer',
       },
     },
+    'hover:green:color': {
+      _hover: {
+        color: 'green',
+        cursor: 'pointer',
+      },
+    },
   },
   colors: {
     white: '#e0f2f1',
     red: '#cf6679',
-    green: '#4caf50',
+    green: {
+      100: '#4caf50',
+    },
     brand: {
       100: '#121212',
     },
   },
   components: {
+    Radio: {
+      baseStyle: {
+        label: {
+          color: 'white',
+        },
+      },
+    },
     Table: {
       variants: {
         striped: {
@@ -69,20 +93,19 @@ const theme = extendTheme({
         variant: 'striped',
       },
     },
-    // Th: {
-    //   sizes: {
-    //     sm: {
-    //       color: 'red',
-    //     },
-    //   },
-    //   baseStyle: {
-    //     textColor: 'white',
-    //     color: 'white',
-    //   },
-    //   defaultProps: {
-    //     color: 'white',
-    //   },
-    // },
+    Popover: {
+      baseStyle: {
+        popper: {
+          width: 'fit-content',
+          maxWidth: 'fit-content',
+        },
+        content: {
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+      },
+    },
   },
 });
 
