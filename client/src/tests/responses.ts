@@ -1,54 +1,98 @@
-import {Methods, Routes} from 'redux/helpers/apiHelpers';
+import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
+import {LimitOrder, MethodNames, MockedMethods, OrderAmend, OrderBulk, OrderCancel} from 'redux/api/api';
+import {createProfitTarget, MarketOrderProps, ProfitTargetProps} from 'utils';
 
-export type Response = {
-  [key in Routes]?: {
-    [key in Methods]?: {
-      data: {data: any & {text: string}; success: number};
-    };
-  };
-};
+abstract class Builder {
+  protected constructor(protected mockedMethods: Partial<MockedMethods> = {}) {}
+}
 
-export class ResponseBuilder {
-  private responses: Response[] = [];
+export class ResponseBuilder extends Builder {
+  constructor() {
+    super();
+  }
 
-  private add<T extends Response>(data: T) {
-    this.responses.push(data);
+  private add(mockedMethod: Partial<MockedMethods>) {
+    const methodName = Object.keys(mockedMethod)[0] as MethodNames;
+    const {props, result} = mockedMethod[methodName] as any;
+    Object.assign(this.mockedMethods, {
+      [methodName]: {props, result: {data: {data: JSON.stringify(result), statusCode: 200}}},
+    });
     return this;
   }
 
-  getBalance(walletBalance: number) {
+  marketOrder({symbol, side, orderQty}: MarketOrderProps) {
     return this.add({
-      getBalance: {
-        GET: {data: {data: {walletBalance}, success: 200}},
+      marketOrder: {
+        props: {symbol, side, orderQty},
+        result: {orderQty},
       },
     });
   }
 
-  postMarketOrder(orderID: string, price: number) {
+  limitOrder(props: LimitOrder, orderID: string) {
     return this.add({
-      order: {
-        POST: {data: {data: {orderID, price}, success: 200}},
+      limitOrder: {
+        //@ts-ignore
+        props: props,
+        result: {...props, orderID},
       },
     });
   }
 
-  putTrailingOrder(price: number) {
+  orderAmend(props: OrderAmend) {
     return this.add({
-      order: {
-        PUT: {data: {data: {price}, success: 200}},
+      orderAmend: {
+        props,
+        result: props,
       },
     });
   }
 
-  postTrailingOrder(orderID: string, price: number) {
+  orderBulk(orders: OrderBulk[]) {
     return this.add({
-      order: {
-        POST: {data: {data: {orderID, price, text: 'best_order'}, success: 200}},
+      orderBulk: {
+        props: orders,
+        result: orders,
       },
     });
   }
 
-  build(): Response {
-    return Object.assign({}, ...this.responses);
+  orderCancel(props: OrderCancel) {
+    return this.add({
+      orderCancel: {
+        props,
+        result: props,
+      },
+    });
+  }
+
+  orderCancelAll() {
+    return this.add({
+      orderCancelAll: {
+        result: {},
+      },
+    });
+  }
+
+  getOpenOrders(orders: Order[]) {
+    return this.add({
+      getOpenOrders: {
+        result: orders,
+      },
+    });
+  }
+
+  profitTargetOrder(props: ProfitTargetProps) {
+    return this.add({
+      profitTargetOrder: {
+        props: props,
+        result: {...createProfitTarget(props), timestamp: '0', orderID: '2323'},
+      },
+    });
+  }
+
+  build() {
+    if (Object.keys(this.mockedMethods).length === 0) throw new Error(`No responses were added.`);
+    return this.mockedMethods;
   }
 }
