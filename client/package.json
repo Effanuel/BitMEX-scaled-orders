@@ -39,7 +39,6 @@
     "react-toastify": "^6.0.8",
     "redux": "4.0.4",
     "redux-thunk": "2.3.0",
-    "reselect": "4.0.0",
     "ts-mixer": "^5.4.0"
   },
   "devDependencies": {

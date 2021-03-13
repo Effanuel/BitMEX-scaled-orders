@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {createSelector} from 'reselect';
+import {createSelector} from '@reduxjs/toolkit';
 import {SYMBOL, SIDE, Order} from '../../redux/api/bitmex/types';
 import {AppState} from 'redux/models/state';
 import {INSTRUMENT_PARAMS, RegularOrder, StopLoss} from 'utils';
