@@ -1,7 +1,7 @@
+import {Button, ButtonVariants} from './Button';
 import {createRenderer} from 'tests/wrench/Wrench';
 import {classNameOf} from 'tests/wrench/inspectors';
 import {SIDE} from 'redux/api/bitmex/types';
-import {Button, ButtonVariants} from './Button';
 
 const props = {
   id: 'default:id',

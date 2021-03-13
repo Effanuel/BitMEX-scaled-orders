@@ -1,5 +1,5 @@
-import {exists, textOf} from 'tests/wrench/inspectors';
 import {MainContainer} from 'components';
+import {exists, textOf} from 'tests/wrench/inspectors';
 import {createRenderer} from 'tests/wrench/Wrench';
 import {MAIN_CONTAINER} from 'data-test-ids';
 import React from 'react';
