@@ -8,34 +8,25 @@ enum State {
 
 type Tasks<T> = {[key: string]: () => Promise<T>};
 
-export default class Queue<T> extends EventEmitter {
-  tasks: Tasks<T> = {};
-  logs: any[] = [];
-  currentlyHandled = 0;
-  state: State = State.IDLE;
+export default class Queue<T = any> extends EventEmitter {
+  private tasks: Tasks<T> = {};
+  private logs: obj[] = [];
+  private state: State = State.IDLE;
+  private currentlyHandled = 0;
+  private concurrent = 1;
 
-  constructor(private concurrent = 1) {
-    super();
+  private stop() {
+    this.state = State.STOPPED;
+    this.emit('stop');
   }
 
-  finalize() {
-    this.currentlyHandled -= 1;
-
-    if (this.currentlyHandled === 0 && this.isEmpty) {
-      this.stop();
-      this.state = State.IDLE;
-      this.emit('end');
-    }
-  }
-
-  async execute(id: string) {
+  private async execute(id: string) {
     const promises: Promise<T>[] = [];
     const promise = this.tasks?.[id];
     if (!promise) {
       throw new Error(`Promise with id '${id}' is not defined.`);
     }
 
-    // Maximum amount of parallel tasks:
     if (this.currentlyHandled < this.concurrent) {
       this.currentlyHandled++;
       delete this.tasks[id];
@@ -62,6 +53,16 @@ export default class Queue<T> extends EventEmitter {
     return this.concurrent === 1 ? output[0] : output;
   }
 
+  private finalize() {
+    this.currentlyHandled -= 1;
+
+    if (this.currentlyHandled === 0 && this.isEmpty) {
+      this.stop();
+      this.state = State.IDLE;
+      this.emit('end');
+    }
+  }
+
   dequeue(id: string) {
     return new Promise((resolve, reject) => {
       setImmediate(() => void this.execute(id).then(resolve));
@@ -69,12 +70,13 @@ export default class Queue<T> extends EventEmitter {
   }
 
   enqueue(tasks: Tasks<T>) {
+    const currentTasks = Object.keys(this.tasks);
+    Object.keys(tasks).forEach((taskId) => {
+      if (currentTasks.includes(taskId)) {
+        throw new Error(`Task with id "${taskId}" has already been enqueued`);
+      }
+    });
     this.tasks = {...this.tasks, ...tasks};
-  }
-
-  stop() {
-    this.state = State.STOPPED;
-    this.emit('stop');
   }
 
   clear() {
@@ -82,11 +84,11 @@ export default class Queue<T> extends EventEmitter {
     this.logs = [];
   }
 
-  getTasks() {
+  getLogs() {
     return this.logs;
   }
 
-  log(event: any) {
+  log(event: obj) {
     this.logs.push(event);
   }
 
