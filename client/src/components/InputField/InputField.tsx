@@ -6,7 +6,7 @@ interface Props {
   testID?: string;
   id?: string;
   label?: string;
-  value: string;
+  value: any;
   stop?: boolean;
   placeholder?: string;
   t_placement?: string;
