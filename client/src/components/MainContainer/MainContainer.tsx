@@ -1,6 +1,6 @@
 import React from 'react';
 import {Flex, Container, Box, Collapse, Tooltip} from '@chakra-ui/react';
-import {InfoOutlineIcon} from '@chakra-ui/icons';
+import {InfoOutlineIcon, WarningTwoIcon} from '@chakra-ui/icons';
 import styles from './styles.module.scss';
 import {MAIN_CONTAINER} from '../../data-test-ids';
 
@@ -33,9 +33,16 @@ export const MainContainer = React.memo((props: Props) => {
           </Flex>
           <div className={styles.container_minimized_text}>
             <span>{label}</span>
-            <Tooltip marginRight={2} hasArrow label={description} bg="gray.300" color="black">
-              <InfoOutlineIcon color="grey" marginRight={2} />
-            </Tooltip>
+            <Box>
+              {!connected && (
+                <Tooltip marginRight={2} hasArrow label={'Not connected to a websocket'} bg="gray.300" color="black">
+                  <WarningTwoIcon color="grey" marginRight={2} />
+                </Tooltip>
+              )}
+              <Tooltip marginRight={2} hasArrow label={description} bg="gray.300" color="black">
+                <InfoOutlineIcon color="grey" marginRight={2} />
+              </Tooltip>
+            </Box>
           </div>
         </Flex>
         <Collapse className={styles.main} in={isViewMaximized} animateOpacity unmountOnExit>
