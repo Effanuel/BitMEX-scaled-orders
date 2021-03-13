@@ -8,7 +8,7 @@ import {ResponseBuilder} from 'tests/responses';
 import {toastSpy} from 'tests/spies';
 import CrossOrderContainer from './CrossOrderContainer';
 
-const render = createRenderer(CrossOrderContainer, {props: {}});
+const render = createRenderer(CrossOrderContainer);
 
 describe('CrossOrderContainer', () => {
   it('should render submit button as disabled when not subscribed to ws', async () => {

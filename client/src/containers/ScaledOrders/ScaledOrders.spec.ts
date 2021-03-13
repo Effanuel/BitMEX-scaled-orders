@@ -29,7 +29,7 @@ function fillInputs({orderQty, n_tp, start, end, stop, symbol, side}: ScaledInpu
   };
 }
 
-const render = createRenderer(ScaledContainer, {props: {}});
+const render = createRenderer(ScaledContainer);
 
 describe('ScaledOrders', () => {
   it('should render submit button as disabled', async () => {

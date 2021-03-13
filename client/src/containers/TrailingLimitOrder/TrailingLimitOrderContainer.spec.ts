@@ -12,7 +12,7 @@ import {createRenderer} from 'tests/wrench/Wrench';
 
 const orderID = 'OrderId';
 
-const render = createRenderer(TrailingLimitOrderContainer, {props: {}});
+const render = createRenderer(TrailingLimitOrderContainer);
 
 describe('TrailingLimitContainer', () => {
   it('should render submit button as disabled when not subscribed to ws', async () => {
