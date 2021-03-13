@@ -53,7 +53,7 @@ export function useHooks() {
       dispatch(__clearTrailingOrder());
     }
     // TODO: handle ammending error in some way
-    // Trailing order ammending error trailing order status change would be ignore,
+    // Trailing order ammending error trailing order status change is ignored because of a missing dep,
     // but right now it wont matter, cause nothing depends on that error
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, status]);
