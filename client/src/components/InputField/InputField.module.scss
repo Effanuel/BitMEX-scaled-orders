@@ -15,7 +15,6 @@ input[type='number'] {
   &:focus {
     -moz-appearance: textfield;
     -webkit-appearance: textfield;
-    /*background-color: var(--primaryColor);*/
     color: rgba(255, 255, 255, 0.87);
     border: 1px solid var(--accentColor);
     -webkit-box-shadow: none;
