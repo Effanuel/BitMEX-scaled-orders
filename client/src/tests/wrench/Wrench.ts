@@ -42,6 +42,8 @@ export function createRenderer<P extends React.ComponentProps>(
 
 type MatchOptions = {index?: number};
 
+type MockPromises<T = any> = Record<string, T>;
+
 export interface Memory {
   node: RenderResult;
   locateAll: (testID: Matcher, options?: MatchOptions) => HTMLElement;
@@ -192,20 +194,18 @@ export class Wrench<P extends {} = {}> {
     return {node, locateAll, externalContext: this.context.externalContext};
   };
 
-  private addPromisesToQueue() {
-    this.PromiseQueue.clear();
-    Object.entries(this.promises).forEach(([methodName, query]) => {
-      const responseData = query?.result;
-      if (responseData) {
-        this.PromiseQueue.enqueue({[methodName]: () => Promise.resolve(responseData)});
-        this.PromiseQueue.log({[methodName]: query?.props});
+  private addToQueue(promises: MockPromises) {
+    Object.entries(promises).forEach(([methodName, {result, props}]) => {
+      if (result) {
+        this.PromiseQueue.enqueue({[methodName]: () => Promise.resolve(result)});
+        this.PromiseQueue.log({[methodName]: props});
+      } else {
+        throw new Error(`Result of promise "${methodName}" is not valid.`);
       }
     });
   }
 
   private prepare() {
-    this.addPromisesToQueue();
-
     const reduxStore = createMockedStore(this.initialStore, new MOCK(this.promises));
     this.context.externalContext.store = reduxStore;
     this.context.internalContext.store = reduxStore;
@@ -215,7 +215,8 @@ export class Wrench<P extends {} = {}> {
     );
   }
 
-  resolve(promises: Record<string, any>) {
+  resolve(promises: MockPromises) {
+    this.addToQueue(promises);
     this.promises = {...this.promises, ...promises}; //TODO use array instead so same queries with different args are supported
     this.steps.push(async () => {
       await act(async () => {
@@ -240,8 +241,9 @@ export class Wrench<P extends {} = {}> {
         this.assertErrors();
       }
 
-      const promiseTasks = this.PromiseQueue.getTasks();
-      const result = {...this.inspections, ...this.getInterop(), ...(promiseTasks.length ? {api: promiseTasks} : {})};
+      const taskLogs = this.PromiseQueue.getLogs();
+      this.PromiseQueue.clear();
+      const result = {...this.inspections, ...this.getInterop(), ...(taskLogs.length ? {api: taskLogs} : {})};
       return resolve(result);
     } catch (e) {
       this.assertErrors();
