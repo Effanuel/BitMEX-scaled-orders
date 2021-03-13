@@ -84,9 +84,9 @@ export default React.memo(function CrossOrderContainer() {
 
   return (
     <MainContainer
+      connected={connected}
       label="Cross Order"
       description="Place a market order when the price crosses your set price"
-      connected={connected}
     >
       {renderFirstRow}
       {renderSecondRow}

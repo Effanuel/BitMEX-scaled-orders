@@ -35,7 +35,7 @@ export const MainContainer = React.memo((props: Props) => {
             <span>{label}</span>
             <Box>
               {!connected && (
-                <Tooltip marginRight={2} hasArrow label={'Not connected to a websocket'} bg="gray.300" color="black">
+                <Tooltip marginRight={2} hasArrow label="Not connected to a websocket" bg="gray.300" color="black">
                   <WarningTwoIcon color="grey" marginRight={2} />
                 </Tooltip>
               )}

@@ -20,13 +20,9 @@ export class API implements APIType {
       marketOrder: (props: MarketOrderProps) => this.bitmex.order.orderNew({...props, ordType: ORD_TYPE.Market}),
       limitOrder: (props: LimitOrder) =>
         this.bitmex.order.orderNew({...props, execInst: EXEC_INST.ParticipateDoNotInitiate, ordType: ORD_TYPE.Limit}),
-      profitTargetOrder: (props: ProfitTargetProps) => {
-        const profitTargetQuery = createProfitTarget(props);
-        return this.bitmex.order.orderNew(profitTargetQuery);
-      },
+      profitTargetOrder: (props: ProfitTargetProps) => this.bitmex.order.orderNew(createProfitTarget(props)),
       orderAmend: (props: OrderAmend) => this.bitmex.order.orderAmend(props),
       orderCancel: (props: OrderCancel) => this.bitmex.order.orderCancel(props),
-      // this.bitmex.execution.executionGetTradeHistory({count: 30, reverse: true, columns: 'text'}),
       orderCancelAll: () => this.bitmex.order.orderCancelAll({}),
       orderBulk: (orders: OrderBulk[]) => this.bitmex.order.orderNewBulk({orders}),
       getBalance: () => this.bitmex.user.userGetMargin(),
@@ -35,7 +31,7 @@ export class API implements APIType {
   };
 
   getQuery(method: string) {
-    //@ts-ignore
+    //@ts-expect-error
     const query = this.availableMethods[this.activeExchange]?.[method];
     if (!query) throw new Error(`${method} for ${this.activeExchange} hasn't been implemented yet`);
     return query;

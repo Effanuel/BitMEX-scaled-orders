@@ -5,7 +5,7 @@ import {createModals, Modals} from './modals';
 
 export interface ModalContext {
   modals: Modals;
-  showModal: (arg: ShowModalArgs) => void;
+  showModal: (args: ShowModalArgs) => void;
   hideModal: () => void;
 }
 
