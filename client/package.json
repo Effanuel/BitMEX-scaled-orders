@@ -19,12 +19,13 @@
     "tsc": "tsc"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.6",
     "@chakra-ui/react": "^1.2.1",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
-    "framer-motion": "^3.3.0",
     "@giantmachines/redux-websocket": "1.1.6",
     "@reduxjs/toolkit": "^1.4.0",
+    "framer-motion": "^3.3.0",
     "axios": "0.19.0",
     "bootstrap": "^4.4.1",
     "classnames": "^2.2.6",
