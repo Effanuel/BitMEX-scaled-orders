@@ -1,5 +1,6 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
+import {Box} from '@chakra-ui/react';
 import {
   ScaledOrders,
   MarketOrderContainer,
@@ -13,7 +14,6 @@ import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
 import {getBalance} from 'redux/modules/preview/previewModule';
 import 'scss/root.module.scss';
-import {Box} from '@chakra-ui/react';
 
 const App = React.memo(() => {
   const dispatch = useDispatch();
