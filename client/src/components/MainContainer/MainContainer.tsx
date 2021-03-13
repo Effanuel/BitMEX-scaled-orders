@@ -1,5 +1,6 @@
 import React from 'react';
-import {Flex, Container, Box} from '@chakra-ui/react';
+import {Flex, Container, Box, Collapse, Tooltip} from '@chakra-ui/react';
+import {InfoOutlineIcon} from '@chakra-ui/icons';
 import styles from './styles.module.scss';
 import {MAIN_CONTAINER} from '../../data-test-ids';
 
@@ -32,18 +33,14 @@ export const MainContainer = React.memo((props: Props) => {
           </Flex>
           <div className={styles.container_minimized_text}>
             <span>{label}</span>
-            {!isViewMaximized && (
-              <span data-testid={MAIN_CONTAINER.DESCRIPTION} className={styles.description}>
-                {description}
-              </span>
-            )}
+            <Tooltip marginRight={2} hasArrow label={description} bg="gray.300" color="black">
+              <InfoOutlineIcon color="grey" marginRight={2} />
+            </Tooltip>
           </div>
         </Flex>
-        {isViewMaximized ? (
-          <Box width="100%" data-testid={MAIN_CONTAINER.CHILDREN_VIEW}>
-            {secondaryState ?? children}
-          </Box>
-        ) : null}
+        <Collapse className={styles.main} in={isViewMaximized} animateOpacity unmountOnExit>
+          <Box data-testid={MAIN_CONTAINER.CHILDREN_VIEW}>{secondaryState ?? children}</Box>
+        </Collapse>
       </Container>
 
       {isViewMaximized && !!renderOutside ? <>{renderOutside}</> : null}

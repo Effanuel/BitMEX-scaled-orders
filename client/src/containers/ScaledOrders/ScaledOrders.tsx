@@ -81,7 +81,7 @@ export default React.memo(function ScaledContainer() {
       <Row>
         <SelectDropdown id="symbol" onChange={onChangeDropdown} label="Instrument" />
         <SideRadioButtons testID={SCALED_CONTAINER.SIDE} onChangeRadio={toggleSide} side={state.side} />
-        <Box width="30%" />
+        <Box width="35%" />
         <InputField
           testID={SCALED_CONTAINER.STOP_LOSS_INPUT}
           id="stop"

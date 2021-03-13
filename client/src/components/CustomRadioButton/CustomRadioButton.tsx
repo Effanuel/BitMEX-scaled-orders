@@ -9,7 +9,7 @@ interface CustomRadioButtonProps {
 
 export function CustomRadioButton({label, value}: CustomRadioButtonProps) {
   return (
-    <Radio value={value} size="md" colorScheme="green" margin={0}>
+    <Radio value={value} size="md" colorScheme="green" margin={0} marginRight={4}>
       {label}
     </Radio>
   );
