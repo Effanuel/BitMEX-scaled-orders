@@ -15,16 +15,7 @@ describe('Main Container', () => {
     expect(result).toEqual({maxViewVisible: true});
   });
 
-  it('should hide description after collapsing container', async () => {
-    const result = await render()
-      .inspect({initialDescription: exists(MAIN_CONTAINER.DESCRIPTION)})
-      .press(MAIN_CONTAINER.CORNER_BUTTON)
-      .inspect({afterDescription: textOf(MAIN_CONTAINER.DESCRIPTION)});
-
-    expect(result).toEqual({initialDescription: false, afterDescription: 'Description'});
-  });
-
-  it('should toggle children rendering on toggle', async () => {
+  it.skip('should toggle children rendering on toggle', async () => {
     const result = await render()
       .inspect({beforeMaxViewVisible: exists(MAIN_CONTAINER.CHILDREN_VIEW)})
       .press(MAIN_CONTAINER.CORNER_BUTTON)
