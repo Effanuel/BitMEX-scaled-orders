@@ -1,4 +1,4 @@
-import MarketOrderContainer from './MarketOrder';
+import MarketOrderContainer from './MarketOrderContainer';
 import {COMPONENTS, MARKET_CONTAINER} from 'data-test-ids';
 import {toastSpy} from 'tests/spies';
 import {createRenderer} from 'tests/wrench/Wrench';
