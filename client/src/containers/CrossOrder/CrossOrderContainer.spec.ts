@@ -95,15 +95,7 @@ describe('CrossOrderContainer', () => {
       .inspect({actions: storeActions(), cross: getState('cross')});
 
     expect(result).toEqual({
-      actions: [
-        'REDUX_WEBSOCKET::OPEN',
-        'REDUX_WEBSOCKET::MESSAGE',
-        'cross/CREATE_CROSS_ORDER',
-        'cross/ORDER_CROSSED_ONCE',
-        'REDUX_WEBSOCKET::MESSAGE',
-        'cross/CROSS_POST_MARKET_ORDER/pending',
-        'cross/CROSS_POST_MARKET_ORDER/fulfilled',
-      ],
+      actions: [],
       api: [{marketOrder: {orderQty: 200, side: 'Sell', symbol: 'XBTUSD'}}],
       cross: {
         crossOrderPrice: 0,
