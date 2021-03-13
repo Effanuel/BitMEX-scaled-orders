@@ -101,7 +101,11 @@ export default React.memo(function TrailingLimitOrderContainer() {
   }, [connected, cancelOrder, trailOrderPrice, trailOrderStatus, wsCurrentPrice, trailOrderId]);
 
   return (
-    <MainContainer label="Trailing Limit Order" description="Place a limit order to trail market price">
+    <MainContainer
+      connected={connected}
+      label="Trailing Limit Order"
+      description="Place a limit order to trail market price"
+    >
       {renderFirstRow}
       {renderSecondRow}
     </MainContainer>
