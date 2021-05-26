@@ -1,15 +1,15 @@
 import React from 'react';
-import {Tbody, Td, Th, Thead, Tr, Table, Box} from '@chakra-ui/react';
+import {Tbody, Th, Thead, Tr, Table, Box} from '@chakra-ui/react';
 import {useDispatch} from 'react-redux';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
 import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
 import {MainContainer} from 'components';
 import {getOpenOrders} from 'redux/modules/orders/ordersModule';
-import {presentOrderType} from 'presenters/order-presenters';
 import {useModal} from 'general/hooks';
-import ProfitOrders from './ProfitOrders';
 import {OPEN_ORDERS_CONTAINER} from 'data-test-ids';
+import OpenOrderRow from './OpenOrderRow';
+import ProfitOrderInActionRow from './ProfitOrderInActionRow';
 
 function Text({children}: {children: React.ReactNode}) {
   return (
@@ -63,25 +63,10 @@ export default function OpenOrdersContainer() {
     dispatch(getOpenOrders(undefined));
   }, [dispatch]);
 
-  const showCancelOrderModal = React.useCallback(
-    (orderID: string) => () => modals.showCancelOrder({orderID}), /// Prettier
-    [modals],
-  );
-
-  const showAddProfitTargetModal = React.useCallback(
-    (orderID: string) => () => modals.showAddProfitTarget({orderID}), /// Prettier
-    [modals],
-  );
-
   const showCancelAllOrdersModal = React.useCallback(() => {
     const totalOrders = openOrders.length + profitOrders.length + profitOrdersInAction.length;
     modals.showCancelAllOrders({totalOrders});
   }, [modals, openOrders.length, profitOrders.length, profitOrdersInAction.length]);
-
-  const showCancelProfitOrderModal = React.useCallback(
-    (modalProps: any) => () => modals.showCancelProfitOrder(modalProps),
-    [modals],
-  );
 
   const secondaryState = React.useMemo(() => {
     const text =
@@ -118,78 +103,12 @@ export default function OpenOrdersContainer() {
           </Tr>
         </Thead>
         <Tbody>
-          {openOrders.map((order) => {
-            const {orderQty, side, symbol, orderID, timestamp} = order;
-            const color = side === 'Sell' ? 'red' : 'green';
-
-            const profitOrders = groupedOrders?.[orderID] ?? [];
-            return (
-              <Tr
-                key={orderID}
-                data-testid={OPEN_ORDERS_CONTAINER.ORDER_ROW}
-                borderLeftWidth={2}
-                borderLeftColor={color}
-              >
-                <Td>{symbol}</Td>
-                <Td whiteSpace="pre" color={color}>
-                  {presentOrderType(order)}
-                </Td>
-                <Td isNumeric>{orderQty}</Td>
-                <Td isNumeric>{presentOrderPrice(order)}</Td>
-                <Td whiteSpace="pre">{new Date(timestamp).toISOString().split('T')[0]}</Td>
-                {profitOrders?.length ? (
-                  <Td>
-                    <ProfitOrders orderID={orderID} orders={profitOrders} quantityToCover={orderQty} />
-                  </Td>
-                ) : (
-                  <Td
-                    data-testid={OPEN_ORDERS_CONTAINER.ADD_PROFIT}
-                    textStyle="hover:green:color"
-                    onClick={showAddProfitTargetModal(orderID)}
-                  >
-                    +Add
-                  </Td>
-                )}
-                <Td
-                  data-testid={`${OPEN_ORDERS_CONTAINER.CANCEL}.${orderID}`}
-                  color="red"
-                  textStyle="hover:red:color"
-                  onClick={showCancelOrderModal(orderID)}
-                >
-                  CANCEL
-                </Td>
-              </Tr>
-            );
-          })}
-          {profitOrdersInAction.map((order) => {
-            const {orderQty, side, symbol, orderID, timestamp, price} = order;
-            const color = side === 'Sell' ? 'red' : 'green';
-            return (
-              <Tr
-                key={orderID}
-                data-testid={OPEN_ORDERS_CONTAINER.PROFIT_ORDER_IN_ACTION}
-                borderLeftWidth={2}
-                borderLeftColor={color}
-              >
-                <Td>{symbol}</Td>
-                <Td whiteSpace="pre" color={color}>
-                  Profit Order In Action
-                </Td>
-                <Td isNumeric>{orderQty}</Td>
-                <Td isNumeric>{formatPrice(price)}</Td>
-                <Td whiteSpace="pre">{new Date(timestamp).toISOString().split('T')[0]}</Td>
-                <Td>PROFIT</Td>
-                <Td
-                  data-testid={`${OPEN_ORDERS_CONTAINER.CANCEL}.${orderID}`}
-                  color="red"
-                  textStyle="hover:red:color"
-                  onClick={showCancelProfitOrderModal({orderID, side, symbol, quantity: orderQty, price})}
-                >
-                  CANCEL
-                </Td>
-              </Tr>
-            );
-          })}
+          {openOrders.map((order) => (
+            <OpenOrderRow key={order.orderID} order={order} profitOrders={groupedOrders?.[order.orderID] ?? []} />
+          ))}
+          {profitOrdersInAction.map((order) => (
+            <ProfitOrderInActionRow key={order.orderID} order={order} />
+          ))}
         </Tbody>
       </Table>
     </MainContainer>

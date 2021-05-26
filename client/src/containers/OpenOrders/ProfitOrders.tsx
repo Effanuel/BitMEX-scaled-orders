@@ -46,10 +46,7 @@ export default function ProfitOrders({orderID, orders, quantityToCover}: Props) 
   );
 
   const showCancelAllProfitOrdersModal = React.useCallback(() => {
-    modals.showCancelAllProfitOrders({
-      totalOrders: orders.length,
-      profitOrderIds: orders.map(({orderID}) => orderID),
-    });
+    modals.showCancelAllProfitOrders({totalOrders: orders.length, profitOrderIds: orders.map(({orderID}) => orderID)});
   }, [modals, orders]);
 
   const showAddProfitTargetModal = React.useCallback(() => modals.showAddProfitTarget({orderID}), [modals, orderID]);
