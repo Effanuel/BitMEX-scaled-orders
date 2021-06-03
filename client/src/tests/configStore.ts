@@ -104,11 +104,11 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
 
   // dispatch({type: ActionTypes.INIT} as A);
 
-  const store = ({
+  const store = {
     dispatch: dispatch,
     getState,
     getActions,
     subscribe,
-  } as unknown) as any;
+  } as unknown as any;
   return store;
 }

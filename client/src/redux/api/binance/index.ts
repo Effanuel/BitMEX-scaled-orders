@@ -19,7 +19,7 @@ export interface Account {
   canDeposit?: boolean;
   updateTime?: number;
   accountType?: string;
-  balances?: { asset?: string; free?: string; locked?: string }[];
+  balances?: {asset?: string; free?: string; locked?: string}[];
 }
 
 export interface Order {
@@ -134,7 +134,7 @@ export interface MarginOrderResponseFull {
   side?: string;
   marginBuyBorrowAmount?: number;
   marginBuyBorrowAsset?: string;
-  fills?: { price?: string; qty?: string; commission?: string; commissionAsset?: string }[];
+  fills?: {price?: string; qty?: string; commission?: string; commissionAsset?: string}[];
 }
 
 export interface MarginTrade {
@@ -195,7 +195,7 @@ export interface OrderResponseFull {
   timeInForce?: string;
   type?: string;
   side?: string;
-  fills?: { price?: string; qty?: string; commission?: string; commissionAsset?: string }[];
+  fills?: {price?: string; qty?: string; commission?: string; commissionAsset?: string}[];
 }
 
 export interface OCOOrder {
@@ -206,7 +206,7 @@ export interface OCOOrder {
   listClientOrderId?: string;
   transactionTime?: number;
   symbol?: string;
-  orders?: { symbol?: string; orderId?: number; clientOrderId?: string }[];
+  orders?: {symbol?: string; orderId?: number; clientOrderId?: string}[];
 }
 
 export interface OCOOrderReport {
@@ -217,7 +217,7 @@ export interface OCOOrderReport {
   listClientOrderId?: string;
   transactionTime?: number;
   symbol?: string;
-  orders?: { symbol?: string; orderId?: number; clientOrderId?: string }[];
+  orders?: {symbol?: string; orderId?: number; clientOrderId?: string}[];
   orderReports?: Order[];
 }
 
@@ -346,7 +346,7 @@ export interface Error {
   msg?: string;
 }
 
-export type RequestParams = Omit<RequestInit, "body" | "method"> & {
+export type RequestParams = Omit<RequestInit, 'body' | 'method'> & {
   secure?: boolean;
 };
 
@@ -369,17 +369,17 @@ enum BodyType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "https://api.binance.com";
+  public baseUrl: string = 'https://api.binance.com';
   private securityData: SecurityDataType = null as any;
-  private securityWorker: null | ApiConfig<SecurityDataType>["securityWorker"] = null;
+  private securityWorker: null | ApiConfig<SecurityDataType>['securityWorker'] = null;
 
   private baseApiParams: RequestParams = {
-    credentials: "same-origin",
+    credentials: 'same-origin',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    redirect: "follow",
-    referrerPolicy: "no-referrer",
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
   };
 
   constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
@@ -392,22 +392,22 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private addQueryParam(query: RequestQueryParamsType, key: string) {
     return (
-      encodeURIComponent(key) + "=" + encodeURIComponent(Array.isArray(query[key]) ? query[key].join(",") : query[key])
+      encodeURIComponent(key) + '=' + encodeURIComponent(Array.isArray(query[key]) ? query[key].join(',') : query[key])
     );
   }
 
   protected addQueryParams(rawQuery?: RequestQueryParamsType): string {
     const query = rawQuery || {};
-    const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
+    const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key]);
     return keys.length
       ? `?${keys
           .map((key) =>
-            typeof query[key] === "object" && !Array.isArray(query[key])
+            typeof query[key] === 'object' && !Array.isArray(query[key])
               ? this.addQueryParams(query[key] as object).substring(1)
               : this.addQueryParam(query, key),
           )
-          .join("&")}`
-      : "";
+          .join('&')}`
+      : '';
   }
 
   private bodyFormatters: Record<BodyType, (input: any) => any> = {
@@ -434,8 +434,8 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private safeParseResponse = <T = any, E = any>(response: Response): Promise<HttpResponse<T, E>> => {
     const r = response as HttpResponse<T, E>;
-    r.data = (null as unknown) as T;
-    r.error = (null as unknown) as E;
+    r.data = null as unknown as T;
+    r.error = null as unknown as E;
 
     return response
       .json()
@@ -456,7 +456,7 @@ export class HttpClient<SecurityDataType = unknown> {
   public request = <T = any, E = any>(
     path: string,
     method: string,
-    { secure, ...params }: RequestParams = {},
+    {secure, ...params}: RequestParams = {},
     body?: any,
     bodyType?: BodyType,
     secureByDefault?: boolean,
@@ -498,7 +498,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Test Connectivity
      * @request GET:/api/v3/ping
      */
-    v3PingList: (params?: RequestParams) => this.request<any, any>(`/api/v3/ping`, "GET", params),
+    v3PingList: (params?: RequestParams) => this.request<any, any>(`/api/v3/ping`, 'GET', params),
 
     /**
      * @description Test connectivity to the Rest API and get the current server time. Weight 1
@@ -508,7 +508,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Check Server Time
      * @request GET:/api/v3/time
      */
-    v3TimeList: (params?: RequestParams) => this.request<{ serverTime?: number }, any>(`/api/v3/time`, "GET", params),
+    v3TimeList: (params?: RequestParams) => this.request<{serverTime?: number}, any>(`/api/v3/time`, 'GET', params),
 
     /**
      * @description Current exchange trading rules and symbol information Weight 1
@@ -523,7 +523,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         {
           timezone?: string;
           serverTime?: number;
-          rateLimits?: { rateLimitType?: string; interval?: string; intervalNum?: number; limit?: number }[];
+          rateLimits?: {rateLimitType?: string; interval?: string; intervalNum?: number; limit?: number}[];
           exchangeFilters?: object[];
           symbols?: {
             symbol?: string;
@@ -540,12 +540,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
             quoteOrderQtyMarketAllowed?: boolean;
             isSpotTradingAllowed?: boolean;
             isMarginTradingAllowed?: boolean;
-            filters?: { filterType?: string; minPrice?: string; maxPrice?: string; tickSize?: string }[];
+            filters?: {filterType?: string; minPrice?: string; maxPrice?: string; tickSize?: string}[];
             permissions?: string[];
           }[];
         },
         any
-      >(`/api/v3/exchangeInfo`, "GET", params),
+      >(`/api/v3/exchangeInfo`, 'GET', params),
 
     /**
      * @description | Limit               | Weight  | | -------------       |---------| | 5, 10, 20, 50, 100  | 1       | | 500                 | 5       | | 1000                | 10      | | 5000                | 50      |
@@ -556,12 +556,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/api/v3/depth
      */
     v3DepthList: (
-      query: { symbol: string; limit?: 5 | 10 | 20 | 50 | 100 | 500 | 1000 | 5000 },
+      query: {symbol: string; limit?: 5 | 10 | 20 | 50 | 100 | 500 | 1000 | 5000},
       params?: RequestParams,
     ) =>
-      this.request<{ lastUpdateId?: number; bids?: string[][][]; asks?: string[][][] }, Error>(
+      this.request<{lastUpdateId?: number; bids?: string[][][]; asks?: string[][][]}, Error>(
         `/api/v3/depth${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -573,8 +573,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Recent Trades List
      * @request GET:/api/v3/trades
      */
-    v3TradesList: (query: { symbol: string; limit?: number }, params?: RequestParams) =>
-      this.request<Trade[], Error>(`/api/v3/trades${this.addQueryParams(query)}`, "GET", params),
+    v3TradesList: (query: {symbol: string; limit?: number}, params?: RequestParams) =>
+      this.request<Trade[], Error>(`/api/v3/trades${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Get older market trades. `X-MBX-APIKEY` required in header Weight 5
@@ -585,10 +585,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/api/v3/historicalTrades
      * @secure
      */
-    v3HistoricalTradesList: (query: { symbol: string; limit?: number; fromId?: number }, params?: RequestParams) =>
+    v3HistoricalTradesList: (query: {symbol: string; limit?: number; fromId?: number}, params?: RequestParams) =>
       this.request<Trade[], Error>(
         `/api/v3/historicalTrades${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -604,9 +604,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/api/v3/aggTrades
      */
     v3AggTradesList: (
-      query: { symbol: string; fromId?: number; startTime?: number; endTime?: number; limit?: number },
+      query: {symbol: string; fromId?: number; startTime?: number; endTime?: number; limit?: number},
       params?: RequestParams,
-    ) => this.request<AggTrade[], Error>(`/api/v3/aggTrades${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<AggTrade[], Error>(`/api/v3/aggTrades${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Kline/candlestick bars for a symbol.\ Klines are uniquely identified by their open time. Weight 1
@@ -620,27 +620,27 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
       query: {
         symbol: string;
         interval:
-          | "1m"
-          | "3m"
-          | "5m"
-          | "15m"
-          | "30m"
-          | "1h"
-          | "2h"
-          | "4h"
-          | "6h"
-          | "8h"
-          | "12h"
-          | "1d"
-          | "3d"
-          | "1w"
-          | "1M";
+          | '1m'
+          | '3m'
+          | '5m'
+          | '15m'
+          | '30m'
+          | '1h'
+          | '2h'
+          | '4h'
+          | '6h'
+          | '8h'
+          | '12h'
+          | '1d'
+          | '3d'
+          | '1w'
+          | '1M';
         startTime?: number;
         endTime?: number;
         limit?: number;
       },
       params?: RequestParams,
-    ) => this.request<any[], Error>(`/api/v3/klines${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<any[], Error>(`/api/v3/klines${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Current average price for a symbol. Weight 1
@@ -650,10 +650,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Current Average Price
      * @request GET:/api/v3/avgPrice
      */
-    v3AvgPriceList: (query: { symbol: string }, params?: RequestParams) =>
-      this.request<{ mins?: number; price?: string }, Error>(
+    v3AvgPriceList: (query: {symbol: string}, params?: RequestParams) =>
+      this.request<{mins?: number; price?: string}, Error>(
         `/api/v3/avgPrice${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -665,8 +665,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary 24hr Ticker Price Change Statistics
      * @request GET:/api/v3/ticker/24hr
      */
-    v3Ticker24HrList: (query?: { symbol?: string }, params?: RequestParams) =>
-      this.request<Ticker | TickerList, Error>(`/api/v3/ticker/24hr${this.addQueryParams(query)}`, "GET", params),
+    v3Ticker24HrList: (query?: {symbol?: string}, params?: RequestParams) =>
+      this.request<Ticker | TickerList, Error>(`/api/v3/ticker/24hr${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Latest price for a symbol or symbols. Weight:\ `1` for a single symbol;\ `2` when the symbol parameter is omitted
@@ -676,10 +676,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Symbol Price Ticker
      * @request GET:/api/v3/ticker/price
      */
-    v3TickerPriceList: (query?: { symbol?: string }, params?: RequestParams) =>
+    v3TickerPriceList: (query?: {symbol?: string}, params?: RequestParams) =>
       this.request<PriceTicker | PriceTickerList, Error>(
         `/api/v3/ticker/price${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -691,10 +691,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Symbol Order Book Ticker
      * @request GET:/api/v3/ticker/bookTicker
      */
-    v3TickerBookTickerList: (query?: { symbol?: string }, params?: RequestParams) =>
+    v3TickerBookTickerList: (query?: {symbol?: string}, params?: RequestParams) =>
       this.request<BookTicker | BookTickerList, Error>(
         `/api/v3/ticker/bookTicker${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -710,23 +710,23 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     v3OrderTestCreate: (
       query: {
         symbol: string;
-        side: "SELL" | "BUY";
+        side: 'SELL' | 'BUY';
         type:
-          | "LIMIT"
-          | "MARKET"
-          | "STOP_LOSS"
-          | "STOP_LOSS_LIMIT"
-          | "TAKE_PROFIT"
-          | "TAKE_PROFIT_LIMIT"
-          | "LIMIT_MAKER";
-        timeInForce?: "GTC" | "IOC" | "FOK";
+          | 'LIMIT'
+          | 'MARKET'
+          | 'STOP_LOSS'
+          | 'STOP_LOSS_LIMIT'
+          | 'TAKE_PROFIT'
+          | 'TAKE_PROFIT_LIMIT'
+          | 'LIMIT_MAKER';
+        timeInForce?: 'GTC' | 'IOC' | 'FOK';
         quantity?: number;
         quoteOrderQty?: number;
         price?: number;
         newClientOrderId?: string;
         stopPrice?: number;
         icebergQty?: number;
-        newOrderRespType?: "ACK" | "RESULT" | "FULL";
+        newOrderRespType?: 'ACK' | 'RESULT' | 'FULL';
         recvWindow?: number;
         timestamp: number;
         signature: string;
@@ -735,7 +735,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<any, Error>(
         `/api/v3/order/test${this.addQueryParams(query)}`,
-        "POST",
+        'POST',
         params,
         null,
         BodyType.Json,
@@ -760,7 +760,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<OrderDetails, Error>(`/api/v3/order${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<OrderDetails, Error>(`/api/v3/order${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Send in a new order. - `LIMIT_MAKER` are `LIMIT` orders that will be rejected if they would immediately match and trade as a taker. - `STOP_LOSS` and `TAKE_PROFIT` will execute a `MARKET` order when the `stopPrice` is reached. - Any `LIMIT` or `LIMIT_MAKER` type order can be made an iceberg order by sending an `icebergQty`. - Any order with an `icebergQty` MUST have `timeInForce` set to `GTC`. - `MARKET` orders using `quantity` specifies how much a user wants to buy or sell based on the market price. - `MARKET` orders using `quoteOrderQty` specifies the amount the user wants to spend (when buying) or receive (when selling) of the quote asset; the correct quantity will be determined based on the market liquidity and `quoteOrderQty`. - `MARKET` orders using `quoteOrderQty` will not break `LOT_SIZE` filter rules; the order will execute a quantity that will have the notional value as close as possible to `quoteOrderQty`. - same `newClientOrderId` can be accepted only when the previous one is filled, otherwise the order will be rejected. Trigger order price rules against market price for both `MARKET` and `LIMIT` versions: - Price above market price: STOP_LOSS BUY, TAKE_PROFIT SELL - Price below market price: STOP_LOSS SELL, TAKE_PROFIT BUY Weight: 1
@@ -774,23 +774,23 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     v3OrderCreate: (
       query: {
         symbol: string;
-        side: "SELL" | "BUY";
+        side: 'SELL' | 'BUY';
         type:
-          | "LIMIT"
-          | "MARKET"
-          | "STOP_LOSS"
-          | "STOP_LOSS_LIMIT"
-          | "TAKE_PROFIT"
-          | "TAKE_PROFIT_LIMIT"
-          | "LIMIT_MAKER";
-        timeInForce?: "GTC" | "IOC" | "FOK";
+          | 'LIMIT'
+          | 'MARKET'
+          | 'STOP_LOSS'
+          | 'STOP_LOSS_LIMIT'
+          | 'TAKE_PROFIT'
+          | 'TAKE_PROFIT_LIMIT'
+          | 'LIMIT_MAKER';
+        timeInForce?: 'GTC' | 'IOC' | 'FOK';
         quantity?: number;
         quoteOrderQty?: number;
         price?: number;
         newClientOrderId?: string;
         stopPrice?: number;
         icebergQty?: number;
-        newOrderRespType?: "ACK" | "RESULT" | "FULL";
+        newOrderRespType?: 'ACK' | 'RESULT' | 'FULL';
         recvWindow?: number;
         timestamp: number;
         signature: string;
@@ -799,7 +799,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<OrderResponseAck | OrderResponseResult | OrderResponseFull, Error>(
         `/api/v3/order${this.addQueryParams(query)}`,
-        "POST",
+        'POST',
         params,
         null,
         BodyType.Json,
@@ -825,7 +825,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<Order, Error>(`/api/v3/order${this.addQueryParams(query)}`, "DELETE", params),
+    ) => this.request<Order, Error>(`/api/v3/order${this.addQueryParams(query)}`, 'DELETE', params),
 
     /**
      * @description Get all open orders on a symbol. Careful when accessing this with no symbol.\ Weight:\ `1` for a single symbol;\ `40` when the symbol parameter is omitted
@@ -836,9 +836,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/api/v3/openOrders
      */
     v3OpenOrdersList: (
-      query: { symbol?: string; recvWindow?: number; timestamp: number; signature: string },
+      query: {symbol?: string; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<OrderDetails[], Error>(`/api/v3/openOrders${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<OrderDetails[], Error>(`/api/v3/openOrders${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Cancels all active orders on a symbol.\ This includes OCO orders. Weight: 1
@@ -849,9 +849,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request DELETE:/api/v3/openOrders
      */
     v3OpenOrdersDelete: (
-      query: { symbol: string; recvWindow?: number; timestamp: number; signature: string },
+      query: {symbol: string; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<Order[], Error>(`/api/v3/openOrders${this.addQueryParams(query)}`, "DELETE", params),
+    ) => this.request<Order[], Error>(`/api/v3/openOrders${this.addQueryParams(query)}`, 'DELETE', params),
 
     /**
      * @description Get all account orders; active, canceled, or filled.. - If orderId is set, it will get orders >= that orderId. Otherwise most recent orders are returned. - For some historical orders cummulativeQuoteQty will be < 0, meaning the data is not available at this time. Weight: 5
@@ -873,7 +873,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<OrderDetails[], Error>(`/api/v3/allOrders${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<OrderDetails[], Error>(`/api/v3/allOrders${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Send in a new OCO - Price Restrictions: - SELL: Limit Price > Last Price > Stop Price - BUY: Limit Price < Last Price < Stop Price - Quantity Restrictions: - Both legs must have the same quantity - ICEBERG quantities however do not have to be the same Weight: 1
@@ -887,7 +887,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
       query: {
         symbol: string;
         listClientOrderId?: string;
-        side: "SELL" | "BUY";
+        side: 'SELL' | 'BUY';
         quantity: number;
         limitClientOrderId?: number;
         price: number;
@@ -896,8 +896,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         stopPrice: number;
         stopLimitPrice?: number;
         stopIcebergQty?: number;
-        stopLimitTimeInForce?: "GTC" | "FOK" | "IOC";
-        newOrderRespType?: "ACK" | "RESULT" | "FULL";
+        stopLimitTimeInForce?: 'GTC' | 'FOK' | 'IOC';
+        newOrderRespType?: 'ACK' | 'RESULT' | 'FULL';
         recvWindow?: number;
         timestamp: number;
         signature: string;
@@ -913,7 +913,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           listClientOrderId?: string;
           transactionTime?: number;
           symbol?: string;
-          orders?: { symbol?: string; orderId?: number; clientOrderId?: string }[];
+          orders?: {symbol?: string; orderId?: number; clientOrderId?: string}[];
           orderReports?: {
             symbol?: string;
             orderId?: number;
@@ -932,7 +932,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           }[];
         },
         Error
-      >(`/api/v3/order/oco${this.addQueryParams(query)}`, "POST", params),
+      >(`/api/v3/order/oco${this.addQueryParams(query)}`, 'POST', params),
 
     /**
      * @description Retrieves a specific OCO based on provided optional parameters Weight: 1
@@ -951,7 +951,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<OCOOrder, Error>(`/api/v3/orderList${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<OCOOrder, Error>(`/api/v3/orderList${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Cancel an entire Order List Canceling an individual leg will cancel the entire OCO Weight: 1
@@ -972,7 +972,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<OCOOrderReport, Error>(`/api/v3/orderList${this.addQueryParams(query)}`, "DELETE", params),
+    ) => this.request<OCOOrderReport, Error>(`/api/v3/orderList${this.addQueryParams(query)}`, 'DELETE', params),
 
     /**
      * @description Retrieves all OCO based on provided optional parameters Weight: 10
@@ -993,7 +993,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<OCOOrder[], Error>(`/api/v3/allOrderList${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<OCOOrder[], Error>(`/api/v3/allOrderList${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 2
@@ -1003,10 +1003,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Query Open OCO (USER_DATA)
      * @request GET:/api/v3/openOrderList
      */
-    v3OpenOrderListList: (
-      query: { recvWindow?: number; timestamp: number; signature: string },
-      params?: RequestParams,
-    ) => this.request<OCOOrder[], Error>(`/api/v3/openOrderList${this.addQueryParams(query)}`, "GET", params),
+    v3OpenOrderListList: (query: {recvWindow?: number; timestamp: number; signature: string}, params?: RequestParams) =>
+      this.request<OCOOrder[], Error>(`/api/v3/openOrderList${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Get current account information. Weight: 5
@@ -1016,8 +1014,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Account Information (USER_DATA)
      * @request GET:/api/v3/account
      */
-    v3AccountList: (query: { recvWindow?: number; timestamp: number; signature: string }, params?: RequestParams) =>
-      this.request<Account, Error>(`/api/v3/account${this.addQueryParams(query)}`, "GET", params),
+    v3AccountList: (query: {recvWindow?: number; timestamp: number; signature: string}, params?: RequestParams) =>
+      this.request<Account, Error>(`/api/v3/account${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Get trades for a specific account and symbol. If fromId is set, it will get id >= that fromId. Otherwise most recent orders are returned. Weight: 5
@@ -1039,7 +1037,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<MyTrade, Error>(`/api/v3/myTrades${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<MyTrade, Error>(`/api/v3/myTrades${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Start a new user data stream. The stream will close after 60 minutes unless a keepalive is sent. If the account has an active listenKey, that listenKey will be returned and its validity will be extended for 60 minutes. Weight: 1
@@ -1050,7 +1048,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/api/v3/userDataStream
      */
     v3UserDataStreamCreate: (params?: RequestParams) =>
-      this.request<{ listenKey?: string }, Error>(`/api/v3/userDataStream`, "POST", params),
+      this.request<{listenKey?: string}, Error>(`/api/v3/userDataStream`, 'POST', params),
 
     /**
      * @description Keepalive a user data stream to prevent a time out. User data streams will close after 60 minutes. It's recommended to send a ping about every 30 minutes. Weight: 1
@@ -1060,8 +1058,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Ping/Keep-alive a ListenKey (USER_STREAM)
      * @request PUT:/api/v3/userDataStream
      */
-    v3UserDataStreamUpdate: (query?: { listenKey?: string }, params?: RequestParams) =>
-      this.request<object, Error>(`/api/v3/userDataStream${this.addQueryParams(query)}`, "PUT", params),
+    v3UserDataStreamUpdate: (query?: {listenKey?: string}, params?: RequestParams) =>
+      this.request<object, Error>(`/api/v3/userDataStream${this.addQueryParams(query)}`, 'PUT', params),
 
     /**
      * @description Close out a user data stream. Weight: 1
@@ -1071,8 +1069,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Close a ListenKey (USER_STREAM)
      * @request DELETE:/api/v3/userDataStream
      */
-    v3UserDataStreamDelete: (query?: { listenKey?: string }, params?: RequestParams) =>
-      this.request<object, Error>(`/api/v3/userDataStream${this.addQueryParams(query)}`, "DELETE", params),
+    v3UserDataStreamDelete: (query?: {listenKey?: string}, params?: RequestParams) =>
+      this.request<object, Error>(`/api/v3/userDataStream${this.addQueryParams(query)}`, 'DELETE', params),
   };
   sapi = {
     /**
@@ -1084,9 +1082,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/margin/transfer
      */
     v1MarginTransferCreate: (
-      query: { asset: string; amount: number; type?: 1 | 2; recvWindow?: number; timestamp: number; signature: string },
+      query: {asset: string; amount: number; type?: 1 | 2; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<Transaction, Error>(`/sapi/v1/margin/transfer${this.addQueryParams(query)}`, "POST", params),
+    ) => this.request<Transaction, Error>(`/sapi/v1/margin/transfer${this.addQueryParams(query)}`, 'POST', params),
 
     /**
      * @description Weight: 1
@@ -1099,7 +1097,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     v1MarginTransferList: (
       query: {
         asset?: string;
-        type?: "ROLL_IN" | "ROLL_OUT";
+        type?: 'ROLL_IN' | 'ROLL_OUT';
         startTime?: number;
         endTime?: number;
         current?: number;
@@ -1109,7 +1107,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<object, Error>(`/sapi/v1/margin/transfer${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<object, Error>(`/sapi/v1/margin/transfer${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Apply for a loan. Weight: 1
@@ -1120,9 +1118,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/margin/loan
      */
     v1MarginLoanCreate: (
-      query: { asset: string; amount: number; recvWindow?: number; timestamp: number; signature: string },
+      query: {asset: string; amount: number; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<Transaction, Error>(`/sapi/v1/margin/loan${this.addQueryParams(query)}`, "POST", params),
+    ) => this.request<Transaction, Error>(`/sapi/v1/margin/loan${this.addQueryParams(query)}`, 'POST', params),
 
     /**
      * @description `txId` or `startTime` must be sent. txId takes precedence. Weight: 1
@@ -1145,7 +1143,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<object, Error>(`/sapi/v1/margin/loan${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<object, Error>(`/sapi/v1/margin/loan${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Repay loan for margin account. Weight: 1
@@ -1156,9 +1154,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/margin/repay
      */
     v1MarginRepayCreate: (
-      query: { asset: string; amount: number; recvWindow?: number; timestamp: number; signature: string },
+      query: {asset: string; amount: number; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<Transaction, Error>(`/sapi/v1/margin/repay${this.addQueryParams(query)}`, "POST", params),
+    ) => this.request<Transaction, Error>(`/sapi/v1/margin/repay${this.addQueryParams(query)}`, 'POST', params),
 
     /**
      * @description `txId` or `startTime` must be sent. txId takes precedence. Weight: 1
@@ -1196,7 +1194,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           total?: number;
         },
         Error
-      >(`/sapi/v1/margin/repay${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/margin/repay${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 1
@@ -1207,7 +1205,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/margin/asset
      * @secure
      */
-    v1MarginAssetList: (query: { asset: string }, params?: RequestParams) =>
+    v1MarginAssetList: (query: {asset: string}, params?: RequestParams) =>
       this.request<
         {
           assetFullName?: string;
@@ -1218,7 +1216,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           userMinRepay?: string;
         },
         Error
-      >(`/sapi/v1/margin/asset${this.addQueryParams(query)}`, "GET", params, null, BodyType.Json, true),
+      >(`/sapi/v1/margin/asset${this.addQueryParams(query)}`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * @description Weight: 1
@@ -1228,7 +1226,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Query Margin Pair (MARKET_DATA)
      * @request GET:/sapi/v1/margin/pair
      */
-    v1MarginPairList: (query: { symbol: string }, params?: RequestParams) =>
+    v1MarginPairList: (query: {symbol: string}, params?: RequestParams) =>
       this.request<
         {
           id?: number;
@@ -1240,7 +1238,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           isSellAllowed?: boolean;
         },
         Error
-      >(`/sapi/v1/margin/pair${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/margin/pair${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 1
@@ -1262,7 +1260,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           userMinRepay?: string;
         }[],
         Error
-      >(`/sapi/v1/margin/allAssets`, "GET", params, null, BodyType.Json, true),
+      >(`/sapi/v1/margin/allAssets`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * @description Weight: 1
@@ -1285,7 +1283,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           symbol?: string;
         }[],
         Error
-      >(`/sapi/v1/margin/allPairs`, "GET", params, null, BodyType.Json, true),
+      >(`/sapi/v1/margin/allPairs`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * @description Weight: 1
@@ -1296,10 +1294,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/margin/priceIndex
      * @secure
      */
-    v1MarginPriceIndexList: (query: { symbol: string }, params?: RequestParams) =>
-      this.request<{ calcTime?: number; price?: string; symbol?: string }, Error>(
+    v1MarginPriceIndexList: (query: {symbol: string}, params?: RequestParams) =>
+      this.request<{calcTime?: number; price?: string; symbol?: string}, Error>(
         `/sapi/v1/margin/priceIndex${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -1324,7 +1322,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<MarginOrderDetail, Error>(`/sapi/v1/margin/order${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<MarginOrderDetail, Error>(`/sapi/v1/margin/order${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Post a new order for margin account. Weight: 1
@@ -1337,23 +1335,23 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     v1MarginOrderCreate: (
       query: {
         symbol: string;
-        side: "SELL" | "BUY";
+        side: 'SELL' | 'BUY';
         type:
-          | "LIMIT"
-          | "MARKET"
-          | "STOP_LOSS"
-          | "STOP_LOSS_LIMIT"
-          | "TAKE_PROFIT"
-          | "TAKE_PROFIT_LIMIT"
-          | "LIMIT_MAKER";
+          | 'LIMIT'
+          | 'MARKET'
+          | 'STOP_LOSS'
+          | 'STOP_LOSS_LIMIT'
+          | 'TAKE_PROFIT'
+          | 'TAKE_PROFIT_LIMIT'
+          | 'LIMIT_MAKER';
         quantity: number;
         price?: number;
         stopPrice?: number;
         newClientOrderId?: string;
         icebergQty?: number;
-        newOrderRespType?: "ACK" | "RESULT" | "FULL";
-        sideEffectType?: "NO_SIDE_EFFECT" | "MARGIN_BUY" | "AUTO_REPAY";
-        timeInForce?: "GTC" | "IOC" | "FOK";
+        newOrderRespType?: 'ACK' | 'RESULT' | 'FULL';
+        sideEffectType?: 'NO_SIDE_EFFECT' | 'MARGIN_BUY' | 'AUTO_REPAY';
+        timeInForce?: 'GTC' | 'IOC' | 'FOK';
         recvWindow?: number;
         timestamp: number;
         signature: string;
@@ -1362,7 +1360,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<MarginOrderResponseAck | MarginOrderResponseResult | MarginOrderResponseFull, Error>(
         `/sapi/v1/margin/order${this.addQueryParams(query)}`,
-        "POST",
+        'POST',
         params,
       ),
 
@@ -1385,7 +1383,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<MarginOrder, Error>(`/sapi/v1/margin/order${this.addQueryParams(query)}`, "DELETE", params),
+    ) => this.request<MarginOrder, Error>(`/sapi/v1/margin/order${this.addQueryParams(query)}`, 'DELETE', params),
 
     /**
      * @description Weight: 1
@@ -1421,7 +1419,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           total?: number;
         },
         Error
-      >(`/sapi/v1/margin/interestHistory${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/margin/interestHistory${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 1
@@ -1442,7 +1440,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<object, any>(`/sapi/v1/margin/forceLiquidationRec${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<object, any>(`/sapi/v1/margin/forceLiquidationRec${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 1
@@ -1452,10 +1450,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Query Margin Account Details (USER_DATA)
      * @request GET:/sapi/v1/margin/account
      */
-    v1MarginAccountList: (
-      query: { recvWindow?: number; timestamp: number; signature: string },
-      params?: RequestParams,
-    ) =>
+    v1MarginAccountList: (query: {recvWindow?: number; timestamp: number; signature: string}, params?: RequestParams) =>
       this.request<
         {
           borrowEnabled?: boolean;
@@ -1475,7 +1470,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           }[];
         },
         Error
-      >(`/sapi/v1/margin/account${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/margin/account${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description - If the symbol is not sent, orders for all symbols will be returned in an array. - When all symbols are returned, the number of requests counted against the rate limiter is equal to the number of symbols currently trading on the exchange Weight: 1
@@ -1486,12 +1481,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/margin/openOrders
      */
     v1MarginOpenOrdersList: (
-      query: { symbol?: string; recvWindow?: number; timestamp: number; signature: string },
+      query: {symbol?: string; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<MarginOrderDetail[], Error>(
         `/sapi/v1/margin/openOrders${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -1516,7 +1511,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
       },
       params?: RequestParams,
     ) =>
-      this.request<MarginOrderDetail[], Error>(`/sapi/v1/margin/allOrders${this.addQueryParams(query)}`, "GET", params),
+      this.request<MarginOrderDetail[], Error>(`/sapi/v1/margin/allOrders${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 1
@@ -1538,7 +1533,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         signature: string;
       },
       params?: RequestParams,
-    ) => this.request<MarginTrade[], Error>(`/sapi/v1/margin/myTrades${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<MarginTrade[], Error>(`/sapi/v1/margin/myTrades${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 5
@@ -1549,9 +1544,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/margin/maxBorrowable
      */
     v1MarginMaxBorrowableList: (
-      query: { symbol: string; recvWindow?: number; timestamp: number; signature: string },
+      query: {symbol: string; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<object, Error>(`/sapi/v1/margin/maxBorrowable${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<object, Error>(`/sapi/v1/margin/maxBorrowable${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 5
@@ -1562,9 +1557,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/margin/maxTransferable
      */
     v1MarginMaxTransferableList: (
-      query: { symbol: string; recvWindow?: number; timestamp: number; signature: string },
+      query: {symbol: string; recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
-    ) => this.request<object, Error>(`/sapi/v1/margin/maxTransferable${this.addQueryParams(query)}`, "GET", params),
+    ) => this.request<object, Error>(`/sapi/v1/margin/maxTransferable${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Get information of coins (available for deposit and withdraw) for user. Weight: 1
@@ -1575,7 +1570,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/capital/config/getall
      */
     v1CapitalConfigGetallList: (
-      query: { recvWindow?: number; timestamp: number; signature: string },
+      query: {recvWindow?: number; timestamp: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<
@@ -1612,7 +1607,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           withdrawing?: string;
         },
         Error
-      >(`/sapi/v1/capital/config/getall${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/capital/config/getall${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Weight: 1
@@ -1624,7 +1619,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      */
     v1AccountSnapshotList: (
       query: {
-        type: "SPOT" | "MARGIN" | "FUTURES";
+        type: 'SPOT' | 'MARGIN' | 'FUTURES';
         startTime?: number;
         endTime?: number;
         limit: number;
@@ -1639,13 +1634,13 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           code?: number;
           msg?: string;
           snapshotVos?: {
-            data?: { balances?: { asset?: string; free?: string; locked?: string }[]; totalAssetOfBtc?: string };
+            data?: {balances?: {asset?: string; free?: string; locked?: string}[]; totalAssetOfBtc?: string};
             type?: string;
             updateTime?: number;
           }[];
         },
         Error
-      >(`/sapi/v1/accountSnapshot${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/accountSnapshot${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description This request will disable fastwithdraw switch under your account. You need to enable "trade" option for the api key which requests this endpoint. Weight: 1
@@ -1656,12 +1651,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/account/disableFastWithdrawSwitch
      */
     v1AccountDisableFastWithdrawSwitchCreate: (
-      query: { timestamp: number; recvWindow?: number; signature: string },
+      query: {timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<any, Error>(
         `/sapi/v1/account/disableFastWithdrawSwitch${this.addQueryParams(query)}`,
-        "POST",
+        'POST',
         params,
       ),
 
@@ -1674,12 +1669,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/account/enableFastWithdrawSwitch
      */
     v1AccountEnableFastWithdrawSwitchCreate: (
-      query: { timestamp: number; recvWindow?: number; signature: string },
+      query: {timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<any, Error>(
         `/sapi/v1/account/enableFastWithdrawSwitch${this.addQueryParams(query)}`,
-        "POST",
+        'POST',
         params,
       ),
 
@@ -1707,9 +1702,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
       },
       params?: RequestParams,
     ) =>
-      this.request<{ id?: string }, Error>(
+      this.request<{id?: string}, Error>(
         `/sapi/v1/capital/withdraw/apply${this.addQueryParams(query)}`,
-        "POST",
+        'POST',
         params,
       ),
 
@@ -1747,7 +1742,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           txId?: string;
         }[],
         any
-      >(`/sapi/v1/capital/deposit/hisrec${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/capital/deposit/hisrec${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Fetch withdraw history. - network may not be in the response for old withdraw. - Please notice the default startTime and endTime to make sure that time interval is within 0-90 days. - If both startTime and endTime are sent, time between startTime and endTime must be less than 90 days Weight: 1
@@ -1783,7 +1778,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           txId?: string;
         }[],
         Error
-      >(`/sapi/v1/capital/withdraw/history${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/capital/withdraw/history${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Fetch withdraw history. - network may not be in the response for old withdraw. - Please notice the default startTime and endTime to make sure that time interval is within 0-90 days. - If both startTime and endTime are sent, time between startTime and endTime must be less than 90 days Weight: 1
@@ -1794,12 +1789,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/sapi/v1/capital/deposit/address
      */
     v1CapitalDepositAddressList: (
-      query: { coin: string; network?: string; timestamp: number; recvWindow?: number; signature: string },
+      query: {coin: string; network?: string; timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
-      this.request<{ address?: string; coin?: string; tag?: string; url?: string }, Error>(
+      this.request<{address?: string; coin?: string; tag?: string; url?: string}, Error>(
         `/sapi/v1/capital/deposit/address${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -1812,7 +1807,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/asset/dust
      */
     v1AssetDustCreate: (
-      query: { asset: string; timestamp: number; recvWindow?: number; signature: string },
+      query: {asset: string; timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<
@@ -1829,7 +1824,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           }[];
         },
         Error
-      >(`/sapi/v1/asset/dust${this.addQueryParams(query)}`, "POST", params),
+      >(`/sapi/v1/asset/dust${this.addQueryParams(query)}`, 'POST', params),
 
     /**
      * @description Query asset Dividend Record Weight: 1
@@ -1853,11 +1848,11 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<
         {
-          rows?: { amount?: string; asset?: string; divTime?: number; enInfo?: string; tranId?: number }[];
+          rows?: {amount?: string; asset?: string; divTime?: number; enInfo?: string; tranId?: number}[];
           total?: number;
         },
         Error
-      >(`/sapi/v1/asset/assetDividend${this.addQueryParams(query)}`, "GET", params),
+      >(`/sapi/v1/asset/assetDividend${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Start a new user data stream. The stream will close after 60 minutes unless a keepalive is sent. If the account has an active listenKey, that listenKey will be returned and its validity will be extended for 60 minutes. Weight: 1
@@ -1868,7 +1863,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/sapi/v1/userDataStream
      */
     v1UserDataStreamCreate: (params?: RequestParams) =>
-      this.request<{ listenKey?: string }, Error>(`/sapi/v1/userDataStream`, "POST", params),
+      this.request<{listenKey?: string}, Error>(`/sapi/v1/userDataStream`, 'POST', params),
 
     /**
      * @description Keepalive a user data stream to prevent a time out. User data streams will close after 60 minutes. It's recommended to send a ping about every 30 minutes. Weight: 1
@@ -1878,8 +1873,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Ping/Keep-alive a ListenKey (USER_STREAM)
      * @request PUT:/sapi/v1/userDataStream
      */
-    v1UserDataStreamUpdate: (query?: { listenKey?: string }, params?: RequestParams) =>
-      this.request<object, Error>(`/sapi/v1/userDataStream${this.addQueryParams(query)}`, "PUT", params),
+    v1UserDataStreamUpdate: (query?: {listenKey?: string}, params?: RequestParams) =>
+      this.request<object, Error>(`/sapi/v1/userDataStream${this.addQueryParams(query)}`, 'PUT', params),
 
     /**
      * @description Close out a user data stream. Weight: 1
@@ -1889,8 +1884,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @summary Close a ListenKey (USER_STREAM)
      * @request DELETE:/sapi/v1/userDataStream
      */
-    v1UserDataStreamDelete: (query?: { listenKey?: string }, params?: RequestParams) =>
-      this.request<object, Error>(`/sapi/v1/userDataStream${this.addQueryParams(query)}`, "DELETE", params),
+    v1UserDataStreamDelete: (query?: {listenKey?: string}, params?: RequestParams) =>
+      this.request<object, Error>(`/sapi/v1/userDataStream${this.addQueryParams(query)}`, 'DELETE', params),
   };
   wapi = {
     /**
@@ -1902,7 +1897,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/wapi/v3/systemStatus.html
      */
     v3SystemStatusHtmlList: (params?: RequestParams) =>
-      this.request<object, any>(`/wapi/v3/systemStatus.html`, "GET", params),
+      this.request<object, any>(`/wapi/v3/systemStatus.html`, 'GET', params),
 
     /**
      * @description Fetch account status detail. Weight: 1
@@ -1913,12 +1908,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/wapi/v3/accountStatus.html
      */
     v3AccountStatusHtmlList: (
-      query: { timestamp: number; recvWindow?: number; signature: string },
+      query: {timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
-      this.request<{ msg?: string; success?: boolean }, Error>(
+      this.request<{msg?: string; success?: boolean}, Error>(
         `/wapi/v3/accountStatus.html${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
 
@@ -1931,7 +1926,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/wapi/v3/apiTradingStatus.html
      */
     v3ApiTradingStatusHtmlList: (
-      query: { timestamp: number; recvWindow?: number; signature: string },
+      query: {timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<
@@ -1940,13 +1935,13 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           status?: {
             isLocked?: boolean;
             plannedRecoverTime?: number;
-            triggerCondition?: { gcr?: number; ifer?: number; ufr?: number };
-            indicators?: { BTCUSDT?: { i?: string; c?: number; v?: number; t?: number }[] };
+            triggerCondition?: {gcr?: number; ifer?: number; ufr?: number};
+            indicators?: {BTCUSDT?: {i?: string; c?: number; v?: number; t?: number}[]};
             updateTime?: number;
           };
         },
         Error
-      >(`/wapi/v3/apiTradingStatus.html${this.addQueryParams(query)}`, "GET", params),
+      >(`/wapi/v3/apiTradingStatus.html${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Fetch small amounts of assets exchanged BNB records. Weight: 1
@@ -1957,7 +1952,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/wapi/v3/userAssetDribbletLog.html
      */
     v3UserAssetDribbletLogHtmlList: (
-      query: { timestamp: number; recvWindow?: number; signature: string },
+      query: {timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<
@@ -1983,7 +1978,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           };
         },
         Error
-      >(`/wapi/v3/userAssetDribbletLog.html${this.addQueryParams(query)}`, "GET", params),
+      >(`/wapi/v3/userAssetDribbletLog.html${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Fetch details of assets supported on Binance. Please get network and other deposit or withdraw details from `GET /sapi/v1/capital/config/getall`. Weight: 1
@@ -1994,7 +1989,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/wapi/v3/assetDetail.html
      */
     v3AssetDetailHtmlList: (
-      query: { timestamp: number; recvWindow?: number; signature: string },
+      query: {timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
       this.request<
@@ -2010,7 +2005,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
           };
         },
         Error
-      >(`/wapi/v3/assetDetail.html${this.addQueryParams(query)}`, "GET", params),
+      >(`/wapi/v3/assetDetail.html${this.addQueryParams(query)}`, 'GET', params),
 
     /**
      * @description Fetch trade fee, values in percentage. Weight: 1
@@ -2021,12 +2016,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/wapi/v3/tradeFee.html
      */
     v3TradeFeeHtmlList: (
-      query: { symbol?: string; timestamp: number; recvWindow?: number; signature: string },
+      query: {symbol?: string; timestamp: number; recvWindow?: number; signature: string},
       params?: RequestParams,
     ) =>
-      this.request<{ success?: boolean; tradeFee?: { symbol?: string; maker?: number; taker?: number }[] }, Error>(
+      this.request<{success?: boolean; tradeFee?: {symbol?: string; maker?: number; taker?: number}[]}, Error>(
         `/wapi/v3/tradeFee.html${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
       ),
   };

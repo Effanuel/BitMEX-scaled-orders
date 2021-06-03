@@ -437,7 +437,7 @@ export interface ReplaceOrderBase {
   ret_msg?: string;
   ext_code?: string;
   ext_info?: string;
-  result?: { stop_order_id?: string }[];
+  result?: {stop_order_id?: string}[];
   time_now?: string;
 }
 
@@ -505,7 +505,7 @@ export interface V2CancelOrderBase {
   ret_msg?: string;
   ext_code?: string;
   ext_info?: string;
-  result?: { stop_order_id?: string }[];
+  result?: {stop_order_id?: string}[];
   time_now?: string;
 }
 
@@ -650,7 +650,7 @@ export interface ReplaceConditionalBase {
   ret_msg?: string;
   ext_code?: string;
   ext_info?: string;
-  result?: { stop_order_id?: string }[];
+  result?: {stop_order_id?: string}[];
   time_now?: string;
 }
 
@@ -1725,7 +1725,7 @@ export interface LinearRiskLimitResp {
   updated_at?: string;
 }
 
-export type RequestParams = Omit<RequestInit, "body" | "method"> & {
+export type RequestParams = Omit<RequestInit, 'body' | 'method'> & {
   secure?: boolean;
 };
 
@@ -1748,17 +1748,17 @@ enum BodyType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "//api.bybit.com/";
+  public baseUrl: string = '//api.bybit.com/';
   private securityData: SecurityDataType = null as any;
-  private securityWorker: null | ApiConfig<SecurityDataType>["securityWorker"] = null;
+  private securityWorker: null | ApiConfig<SecurityDataType>['securityWorker'] = null;
 
   private baseApiParams: RequestParams = {
-    credentials: "same-origin",
+    credentials: 'same-origin',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    redirect: "follow",
-    referrerPolicy: "no-referrer",
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
   };
 
   constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
@@ -1771,22 +1771,22 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private addQueryParam(query: RequestQueryParamsType, key: string) {
     return (
-      encodeURIComponent(key) + "=" + encodeURIComponent(Array.isArray(query[key]) ? query[key].join(",") : query[key])
+      encodeURIComponent(key) + '=' + encodeURIComponent(Array.isArray(query[key]) ? query[key].join(',') : query[key])
     );
   }
 
   protected addQueryParams(rawQuery?: RequestQueryParamsType): string {
     const query = rawQuery || {};
-    const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
+    const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key]);
     return keys.length
       ? `?${keys
           .map((key) =>
-            typeof query[key] === "object" && !Array.isArray(query[key])
+            typeof query[key] === 'object' && !Array.isArray(query[key])
               ? this.addQueryParams(query[key] as object).substring(1)
               : this.addQueryParam(query, key),
           )
-          .join("&")}`
-      : "";
+          .join('&')}`
+      : '';
   }
 
   private bodyFormatters: Record<BodyType, (input: any) => any> = {
@@ -1813,8 +1813,8 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private safeParseResponse = <T = any, E = any>(response: Response): Promise<HttpResponse<T, E>> => {
     const r = response as HttpResponse<T, E>;
-    r.data = (null as unknown) as T;
-    r.error = (null as unknown) as E;
+    r.data = null as unknown as T;
+    r.error = null as unknown as E;
 
     return response
       .json()
@@ -1835,7 +1835,7 @@ export class HttpClient<SecurityDataType = unknown> {
   public request = <T = any, E = any>(
     path: string,
     method: string,
-    { secure, ...params }: RequestParams = {},
+    {secure, ...params}: RequestParams = {},
     body?: any,
     bodyType?: BodyType,
     secureByDefault?: boolean,
@@ -1877,7 +1877,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     commonGetTime: (params?: RequestParams) =>
-      this.request<ServerTime[], any>(`/v2/public/time`, "GET", params, null, BodyType.Json, true),
+      this.request<ServerTime[], any>(`/v2/public/time`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * No description
@@ -1889,7 +1889,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     commonAnnouncements: (params?: RequestParams) =>
-      this.request<Announcement[], any>(`/v2/public/announcement`, "GET", params, null, BodyType.Json, true),
+      this.request<Announcement[], any>(`/v2/public/announcement`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * No description
@@ -1900,10 +1900,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/private/account/lcp
      * @secure
      */
-    commonGetLcp: (query: { symbol: string }, params?: RequestParams) =>
+    commonGetLcp: (query: {symbol: string}, params?: RequestParams) =>
       this.request<LCPInfo[], any>(
         `/v2/private/account/lcp${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -1920,7 +1920,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     symbolGet: (params?: RequestParams) =>
-      this.request<Symbols[], any>(`/v2/public/symbols`, "GET", params, null, BodyType.Json, true),
+      this.request<Symbols[], any>(`/v2/public/symbols`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * No description
@@ -1932,12 +1932,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     marketLiqRecords: (
-      query: { symbol: string; from?: number; limit?: number; start_time?: number; end_time?: number },
+      query: {symbol: string; from?: number; limit?: number; start_time?: number; end_time?: number},
       params?: RequestParams,
     ) =>
       this.request<LiqRecords[], any>(
         `/v2/public/liq-records${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -1953,13 +1953,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/mark-price-kline
      * @secure
      */
-    klineMarkPrice: (
-      query: { symbol: string; interval: string; from: number; limit?: number },
-      params?: RequestParams,
-    ) =>
+    klineMarkPrice: (query: {symbol: string; interval: string; from: number; limit?: number}, params?: RequestParams) =>
       this.request<MarkPriceKlineBase[], any>(
         `/v2/public/mark-price-kline${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -1975,10 +1972,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/open-interest
      * @secure
      */
-    marketOpenInterest: (query: { symbol: string; limit?: number; period: string }, params?: RequestParams) =>
+    marketOpenInterest: (query: {symbol: string; limit?: number; period: string}, params?: RequestParams) =>
       this.request<OpenInterest[], any>(
         `/v2/public/open-interest${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -1994,10 +1991,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/big-deal
      * @secure
      */
-    marketBigDeal: (query: { symbol: string; limit?: number }, params?: RequestParams) =>
+    marketBigDeal: (query: {symbol: string; limit?: number}, params?: RequestParams) =>
       this.request<BigDeal[], any>(
         `/v2/public/big-deal${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2013,10 +2010,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/account-ratio
      * @secure
      */
-    marketAccountRatio: (query: { symbol: string; limit?: number; period: string }, params?: RequestParams) =>
+    marketAccountRatio: (query: {symbol: string; limit?: number; period: string}, params?: RequestParams) =>
       this.request<AccountRatio[], any>(
         `/v2/public/account-ratio${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2032,10 +2029,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/private/position/list
      * @secure
      */
-    positionsMyPosition: (query?: { symbol?: string }, params?: RequestParams) =>
+    positionsMyPosition: (query?: {symbol?: string}, params?: RequestParams) =>
       this.request<Position[], any>(
         `/v2/private/position/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2051,10 +2048,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/private/exchange-order/list
      * @secure
      */
-    walletExchangeOrder: (query?: { limit?: number; from?: number; direction?: string }, params?: RequestParams) =>
+    walletExchangeOrder: (query?: {limit?: number; from?: number; direction?: string}, params?: RequestParams) =>
       this.request<ExchangeOrderListBase[], any>(
         `/v2/private/exchange-order/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2070,10 +2067,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/private/wallet/balance
      * @secure
      */
-    walletGetBalance: (query?: { coin?: string }, params?: RequestParams) =>
+    walletGetBalance: (query?: {coin?: string}, params?: RequestParams) =>
       this.request<WalletBalanceBase[], any>(
         `/v2/private/wallet/balance${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2104,7 +2101,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
         order_link_id?: string;
       },
       params?: RequestParams,
-    ) => this.request<OrderResBase[], any>(`/v2/private/order/create`, "POST", params, data, BodyType.Json, true),
+    ) => this.request<OrderResBase[], any>(`/v2/private/order/create`, 'POST', params, data, BodyType.Json, true),
 
     /**
      * No description
@@ -2116,12 +2113,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     orderGetOrders: (
-      query: { symbol: string; limit?: number; order_status?: string; direction?: string; cursor?: string },
+      query: {symbol: string; limit?: number; order_status?: string; direction?: string; cursor?: string},
       params?: RequestParams,
     ) =>
       this.request<V2OrderListBase[], any>(
         `/v2/private/order/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2137,8 +2134,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/v2/private/order/cancel
      * @secure
      */
-    orderCancel: (data: { order_id?: string; symbol: string; order_link_id?: string }, params?: RequestParams) =>
-      this.request<OrderCancelBase[], any>(`/v2/private/order/cancel`, "POST", params, data, BodyType.Json, true),
+    orderCancel: (data: {order_id?: string; symbol: string; order_link_id?: string}, params?: RequestParams) =>
+      this.request<OrderCancelBase[], any>(`/v2/private/order/cancel`, 'POST', params, data, BodyType.Json, true),
 
     /**
      * No description
@@ -2149,8 +2146,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/v2/private/order/cancelAll
      * @secure
      */
-    orderCancelAll: (data: { symbol: string }, params?: RequestParams) =>
-      this.request<OrderCancelAllBase[], any>(`/v2/private/order/cancelAll`, "POST", params, data, BodyType.Json, true),
+    orderCancelAll: (data: {symbol: string}, params?: RequestParams) =>
+      this.request<OrderCancelAllBase[], any>(`/v2/private/order/cancelAll`, 'POST', params, data, BodyType.Json, true),
 
     /**
      * No description
@@ -2162,9 +2159,9 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     orderReplace: (
-      data: { order_id?: string; order_link_id?: string; symbol: string; p_r_qty?: string; p_r_price?: string },
+      data: {order_id?: string; order_link_id?: string; symbol: string; p_r_qty?: string; p_r_price?: string},
       params?: RequestParams,
-    ) => this.request<ReplaceOrderBase[], any>(`/v2/private/order/replace`, "POST", params, data, BodyType.Json, true),
+    ) => this.request<ReplaceOrderBase[], any>(`/v2/private/order/replace`, 'POST', params, data, BodyType.Json, true),
 
     /**
      * No description
@@ -2175,10 +2172,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/private/order
      * @secure
      */
-    orderQuery: (query?: { order_id?: string; symbol?: string; order_link_id?: string }, params?: RequestParams) =>
+    orderQuery: (query?: {order_id?: string; symbol?: string; order_link_id?: string}, params?: RequestParams) =>
       this.request<QueryOrderBase[], any>(
         `/v2/private/order${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2212,7 +2209,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<V2ConditionalBase[], any>(
         `/v2/private/stop-order/create`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2229,12 +2226,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     conditionalGetOrders: (
-      query: { symbol: string; stop_order_status?: string; limit?: number; direction?: string; cursor?: string },
+      query: {symbol: string; stop_order_status?: string; limit?: number; direction?: string; cursor?: string},
       params?: RequestParams,
     ) =>
       this.request<ConditionalOrdersResBase[], any>(
         `/v2/private/stop-order/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2251,12 +2248,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     conditionalQuery: (
-      query?: { stop_order_id?: string; order_link_id?: string; symbol?: string },
+      query?: {stop_order_id?: string; order_link_id?: string; symbol?: string},
       params?: RequestParams,
     ) =>
       this.request<StopOrderOrdersResBase[], any>(
         `/v2/private/stop-order${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2273,12 +2270,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     conditionalCancel: (
-      data: { stop_order_id?: string; order_link_id?: string; symbol: string },
+      data: {stop_order_id?: string; order_link_id?: string; symbol: string},
       params?: RequestParams,
     ) =>
       this.request<V2CancelOrderBase[], any>(
         `/v2/private/stop-order/cancel`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2294,10 +2291,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/v2/private/stop-order/cancelAll
      * @secure
      */
-    conditionalCancelAll: (data: { symbol: string }, params?: RequestParams) =>
+    conditionalCancelAll: (data: {symbol: string}, params?: RequestParams) =>
       this.request<ConditionalCancelAllBase[], any>(
         `/v2/private/stop-order/cancelAll`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2326,7 +2323,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<ReplaceConditionalBase[], any>(
         `/v2/private/stop-order/replace`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2343,12 +2340,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     executionGetTrades: (
-      query: { order_id?: string; symbol: string; start_time?: string; page?: string; limit?: string },
+      query: {order_id?: string; symbol: string; start_time?: string; page?: string; limit?: string},
       params?: RequestParams,
     ) =>
       this.request<TradeRecordsBase[], any>(
         `/v2/private/execution/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2377,7 +2374,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<ClosedPnlBase[], any>(
         `/v2/private/trade/closed-pnl/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2393,10 +2390,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/orderBook/L2
      * @secure
      */
-    marketOrderbook: (query: { symbol: string }, params?: RequestParams) =>
+    marketOrderbook: (query: {symbol: string}, params?: RequestParams) =>
       this.request<OrderBookBase[], any>(
         `/v2/public/orderBook/L2${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2412,10 +2409,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/tickers
      * @secure
      */
-    marketSymbolInfo: (query?: { symbol?: string }, params?: RequestParams) =>
+    marketSymbolInfo: (query?: {symbol?: string}, params?: RequestParams) =>
       this.request<SymbolInfoBase[], any>(
         `/v2/public/tickers${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2431,10 +2428,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/trading-records
      * @secure
      */
-    marketTradingRecords: (query: { symbol: string; from?: number; limit?: number }, params?: RequestParams) =>
+    marketTradingRecords: (query: {symbol: string; from?: number; limit?: number}, params?: RequestParams) =>
       this.request<TradingRecords[], any>(
         `/v2/public/trading-records${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2450,10 +2447,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/v2/public/kline/list
      * @secure
      */
-    klineGet: (query: { symbol: string; interval: string; from: number; limit?: number }, params?: RequestParams) =>
+    klineGet: (query: {symbol: string; interval: string; from: number; limit?: number}, params?: RequestParams) =>
       this.request<KlineBase[], any>(
         `/v2/public/kline/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2471,7 +2468,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     apIkeyInfo: (params?: RequestParams) =>
-      this.request<APIKeyBase[], any>(`/open-api/api-key`, "GET", params, null, BodyType.Json, true),
+      this.request<APIKeyBase[], any>(`/open-api/api-key`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * No description
@@ -2494,7 +2491,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<TradingStopBase[], any>(
         `/open-api/position/trading-stop`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2523,7 +2520,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<FundRecordBase[], any>(
         `/open-api/wallet/fund/records${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2540,12 +2537,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     walletWithdraw: (
-      query?: { start_date?: string; end_date?: string; coin?: string; status?: string; page?: string; limit?: string },
+      query?: {start_date?: string; end_date?: string; coin?: string; status?: string; page?: string; limit?: string},
       params?: RequestParams,
     ) =>
       this.request<WithdrawResBase[], any>(
         `/open-api/wallet/withdraw/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2561,8 +2558,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/open-api/wallet/risk-limit
      * @secure
      */
-    walletSetRiskLimit: (data: { symbol: string; risk_id: number }, params?: RequestParams) =>
-      this.request<SetRiskLimitBase[], any>(`/open-api/wallet/risk-limit`, "POST", params, data, BodyType.Json, true),
+    walletSetRiskLimit: (data: {symbol: string; risk_id: number}, params?: RequestParams) =>
+      this.request<SetRiskLimitBase[], any>(`/open-api/wallet/risk-limit`, 'POST', params, data, BodyType.Json, true),
 
     /**
      * No description
@@ -2574,7 +2571,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     walletGetRiskLimit: (params?: RequestParams) =>
-      this.request<RiskLimitBase[], any>(`/open-api/wallet/risk-limit/list`, "GET", params, null, BodyType.Json, true),
+      this.request<RiskLimitBase[], any>(`/open-api/wallet/risk-limit/list`, 'GET', params, null, BodyType.Json, true),
 
     /**
      * No description
@@ -2585,10 +2582,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/open-api/funding/prev-funding-rate
      * @secure
      */
-    fundingPrevRate: (query: { symbol: string }, params?: RequestParams) =>
+    fundingPrevRate: (query: {symbol: string}, params?: RequestParams) =>
       this.request<FundingRateBase[], any>(
         `/open-api/funding/prev-funding-rate${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2604,10 +2601,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/open-api/funding/prev-funding
      * @secure
      */
-    fundingMyLastFee: (query: { symbol: string }, params?: RequestParams) =>
+    fundingMyLastFee: (query: {symbol: string}, params?: RequestParams) =>
       this.request<FundingFeeBase[], any>(
         `/open-api/funding/prev-funding${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2623,10 +2620,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/open-api/funding/predicted-funding
      * @secure
      */
-    fundingPredicted: (query: { symbol: string }, params?: RequestParams) =>
+    fundingPredicted: (query: {symbol: string}, params?: RequestParams) =>
       this.request<FundingPredictedBase[], any>(
         `/open-api/funding/predicted-funding${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2643,8 +2640,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/user/leverage/save
      * @secure
      */
-    positionsSaveLeverage: (data: { symbol: string; leverage: string }, params?: RequestParams) =>
-      this.request<ServerTime[], any>(`/user/leverage/save`, "POST", params, data, BodyType.Json, true),
+    positionsSaveLeverage: (data: {symbol: string; leverage: string}, params?: RequestParams) =>
+      this.request<ServerTime[], any>(`/user/leverage/save`, 'POST', params, data, BodyType.Json, true),
   };
   position = {
     /**
@@ -2656,8 +2653,8 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/position/change-position-margin
      * @secure
      */
-    positionsChangeMargin: (data: { symbol: string; margin: string }, params?: RequestParams) =>
-      this.request<ServerTime[], any>(`/position/change-position-margin`, "POST", params, data, BodyType.Json, true),
+    positionsChangeMargin: (data: {symbol: string; margin: string}, params?: RequestParams) =>
+      this.request<ServerTime[], any>(`/position/change-position-margin`, 'POST', params, data, BodyType.Json, true),
   };
   private = {
     /**
@@ -2689,7 +2686,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearCreateOrderResultBase[], any>(
         `/private/linear/order/create`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2705,10 +2702,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/private/linear/order/cancel
      * @secure
      */
-    linearOrderCancel: (data: { order_id?: string; order_link_id?: string; symbol?: string }, params?: RequestParams) =>
+    linearOrderCancel: (data: {order_id?: string; order_link_id?: string; symbol?: string}, params?: RequestParams) =>
       this.request<LinearCancelOrderResultBase[], any>(
         `/private/linear/order/cancel`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2724,10 +2721,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/private/linear/order/cancel-all
      * @secure
      */
-    linearOrderCancelAll: (data: { symbol: string }, params?: RequestParams) =>
+    linearOrderCancelAll: (data: {symbol: string}, params?: RequestParams) =>
       this.request<LinearOrderCancelAllBase[], any>(
         `/private/linear/order/cancel-all`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2757,7 +2754,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearOrderRecordsResponseBase[], any>(
         `/private/linear/order/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2773,13 +2770,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/private/linear/order/search
      * @secure
      */
-    linearOrderQuery: (
-      query?: { symbol?: string; order_id?: string; order_link_id?: string },
-      params?: RequestParams,
-    ) =>
+    linearOrderQuery: (query?: {symbol?: string; order_id?: string; order_link_id?: string}, params?: RequestParams) =>
       this.request<LinearSearchOrderResultBase[], any>(
         `/private/linear/order/search${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2796,12 +2790,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearOrderReplace: (
-      data: { symbol: string; order_id?: string; order_link_id?: string; p_r_qty?: string; p_r_price?: number },
+      data: {symbol: string; order_id?: string; order_link_id?: string; p_r_qty?: string; p_r_price?: number},
       params?: RequestParams,
     ) =>
       this.request<LinearOrderReplace[], any>(
         `/private/linear/order/replace`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2840,7 +2834,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearCreateStopOrderResultBase[], any>(
         `/private/linear/stop-order/create`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2857,12 +2851,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearConditionalCancel: (
-      data: { stop_order_id?: string; order_link_id?: string; symbol?: string },
+      data: {stop_order_id?: string; order_link_id?: string; symbol?: string},
       params?: RequestParams,
     ) =>
       this.request<LinearCancelStopOrderResultBase[], any>(
         `/private/linear/stop-order/cancel`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2878,10 +2872,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/private/linear/stop-order/cancel-all
      * @secure
      */
-    linearConditionalCancelAll: (data: { symbol: string }, params?: RequestParams) =>
+    linearConditionalCancelAll: (data: {symbol: string}, params?: RequestParams) =>
       this.request<LinearStopOrderCancelAllBase[], any>(
         `/private/linear/stop-order/cancel-all`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2911,7 +2905,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearStopOrderRecordsResponseBase[], any>(
         `/private/linear/stop-order/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2928,12 +2922,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearConditionalQuery: (
-      query?: { symbol?: string; stop_order_id?: string; order_link_id?: string },
+      query?: {symbol?: string; stop_order_id?: string; order_link_id?: string},
       params?: RequestParams,
     ) =>
       this.request<LinearSearchStopOrderResultBase[], any>(
         `/private/linear/stop-order/search${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2962,7 +2956,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearStopOrderReplace[], any>(
         `/private/linear/stop-order/replace`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -2978,10 +2972,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/private/linear/position/list
      * @secure
      */
-    linearPositionsMyPosition: (query?: { symbol?: string }, params?: RequestParams) =>
+    linearPositionsMyPosition: (query?: {symbol?: string}, params?: RequestParams) =>
       this.request<LinearPositionListResultBase[], any>(
         `/private/linear/position/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -2998,12 +2992,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearPositionsSetAutoAddMargin: (
-      data: { symbol?: string; side?: string; auto_add_margin?: boolean },
+      data: {symbol?: string; side?: string; auto_add_margin?: boolean},
       params?: RequestParams,
     ) =>
       this.request<LinearSetMarginResult[], any>(
         `/private/linear/position/set-auto-add-margin`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -3020,12 +3014,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearPositionsSaveLeverage: (
-      data: { symbol?: string; buy_leverage?: number; sell_leverage?: number },
+      data: {symbol?: string; buy_leverage?: number; sell_leverage?: number},
       params?: RequestParams,
     ) =>
       this.request<LinearSetLeverageResult[], any>(
         `/private/linear/position/set-leverage`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -3042,12 +3036,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearPositionsSwitchIsolated: (
-      data: { symbol?: string; is_isolated?: boolean; buy_leverage?: number; sell_leverage?: number },
+      data: {symbol?: string; is_isolated?: boolean; buy_leverage?: number; sell_leverage?: number},
       params?: RequestParams,
     ) =>
       this.request<LinearSwitchIsolatedResult[], any>(
         `/private/linear/position/switch-isolated`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -3079,7 +3073,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearSetTradingStopResult[], any>(
         `/private/linear/position/trading-stop`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -3095,10 +3089,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/private/linear/position/add-margin
      * @secure
      */
-    linearPositionsChangeMargin: (data: { symbol?: string; side?: string; margin?: number }, params?: RequestParams) =>
+    linearPositionsChangeMargin: (data: {symbol?: string; side?: string; margin?: number}, params?: RequestParams) =>
       this.request<LinearSetMarginResult[], any>(
         `/private/linear/position/add-margin`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -3114,10 +3108,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request POST:/private/linear/tpsl/switch-mode
      * @secure
      */
-    linearPositionsSwitchMode: (data: { symbol?: string; tp_sl_mode?: string }, params?: RequestParams) =>
+    linearPositionsSwitchMode: (data: {symbol?: string; tp_sl_mode?: string}, params?: RequestParams) =>
       this.request<LinearSwitchModeResult[], any>(
         `/private/linear/tpsl/switch-mode`,
-        "POST",
+        'POST',
         params,
         data,
         BodyType.Json,
@@ -3146,7 +3140,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearClosePnlRecordsResponse[], any>(
         `/private/linear/trade/closed-pnl/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3175,7 +3169,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     ) =>
       this.request<LinearTradeRecordsResponse[], any>(
         `/private/linear/trade/execution/list${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3191,10 +3185,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/private/linear/funding/prev-funding
      * @secure
      */
-    linearFundingMyLastFee: (query?: { symbol?: string }, params?: RequestParams) =>
+    linearFundingMyLastFee: (query?: {symbol?: string}, params?: RequestParams) =>
       this.request<LinearPrevFundingRespBase[], any>(
         `/private/linear/funding/prev-funding${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3210,10 +3204,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/private/linear/funding/predicted-funding
      * @secure
      */
-    linearFundingPredicted: (query: { symbol: string }, params?: RequestParams) =>
+    linearFundingPredicted: (query: {symbol: string}, params?: RequestParams) =>
       this.request<LinearFundingPredictedBase[], any>(
         `/private/linear/funding/predicted-funding${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3230,10 +3224,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/public/linear/funding/prev-funding-rate
      * @secure
      */
-    linearFundingPrevRate: (query: { symbol: string }, params?: RequestParams) =>
+    linearFundingPrevRate: (query: {symbol: string}, params?: RequestParams) =>
       this.request<LinearPrevFundingRateRespBase[], any>(
         `/public/linear/funding/prev-funding-rate${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3249,13 +3243,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/public/linear/kline
      * @secure
      */
-    linearKlineGet: (
-      query: { symbol: string; interval: string; from: number; limit?: number },
-      params?: RequestParams,
-    ) =>
+    linearKlineGet: (query: {symbol: string; interval: string; from: number; limit?: number}, params?: RequestParams) =>
       this.request<LinearKlineRespBase[], any>(
         `/public/linear/kline${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3272,12 +3263,12 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @secure
      */
     linearKlineMarkPrice: (
-      query: { symbol: string; interval: string; from: number; limit?: number },
+      query: {symbol: string; interval: string; from: number; limit?: number},
       params?: RequestParams,
     ) =>
       this.request<LinearKlineRespBase[], any>(
         `/public/linear/mark-price-kline${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3293,10 +3284,10 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
      * @request GET:/public/linear/recent-trading-records
      * @secure
      */
-    linearMarketTrading: (query: { symbol: string; limit?: string }, params?: RequestParams) =>
+    linearMarketTrading: (query: {symbol: string; limit?: string}, params?: RequestParams) =>
       this.request<LinearRecentTradingRecordRespBase[], any>(
         `/public/linear/recent-trading-records${this.addQueryParams(query)}`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,
@@ -3315,7 +3306,7 @@ export class Api<SecurityDataType = any> extends HttpClient<SecurityDataType> {
     linearWalletGetRiskLimit: (params?: RequestParams) =>
       this.request<LinearRiskLimitRespBase[], any>(
         `/public/linear/risk-limit`,
-        "GET",
+        'GET',
         params,
         null,
         BodyType.Json,

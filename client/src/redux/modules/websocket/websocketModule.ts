@@ -137,14 +137,16 @@ export const wsAuthenticate = (): Thunk => async (dispatch) => {
   }
 };
 
-export const wsSubscribeTo = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
-  try {
-    dispatch(send({op: 'subscribe', args: [payload]}));
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err.response.data, 'wsSubscribe Error');
-  }
-};
+export const wsSubscribeTo =
+  (payload: SUBSCRIPTION_TOPICS): Thunk =>
+  async (dispatch) => {
+    try {
+      dispatch(send({op: 'subscribe', args: [payload]}));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err.response.data, 'wsSubscribe Error');
+    }
+  };
 
 // export const wsUnsubscribeFrom = (payload: SUBSCRIPTION_TOPICS): Thunk => async (dispatch) => {
 //   try {

@@ -170,16 +170,13 @@ export const orderSelector = createSelector(
   (orders, orderID): Order | undefined => orders.find((order) => order.orderID === orderID),
 );
 
-export const groupedOrdersSelector = createSelector(
-  [getProfitOrders],
-  (orders): Record<string, Order[]> => {
-    const groupedOrders: Record<string, Order[]> = {};
-    // TODO Refactor to use .reduce
-    orders.forEach((order) => {
-      const openOrderId = order.text.split('.')[1];
-      if (!(openOrderId in groupedOrders)) groupedOrders[openOrderId] = [order];
-      else groupedOrders[openOrderId].push(order);
-    });
-    return groupedOrders;
-  },
-);
+export const groupedOrdersSelector = createSelector([getProfitOrders], (orders): Record<string, Order[]> => {
+  const groupedOrders: Record<string, Order[]> = {};
+  // TODO Refactor to use .reduce
+  orders.forEach((order) => {
+    const openOrderId = order.text.split('.')[1];
+    if (!(openOrderId in groupedOrders)) groupedOrders[openOrderId] = [order];
+    else groupedOrders[openOrderId].push(order);
+  });
+  return groupedOrders;
+});

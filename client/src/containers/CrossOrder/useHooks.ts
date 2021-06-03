@@ -5,24 +5,18 @@ import {orderCrossedOnce, postMarketCrossOrder} from 'redux/modules/cross/crossM
 import {hasCrossedOnceSelector, hasCrossedSecondTimeSelector, websocketCrossPriceSelector} from 'redux/selectors';
 
 export function useHooks() {
-  const {
-    hasCrossedOnce,
-    hasCrossedSecondTime,
-    wsCrossPrice,
-    connected,
-    crossOrderPrice,
-    hasPriceCrossedOnce,
-  } = useSelector((state: AppState) => {
-    const {websocket, cross} = state;
-    return {
-      hasCrossedOnce: hasCrossedOnceSelector(state),
-      hasCrossedSecondTime: hasCrossedSecondTimeSelector(state),
-      wsCrossPrice: websocketCrossPriceSelector(state),
-      connected: websocket.connected,
-      crossOrderPrice: cross.crossOrderPrice,
-      hasPriceCrossedOnce: cross.hasPriceCrossedOnce,
-    };
-  }, shallowEqual);
+  const {hasCrossedOnce, hasCrossedSecondTime, wsCrossPrice, connected, crossOrderPrice, hasPriceCrossedOnce} =
+    useSelector((state: AppState) => {
+      const {websocket, cross} = state;
+      return {
+        hasCrossedOnce: hasCrossedOnceSelector(state),
+        hasCrossedSecondTime: hasCrossedSecondTimeSelector(state),
+        wsCrossPrice: websocketCrossPriceSelector(state),
+        connected: websocket.connected,
+        crossOrderPrice: cross.crossOrderPrice,
+        hasPriceCrossedOnce: cross.hasPriceCrossedOnce,
+      };
+    }, shallowEqual);
 
   const dispatch = useDispatch();
 

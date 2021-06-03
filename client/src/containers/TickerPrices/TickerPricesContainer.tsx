@@ -6,11 +6,11 @@ import {SymbolPrices} from 'redux/selectors';
 import {MainContainer, Row} from 'components';
 import styles from './TickerPricesContainer.module.scss';
 
-const defaultData = ([
+const defaultData = [
   {askPrice: '---', bidPrice: '---', symbol: SYMBOL.XBTUSD},
   {askPrice: '---', bidPrice: '---', symbol: SYMBOL.ETHUSD},
   {askPrice: '---', bidPrice: '---', symbol: SYMBOL.XRPUSD},
-] as unknown) as SymbolPrices[];
+] as unknown as SymbolPrices[];
 
 export default React.memo(function TickerPricesContainer() {
   const {allPrices, wsMessage} = useReduxSelector('allPrices', 'wsMessage');
