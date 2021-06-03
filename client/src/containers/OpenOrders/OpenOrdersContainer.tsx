@@ -60,7 +60,7 @@ export default function OpenOrdersContainer() {
   );
 
   React.useEffect(() => {
-    dispatch(getOpenOrders(undefined));
+    dispatch(getOpenOrders());
   }, [dispatch]);
 
   const showCancelAllOrdersModal = React.useCallback(() => {

@@ -16,7 +16,7 @@ interface Props {
 export function CancelAllOrdersModal({totalOrders}: Props) {
   const dispatch = useDispatch();
 
-  const emitConfirm = React.useCallback(() => void dispatch(cancelAllOrders(undefined)), [dispatch]);
+  const emitConfirm = React.useCallback(() => void dispatch(cancelAllOrders()), [dispatch]);
 
   return (
     <Modal title="Cancel All Orders" onConfirm={emitConfirm}>

@@ -1,6 +1,6 @@
-import {createAsyncThunk, AsyncThunk, Dispatch} from '@reduxjs/toolkit';
-import parseAPIResponse from 'redux/api/parseAPIResponse';
-import {API, APIType} from 'redux/api/api';
+import {createAsyncThunk, AsyncThunk, Dispatch, createAction as createAction_toolkit} from '@reduxjs/toolkit';
+import {HttpResponse} from 'redux/api/bitmex';
+import {API} from 'redux/api/api';
 import {AppState} from 'redux/models/state';
 
 import {ACTIONS_cross} from 'redux/modules/cross/types';
@@ -8,7 +8,8 @@ import {ACTIONS_orders} from 'redux/modules/orders/types';
 import {ACTIONS_preview} from 'redux/modules/preview/types';
 import {ACTIONS_trailing} from 'redux/modules/trailing/types';
 
-export const withPayloadType = <T>() => (payload: T) => ({payload});
+export const createAction = <P = undefined>(actionName: string) =>
+  createAction_toolkit(actionName, (payload: P) => ({payload}));
 
 const reducerActions = [...ACTIONS_preview, ...ACTIONS_trailing, ...ACTIONS_cross, ...ACTIONS_orders];
 
@@ -22,24 +23,40 @@ export interface ThunkApiConfig {
   state: AppState;
 }
 
-type AdaptPayload<P> = (props: {payload: P; getState: () => AppState}) => P;
+type BitmexMethods = API['availableMethods']['bitmex'];
 
-export function createThunk<K extends keyof APIType, P extends Parameters<APIType[K]>[number]>(
-  actionName: ThunkActionNames,
-  apiMethod: K,
-  payloadToReturn?: keyof P,
-  adaptPayload?: AdaptPayload<P>, // TODO: fix conditional type
-  // TODO: add handling of never
-  //AdaptPayload<P> extends undefined ? P : P
-): AsyncThunk<any, P, ThunkApiConfig> {
-  //@ts-ignore
+type Raw<P extends Promise<HttpResponse<any, unknown>>> = P extends Promise<HttpResponse<infer U, unknown>> ? U : never;
+
+type ParseResponse<K extends keyof BitmexMethods, D> = (data: Raw<ReturnType<BitmexMethods[K]>>) => D;
+
+interface AAA<P, K extends keyof BitmexMethods, R> {
+  actionName: ThunkActionNames;
+  apiMethod: K;
+  parseResponse: ParseResponse<K, R>;
+  adaptPayload?: (payload: P, getState: () => AppState) => P;
+  payloadToReturn?: keyof P;
+}
+
+export function createThunkV2<K extends keyof BitmexMethods, P extends Parameters<BitmexMethods[K]>[number], R>({
+  actionName,
+  apiMethod,
+  parseResponse,
+  adaptPayload,
+  payloadToReturn,
+}: AAA<P, K, R>): AsyncThunk<
+  {data: any},
+  Parameters<BitmexMethods[K]>[number] extends never ? void : P,
+  ThunkApiConfig
+> {
+  //@ts-expect-error
   return createAsyncThunk(actionName, async (payload: P, {extra: API, rejectWithValue, getState}) => {
     try {
-      const adaptedPayload = adaptPayload?.({payload, getState}) ?? payload;
+      const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
       // TODO: add a proper type, there may not fix a fix for this tho
       //@ts-expect-error
-      const {data} = await API[apiMethod](adaptedPayload);
-      const responseData = {data: parseAPIResponse(apiMethod)(data), statusCode: data.statusCode};
+      const {data} = await API.getQuery(apiMethod)(adaptedPayload);
+      //@ts-expect-error
+      const responseData = {data: parseResponse(data), statusCode: data.statusCode};
       const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
       return {...responseData, ...extraData};
     } catch (err) {

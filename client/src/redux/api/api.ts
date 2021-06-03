@@ -12,6 +12,8 @@ export type APIType = ClassMethods<typeof API>;
 
 type Exchange = 'bitmex';
 
+type GetQuery = <K extends keyof API['availableMethods']['bitmex']>(method: K) => API['availableMethods']['bitmex'][K];
+
 export class API implements APIType {
   constructor(private activeExchange: Exchange = 'bitmex', private bitmex = new BitmexAPI()) {}
 
@@ -30,23 +32,11 @@ export class API implements APIType {
     },
   };
 
-  getQuery(method: string) {
-    //@ts-expect-error
+  getQuery: GetQuery = (method) => {
     const query = this.availableMethods[this.activeExchange]?.[method];
     if (!query) throw new Error(`${method} for ${this.activeExchange} hasn't been implemented yet`);
     return query;
-  }
-
-  // TODO: This can later be replaced with a single method, limitation know is correct types
-  marketOrder = (props: MarketOrderProps) => this.getQuery('marketOrder')(props);
-  limitOrder = (props: LimitOrder) => this.getQuery('limitOrder')(props);
-  profitTargetOrder = (props: ProfitTargetProps) => this.getQuery('profitTargetOrder')(props);
-  orderAmend = (props: OrderAmend) => this.getQuery('orderAmend')(props);
-  orderCancel = (props: OrderCancel) => this.getQuery('orderCancel')(props);
-  orderCancelAll = () => this.getQuery('orderCancelAll')();
-  orderBulk = (props: OrderBulk[]) => this.getQuery('orderBulk')(props);
-  getBalance = () => this.getQuery('getBalance')();
-  getOpenOrders = () => this.getQuery('getOpenOrders')();
+  };
 }
 
 export type MethodNames = KeysByType<API, Function>;

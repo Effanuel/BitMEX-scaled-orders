@@ -1,16 +1,9 @@
-import {createReducer, createAction} from '@reduxjs/toolkit';
-import {withPayloadType, createThunk} from 'redux/helpers/actionHelpers';
+import {createReducer} from '@reduxjs/toolkit';
+import {createAction, createThunkV2} from 'redux/helpers/actionHelpers';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
-import {
-  TrailingState,
-  __CLEAR_TRAILING_ORDER,
-  POST_TRAILING_ORDER,
-  PUT_TRAILING_ORDER,
-  DELETE_TRAILING_ORDER,
-  CHANGE_TRAILING_ORDER_SYMBOL,
-} from './types';
+import * as types from './types';
 
-export const defaultState: TrailingState = {
+export const defaultState: types.TrailingState = {
   trailOrderId: '',
   trailOrderPrice: 0,
   trailOrderStatus: 'Order not placed.',
@@ -19,22 +12,31 @@ export const defaultState: TrailingState = {
   trailLoading: false,
 };
 
-export const __clearTrailingOrder = createAction(__CLEAR_TRAILING_ORDER);
+export const __clearTrailingOrder = createAction(types.__CLEAR_TRAILING_ORDER);
 
-export const changeTrailingOrderSymbol = createAction(CHANGE_TRAILING_ORDER_SYMBOL, withPayloadType<SYMBOL>());
+export const changeTrailingOrderSymbol = createAction<SYMBOL>(types.CHANGE_TRAILING_ORDER_SYMBOL);
 
-export const postTrailingOrder = createThunk(POST_TRAILING_ORDER, 'limitOrder', 'side');
+export const postTrailingOrder = createThunkV2({
+  actionName: types.POST_TRAILING_ORDER,
+  apiMethod: 'limitOrder',
+  parseResponse: (data) => ({orderID: data.orderID, price: data.price}),
+  payloadToReturn: 'side',
+});
 
-export const ammendTrailingOrder = createThunk(PUT_TRAILING_ORDER, 'orderAmend');
+export const ammendTrailingOrder = createThunkV2({
+  actionName: types.PUT_TRAILING_ORDER,
+  apiMethod: 'orderAmend',
+  parseResponse: (data) => ({price: data.price}),
+});
 
-export const cancelTrailingOrder = createThunk<any, any>(
-  DELETE_TRAILING_ORDER,
-  'orderCancel',
-  undefined,
-  ({getState}) => ({orderID: getState().trailing.trailOrderId}),
-);
+export const cancelTrailingOrder = createThunkV2({
+  actionName: types.DELETE_TRAILING_ORDER,
+  apiMethod: 'orderCancel',
+  adaptPayload: (_, getState) => ({orderID: getState().trailing.trailOrderId}),
+  parseResponse: (data) => ({orderID: data.map(({orderID}) => orderID)}),
+});
 
-const postTrailingOrderReducer = (state = defaultState, action: Action): TrailingState => {
+const postTrailingOrderReducer = (state = defaultState, action: Action): types.TrailingState => {
   const {text, orderID, price} = action.payload.data;
   const {statusCode, side} = action.payload;
 
@@ -51,7 +53,8 @@ export const trailingReducer = createReducer(defaultState, (builder) =>
   builder
     .addCase(postTrailingOrder.fulfilled, postTrailingOrderReducer)
     .addCase(postTrailingOrder.rejected, (state) => {
-      return {...state, trailLoading: false, trailOrderStatus: 'Order posting error.'};
+      state.trailLoading = false;
+      state.trailOrderStatus = 'Order posting error.';
     })
     .addCase(postTrailingOrder.pending, (state) => {
       state.trailLoading = true;

@@ -56,7 +56,7 @@ interface ApiConfig<SecurityDataType> {
   securityWorker?: (securityData: SecurityDataType) => RequestParams;
 }
 
-interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
+export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
   data: D;
   error: E;
 }
@@ -132,8 +132,8 @@ export class HttpClient<SecurityDataType = unknown> {
 
   private safeParseResponse = <T = any, E = any>(response: Response): Promise<HttpResponse<T, E>> => {
     const r = response as HttpResponse<T, E>;
-    r.data = (null as unknown) as T;
-    r.error = (null as unknown) as E;
+    r.data = null as unknown as T;
+    r.error = null as unknown as E;
 
     return response
       .json()

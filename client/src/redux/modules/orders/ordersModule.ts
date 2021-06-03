@@ -1,15 +1,46 @@
 import _ from 'lodash';
 import {createReducer} from '@reduxjs/toolkit';
 import {Order} from 'redux/api/bitmex/types';
-import {createThunk} from 'redux/helpers/actionHelpers';
+import {createThunkV2} from 'redux/helpers/actionHelpers';
 import * as types from './types';
 
-export const cancelOrder = createThunk(types.CANCEL_ORDER, 'orderCancel');
-export const cancelAllOrders = createThunk<any, any>(types.CANCEL_ALL_ORDERS, 'orderCancelAll');
-export const cancelAllProfitOrders = createThunk(types.CANCEL_ALL_PROFIT_ORDERS, 'orderCancel');
-export const getOpenOrders = createThunk<any, any>(types.GET_OPEN_ORDERS, 'getOpenOrders');
-export const addProfitTarget = createThunk(types.ADD_PROFIT_ORDER, 'profitTargetOrder', 'orderID');
-export const cancelProfitOrder = createThunk(types.REMOVE_PROFIT_ORDER, 'orderCancel', 'orderID');
+export const cancelOrder = createThunkV2({
+  actionName: types.CANCEL_ORDER,
+  apiMethod: 'orderCancel',
+  parseResponse: (data) => ({orderID: data.map(({orderID}) => orderID)}),
+});
+
+export const cancelAllOrders = createThunkV2({
+  actionName: types.CANCEL_ALL_ORDERS,
+  apiMethod: 'orderCancelAll',
+  parseResponse: (data) => data,
+});
+
+export const cancelAllProfitOrders = createThunkV2({
+  actionName: types.CANCEL_ALL_PROFIT_ORDERS,
+  apiMethod: 'orderCancel',
+  parseResponse: (data) => ({orderID: data.map(({orderID}) => orderID)}),
+});
+
+export const getOpenOrders = createThunkV2({
+  actionName: types.GET_OPEN_ORDERS,
+  apiMethod: 'getOpenOrders',
+  parseResponse: (data) => data,
+});
+
+export const addProfitTarget = createThunkV2({
+  actionName: types.ADD_PROFIT_ORDER,
+  apiMethod: 'profitTargetOrder',
+  parseResponse: (data) => data,
+  payloadToReturn: 'orderID',
+});
+
+export const cancelProfitOrder = createThunkV2({
+  actionName: types.REMOVE_PROFIT_ORDER,
+  apiMethod: 'orderCancel',
+  parseResponse: (data) => ({orderID: data.map(({orderID}) => orderID)}),
+  payloadToReturn: 'orderID',
+});
 
 export const defaultState: types.OrdersState = {
   openOrders: [],

@@ -1,5 +1,6 @@
+import {createReducer} from '@reduxjs/toolkit';
 import {createScaledOrders, DistributionProps, DISTRIBUTION} from 'utils';
-import {withPayloadType, createThunk} from 'redux/helpers/actionHelpers';
+import {createAction, createThunkV2} from 'redux/helpers/actionHelpers';
 import {
   SHOW_PREVIEW,
   TOGGLE_PREVIEW,
@@ -9,17 +10,28 @@ import {
   PreviewActions as actionTypes,
   PREVIEW_POST_MARKET_ORDER,
 } from './types';
-import {createAction, createReducer} from '@reduxjs/toolkit';
 
-export const postMarketOrder = createThunk(PREVIEW_POST_MARKET_ORDER, 'marketOrder');
+export const postMarketOrder = createThunkV2({
+  actionName: PREVIEW_POST_MARKET_ORDER,
+  apiMethod: 'marketOrder',
+  parseResponse: (data) => data,
+});
 
-export const postOrderBulk = createThunk(PREVIEW_POST_ORDER, 'orderBulk', undefined);
+export const postOrderBulk = createThunkV2({
+  actionName: PREVIEW_POST_ORDER,
+  apiMethod: 'orderBulk',
+  parseResponse: (data) => data,
+});
 
-export const getBalance = createThunk<any, any>(GET_BALANCE, 'getBalance');
+export const getBalance = createThunkV2({
+  actionName: GET_BALANCE,
+  apiMethod: 'getBalance',
+  parseResponse: (data) => ({walletBalance: data.walletBalance}),
+});
 
 export const previewToggle = createAction(TOGGLE_PREVIEW);
 
-const previewShow = createAction(SHOW_PREVIEW, withPayloadType<actionTypes.SHOW_PREVIEW>());
+const previewShow = createAction<actionTypes.SHOW_PREVIEW>(SHOW_PREVIEW);
 
 export const previewOrders = (ordersProps: DistributionProps, distribution: DISTRIBUTION): Action =>
   previewShow(createScaledOrders({ordersProps, distribution}));
