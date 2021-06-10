@@ -1,14 +1,22 @@
-import {CreateAction} from '../../helpers/helperTypes';
+import {Action} from 'redux';
 import {
   WEBSOCKET_BROKEN,
   WEBSOCKET_CLOSED,
   WEBSOCKET_CONNECT,
-  WEBSOCKET_DISCONNECT,
+  // WEBSOCKET_DISCONNECT,
   WEBSOCKET_MESSAGE,
   WEBSOCKET_OPEN,
   WEBSOCKET_SEND,
   WEBSOCKET_ERROR,
 } from '@giantmachines/redux-websocket';
+import {Instrument, Order} from '../../api/bitmex/types';
+
+type CreateNoPayloadAction<T> = Action<T>;
+
+interface CreateAction<T, P> extends CreateNoPayloadAction<T> {
+  payload: P;
+}
+
 export const FETCH_ORDERS = 'websocket/FETCH_ORDERS';
 const WEBSOCKET_PREFIX = 'REDUX_WEBSOCKET';
 export const REDUX_WEBSOCKET_BROKEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_BROKEN}`;
@@ -16,7 +24,7 @@ export const REDUX_WEBSOCKET_OPEN = `${WEBSOCKET_PREFIX}::${WEBSOCKET_OPEN}`;
 export const REDUX_WEBSOCKET_CLOSED = `${WEBSOCKET_PREFIX}::${WEBSOCKET_CLOSED}`;
 export const REDUX_WEBSOCKET_MESSAGE = `${WEBSOCKET_PREFIX}::${WEBSOCKET_MESSAGE}`;
 export const REDUX_WEBSOCKET_CONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_CONNECT}`;
-export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISCONNECT}`;
+// export const REDUX_WEBSOCKET_DISCONNECT = `${WEBSOCKET_PREFIX}::${WEBSOCKET_DISCONNECT}`;
 export const REDUX_WEBSOCKET_SEND = `${WEBSOCKET_PREFIX}::${WEBSOCKET_SEND}`;
 export const REDUX_WEBSOCKET_ERROR = `${WEBSOCKET_PREFIX}::${WEBSOCKET_ERROR}`;
 
@@ -102,145 +110,3 @@ interface WebsocketResponseError {
 export type WebsocketResponse = WebsocketResponseData &
   Partial<WebsocketResponseSuccess> &
   Partial<WebsocketResponseError>;
-
-export interface Instrument {
-  symbol: string;
-  rootSymbol: string;
-  state: string;
-  typ: string;
-  listing: unknown;
-  front: unknown;
-  expiry: unknown;
-  settle: unknown;
-  relistInterval: unknown;
-  inverseLeg: string;
-  sellLeg: string;
-  buyLeg: string;
-  optionStrikePcnt: number;
-  optionStrikeRound: number;
-  optionStrikePrice: number;
-  optionMultiplier: number;
-  positionCurrency: string;
-  underlying: string;
-  quoteCurrency: string;
-  underlyingSymbol: string;
-  reference: string;
-  referenceSymbol: string;
-  calcInterval: unknown;
-  publishInterval: unknown;
-  publishTime: unknown;
-  maxOrderQty: number;
-  maxPrice: number;
-  lotSize: number;
-  tickSize: number;
-  multiplier: number;
-  settlCurrency: string;
-  underlyingToPositionMultiplier: number;
-  underlyingToSettleMultiplier: number;
-  quoteToSettleMultiplier: number;
-  isQuanto: true;
-  isInverse: true;
-  initMargin: number;
-  maintMargin: number;
-  riskLimit: number;
-  riskStep: number;
-  limit: number;
-  capped: true;
-  taxed: true;
-  deleverage: true;
-  makerFee: number;
-  takerFee: number;
-  settlementFee: number;
-  insuranceFee: number;
-  fundingBaseSymbol: string;
-  fundingQuoteSymbol: string;
-  fundingPremiumSymbol: string;
-  fundingTimestamp: unknown;
-  fundingInterval: unknown;
-  fundingRate: number;
-  indicativeFundingRate: number;
-  rebalanceTimestamp: unknown;
-  rebalanceInterval: unknown;
-  openingTimestamp: unknown;
-  closingTimestamp: unknown;
-  sessionInterval: unknown;
-  prevClosePrice: number;
-  limitDownPrice: number;
-  limitUpPrice: number;
-  bankruptLimitDownPrice: number;
-  bankruptLimitUpPrice: number;
-  prevTotalVolume: number;
-  totalVolume: number;
-  volume: number;
-  volume24h: number;
-  prevTotalTurnover: number;
-  totalTurnover: number;
-  turnover: number;
-  turnover24h: number;
-  homeNotional24h: number;
-  foreignNotional24h: number;
-  prevPrice24h: number;
-  vwap: number;
-  highPrice: number;
-  lowPrice: number;
-  lastPrice: number;
-  lastPriceProtected: number;
-  lastTickDirection: string;
-  lastChangePcnt: number;
-  bidPrice: number;
-  midPrice: number;
-  askPrice: number;
-  impactBidPrice: number;
-  impactMidPrice: number;
-  impactAskPrice: number;
-  hasLiquidity: true;
-  openInterest: number;
-  openValue: number;
-  fairMethod: string;
-  fairBasisRate: number;
-  fairBasis: number;
-  fairPrice: number;
-  markMethod: string;
-  markPrice: number;
-  indicativeTaxRate: number;
-  indicativeSettlePrice: number;
-  optionUnderlyingPrice: number;
-  settledPrice: number;
-  timestamp: unknown;
-}
-
-export interface Order {
-  orderID: string;
-  clOrdID: string;
-  clOrdLinkID: string;
-  account: number;
-  symbol: string;
-  side: string;
-  simpleOrderQty: number;
-  orderQty: number;
-  price: number;
-  displayQty: number;
-  stopPx: number;
-  pegOffsetValue: number;
-  pegPriceType: string;
-  currency: string;
-  settlCurrency: string;
-  ordType: string;
-  timeInForce: string;
-  execInst: string;
-  contingencyType: string;
-  exDestination: string;
-  ordStatus: string;
-  triggered: string;
-  workingIndicator: true;
-  ordRejReason: string;
-  simpleLeavesQty: number;
-  leavesQty: number;
-  simpleCumQty: number;
-  cumQty: number;
-  avgPx: number;
-  multiLegReportingType: string;
-  text: string;
-  transactTime: string;
-  timestamp: string;
-}

@@ -12,8 +12,8 @@ import {
   getTrailingOrderSymbol,
   websocketTrailingPriceSelector,
 } from './index';
-import {ScaledOrders} from '../../util';
-import {SIDE, SYMBOLS} from 'util/BitMEX-types';
+import {ScaledOrder} from 'utils';
+import {Instrument, SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {
   mockInstrumentData,
   mockWebsocketState,
@@ -21,16 +21,17 @@ import {
   mockScaledOrders,
   mockTrailingState,
   mockCrossState,
+  mockOrdersState,
 } from 'tests/mockData/orders';
-import {Instrument} from 'redux/modules/websocket/types';
 import {AppState} from 'redux/models/state';
 
 describe('Selectors', () => {
   const mockState: AppState = {
     websocket: mockWebsocketState({instrument: mockInstrumentData as Instrument[]}),
     preview: mockPreviewState({orders: mockScaledOrders, balance: 12_345_678_993_321, showPreview: true}),
-    trailing: mockTrailingState({trailOrderSide: SIDE.SELL, trailOrderSymbol: SYMBOLS.XBTUSD}),
-    cross: mockCrossState({}),
+    trailing: mockTrailingState({trailOrderSide: SIDE.SELL, trailOrderSymbol: SYMBOL.XBTUSD}),
+    cross: mockCrossState(),
+    orders: mockOrdersState(),
   };
 
   let result: unknown;
@@ -48,7 +49,7 @@ describe('Selectors', () => {
       const payload: AppState = {
         ...mockState,
         websocket: {...mockState.websocket},
-        trailing: {...mockState.trailing, trailOrderSymbol: 'HELLO' as SYMBOLS},
+        trailing: {...mockState.trailing, trailOrderSymbol: 'HELLO' as SYMBOL},
       };
       const instrument = table_instrument(payload);
       const wsSymbol = getTrailingOrderSymbol(payload);
@@ -80,29 +81,30 @@ describe('Selectors', () => {
   });
 
   describe('websocketTrailingPriceSelector', () => {
-    function validateTrailingPrice(symbol: SYMBOLS, side: SIDE) {
+    function validateTrailingPrice(symbol: SYMBOL, side: SIDE) {
       const instrument = table_instrument(mockState);
       const bidAskPrices = websocketBidAskPrices.resultFunc(instrument, symbol);
       return websocketTrailingPriceSelector.resultFunc(bidAskPrices, side, symbol);
     }
     it('should calculate with sell side', () => {
-      expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.SELL)).toEqual(8001.5);
-      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.SELL)).toEqual(111.3);
-      expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.SELL)).toEqual(0.1989);
+      expect(validateTrailingPrice(SYMBOL.XBTUSD, SIDE.SELL)).toEqual(8001.5);
+      expect(validateTrailingPrice(SYMBOL.ETHUSD, SIDE.SELL)).toEqual(111.3);
+      expect(validateTrailingPrice(SYMBOL.XRPUSD, SIDE.SELL)).toEqual(0.1989);
     });
 
     it('should calculate with buy side', () => {
-      expect(validateTrailingPrice(SYMBOLS.XBTUSD, SIDE.BUY)).toEqual(8010.5);
-      expect(validateTrailingPrice(SYMBOLS.ETHUSD, SIDE.BUY)).toEqual(221.9);
-      expect(validateTrailingPrice(SYMBOLS.XRPUSD, SIDE.BUY)).toEqual(0.237);
+      expect(validateTrailingPrice(SYMBOL.XBTUSD, SIDE.BUY)).toEqual(8010.5);
+      expect(validateTrailingPrice(SYMBOL.ETHUSD, SIDE.BUY)).toEqual(221.9);
+      expect(validateTrailingPrice(SYMBOL.XRPUSD, SIDE.BUY)).toEqual(0.237);
     });
   });
 
   describe('ordersRiskSelector', () => {
+    const findStopOrderIndex = (orders: ScaledOrder[]) => orders.findIndex((order) => 'stopPx' in order);
     it('should calculate risk based on average entry for XBTUSD', () => {
       const showPreview = getShowPreview(mockState);
       const orders = getOrders(mockState);
-      orders.stop['symbol'] = SYMBOLS.XBTUSD;
+      orders[findStopOrderIndex(orders)]['symbol'] = SYMBOL.XBTUSD;
 
       const averageEntry = ordersAverageEntrySelector.resultFunc(orders, showPreview);
 
@@ -113,7 +115,8 @@ describe('Selectors', () => {
     it('calculates risk based on average entry for ETHUSD', () => {
       const showPreview = getShowPreview(mockState);
       const orders = getOrders(mockState);
-      orders.stop['symbol'] = SYMBOLS.ETHUSD;
+
+      orders[findStopOrderIndex(orders)]['symbol'] = SYMBOL.ETHUSD;
 
       const averageEntry = ordersAverageEntrySelector.resultFunc(orders, showPreview);
 
@@ -124,7 +127,7 @@ describe('Selectors', () => {
     it('calculates risk based on average entry for XRPUSD', () => {
       const showPreview = getShowPreview(mockState);
       const orders = getOrders(mockState);
-      orders.stop['symbol'] = SYMBOLS.XRPUSD;
+      orders[findStopOrderIndex(orders)]['symbol'] = SYMBOL.XRPUSD;
 
       const averageEntry = ordersAverageEntrySelector.resultFunc(orders, showPreview);
 
@@ -167,7 +170,7 @@ describe('Selectors', () => {
       result = ordersAverageEntrySelector.resultFunc(orders, false);
       expect(result).toEqual(undefined);
 
-      result = ordersAverageEntrySelector.resultFunc({} as ScaledOrders, true);
+      result = ordersAverageEntrySelector.resultFunc([], true);
       expect(result).toEqual(undefined);
     });
   });

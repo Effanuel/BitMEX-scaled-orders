@@ -1,4 +1,4 @@
-import {SYMBOLS} from 'util/BitMEX-types';
+import {SYMBOL} from 'redux/api/bitmex/types';
 
 enum Exchange {
   BITMEX = 'bitmex',
@@ -11,4 +11,4 @@ export function websocketBaseUrl(exchange: Exchange = Exchange.BITMEX) {
   return baseUrls[exchange];
 }
 
-export const instrumentTopics = (...symbols: SYMBOLS[]) => symbols.map((symbol) => `instrument:${symbol}`).join(',');
+export const instrumentTopics = (...symbols: SYMBOL[]) => symbols.map((symbol) => `instrument:${symbol}`).join(',');

@@ -1,60 +1,42 @@
 import React from 'react';
-import cx from 'classnames';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {formatPrice} from 'general/formatting';
-import styles from './orders-table.module.scss';
-import {PREVIEW_CONTAINER, SCALED_CONTAINER} from 'data-test-ids';
-import {useSingleton} from 'general/hooks';
+import {Table, Tbody, Td, Th, Thead, Tr} from '@chakra-ui/react';
+import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
+import {ScaledOrder} from 'utils';
+import {presentOrderType} from 'presenters/order-presenters';
+import {presentOrderPrice} from 'containers/OpenOrders/OpenOrdersContainer';
+import {SCALED_CONTAINER} from 'data-test-ids';
 
-const generateSideColorStyles = (xSide: boolean) => ({
-  normal: cx({[styles.side_color__sell]: xSide, [styles.side_color__buy]: !xSide}),
-  stop: cx({[styles.side_stop__sell]: !xSide, [styles.side_stop__buy]: xSide}),
-  textX: cx({[styles.side__sell]: xSide, [styles.side__buy]: !xSide}),
-  textY: cx({[styles.side__sell]: !xSide, [styles.side__buy]: xSide}),
-});
+interface Props {
+  orders?: ScaledOrder[];
+}
 
-export default function OrdersTable() {
-  const {orders} = useReduxSelector('orders');
-
-  const xSide = useSingleton(orders?.orders?.[0].side === 'Sell');
-  const ySide = useSingleton(xSide ? 'Buy' : 'Sell');
-  const {normal, stop, textX, textY} = useSingleton(generateSideColorStyles(xSide));
-
-  const renderOrders = useSingleton(
-    orders?.orders.map(({orderQty, side, price}, i) => (
-      <tr key={`${i}`} className={normal}>
-        <td key={i + 'a'}>{formatPrice(orderQty)}</td>
-        <td key={i + 'b'} className={textX}>
-          {side}
-        </td>
-        <td key={i + 'c'}>{formatPrice(price)}</td>
-      </tr>
-    )),
-  );
-
-  const renderStop = useSingleton(
-    orders?.stop.stopPx ? (
-      <tr data-testid={PREVIEW_CONTAINER.STOP_ORDER_ROW} className={stop}>
-        <td>{formatPrice(orders.stop.orderQty)}</td>
-        <td className={textY}>{ySide}</td>
-        <td>{formatPrice(orders.stop.stopPx)}</td>
-      </tr>
-    ) : null,
-  );
-
+export default function OrdersTable({orders}: Props) {
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <th>Quantity</th>
-          <th>Side</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody data-test-id={SCALED_CONTAINER.ORDER_ROW}>
-        {renderOrders}
-        {renderStop}
-      </tbody>
-    </table>
+    <Table>
+      <Thead>
+        <Tr>
+          <Th>Symbol</Th>
+          <Th>Type</Th>
+          <Th isNumeric>Quantity</Th>
+          <Th isNumeric>Price</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {orders &&
+          //@ts-ignore
+          orders.map(({symbol, side, orderQty, price, stopPx}, index) => {
+            const color = side === 'Sell' ? 'red' : 'green';
+            const ordType = !!stopPx ? ORD_TYPE.Stop : ORD_TYPE.Limit;
+            return (
+              <Tr data-testid={SCALED_CONTAINER.ORDER_ROW} key={index} borderLeftWidth={2} borderLeftColor={color}>
+                <Td>{symbol}</Td>
+                <Td color={color}>{presentOrderType({side, ordType} as Order)}</Td>
+                <Td isNumeric>{orderQty}</Td>
+                <Td isNumeric>{presentOrderPrice({price, stopPx, ordType} as Order)}</Td>
+              </Tr>
+            );
+          })}
+      </Tbody>
+    </Table>
   );
 }

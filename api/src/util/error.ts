@@ -1,10 +1,10 @@
 import {logger} from './logger';
 
 const error_400_handler = (error: any): string => {
-  const response_error = JSON.parse(error).error;
-  const response_message = response_error ? response_error.message.toLowerCase() : '';
-  console.warn('Error handler response message: ', response_message);
-  const error_messages: {[key: string]: string} = {
+  const responseError = JSON.parse(error).error;
+  const responseErrormMessage = responseError ? responseError.message.toLowerCase() : '';
+  console.warn('Error handler response message: ', responseErrormMessage);
+  const error_messages: Record<string, string> = {
     'duplicate clordid': 'Duplicate order.',
     'insufficient available balance': 'Insufficient funds.',
     'missing api key': 'Missing API key.',
@@ -15,12 +15,22 @@ const error_400_handler = (error: any): string => {
     'order price is above': 'Order price is out of range of liquidation price.',
   };
   for (const match in error_messages) {
-    if (response_message.includes(match)) {
-      // startswith TODO
-      return error_messages[match];
-    }
+    if (responseErrormMessage.includes(match)) return error_messages[match]; // startswith TODO
   }
   return 'Unhandled Error';
+};
+
+const error_404_handler = (error: any): string => {
+  const responseError = JSON.parse(error).error;
+  const responseErrormMessage = responseError ? responseError.message.toLowerCase() : '';
+  console.warn('Error handler response message: ', responseErrormMessage);
+  const error_messages: Record<string, string> = {
+    'not found': 'Order doesn`t exist',
+  };
+  for (const match in error_messages) {
+    if (responseErrormMessage.includes(match)) return error_messages[match]; // startswith TODO
+  }
+  return 'Unable to contact the BitMEX API (404).';
 };
 
 export const ErrorHandler = ({message, statusCode, error}: any) => {
@@ -30,7 +40,7 @@ export const ErrorHandler = ({message, statusCode, error}: any) => {
       case 401:
         return 'API Key or Secret incorrect, please check and restart.';
       case 404:
-        return 'Unable to contact the BitMEX API (404).';
+        return error_404_handler(error);
       case 429:
         return 'Ratelimited on current request';
       case 503:
@@ -38,7 +48,7 @@ export const ErrorHandler = ({message, statusCode, error}: any) => {
       case 400:
         return error_400_handler(error);
       default:
-        return 'Error::Default';
+        return 'Something has gone terribly wrong.';
     }
   })(statusCode);
   logger.log('error', errorMessage);

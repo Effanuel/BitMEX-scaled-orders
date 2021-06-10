@@ -1,7 +1,7 @@
-import {SYMBOLS} from 'util/BitMEX-types';
+import {SYMBOL} from 'redux/api/bitmex/types';
 
 interface PartialInstrument {
-  symbol: SYMBOLS;
+  symbol: SYMBOL;
   price: number;
   orderID: string;
   ordStatus: 'New' | 'Filled';

@@ -16,12 +16,12 @@ const toastColors: {[key in ToastPreset]: string} = {
   general: 'violet',
 };
 
-export interface ToastBarProps {
+interface Props {
   toastPreset: ToastPreset;
   message: string;
 }
 
-const ToastBar = React.memo(({toastPreset, message}: ToastBarProps) => {
+const ToastBar = React.memo(({toastPreset, message}: Props) => {
   const toast_style = cx({
     [styles.error_toast]: toastPreset === 'error',
     [styles.success_toast]: toastPreset === 'success',

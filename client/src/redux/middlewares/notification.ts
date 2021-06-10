@@ -1,6 +1,10 @@
+import {AnyAction, Dispatch, Middleware} from '@reduxjs/toolkit';
+import {AppState} from 'redux/models/state';
 import {registeredToasts} from './registerToasts';
 
-export default (store: any) => (next: any) => (action: Action) => {
-  registeredToasts[action.type]?.(store, action);
+const middleware: Middleware<obj, AppState, Dispatch<AnyAction>> = (store) => (next) => (action: Action) => {
+  registeredToasts[action.type]?.(action);
   next(action);
 };
+
+export default middleware;

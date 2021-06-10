@@ -1,48 +1,26 @@
-@import '../../scss/colors.module.scss';
-
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-/* Firefox */
+
 input[type='number'] {
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
-}
-
-/*Update for Material */
-input[type='number'] {
-  -moz-appearance: textfield;
   background-color: var(--primaryColor);
   color: rgba(255, 255, 255, 0.87);
   border: 1px solid var(--white60);
   border-radius: 2px;
   padding: 5px 5px;
+  &:focus {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    color: rgba(255, 255, 255, 0.87);
+    border: 1px solid var(--accentColor);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
 }
-
-/*Update for Material */
-input[type='number']:focus {
-  -moz-appearance: textfield;
-  -webkit-appearance: textfield;
-  /*background-color: var(--primaryColor);*/
-  color: rgba(255, 255, 255, 0.87);
-  border: 1px solid var(--accentColor);
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-
-/* Updated with Material */
-/*label {
-  color: var(--white60);
-  font-size: calc(0.5em + 0.5vw);
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}*/
 
 input[type='number']::selection {
   background-color: var(--accentColor);

@@ -1,20 +1,26 @@
 import {applyMiddleware, compose} from 'redux';
 import thunk from 'redux-thunk';
-import {mockWebsocketState, mockPreviewState, mockTrailingState, mockCrossState} from './mockData/orders';
-import {MockBitMEX_API} from './mockAPI';
+import {
+  mockWebsocketState,
+  mockPreviewState,
+  mockTrailingState,
+  mockCrossState,
+  mockOrdersState,
+} from './mockData/orders';
 import {rootReducer} from 'redux/store';
 import createStore from './configStore';
 import {AppState} from 'redux/models/state';
 import notificationMiddleware from '../redux/middlewares/notification';
 
-export const mockedDefaultState: AppState = {
+const mockedDefaultState: AppState = {
   websocket: mockWebsocketState({}),
   preview: mockPreviewState({}),
   trailing: mockTrailingState({}),
   cross: mockCrossState({}),
+  orders: mockOrdersState({}),
 };
 
-export function createMockedStore(overrideState: Partial<AppState> = {}, mockAPI = new MockBitMEX_API({})) {
+export function createMockedStore(overrideState: Partial<AppState> = {}, mockAPI: any) {
   const preloadedState = {...mockedDefaultState, ...overrideState};
   const middlewares = [thunk.withExtraArgument(mockAPI), notificationMiddleware];
   const enhancer = compose(applyMiddleware(...middlewares));

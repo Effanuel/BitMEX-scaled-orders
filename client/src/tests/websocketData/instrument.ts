@@ -1,7 +1,7 @@
-import {SYMBOLS} from 'util/BitMEX-types';
+import {SYMBOL} from 'redux/api/bitmex/types';
 
 interface Instrument {
-  symbol: SYMBOLS;
+  symbol: SYMBOL;
   askPrice: number;
   bidPrice: number;
 }

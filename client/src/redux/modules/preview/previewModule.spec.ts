@@ -1,12 +1,12 @@
 import {createStore} from '../../store';
 import {previewOrders} from 'redux/modules/preview/previewModule';
-import {DISTRIBUTIONS} from 'util/index';
-import {SIDE, SYMBOLS} from 'util/BitMEX-types';
+import {DISTRIBUTION} from 'utils';
+import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import mockDistributionOrders from 'tests/mockData/orders';
 
 describe('Preview actions', () => {
   const distributionParams = (stop = 8000) => {
-    return {orderQty: 500, n_tp: 3, start: 7500, end: 7700, stop: stop, side: SIDE.SELL, symbol: SYMBOLS.XBTUSD};
+    return {orderQty: 500, n_tp: 3, start: 7500, end: 7700, stop: stop, side: SIDE.SELL, symbol: SYMBOL.XBTUSD};
   };
 
   const store = createStore();
@@ -16,34 +16,35 @@ describe('Preview actions', () => {
 
     expect(store.getState().preview.showPreview).toEqual(false);
 
-    store.dispatch(previewOrders(distributionParams(), DISTRIBUTIONS.Uniform));
+    store.dispatch(previewOrders(distributionParams(), DISTRIBUTION.Uniform));
     expect(store.getState().preview.orders).toEqual(orders_uniform);
 
-    store.dispatch(previewOrders(distributionParams(), DISTRIBUTIONS.Normal));
+    store.dispatch(previewOrders(distributionParams(), DISTRIBUTION.Normal));
     expect(store.getState().preview.orders).toEqual(orders_normal);
 
-    store.dispatch(previewOrders(distributionParams(), DISTRIBUTIONS.Positive));
+    store.dispatch(previewOrders(distributionParams(), DISTRIBUTION.Positive));
     expect(store.getState().preview.orders).toEqual(orders_positive);
 
-    store.dispatch(previewOrders(distributionParams(), DISTRIBUTIONS.Negative));
+    store.dispatch(previewOrders(distributionParams(), DISTRIBUTION.Negative));
     expect(store.getState().preview.orders).toEqual(orders_negative);
 
     expect(store.getState().preview.showPreview).toEqual(true);
   });
 
   it('should generate orders without stop-loss', () => {
-    const {orders_uniform} = mockDistributionOrders({});
+    const {orders_uniform} = mockDistributionOrders(null);
 
-    store.dispatch(previewOrders(distributionParams(0), DISTRIBUTIONS.Uniform));
+    store.dispatch(previewOrders(distributionParams(0), DISTRIBUTION.Uniform));
     expect(store.getState().preview.orders).toEqual(orders_uniform);
   });
 
   it('should have a stop with specific parameters', () => {
     const {orders_negative} = mockDistributionOrders();
 
-    store.dispatch(previewOrders(distributionParams(), DISTRIBUTIONS.Negative));
+    store.dispatch(previewOrders(distributionParams(), DISTRIBUTION.Negative));
     expect(store.getState().preview.orders).toEqual(orders_negative);
 
-    expect(store.getState().preview.orders.stop.execInst).toEqual('LastPrice,ReduceOnly');
+    //@ts-ignore
+    expect(store.getState().preview.orders[3].execInst).toEqual('LastPrice,ReduceOnly');
   });
 });
