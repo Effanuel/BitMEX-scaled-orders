@@ -2,14 +2,8 @@ import React from 'react';
 import {shallowEqual, useDispatch, useSelector} from 'react-redux';
 import {Modal} from 'components';
 import {cancelOrder} from 'redux/modules/orders/ordersModule';
-import {ModalType} from 'context/registerModals';
 import {AppState} from 'redux/models/state';
 import {groupedOrdersSelector, orderSelector} from 'redux/selectors';
-
-export interface CancelOrderModalProps {
-  type: ModalType.CANCEL_ORDER;
-  props: Props;
-}
 
 interface Props {
   orderID: string;

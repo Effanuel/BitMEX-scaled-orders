@@ -2,12 +2,6 @@ import React from 'react';
 import {useDispatch} from 'react-redux';
 import {Modal} from 'components';
 import {cancelAllProfitOrders} from 'redux/modules/orders/ordersModule';
-import {ModalType} from 'context/registerModals';
-
-export interface CancelAllProfitOrdersModalProps {
-  type: ModalType.CANCEL_ALL_PROFIT_ORDERS;
-  props: Props;
-}
 
 interface Props {
   totalOrders: number;

@@ -3,12 +3,6 @@ import {useDispatch} from 'react-redux';
 import {Modal} from 'components';
 import {cancelProfitOrder} from 'redux/modules/orders/ordersModule';
 import {SYMBOL} from 'redux/api/bitmex/types';
-import {ModalType} from 'context/registerModals';
-
-export interface CancelProfitOrderModalProps {
-  type: ModalType.CANCEL_PROFIT_ORDER;
-  props: Props;
-}
 
 interface Props {
   symbol: SYMBOL;

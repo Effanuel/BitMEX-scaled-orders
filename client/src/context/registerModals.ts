@@ -1,43 +1,39 @@
 import React from 'react';
 import {
   CancelOrderModal,
-  CancelOrderModalProps,
   CancelAllOrdersModal,
-  CancelAllOrdersModalProps,
   CancelProfitOrderModal,
-  CancelProfitOrderModalProps,
-  CancelAllProfitOrdersModalProps,
   CancelAllProfitOrdersModal,
   AddProfitOrderModal,
-  AddProfitTargetModalProps,
 } from 'components/modals';
 
-export type ShowModalArgs =
-  | CancelOrderModalProps
-  | CancelProfitOrderModalProps
-  | CancelAllOrdersModalProps
-  | CancelAllProfitOrdersModalProps
-  | AddProfitTargetModalProps;
+export type ShowModalArgs = {
+  [key in keyof RegisteredModals]: {type: key; props: InferProps<RegisteredModals[key]>};
+}[keyof RegisteredModals];
 
-export enum ModalType {
-  CANCEL_ORDER = 'CancelOrder',
-  CANCEL_PROFIT_ORDER = 'CancelProfitOrder',
-  CANCEL_ALL_ORDERS = 'CancelAllOrders',
-  CANCEL_ALL_PROFIT_ORDERS = 'CancelAllProfitOrders',
-  ADD_PROFIT_TARGET = 'AddProfitTarget',
-}
+export type ModalType = keyof RegisteredModals;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type RegisteredModals = Readonly<{[key in ModalType]: React.ComponentType<any>}>;
+export type RegisteredModals = typeof registeredModals;
 
-const registeredModals: RegisteredModals = {
-  [ModalType.CANCEL_ORDER]: CancelOrderModal,
-  [ModalType.CANCEL_PROFIT_ORDER]: CancelProfitOrderModal,
-  [ModalType.CANCEL_ALL_ORDERS]: CancelAllOrdersModal,
-  [ModalType.CANCEL_ALL_PROFIT_ORDERS]: CancelAllProfitOrdersModal,
-  [ModalType.ADD_PROFIT_TARGET]: AddProfitOrderModal,
+export type Modals = {[key in keyof RegisteredModals]: (modalProps: InferProps<RegisteredModals[key]>) => void};
+
+export const registeredModals = {
+  showCancelOrder: CancelOrderModal,
+  showCancelProfitOrder: CancelProfitOrderModal,
+  showCancelAllOrders: CancelAllOrdersModal,
+  showCancelAllProfitOrders: CancelAllProfitOrdersModal,
+  showAddProfitTarget: AddProfitOrderModal,
 };
 
-export function showRegisteredModal<P>(type: ModalType, modalProps: P) {
-  return React.createElement(registeredModals[type], modalProps);
+export function showRegisteredModal<P>(type: keyof RegisteredModals, modalProps: P) {
+  return React.createElement(registeredModals[type] as any, modalProps);
+}
+
+export function createModals(showModal: ({type, props}: ShowModalArgs) => void): Modals {
+  return Object.assign(
+    {},
+    ...Object.keys(registeredModals).map((modalName) => ({
+      [modalName]: (props: any) => showModal({type: modalName as any, props}),
+    })),
+  );
 }

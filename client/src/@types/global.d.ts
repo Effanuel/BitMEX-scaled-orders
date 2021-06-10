@@ -15,6 +15,8 @@ type ValueOf<T> = T[keyof T];
 
 type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
+type InferProps<T> = T extends React.ComponentType<infer Props> ? Props : never;
+
 type PickWithOptional<T, K extends keyof T, O extends keyof T> = {
   [P in K]: T[P];
 } &

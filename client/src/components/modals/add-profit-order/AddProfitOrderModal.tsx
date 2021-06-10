@@ -1,17 +1,11 @@
 import React from 'react';
-import {shallowEqual, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Modal, InputField} from 'components';
 import {addProfitTarget} from 'redux/modules/orders/ordersModule';
 import {SIDE} from 'redux/api/bitmex/types';
-import {ModalType} from 'context/registerModals';
 import {AppState} from 'redux/models/state';
 import {orderSelector} from 'redux/selectors';
 import {ADD_ORDER_MODAL} from 'data-test-ids';
-
-export interface AddProfitTargetModalProps {
-  type: ModalType.ADD_PROFIT_TARGET;
-  props: Props;
-}
 
 interface Props {
   orderID: string;
@@ -20,7 +14,7 @@ interface Props {
 export function AddProfitOrderModal({orderID}: Props) {
   const dispatch = useDispatch();
 
-  const {order} = useSelector((state: AppState) => ({order: orderSelector(state, {orderID})}), shallowEqual);
+  const order = useSelector((state: AppState) => orderSelector(state, {orderID}));
   const {symbol, side, price: stopPx} = order!;
 
   const [price, setPrice] = React.useState('');
