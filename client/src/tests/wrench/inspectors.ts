@@ -1,8 +1,7 @@
 import _ from 'lodash/fp';
 import {AppState} from 'redux/models/state';
-import {Memory} from 'tests/wrench/Wrench';
-
-export type Inspector<Return> = (memory: Memory) => Return;
+import {createMockedStore} from 'tests/mockStore';
+import {Inspector} from 'influnt';
 
 export function exists(testID: string): Inspector<boolean> {
   return ({node}) => !!node.queryAllByTestId(testID).length;
@@ -26,9 +25,12 @@ export function isDisabled(testID: string): Inspector<boolean> {
   return ({node}) => !(node.queryByTestId(testID)?.getAttribute('disabled') === null);
 }
 
-export function storeActions(): Inspector<string[]> {
-  //@ts-ignore
-  return ({externalContext}) => externalContext.store.getActions().map((action: any) => action.type);
+export function storeActions(): Inspector<string[], ReturnType<typeof createMockedStore>> {
+  //@ts-expect-error
+  return (context) => {
+    //@ts-expect-error
+    return context.externalContext.store.getActions().map((action: any) => action.type);
+  };
 }
 
 export function getState<K extends keyof AppState>(keys: K | string): Inspector<AppState[K]> {

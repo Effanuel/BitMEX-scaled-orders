@@ -1,12 +1,12 @@
 import MarketOrderContainer from './MarketOrderContainer';
 import {COMPONENTS, MARKET_CONTAINER} from 'data-test-ids';
-import {toastSpy} from 'tests/spies';
-import {createRenderer} from 'tests/wrench/Wrench';
-import {isDisabled, storeActions} from 'tests/wrench/inspectors';
-import {ResponseBuilder} from 'tests/responses';
+import {forgeMarketOrder} from 'tests/responses';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
+import {createRenderer, storeActions} from 'tests/influnt';
+import {createMockedStore} from 'tests/mockStore';
+import {isDisabled, respond, exists} from 'influnt';
 
-const render = createRenderer(MarketOrderContainer);
+const render = createRenderer(MarketOrderContainer, {extraArgs: () => createMockedStore({})});
 
 describe('MarketOrder', () => {
   it('should disable market buy and market sell buttons by default', async () => {
@@ -19,56 +19,62 @@ describe('MarketOrder', () => {
   });
 
   it('should submit a market buy order', async () => {
-    const promises = new ResponseBuilder().marketOrder({symbol: SYMBOL.XBTUSD, side: SIDE.BUY, orderQty: 1113}).build();
+    const mock = respond('marketOrder', [{orderQty: 1113, symbol: SYMBOL.XBTUSD, side: SIDE.BUY}]).with(
+      forgeMarketOrder({orderQty: 1113}),
+    );
 
     const result = await render()
-      .addSpies(toastSpy)
       .inputText(MARKET_CONTAINER.INPUT, 1113)
       .press(MARKET_CONTAINER.BUY_BUTTON)
-      .expectExists(COMPONENTS.SPINNER)
-      .resolve(promises)
+      .inspect({spinnerIsVisible: exists(COMPONENTS.SPINNER)})
+      .resolve(mock)
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
-      actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
-      api: [{marketOrder: {orderQty: 1113, side: 'Buy', symbol: 'XBTUSD'}}],
+      actions: ['preview/PREVIEW_POST_MARKET_ORDER/success'],
+      network: [{marketOrder: [{orderQty: 1113, symbol: SYMBOL.XBTUSD, side: SIDE.BUY}]}],
+      spinnerIsVisible: true,
       toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
     });
   });
 
   it('should submit a market sell order', async () => {
-    const promises = new ResponseBuilder().marketOrder({symbol: SYMBOL.XBTUSD, side: SIDE.SELL, orderQty: 111}).build();
+    const mock = respond('marketOrder', [{symbol: SYMBOL.XBTUSD, side: SIDE.SELL, orderQty: 111}]).with(
+      forgeMarketOrder({orderQty: 111}),
+    );
 
     const result = await render()
-      .addSpies(toastSpy)
       .inputText(MARKET_CONTAINER.INPUT, 111)
       .press(MARKET_CONTAINER.SELL_BUTTON)
-      .expectExists(COMPONENTS.SPINNER)
-      .resolve(promises)
+      .inspect({spinnerIsVisible: exists(COMPONENTS.SPINNER)})
+      .resolve(mock)
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
-      actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
-      api: [{marketOrder: {orderQty: 111, side: 'Sell', symbol: 'XBTUSD'}}],
+      actions: ['preview/PREVIEW_POST_MARKET_ORDER/success'],
+      network: [{marketOrder: [{orderQty: 111, side: 'Sell', symbol: 'XBTUSD'}]}],
+      spinnerIsVisible: true,
       toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
     });
   });
 
   it('should submit an order with a selected ticker', async () => {
-    const promises = new ResponseBuilder().marketOrder({symbol: SYMBOL.ETHUSD, side: SIDE.SELL, orderQty: 111}).build();
+    const mock = respond('marketOrder', [{symbol: SYMBOL.ETHUSD, side: SIDE.SELL, orderQty: 111}]).with(
+      forgeMarketOrder({orderQty: 111}),
+    );
 
     const result = await render()
-      .addSpies(toastSpy)
       .selectOption(COMPONENTS.SELECT_DROPDOWN, SYMBOL.ETHUSD)
       .inputText(MARKET_CONTAINER.INPUT, 111)
       .press(MARKET_CONTAINER.SELL_BUTTON)
-      .expectExists(COMPONENTS.SPINNER)
-      .resolve(promises)
+      .inspect({spinnerIsVisible: exists(COMPONENTS.SPINNER)})
+      .resolve(mock)
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
-      actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
-      api: [{marketOrder: {orderQty: 111, side: 'Sell', symbol: 'ETHUSD'}}],
+      actions: ['preview/PREVIEW_POST_MARKET_ORDER/success'],
+      spinnerIsVisible: true,
+      network: [{marketOrder: [{orderQty: 111, side: 'Sell', symbol: 'ETHUSD'}]}],
       toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
     });
   });

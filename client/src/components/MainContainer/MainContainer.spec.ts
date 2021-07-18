@@ -1,11 +1,11 @@
 import {MainContainer} from 'components';
 import {exists, textOf} from 'tests/wrench/inspectors';
-import {createRenderer} from 'tests/wrench/Wrench';
 import {MAIN_CONTAINER} from 'data-test-ids';
 import React from 'react';
+import {createComponentRenderer} from 'tests/influnt';
 
-const render = createRenderer(MainContainer, {
-  props: {label: 'LABEL', children: undefined, description: 'Description'},
+const render = createComponentRenderer(MainContainer, {
+  passProps: {label: 'LABEL', children: undefined, description: 'Description'},
 });
 
 describe('Main Container', () => {

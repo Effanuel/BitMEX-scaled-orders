@@ -1,7 +1,7 @@
 import {Button, ButtonVariants} from './Button';
-import {createRenderer} from 'tests/wrench/Wrench';
 import {classNameOf} from 'tests/wrench/inspectors';
 import {SIDE} from 'redux/api/bitmex/types';
+import {createComponentRenderer} from 'tests/influnt';
 
 const props = {
   id: 'default:id',
@@ -14,7 +14,7 @@ const props = {
   className: 'ClassName',
 };
 
-const render = createRenderer(Button, {props});
+const render = createComponentRenderer(Button, {passProps: props});
 
 describe('ButtonDriver', () => {
   it.each([
@@ -32,9 +32,8 @@ describe('ButtonDriver', () => {
   });
 
   it('should use `className` prop for `custom` variant button', async () => {
-    const result = await render({passProps: {variant: 'custom'}}).inspect({
-      className: classNameOf('default:testID'),
-    });
+    const result = await render({passProps: {variant: 'custom'}}) //
+      .inspect({className: classNameOf('default:testID')});
 
     expect(result).toEqual({className: 'ClassName'});
   });

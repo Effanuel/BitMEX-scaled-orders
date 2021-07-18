@@ -1,98 +1,21 @@
-import {Order} from 'redux/api/bitmex/types';
-import {LimitOrder, MethodNames, MockedMethods, OrderAmend, OrderBulk, OrderCancel} from 'redux/api/api';
-import {createProfitTarget, MarketOrderProps, ProfitTargetProps} from 'utils';
+import {AvailableMethods} from 'redux/api/api';
 
-abstract class Builder {
-  protected constructor(protected mockedMethods: Partial<MockedMethods> = {}) {}
-}
+export type ForgedResponse = {
+  [K in keyof AvailableMethods]: {apiMethod: K; props: Parameters<AvailableMethods[K]>[number]; result: any};
+}[keyof AvailableMethods];
 
-export class ResponseBuilder extends Builder {
-  constructor() {
-    super();
-  }
+export const forgeResult = <R>(data: R) => ({data: {data: JSON.stringify(data), statusCode: 200}});
 
-  private add(mockedMethod: Partial<MockedMethods>) {
-    const methodName = Object.keys(mockedMethod)[0] as MethodNames;
-    const {props, result} = mockedMethod[methodName] as any;
-    Object.assign(this.mockedMethods, {
-      [methodName]: {props, result: {data: {data: JSON.stringify(result), statusCode: 200}}},
-    });
-    return this;
-  }
+export const forgeMarketOrder = (data: any) => forgeResult(data);
 
-  marketOrder({symbol, side, orderQty}: MarketOrderProps) {
-    return this.add({
-      marketOrder: {
-        props: {symbol, side, orderQty},
-        result: {orderQty},
-      },
-    });
-  }
+export const forgeLimitOrder = (data: any) => forgeResult(data);
 
-  limitOrder(props: LimitOrder, orderID: string) {
-    return this.add({
-      limitOrder: {
-        //@ts-ignore
-        props: props,
-        result: {...props, orderID},
-      },
-    });
-  }
+export const forgeAmendOrder = (data: any) => forgeResult(data);
 
-  orderAmend(props: OrderAmend) {
-    return this.add({
-      orderAmend: {
-        props,
-        result: props,
-      },
-    });
-  }
+export const forgeOpenOrders = (data: any) => forgeResult(data);
 
-  orderBulk(orders: OrderBulk[]) {
-    return this.add({
-      orderBulk: {
-        props: orders,
-        result: orders,
-      },
-    });
-  }
+export const forgeOrderCancel = (data: any) => forgeResult(data);
 
-  orderCancel(props: OrderCancel) {
-    return this.add({
-      orderCancel: {
-        props,
-        result: props,
-      },
-    });
-  }
+export const forgeOrderCancelAll = (data: any) => forgeResult(data);
 
-  orderCancelAll() {
-    return this.add({
-      orderCancelAll: {
-        result: {},
-      },
-    });
-  }
-
-  getOpenOrders(orders: Order[]) {
-    return this.add({
-      getOpenOrders: {
-        result: orders,
-      },
-    });
-  }
-
-  profitTargetOrder(props: ProfitTargetProps) {
-    return this.add({
-      profitTargetOrder: {
-        props: props,
-        result: {...createProfitTarget(props), timestamp: '0', orderID: '2323'},
-      },
-    });
-  }
-
-  build() {
-    if (Object.keys(this.mockedMethods).length === 0) throw new Error(`No responses were added.`);
-    return this.mockedMethods;
-  }
-}
+export const forgeProfitTargetOrder = (data: any) => forgeResult(data);

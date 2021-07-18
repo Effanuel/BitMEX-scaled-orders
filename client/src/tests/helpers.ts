@@ -1,17 +1,16 @@
 import {REDUX_WEBSOCKET_MESSAGE, REDUX_WEBSOCKET_OPEN} from 'redux/modules/websocket/types';
-import {Wrench} from 'tests/wrench/Wrench';
+import {Step} from 'influnt/dist/types';
+import {MockedStore} from './mockStore';
 
-export function openWebsocket() {
-  return (driver: Wrench<{}>) => {
-    //@ts-ignore
-    driver.context.internalContext.store.dispatch({type: REDUX_WEBSOCKET_OPEN});
+export function openWebsocket(): Step<MockedStore> {
+  return ({extraArgs}) => {
+    extraArgs.dispatch({type: REDUX_WEBSOCKET_OPEN});
   };
 }
 
-export function sendWebsocketMessage<D>(data: D) {
-  return (driver: Wrench<{}>) => {
+export function sendWebsocketMessage<D>(data: D): Step<MockedStore> {
+  return ({extraArgs}) => {
     const message = JSON.stringify(data);
-    //@ts-ignore
-    driver.context.internalContext.store.dispatch({type: REDUX_WEBSOCKET_MESSAGE, payload: {message}});
+    extraArgs.dispatch({type: REDUX_WEBSOCKET_MESSAGE, payload: {message}});
   };
 }

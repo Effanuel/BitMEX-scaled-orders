@@ -2,57 +2,53 @@ import {OpenOrdersContainer} from 'containers';
 import {ADD_ORDER_MODAL, GLOBAL, OPEN_ORDERS_CONTAINER} from 'data-test-ids';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {builderProfitOrder, buildOrder} from 'tests/builders';
-import {countOf, exists, getState, storeActions} from 'tests/wrench/inspectors';
-import {ResponseBuilder} from 'tests/responses';
-import {createRenderer} from 'tests/wrench/Wrench';
+import {createRenderer, getState, storeActions} from 'tests/influnt';
+import {countOf, exists, respond} from 'influnt';
+import {forgeOpenOrders, forgeOrderCancel, forgeOrderCancelAll, forgeProfitTargetOrder} from 'tests/responses';
+import {createMockedStore} from 'tests/mockStore';
+import {createProfitTarget} from 'utils';
 
-const render = createRenderer(OpenOrdersContainer, {props: {}});
+const render = createRenderer(OpenOrdersContainer, {extraArgs: () => createMockedStore()});
 
 describe('OpenOrders', () => {
   it('should show empty cta when there are no open orders', async () => {
-    const promises = new ResponseBuilder().getOpenOrders([]).build();
+    const mock = respond('getOpenOrders', [undefined]).with(forgeOpenOrders([]));
 
-    const result = await render()
-      .resolve(promises)
-      .inspect({emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA)});
+    const result = await render({mocks: [mock]}).inspect({emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA)});
 
     expect(result).toEqual({
       emptyCtaVisible: true,
-      api: [{getOpenOrders: undefined}],
+      network: [{getOpenOrders: [undefined]}],
     });
   });
 
   it('should show open orders that are without profit targets', async () => {
-    const promises = new ResponseBuilder().getOpenOrders([buildOrder(), buildOrder()]).build();
+    const mock = respond('getOpenOrders', [undefined]).with(forgeOpenOrders([buildOrder(), buildOrder()]));
 
-    const result = await render()
-      .resolve(promises)
-      .inspect({
-        emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
-        orderRowCount: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
-      });
+    const result = await render({mocks: [mock]}).inspect({
+      emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
+      orderRowCount: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
+    });
 
     expect(result).toEqual({
-      api: [{getOpenOrders: undefined}],
+      network: [{getOpenOrders: [undefined]}],
       emptyCtaVisible: false,
       orderRowCount: 2,
     });
   });
 
   it('should show a profit order that is in action', async () => {
-    const promises = new ResponseBuilder()
-      .getOpenOrders([buildOrder({text: 'stop price reached\nprofit-target'})])
-      .build();
+    const mock = respond('getOpenOrders', [undefined]).with(
+      forgeOpenOrders([buildOrder({text: 'stop price reached\nprofit-target'})]),
+    );
 
-    const result = await render()
-      .resolve(promises)
-      .inspect({
-        emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
-        orderRowCount: countOf(OPEN_ORDERS_CONTAINER.PROFIT_ORDER_IN_ACTION),
-      });
+    const result = await render({mocks: [mock]}).inspect({
+      emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
+      orderRowCount: countOf(OPEN_ORDERS_CONTAINER.PROFIT_ORDER_IN_ACTION),
+    });
 
     expect(result).toEqual({
-      api: [{getOpenOrders: undefined}],
+      network: [{getOpenOrders: [undefined]}],
       emptyCtaVisible: false,
       orderRowCount: 1,
     });
@@ -60,17 +56,17 @@ describe('OpenOrders', () => {
 
   it('should cancel an open order', async () => {
     const orderID1 = 'OrderID1';
-    const {getOpenOrders, orderCancel} = new ResponseBuilder()
-      .getOpenOrders([buildOrder({orderID: orderID1}), buildOrder()])
-      .orderCancel({orderID: [orderID1]})
-      .build();
 
-    const result = await render()
-      .resolve({getOpenOrders})
+    const [getOpenOrdersPromise, orderCancelPromise] = [
+      respond('getOpenOrders', [undefined]).with(forgeOpenOrders([buildOrder({orderID: orderID1}), buildOrder()])),
+      respond('orderCancel', [{orderID: [orderID1]}]).with(forgeOrderCancel([{orderID: orderID1}])),
+    ];
+
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .press(`${OPEN_ORDERS_CONTAINER.CANCEL}.${orderID1}`)
       .press(GLOBAL.MODAL_CONFIRM)
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
-      .resolve({orderCancel})
+      .resolve(orderCancelPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -84,7 +80,7 @@ describe('OpenOrders', () => {
         'orders/CANCEL_ORDER/pending',
         'orders/CANCEL_ORDER/fulfilled',
       ],
-      api: [{getOpenOrders: undefined}, {orderCancel: {orderID: ['OrderID1']}}],
+      network: [{getOpenOrders: [undefined]}, {orderCancel: [{orderID: ['OrderID1']}]}],
       emptyCtaVisible: false,
       orderRowCountBefore: 2,
       orderRowCountAfter: 1,
@@ -95,20 +91,21 @@ describe('OpenOrders', () => {
     const orderID1 = 'OrderID1';
     const profitOrderID1 = 'ProfitOrderID1';
 
-    const {getOpenOrders, orderCancelAll} = new ResponseBuilder()
-      .getOpenOrders([
-        buildOrder({orderID: orderID1}),
-        builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1}),
-      ])
-      .orderCancelAll()
-      .build();
+    const [getOpenOrdersPromise, orderCancelAllPromise] = [
+      respond('getOpenOrders', [undefined]).with(
+        forgeOpenOrders([
+          buildOrder({orderID: orderID1}),
+          builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1}),
+        ]),
+      ),
+      respond('orderCancelAll', [undefined]).with(forgeOrderCancelAll({})),
+    ];
 
-    const result = await render()
-      .resolve({getOpenOrders})
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
       .press(OPEN_ORDERS_CONTAINER.CANCEL_ALL)
       .press(GLOBAL.MODAL_CONFIRM)
-      .resolve({orderCancelAll})
+      .resolve(orderCancelAllPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -117,7 +114,7 @@ describe('OpenOrders', () => {
       });
 
     expect(result).toEqual({
-      api: [{getOpenOrders: undefined}, {orderCancelAll: undefined}],
+      network: [{getOpenOrders: [undefined]}, {orderCancelAll: [undefined]}],
       actions: [
         'orders/GET_OPEN_ORDERS/pending',
         'orders/GET_OPEN_ORDERS/fulfilled',
@@ -137,18 +134,19 @@ describe('OpenOrders', () => {
 
     const order = buildOrder({orderID: orderID1});
 
-    const {getOpenOrders, orderCancel} = new ResponseBuilder()
-      .getOpenOrders([order, builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1})])
-      .orderCancel({orderID: profitOrderID1})
-      .build();
+    const [getOpenOrdersPromise, orderCancelPromise] = [
+      respond('getOpenOrders', [undefined]).with(
+        forgeOpenOrders([order, builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1})]),
+      ),
+      respond('orderCancel', [{orderID: profitOrderID1}]).with(forgeOrderCancel([{orderID: profitOrderID1}])),
+    ];
 
-    const result = await render()
-      .resolve({getOpenOrders})
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
       .press(OPEN_ORDERS_CONTAINER.SHOW_PROFIT_ORDERS)
       .press(OPEN_ORDERS_CONTAINER.CANCEL_PROFIT)
       .press(GLOBAL.MODAL_CONFIRM)
-      .resolve({orderCancel})
+      .resolve(orderCancelPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -163,7 +161,7 @@ describe('OpenOrders', () => {
         'orders/REMOVE_PROFIT_ORDER/pending',
         'orders/REMOVE_PROFIT_ORDER/fulfilled',
       ],
-      api: [{getOpenOrders: undefined}, {orderCancel: {orderID: 'ProfitOrderID1'}}],
+      network: [{getOpenOrders: [undefined]}, {orderCancel: [{orderID: 'ProfitOrderID1'}]}],
       emptyCtaVisible: false,
       orderRowCountAfter: 1,
       orderRowCountBefore: 1,
@@ -183,23 +181,24 @@ describe('OpenOrders', () => {
 
     const order = buildOrder({orderID: orderID1});
 
-    const {getOpenOrders, orderCancel} = new ResponseBuilder()
-      .getOpenOrders([
-        order,
-        builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderIDs[0]}),
-        builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderIDs[1]}),
-        builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderIDs[2]}),
-      ])
-      .orderCancel({orderID: profitOrderIDs})
-      .build();
+    const [getOpenOrdersPromise, orderCancelPromise] = [
+      respond('getOpenOrders', [undefined]).with(
+        forgeOpenOrders([
+          order,
+          builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderIDs[0]}),
+          builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderIDs[1]}),
+          builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderIDs[2]}),
+        ]),
+      ),
+      respond('orderCancel', [{orderID: profitOrderIDs}]).with(forgeOrderCancel([{orderID: profitOrderIDs}])),
+    ];
 
-    const result = await render()
-      .resolve({getOpenOrders})
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
       .press(OPEN_ORDERS_CONTAINER.SHOW_PROFIT_ORDERS)
       .press(OPEN_ORDERS_CONTAINER.CANCEL_ALL_PROFIT)
       .press(GLOBAL.MODAL_CONFIRM)
-      .resolve({orderCancel})
+      .resolve(orderCancelPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -214,7 +213,7 @@ describe('OpenOrders', () => {
         'orders/CANCEL_ALL_PROFIT_ORDERS/pending',
         'orders/CANCEL_ALL_PROFIT_ORDERS/fulfilled',
       ],
-      api: [{getOpenOrders: undefined}, {orderCancel: {orderID: profitOrderIDs}}],
+      network: [{getOpenOrders: [undefined]}, {orderCancel: [{orderID: profitOrderIDs}]}],
       emptyCtaVisible: false,
       orderRowCountAfter: 1,
       orderRowCountBefore: 1,
@@ -231,20 +230,24 @@ describe('OpenOrders', () => {
   it('should cancel an open order with its profit targets', async () => {
     const orderID1 = 'OrderID1';
     const profitOrderID1 = 'ProfitOrderID1';
-    const {getOpenOrders, orderCancel} = new ResponseBuilder()
-      .getOpenOrders([
-        buildOrder({orderID: orderID1}),
-        builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1}),
-      ])
-      .orderCancel({orderID: [orderID1, profitOrderID1]})
-      .build();
 
-    const result = await render()
-      .resolve({getOpenOrders})
+    const [getOpenOrdersPromise, orderCancelPromise] = [
+      respond('getOpenOrders', [undefined]).with(
+        forgeOpenOrders([
+          buildOrder({orderID: orderID1}),
+          builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1}),
+        ]),
+      ),
+      respond('orderCancel', [{orderID: [orderID1, profitOrderID1]}]).with(
+        forgeOrderCancel([{orderID: orderID1}, {orderID: profitOrderID1}]),
+      ),
+    ];
+
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .press(`${OPEN_ORDERS_CONTAINER.CANCEL}.${orderID1}`)
       .press(GLOBAL.MODAL_CONFIRM)
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
-      .resolve({orderCancel})
+      .resolve(orderCancelPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -259,7 +262,7 @@ describe('OpenOrders', () => {
         'orders/CANCEL_ORDER/pending',
         'orders/CANCEL_ORDER/fulfilled',
       ],
-      api: [{getOpenOrders: undefined}, {orderCancel: {orderID: ['OrderID1', 'ProfitOrderID1']}}],
+      network: [{getOpenOrders: [undefined]}, {orderCancel: [{orderID: ['OrderID1', 'ProfitOrderID1']}]}],
       emptyCtaVisible: true,
       orderRowCountAfter: 0,
       orderRowCountBefore: 1,
@@ -271,33 +274,31 @@ describe('OpenOrders', () => {
     // TODO: very confusing to test profit orders because of stopPx, stop, price, FIX THIS
     const orderID1 = 'OrderID1';
 
-    const order = buildOrder({
+    const order = buildOrder({orderID: orderID1, price: 5000, orderQty: 500, side: SIDE.SELL, symbol: SYMBOL.XBTUSD});
+
+    const profitOrderProps = {
       orderID: orderID1,
-      price: 5000,
-      orderQty: 500,
       side: SIDE.SELL,
       symbol: SYMBOL.XBTUSD,
-    });
-    const {getOpenOrders, profitTargetOrder} = new ResponseBuilder()
-      .getOpenOrders([order])
-      .profitTargetOrder({
-        orderID: orderID1,
-        side: SIDE.SELL,
-        symbol: SYMBOL.XBTUSD,
-        stop: 5000,
-        price: 3333,
-        orderQty: 500,
-      })
-      .build();
+      stop: 5000,
+      price: 3333,
+      orderQty: 500,
+    };
 
-    const result = await render()
-      .resolve({getOpenOrders})
+    const [getOpenOrdersPromise, profitTargetOrderPromise] = [
+      respond('getOpenOrders', [undefined]).with(forgeOpenOrders([order])),
+      respond('profitTargetOrder', [profitOrderProps]).with(
+        forgeProfitTargetOrder({...createProfitTarget(profitOrderProps), timestamp: '0', orderID: '2323'}),
+      ),
+    ];
+
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .press(OPEN_ORDERS_CONTAINER.ADD_PROFIT)
       .inputText(ADD_ORDER_MODAL.PRICE, 3333)
       .inputText(ADD_ORDER_MODAL.QUANTITY, 500)
       .press(GLOBAL.MODAL_CONFIRM)
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
-      .resolve({profitTargetOrder})
+      .resolve(profitTargetOrderPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -312,17 +313,12 @@ describe('OpenOrders', () => {
         'orders/ADD_PROFIT_ORDER/pending',
         'orders/ADD_PROFIT_ORDER/fulfilled',
       ],
-      api: [
-        {getOpenOrders: undefined},
+      network: [
+        {getOpenOrders: [undefined]},
         {
-          profitTargetOrder: {
-            orderID: 'OrderID1',
-            orderQty: 500,
-            price: 3333,
-            side: 'Sell',
-            stop: 5000,
-            symbol: 'XBTUSD',
-          },
+          profitTargetOrder: [
+            {orderID: 'OrderID1', orderQty: 500, price: 3333, side: 'Sell', stop: 5000, symbol: 'XBTUSD'},
+          ],
         },
       ],
       emptyCtaVisible: false,
@@ -353,38 +349,33 @@ describe('OpenOrders', () => {
   it('should add a profit order through profit targets popup', async () => {
     const orderID1 = 'OrderID1';
     const profitOrderID1 = 'ProfitOrderID1';
+    const profitOrder = builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1});
+    const order = buildOrder({orderID: orderID1, price: 5000, orderQty: 500, side: SIDE.SELL, symbol: SYMBOL.XBTUSD});
 
-    const order = buildOrder({
+    const profitOrderProps = {
       orderID: orderID1,
-      price: 5000,
-      orderQty: 500,
       side: SIDE.SELL,
       symbol: SYMBOL.XBTUSD,
-    });
+      stop: 5000,
+      price: 3333,
+      orderQty: 500,
+    };
 
-    const profitOrder = builderProfitOrder({orderID: orderID1, profitOrderID: profitOrderID1});
+    const [getOpenOrdersPromise, profitTargetOrderPromise] = [
+      respond('getOpenOrders', [undefined]).with(forgeOpenOrders([order, profitOrder])),
+      respond('profitTargetOrder', [profitOrderProps]).with(
+        forgeProfitTargetOrder({...createProfitTarget(profitOrderProps), timestamp: '0', orderID: '2323'}),
+      ),
+    ];
 
-    const {getOpenOrders, profitTargetOrder} = new ResponseBuilder()
-      .getOpenOrders([order, profitOrder])
-      .profitTargetOrder({
-        orderID: orderID1,
-        side: SIDE.SELL,
-        symbol: SYMBOL.XBTUSD,
-        stop: 5000,
-        price: 3333,
-        orderQty: 500,
-      })
-      .build();
-
-    const result = await render()
-      .resolve({getOpenOrders})
+    const result = await render({mocks: [getOpenOrdersPromise]})
       .inspect({orderRowCountBefore: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW)})
       .press(OPEN_ORDERS_CONTAINER.SHOW_PROFIT_ORDERS)
       .press(OPEN_ORDERS_CONTAINER.ADD_PROFIT)
       .inputText(ADD_ORDER_MODAL.PRICE, 3333)
       .inputText(ADD_ORDER_MODAL.QUANTITY, 500)
       .press(GLOBAL.MODAL_CONFIRM)
-      .resolve({profitTargetOrder})
+      .resolve(profitTargetOrderPromise)
       .inspect({
         emptyCtaVisible: exists(OPEN_ORDERS_CONTAINER.EMPTY_CTA),
         orderRowCountAfter: countOf(OPEN_ORDERS_CONTAINER.ORDER_ROW),
@@ -399,17 +390,12 @@ describe('OpenOrders', () => {
         'orders/ADD_PROFIT_ORDER/pending',
         'orders/ADD_PROFIT_ORDER/fulfilled',
       ],
-      api: [
-        {getOpenOrders: undefined},
+      network: [
+        {getOpenOrders: [undefined]},
         {
-          profitTargetOrder: {
-            orderID: 'OrderID1',
-            orderQty: 500,
-            price: 3333,
-            side: 'Sell',
-            stop: 5000,
-            symbol: 'XBTUSD',
-          },
+          profitTargetOrder: [
+            {orderID: 'OrderID1', orderQty: 500, price: 3333, side: 'Sell', stop: 5000, symbol: 'XBTUSD'},
+          ],
         },
       ],
       emptyCtaVisible: false,

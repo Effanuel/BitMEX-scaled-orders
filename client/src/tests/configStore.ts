@@ -1,12 +1,19 @@
 import {isPlainObject} from 'lodash/fp';
 import {Reducer, Store, StoreEnhancer} from 'redux';
 
+interface Extra<A extends Action> {
+  getActions: () => A[];
+  clearActions: () => void;
+}
+
+type MockedStore<S, Ext, A extends Action> = Store<S, A> & Ext & Extra<A>;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default function createStore<S, A extends Action, Ext = {}, StateExt = never>(
   reducer: Reducer<S, A>,
   preloadedState?: Partial<S>,
   enhancer?: StoreEnhancer<Ext, StateExt>,
-): Store<S, A> & Ext {
+): MockedStore<S, Ext, A> {
   if (
     (typeof preloadedState === 'function' && typeof enhancer === 'function') ||
     // eslint-disable-next-line prefer-rest-params
@@ -40,12 +47,10 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
   let currentState = preloadedState as S;
   let currentListeners: (() => void)[] | null = [];
   let nextListeners = currentListeners;
-  const dispatchedActions: A[] = [];
+  let dispatchedActions: A[] = [];
 
   function ensureCanMutateNextListeners() {
-    if (nextListeners === currentListeners) {
-      nextListeners = currentListeners.slice();
-    }
+    if (nextListeners === currentListeners) nextListeners = currentListeners.slice();
   }
 
   function getState(): S {
@@ -81,13 +86,11 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
   }
 
   function dispatch(action: A) {
-    if (!isPlainObject(action)) {
+    if (!isPlainObject(action))
       throw new Error('Actions must be plain objects. ' + 'Use custom middleware for async actions.');
-    }
 
-    if (typeof action.type === 'undefined') {
+    if (typeof action.type === 'undefined')
       throw new Error('Actions may not have an undefined "type" property. ' + 'Have you misspelled a constant?');
-    }
 
     dispatchedActions.push(action);
 
@@ -102,13 +105,16 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
     return action;
   }
 
-  // dispatch({type: ActionTypes.INIT} as A);
+  function clearActions() {
+    dispatchedActions = [];
+  }
 
-  const store = {
+  return {
     dispatch: dispatch,
     getState,
     getActions,
     subscribe,
-  } as unknown as any;
-  return store;
+    clearActions,
+    replaceReducer: () => {},
+  } as unknown as MockedStore<S, Ext, A>;
 }

@@ -1,11 +1,11 @@
 import ScaledContainer from './ScaledOrders';
 import {COMPONENTS, SCALED_CONTAINER} from 'data-test-ids';
-import {toastSpy} from 'tests/spies';
-import {countOf, exists, isDisabled, storeActions} from 'tests/wrench/inspectors';
-import {createRenderer, Wrench} from 'tests/wrench/Wrench';
-import {ResponseBuilder} from 'tests/responses';
 import {createScaledOrders, DISTRIBUTION} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
+import {forgeResult} from 'tests/responses';
+import {createRenderer, storeActions} from 'tests/influnt';
+import {createMockedStore} from 'tests/mockStore';
+import {InfluntEngine, respond, isDisabled, exists, countOf} from 'influnt';
 
 interface ScaledInputs {
   orderQty: number;
@@ -18,18 +18,18 @@ interface ScaledInputs {
 }
 
 function fillInputs({orderQty, n_tp, start, end, stop, symbol, side}: ScaledInputs) {
-  return (driver: Wrench) => {
-    !!symbol && driver.selectOption(COMPONENTS.SELECT_DROPDOWN, symbol);
-    !!side && driver.toggle(SCALED_CONTAINER.SIDE, side);
-    !!stop && driver.inputText(SCALED_CONTAINER.STOP_LOSS_INPUT, stop);
-    driver.inputText(SCALED_CONTAINER.QUANTITY_INPUT, orderQty);
-    driver.inputText(SCALED_CONTAINER.ORDER_COUNT_INPUT, n_tp);
-    driver.inputText(SCALED_CONTAINER.RANGE_START_INPUT, start);
-    driver.inputText(SCALED_CONTAINER.RANGE_END_INPUT, end);
+  return (engine: InfluntEngine<any, any>) => {
+    !!symbol && engine.selectOption(COMPONENTS.SELECT_DROPDOWN, symbol);
+    !!side && engine.toggle(SCALED_CONTAINER.SIDE, side);
+    !!stop && engine.inputText(SCALED_CONTAINER.STOP_LOSS_INPUT, stop);
+    engine.inputText(SCALED_CONTAINER.QUANTITY_INPUT, orderQty);
+    engine.inputText(SCALED_CONTAINER.ORDER_COUNT_INPUT, n_tp);
+    engine.inputText(SCALED_CONTAINER.RANGE_START_INPUT, start);
+    engine.inputText(SCALED_CONTAINER.RANGE_END_INPUT, end);
   };
 }
 
-const render = createRenderer(ScaledContainer);
+const render = createRenderer(ScaledContainer, {extraArgs: () => createMockedStore()});
 
 describe('ScaledOrders', () => {
   it('should render submit button as disabled', async () => {
@@ -41,43 +41,19 @@ describe('ScaledOrders', () => {
   it('should submit sell scaled orders without stoploss', async () => {
     const input = {orderQty: 1000, n_tp: 2, start: 1000, end: 2000, side: SIDE.SELL, symbol: SYMBOL.XBTUSD, stop: 0};
     const orders = createScaledOrders({ordersProps: input, distribution: DISTRIBUTION.Uniform});
-
-    const promises = new ResponseBuilder().orderBulk(orders).build();
+    const promise = respond('orderBulk', [orders]).with(forgeResult(orders));
 
     const result = await render()
-      .addSpies(toastSpy)
       .apply(fillInputs(input))
       .press(SCALED_CONTAINER.SUBMIT_BUTTON)
-      .expectExists(COMPONENTS.SPINNER)
-      .resolve(promises)
+      .inspect({spinnerVisible: exists(COMPONENTS.SPINNER)})
+      .resolve(promise)
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
       actions: ['preview/PREVIEW_POST_ORDER/pending', 'preview/PREVIEW_POST_ORDER/fulfilled'],
-      api: [
-        {
-          orderBulk: [
-            {
-              execInst: 'ParticipateDoNotInitiate',
-              ordType: 'Limit',
-              orderQty: 500,
-              price: 1000,
-              side: 'Sell',
-              symbol: 'XBTUSD',
-              text: 'order_1',
-            },
-            {
-              execInst: 'ParticipateDoNotInitiate',
-              ordType: 'Limit',
-              orderQty: 500,
-              price: 2000,
-              side: 'Sell',
-              symbol: 'XBTUSD',
-              text: 'order_2',
-            },
-          ],
-        },
-      ],
+      network: [{orderBulk: [orders]}],
+      spinnerVisible: true,
       toast: [{message: 'Submitted Scaled Orders', toastPreset: 'success'}],
     });
   });
@@ -85,98 +61,47 @@ describe('ScaledOrders', () => {
   it('should submit buy scaled orders without stoploss', async () => {
     const input = {orderQty: 1000, n_tp: 2, start: 1000, end: 2000, side: SIDE.BUY, symbol: SYMBOL.XBTUSD, stop: 0};
     const orders = createScaledOrders({ordersProps: input, distribution: DISTRIBUTION.Uniform});
-
-    const promises = new ResponseBuilder().orderBulk(orders).build();
+    const promise = respond('orderBulk', [orders]).with(forgeResult(orders));
 
     const result = await render()
-      .addSpies(toastSpy)
       .apply(fillInputs(input))
       .press(SCALED_CONTAINER.SUBMIT_BUTTON)
-      .expectExists(COMPONENTS.SPINNER)
-      .resolve(promises)
+      .inspect({spinnerVisible: exists(COMPONENTS.SPINNER)})
+      .resolve(promise)
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
       actions: ['preview/PREVIEW_POST_ORDER/pending', 'preview/PREVIEW_POST_ORDER/fulfilled'],
-      api: [
-        {
-          orderBulk: [
-            {
-              execInst: 'ParticipateDoNotInitiate',
-              ordType: 'Limit',
-              orderQty: 500,
-              price: 1000,
-              side: 'Buy',
-              symbol: 'XBTUSD',
-              text: 'order_1',
-            },
-            {
-              execInst: 'ParticipateDoNotInitiate',
-              ordType: 'Limit',
-              orderQty: 500,
-              price: 2000,
-              side: 'Buy',
-              symbol: 'XBTUSD',
-              text: 'order_2',
-            },
-          ],
-        },
-      ],
+      network: [{orderBulk: [orders]}],
+      spinnerVisible: true,
       toast: [{message: 'Submitted Scaled Orders', toastPreset: 'success'}],
     });
   });
 
   it('should submit scaled orders with stoploss', async () => {
-    const orders = createScaledOrders({
-      ordersProps: {orderQty: 1000, n_tp: 2, start: 1000, end: 20, side: SIDE.SELL, symbol: SYMBOL.XBTUSD, stop: 3000},
-      distribution: DISTRIBUTION.Uniform,
-    });
-
-    const promises = new ResponseBuilder().orderBulk(orders).build();
+    const input = {
+      orderQty: 1000,
+      n_tp: 2,
+      start: 1000,
+      end: 20,
+      side: SIDE.SELL,
+      symbol: SYMBOL.XBTUSD,
+      stop: 3000,
+    };
+    const orders = createScaledOrders({ordersProps: input, distribution: DISTRIBUTION.Uniform});
+    const promise = respond('orderBulk', [orders]).with(forgeResult(orders));
 
     const result = await render()
-      .addSpies(toastSpy)
       .apply(fillInputs({orderQty: 1000, n_tp: 2, start: 1000, end: 20, stop: 3000}))
       .press(SCALED_CONTAINER.SUBMIT_BUTTON)
-      .expectExists(COMPONENTS.SPINNER)
-      .resolve(promises)
+      .inspect({spinnerVisible: exists(COMPONENTS.SPINNER)})
+      .resolve(promise)
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
       actions: ['preview/PREVIEW_POST_ORDER/pending', 'preview/PREVIEW_POST_ORDER/fulfilled'],
-      api: [
-        {
-          orderBulk: [
-            {
-              execInst: 'ParticipateDoNotInitiate',
-              ordType: 'Limit',
-              orderQty: 500,
-              price: 1000,
-              side: 'Sell',
-              symbol: 'XBTUSD',
-              text: 'order_1',
-            },
-            {
-              execInst: 'ParticipateDoNotInitiate',
-              ordType: 'Limit',
-              orderQty: 500,
-              price: 20,
-              side: 'Sell',
-              symbol: 'XBTUSD',
-              text: 'order_2',
-            },
-            {
-              execInst: 'LastPrice,ReduceOnly',
-              ordType: 'Stop',
-              orderQty: 1000,
-              side: 'Buy',
-              stopPx: 3000,
-              symbol: 'XBTUSD',
-              text: 'stop',
-            },
-          ],
-        },
-      ],
+      network: [{orderBulk: [orders]}],
+      spinnerVisible: true,
       toast: [{message: 'Submitted Scaled Orders', toastPreset: 'success'}],
     });
   });
