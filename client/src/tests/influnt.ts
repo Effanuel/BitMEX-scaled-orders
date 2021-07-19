@@ -6,7 +6,7 @@ import {networkProxy} from './proxy';
 
 const toastSpy = spyModule('toast', {
   module: toast,
-  parseArgs: (value) => value[0]?.props,
+  parseArgs: (value: any[]) => value[0]?.props,
 });
 
 export const createRenderer = configureInflunt({
@@ -31,4 +31,8 @@ export function getState<K extends keyof AppState>(
     const module = extraArgs.getState()[moduleKey];
     return key ? module[key] : module;
   };
+}
+
+export function classNameOf(testID: string): Inspector<string | undefined> {
+  return ({locateAll}) => locateAll(testID).className;
 }

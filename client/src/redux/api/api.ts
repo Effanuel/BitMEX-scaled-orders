@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {Api as BitmexAPI} from './bitmex';
 import {createProfitTarget, MarketOrderProps, ProfitTarget, ProfitTargetProps, RegularOrder, StopLoss} from 'utils';
 import {EXEC_INST, Order, ORD_TYPE} from './bitmex/types';

@@ -1,8 +1,8 @@
 import {MainContainer} from 'components';
-import {exists, textOf} from 'tests/wrench/inspectors';
 import {MAIN_CONTAINER} from 'data-test-ids';
 import React from 'react';
 import {createComponentRenderer} from 'tests/influnt';
+import {exists, textOf} from 'influnt';
 
 const render = createComponentRenderer(MainContainer, {
   passProps: {label: 'LABEL', children: undefined, description: 'Description'},

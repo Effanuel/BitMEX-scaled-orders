@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "target": "es2016",
+    "target": "esnext",
     "module": "esnext",
     "noEmit": true,
     "sourceMap": true,
