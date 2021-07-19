@@ -64,7 +64,7 @@
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.1.0",
     "hoist-non-react-statics": "^3.3.2",
-    "influnt": "^1.1.0",
+    "influnt": "^1.2.0",
     "node-sass": "^4.14.1",
     "prettier": "^2.3.0",
     "react-test-renderer": "16.9.0",
