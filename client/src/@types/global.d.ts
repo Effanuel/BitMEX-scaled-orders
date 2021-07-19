@@ -3,9 +3,7 @@ interface Action {
   readonly payload?: any;
 }
 
-type obj = Record<string, unknown>;
-
-type unnull = undefined | null;
+type JsObj = Record<string, unknown>;
 
 type iterobject<T = string> = {[key: string]: T};
 

@@ -29,7 +29,7 @@ export function useHooks() {
 
   useEffect(() => {
     if (hasCrossedSecondTime) {
-      //@ts-ignore
+      //@ts-expect-error
       dispatch(postMarketCrossOrder());
     }
   }, [dispatch, hasCrossedSecondTime]);

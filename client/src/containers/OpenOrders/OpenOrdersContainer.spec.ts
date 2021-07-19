@@ -84,6 +84,7 @@ describe('OpenOrders', () => {
       emptyCtaVisible: false,
       orderRowCountBefore: 2,
       orderRowCountAfter: 1,
+      toast: [{message: 'Order was cancelled.', toastPreset: 'success'}],
     });
   });
 
@@ -267,6 +268,7 @@ describe('OpenOrders', () => {
       orderRowCountAfter: 0,
       orderRowCountBefore: 1,
       orders: {openOrders: [], ordersError: '', profitOrders: [], ordersLoading: false, profitOrdersInAction: []},
+      toast: [{message: 'Order was cancelled.', toastPreset: 'success'}],
     });
   });
 
@@ -343,6 +345,7 @@ describe('OpenOrders', () => {
           },
         ],
       },
+      toast: [{message: 'Profit target at price 3333 was placed', toastPreset: 'success'}],
     });
   });
 
@@ -421,6 +424,7 @@ describe('OpenOrders', () => {
           },
         ],
       },
+      toast: [{message: 'Profit target at price 3333 was placed', toastPreset: 'success'}],
     });
   });
 });

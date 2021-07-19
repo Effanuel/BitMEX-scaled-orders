@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {Api as BitmexAPI} from './bitmex';
 import {createProfitTarget, MarketOrderProps, ProfitTarget, ProfitTargetProps, RegularOrder, StopLoss} from 'utils';
 import {EXEC_INST, Order, ORD_TYPE} from './bitmex/types';
@@ -12,7 +11,9 @@ export type APIType = ClassMethods<typeof API>;
 
 type Exchange = 'bitmex';
 
-type GetQuery = <K extends keyof API['availableMethods']['bitmex']>(method: K) => API['availableMethods']['bitmex'][K];
+export type AvailableMethods = API['availableMethods']['bitmex'];
+
+type GetQuery = <K extends keyof AvailableMethods>(method: K) => AvailableMethods[K];
 
 export class API implements APIType {
   constructor(private activeExchange: Exchange = 'bitmex', private bitmex = new BitmexAPI()) {}
@@ -43,39 +44,5 @@ export type MethodNames = KeysByType<API, Function>;
 export type MethodProps = Parameters<ClassMethods<typeof API>[MethodNames]>[number];
 
 export type MockedMethods = {
-  [key in MethodNames]: Parameters<ClassMethods<typeof API>[key]>[number] extends never
-    ? {result: any}
-    : {result: any; props: Parameters<ClassMethods<typeof API>[key]>[number]};
-};
-
-export class MOCK extends API {
-  constructor(private mockResponsesOverride: Partial<MockedMethods> = {}) {
-    super();
-    this.mockResponsesOverride = mockResponsesOverride;
-  }
-
-  getQuery(method: MethodNames) {
-    return (props: MethodProps) => {
-      if (Object.keys(this.mockResponsesOverride).includes(method)) {
-        //@ts-ignore
-        const {props: mockedProps, result} = this.mockResponsesOverride?.[method] ?? {};
-
-        if (_.isEqual(props, mockedProps)) {
-          return result;
-        } else {
-          console.error(
-            `Expected props of method ${method}:\n${JSON.stringify(props)}\nMocked props:\n${JSON.stringify(
-              mockedProps,
-            )}`,
-          );
-        }
-      } else {
-        throw new Error(
-          `No mocked response for method ${method} was found.\nMocked methods: ${Object.keys(
-            this.mockResponsesOverride,
-          )}`,
-        );
-      }
-    };
-  }
-}
+  [key in keyof API['availableMethods']['bitmex']]: {props: any; result: any};
+}[];

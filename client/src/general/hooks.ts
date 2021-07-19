@@ -9,5 +9,7 @@ export function useSimpleDispatch(dispatch: Dispatch, func: () => AnyAction) {
 }
 
 export function useModal() {
-  return React.useContext(ModalContext);
+  const context = React.useContext(ModalContext);
+  if (!context) throw new Error('Modal context: add wrapper');
+  return context;
 }

@@ -11,7 +11,7 @@ import {trailingReducer as trailing} from '../modules/trailing/trailingModule';
 import {crossReducer as cross} from '../modules/cross/crossModule';
 import {ordersReducer as orders} from '../modules/orders/ordersModule';
 
-export const rootReducer = combineReducers({preview, websocket, trailing, cross, orders});
+const rootReducer = combineReducers({preview, websocket, trailing, cross, orders});
 
 const reduxWebsocketMiddleware = reduxWebsocket();
 
@@ -26,4 +26,4 @@ function createStore(preloadedState: Partial<AppState> = {}, api: APIType = new 
   });
 }
 
-export {createStore};
+export {createStore, rootReducer};

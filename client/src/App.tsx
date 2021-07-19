@@ -34,8 +34,7 @@ const App = React.memo(() => {
 
   React.useEffect(() => {
     if (connected) {
-      //TODO: fix argument
-      dispatch(getBalance(''));
+      dispatch(getBalance());
       dispatch(wsAuthenticate());
       dispatch(wsSubscribeTo('order'));
     }

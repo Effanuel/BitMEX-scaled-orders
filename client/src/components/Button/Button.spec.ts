@@ -24,9 +24,8 @@ describe('ButtonDriver', () => {
     [SIDE.SELL, 'button_sell'],
     ['textSell', 'text_sell'],
   ])('should return %s className for %s variant', async (variant, expectedClassName) => {
-    const result = await render({passProps: {variant: variant as ButtonVariants}}).inspect({
-      className: classNameOf('default:testID'),
-    });
+    const result = await render({passProps: {variant: variant as ButtonVariants}}) //
+      .inspect({className: classNameOf('default:testID')});
 
     expect(result).toEqual({className: expectedClassName});
   });

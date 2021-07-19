@@ -64,7 +64,7 @@ describe('TrailingLimitContainer', () => {
       instrument: [{symbol: SYMBOL.XBTUSD, askPrice: 501, bidPrice: 500.5}],
     });
 
-    const result = await render({mocks: [mock], extraArgs: createMockedStore({websocket})})
+    const result = await render({extraArgs: createMockedStore({websocket})})
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
       .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
       .resolve(mock)
@@ -96,7 +96,7 @@ describe('TrailingLimitContainer', () => {
     );
 
     const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOL.XBTUSD});
-    const result = await render({mocks: [mock]})
+    const result = await render()
       .execute(openWebsocket())
       .execute(sendWebsocketMessage(currentOrderBook))
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, 200)
@@ -136,7 +136,7 @@ describe('TrailingLimitContainer', () => {
 
     const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOL.XBTUSD});
     const newOrderBook = updateInstrument({askPrice: 10321, bidPrice: 10320.5, symbol: SYMBOL.XBTUSD});
-    const result = await render({mocks: [limitOrderPromise, amendOrderPromise]})
+    const result = await render()
       .execute(openWebsocket())
       .execute(sendWebsocketMessage(currentOrderBook))
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, 200)

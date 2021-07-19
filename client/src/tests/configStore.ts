@@ -115,6 +115,7 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
     getActions,
     subscribe,
     clearActions,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     replaceReducer: () => {},
   } as unknown as MockedStore<S, Ext, A>;
 }

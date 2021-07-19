@@ -1,4 +1,10 @@
-import {createAsyncThunk, AsyncThunk, Dispatch, createAction as createAction_toolkit} from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  AsyncThunk,
+  Dispatch,
+  createAction as createAction_toolkit,
+  ActionCreatorWithPreparedPayload,
+} from '@reduxjs/toolkit';
 import {HttpResponse} from 'redux/api/bitmex';
 import {API} from 'redux/api/api';
 import {AppState} from 'redux/models/state';
@@ -8,8 +14,13 @@ import {ACTIONS_orders} from 'redux/modules/orders/types';
 import {ACTIONS_preview} from 'redux/modules/preview/types';
 import {ACTIONS_trailing} from 'redux/modules/trailing/types';
 
-export const createAction = <P = undefined>(actionName: string) =>
+export const createAction = <P = void>(actionName: string) =>
   createAction_toolkit(actionName, (payload: P) => ({payload}));
+
+export type CreateAction = {
+  success: ActionCreatorWithPreparedPayload<[any], unknown, string, never, never>;
+  error: ActionCreatorWithPreparedPayload<[string], string, string, never, never>;
+};
 
 const reducerActions = [...ACTIONS_preview, ...ACTIONS_trailing, ...ACTIONS_cross, ...ACTIONS_orders];
 
@@ -56,11 +67,10 @@ export function createThunkV2<K extends keyof BitmexMethods, P extends Parameter
       //@ts-expect-error
       const {data} = await API.getQuery(apiMethod)(adaptedPayload);
       //@ts-expect-error
-      const responseData = {data: parseResponse(data), statusCode: data.statusCode};
+      const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
       const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
       return {...responseData, ...extraData};
     } catch (err) {
-      console.log('ERR, ', err);
       return rejectWithValue(formatErrorMessage(err));
     }
   });

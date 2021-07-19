@@ -1,10 +1,9 @@
+import {hocFacade} from 'influnt';
 import React from 'react';
 import {Provider} from 'react-redux';
 import {ModalProvider} from 'context/modal-context';
 import {ChakraProvider} from '@chakra-ui/react';
-import {AppProvider} from 'context/app-context';
 import {MockedStore} from './mockStore';
-import {hocFacade} from 'influnt';
 
 class ErrorBoundary<P> extends React.Component<P, {hasError: boolean}> {
   constructor(props: P) {
@@ -27,13 +26,14 @@ class ErrorBoundary<P> extends React.Component<P, {hasError: boolean}> {
   }
 }
 
-export const withStore3 = (store: MockedStore) =>
+export const withStore = (store: MockedStore) =>
   hocFacade({
     providers: [
       ErrorBoundary, //
       [Provider, {props: {store}}],
       ChakraProvider,
       ModalProvider,
-      AppProvider,
     ],
   });
+
+export const componentContext = () => hocFacade({providers: [ChakraProvider]});

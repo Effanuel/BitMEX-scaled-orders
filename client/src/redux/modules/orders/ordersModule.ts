@@ -95,6 +95,7 @@ export const ordersReducer = createReducer(defaultState, (builder) =>
       state.profitOrders = [...state.profitOrders, payload.data];
     })
     .addCase(cancelProfitOrder.fulfilled, (state, {payload}) => {
-      state.profitOrders = state.profitOrders.filter(({orderID}) => orderID !== payload.data.orderID);
+      //@ts-expect-error
+      state.profitOrders = state.profitOrders.filter(({orderID}) => orderID !== payload.orderID);
     }),
 );

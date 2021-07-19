@@ -28,7 +28,7 @@ export default React.memo(function TrailingLimitOrderContainer() {
     }
   }, [dispatch, trailingOrderPrice, quantity, side, symbol]);
 
-  const cancelOrder = React.useCallback(() => void dispatch(cancelTrailingOrder(undefined)), [dispatch]);
+  const cancelOrder = React.useCallback(() => void dispatch(cancelTrailingOrder({} as any)), [dispatch]);
 
   const toggleInstrument = React.useCallback(
     (symbol: SYMBOL) => {

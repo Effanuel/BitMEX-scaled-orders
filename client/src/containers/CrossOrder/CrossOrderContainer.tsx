@@ -6,7 +6,6 @@ import {CROSS_ORDER_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/cross-label-presenter';
 import {clearCrossOrder, createCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
-import {useSimpleDispatch} from 'general/hooks';
 
 export default React.memo(function CrossOrderContainer() {
   const dispatch = useDispatch();
@@ -26,11 +25,12 @@ export default React.memo(function CrossOrderContainer() {
     }
   }, [dispatch, price, quantity, side, symbol]);
 
-  const cancelCrossOrder = useSimpleDispatch(dispatch, clearCrossOrder);
+  const cancelCrossOrder = React.useCallback(() => void dispatch(clearCrossOrder()), [dispatch]);
 
-  const buttonLabel = React.useMemo(() => {
-    return buildOrderPresenter(connected, side, wsCrossPrice, crossOrderPrice);
-  }, [connected, crossOrderPrice, side, wsCrossPrice]);
+  const buttonLabel = React.useMemo(
+    () => buildOrderPresenter(connected, side, wsCrossPrice, crossOrderPrice),
+    [connected, crossOrderPrice, side, wsCrossPrice],
+  );
 
   const renderFirstRow = React.useMemo(() => {
     const isSubmitButtonDisabled = !quantity || +quantity > 20e6 || !price || !wsCrossPrice || buttonLabel.disabled;

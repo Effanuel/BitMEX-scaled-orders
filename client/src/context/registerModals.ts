@@ -17,7 +17,7 @@ export type RegisteredModals = typeof registeredModals;
 
 export type Modals = {[key in keyof RegisteredModals]: (modalProps: InferProps<RegisteredModals[key]>) => void};
 
-export const registeredModals = {
+const registeredModals = {
   showCancelOrder: CancelOrderModal,
   showCancelProfitOrder: CancelProfitOrderModal,
   showCancelAllOrders: CancelAllOrdersModal,

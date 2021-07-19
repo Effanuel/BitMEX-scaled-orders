@@ -28,3 +28,9 @@ function mockComponent(name: string, real: {[key: string]: unknown} = {}) {
 
 //@ts-ignore
 global.flushPromises = flushPromises;
+
+jest.mock('./redux/api/api', () => {
+  return {
+    API: require('./tests/proxy').networkProxy.setNetworkTarget(jest.requireActual('./redux/api/api').API),
+  };
+});

@@ -202,12 +202,11 @@ class MyHTTPClient {
     // const response = await axios.post(path, payload);
     // const {data, success} = response.data;
     // return {data, success};
-    console.log('make not mokced request');
     return axios.post(path, payload);
   }
 
   _parseData<D, Args extends string>(data: D, args: Args[] = []) {
-    const parsedData: obj[] | obj = typeof data === 'string' ? JSON.parse(data) : data;
+    const parsedData: JsObj[] | JsObj = typeof data === 'string' ? JSON.parse(data) : data;
     const dataElement = !Array.isArray(parsedData) ? parsedData : parsedData[0];
     return _.pick([...args, 'text'], dataElement);
   }
@@ -220,7 +219,6 @@ class MyHTTPClient {
     bodyType?: BodyType,
     secureByDefault?: boolean,
   ): Promise<HttpResponse<P>> {
-    console.log('REQUEST222', this._makeRequest);
     const payload = {
       data: body,
       method,

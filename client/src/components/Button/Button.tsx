@@ -1,7 +1,7 @@
 import React from 'react';
 import {Spinner} from '@chakra-ui/react';
 import cx from 'classnames';
-import {SIDE} from 'redux/api/bitmex/types';
+import {SIDE} from '../../redux/api/bitmex/types';
 import {COMPONENTS} from 'data-test-ids';
 import styles from './Button.module.scss';
 

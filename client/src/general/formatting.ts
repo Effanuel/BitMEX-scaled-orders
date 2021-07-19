@@ -2,7 +2,7 @@ import {INSTRUMENT_PARAMS} from 'utils';
 import {SYMBOL} from '../redux/api/bitmex/types';
 
 // @TODO: parse price as string
-export function formatPrice(price: number | unnull): string {
+export function formatPrice(price: number | undefined | null): string {
   if (!price) {
     return '';
   }

@@ -31,7 +31,7 @@ describe('MarketOrder', () => {
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
-      actions: ['preview/PREVIEW_POST_MARKET_ORDER/success'],
+      actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
       network: [{marketOrder: [{orderQty: 1113, symbol: SYMBOL.XBTUSD, side: SIDE.BUY}]}],
       spinnerIsVisible: true,
       toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
@@ -51,7 +51,7 @@ describe('MarketOrder', () => {
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
-      actions: ['preview/PREVIEW_POST_MARKET_ORDER/success'],
+      actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
       network: [{marketOrder: [{orderQty: 111, side: 'Sell', symbol: 'XBTUSD'}]}],
       spinnerIsVisible: true,
       toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
@@ -72,7 +72,7 @@ describe('MarketOrder', () => {
       .inspect({actions: storeActions()});
 
     expect(result).toEqual({
-      actions: ['preview/PREVIEW_POST_MARKET_ORDER/success'],
+      actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
       spinnerIsVisible: true,
       network: [{marketOrder: [{orderQty: 111, side: 'Sell', symbol: 'ETHUSD'}]}],
       toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],

@@ -20,9 +20,10 @@ export function CancelOrderModal({orderID}: Props) {
     shallowEqual,
   );
 
-  const profitOrderIDs = React.useMemo(() => {
-    return (groupedOrders?.[orderID] ?? []).map(({orderID}) => orderID);
-  }, [groupedOrders, orderID]);
+  const profitOrderIDs = React.useMemo(
+    () => (groupedOrders?.[orderID] ?? []).map(({orderID}) => orderID),
+    [groupedOrders, orderID],
+  );
 
   const emitConfirm = React.useCallback(() => {
     if (order) {

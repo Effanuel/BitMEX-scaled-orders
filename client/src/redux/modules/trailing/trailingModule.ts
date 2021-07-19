@@ -19,7 +19,7 @@ export const changeTrailingOrderSymbol = createAction<SYMBOL>(types.CHANGE_TRAIL
 export const postTrailingOrder = createThunkV2({
   actionName: types.POST_TRAILING_ORDER,
   apiMethod: 'limitOrder',
-  parseResponse: (data) => ({orderID: data.orderID, price: data.price}),
+  parseResponse: (data) => ({orderID: data.orderID, price: data.price, text: data.text}),
   payloadToReturn: 'side',
 });
 
