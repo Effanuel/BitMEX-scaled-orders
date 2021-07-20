@@ -4,6 +4,7 @@ import {INSTRUMENT_PARAMS} from 'utils';
 
 describe('formatPrice()', () => {
   const {formatPrice} = formatting;
+
   it('should format price', () => {
     expect(formatPrice(100_000.5555555)).toEqual('100,000.55');
     expect(formatPrice(100_000.1)).toEqual('100,000.10');
@@ -18,6 +19,7 @@ describe('formatPrice()', () => {
 
 describe('tickerRound()', () => {
   const {tickerRound} = formatting;
+
   it('should format XBTUSD', () => {
     const symbol = SYMBOL.XBTUSD;
     expect(tickerRound(1_111.12345, symbol)).toEqual(1111);
@@ -42,6 +44,7 @@ describe('tickerRound()', () => {
 
 describe('parseNumber()', () => {
   const {parseNumber} = formatting;
+
   it('should format XBTUSD', () => {
     const symbol = SYMBOL.XBTUSD;
     const {decimal_rounding} = INSTRUMENT_PARAMS[symbol];
@@ -69,11 +72,12 @@ describe('parseNumber()', () => {
   });
 });
 
-describe('format123', () => {
+describe('format()', () => {
   const {format} = formatting;
 
   describe('Without decimals', () => {
     const decimal = {len: 1, delim: ','};
+
     it('should format if value has even numbers', () => {
       expect(format(1234567891, {decimal, whole: {len: 2, delim: '+'}})).toEqual('12+34+56+78+91,0');
     });
@@ -89,6 +93,7 @@ describe('format123', () => {
 
   describe('With decimals', () => {
     const decimal = {len: 2, delim: ','};
+
     it('should format if value has even whole numbers', () => {
       expect(format(1234567891.888888, {decimal, whole: {len: 2, delim: '+'}})).toEqual('12+34+56+78+91,88');
     });

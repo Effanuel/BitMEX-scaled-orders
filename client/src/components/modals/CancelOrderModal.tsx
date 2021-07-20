@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallowEqual, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Modal} from 'components';
 import {cancelOrder} from 'redux/modules/orders/ordersModule';
 import {AppState} from 'redux/models/state';
@@ -12,13 +12,8 @@ interface Props {
 export function CancelOrderModal({orderID}: Props) {
   const dispatch = useDispatch();
 
-  const {order, groupedOrders} = useSelector(
-    (state: AppState) => ({
-      order: orderSelector(state, {orderID}),
-      groupedOrders: groupedOrdersSelector(state),
-    }),
-    shallowEqual,
-  );
+  const order = useSelector((state: AppState) => orderSelector(state, {orderID}));
+  const groupedOrders = useSelector(groupedOrdersSelector);
 
   const profitOrderIDs = React.useMemo(
     () => (groupedOrders?.[orderID] ?? []).map(({orderID}) => orderID),
