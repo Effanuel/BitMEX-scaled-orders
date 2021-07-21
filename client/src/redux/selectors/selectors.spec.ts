@@ -23,7 +23,7 @@ import {
   mockCrossState,
   mockOrdersState,
 } from 'tests/mockData/orders';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 
 describe('Selectors', () => {
   const mockState: AppState = {

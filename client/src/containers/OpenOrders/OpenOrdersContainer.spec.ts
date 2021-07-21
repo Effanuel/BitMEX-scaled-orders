@@ -2,11 +2,12 @@ import {OpenOrdersContainer} from 'containers';
 import {ADD_ORDER_MODAL, GLOBAL, OPEN_ORDERS_CONTAINER} from 'data-test-ids';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {builderProfitOrder, buildOrder} from 'tests/builders';
-import {createRenderer, getState, storeActions} from 'tests/influnt';
+import {createRenderer} from 'tests/influnt';
 import {countOf, exists, respond} from 'influnt';
 import {forgeOpenOrders, forgeOrderCancel, forgeOrderCancelAll, forgeProfitTargetOrder} from 'tests/responses';
 import {createMockedStore} from 'tests/mockStore';
 import {createProfitTarget} from 'utils';
+import {getState, storeActions} from 'tests/helpers';
 
 const render = createRenderer(OpenOrdersContainer, {extraArgs: () => createMockedStore()});
 

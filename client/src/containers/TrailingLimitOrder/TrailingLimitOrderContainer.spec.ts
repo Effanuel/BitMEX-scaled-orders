@@ -5,8 +5,8 @@ import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {partialInstrument, updateInstrument} from 'tests/websocketData/instrument';
 import {partialOrder} from 'tests/websocketData/order';
 import {forgeAmendOrder, forgeLimitOrder} from 'tests/responses';
-import {openWebsocket, sendWebsocketMessage} from 'tests/helpers';
-import {createRenderer, getState, storeActions} from 'tests/influnt';
+import {getState, openWebsocket, sendWebsocketMessage, storeActions} from 'tests/helpers';
+import {createRenderer} from 'tests/influnt';
 import {textOf, isDisabled, respond} from 'influnt';
 import {createMockedStore} from 'tests/mockStore';
 

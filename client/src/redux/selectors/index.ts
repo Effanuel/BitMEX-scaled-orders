@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {createSelector} from '@reduxjs/toolkit';
 import {SYMBOL, SIDE, Order} from '../../redux/api/bitmex/types';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 import {INSTRUMENT_PARAMS, RegularOrder, StopLoss} from 'utils';
 import {parseNumber} from 'general/formatting';
 
@@ -54,19 +54,20 @@ export const trailingOrderStatusSelector = createSelector(
 
 export const trailingOrderStatus = createSelector([getTrailingOrderStatus], (status) => status);
 
-export const websocketBidAskPrices = createSelector([table_instrument, getTrailingOrderSymbol], (data, symbol):
-  | CurrentPrice
-  | undefined => {
-  for (const dataRow of data) {
-    if (dataRow.symbol === symbol && dataRow.askPrice && dataRow.bidPrice) {
-      return {
-        askPrice: dataRow.askPrice,
-        bidPrice: dataRow.bidPrice,
-      };
+export const websocketBidAskPrices = createSelector(
+  [table_instrument, getTrailingOrderSymbol],
+  (data, symbol): CurrentPrice | undefined => {
+    for (const dataRow of data) {
+      if (dataRow.symbol === symbol && dataRow.askPrice && dataRow.bidPrice) {
+        return {
+          askPrice: dataRow.askPrice,
+          bidPrice: dataRow.bidPrice,
+        };
+      }
     }
-  }
-  return undefined;
-});
+    return undefined;
+  },
+);
 
 export const allWebsocketBidAskPrices = createSelector([table_instrument], (data): SymbolPrices[] | undefined =>
   data.map(({symbol, askPrice, bidPrice}) => ({
@@ -124,18 +125,19 @@ export const hasCrossedSecondTimeSelector = createSelector(
     (crossOrderSide === SIDE.BUY ? currentPrice >= orderPrice : currentPrice <= orderPrice),
 );
 
-export const ordersAverageEntrySelector = createSelector([getOrders, getShowPreview], (orders, previewTable):
-  | number
-  | void => {
-  if (previewTable && orders?.length) {
-    const regularOrders = orders.filter((order) => !('stopPx' in order)) as RegularOrder[];
-    const total_quantity = regularOrders.reduce((total, n) => total + n.orderQty, 0);
+export const ordersAverageEntrySelector = createSelector(
+  [getOrders, getShowPreview],
+  (orders, previewTable): number | void => {
+    if (previewTable && orders?.length) {
+      const regularOrders = orders.filter((order) => !('stopPx' in order)) as RegularOrder[];
+      const total_quantity = regularOrders.reduce((total, n) => total + n.orderQty, 0);
 
-    const contract_value = regularOrders.reduce((total, n) => total + n.orderQty / n.price, 0);
+      const contract_value = regularOrders.reduce((total, n) => total + n.orderQty / n.price, 0);
 
-    return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
-  }
-});
+      return Math.round((total_quantity / contract_value) * 10_000) / 10_000;
+    }
+  },
+);
 
 export const ordersRiskSelector = createSelector(
   [getOrders, ordersAverageEntrySelector, getShowPreview],

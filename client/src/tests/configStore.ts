@@ -6,14 +6,12 @@ interface Extra<A extends Action> {
   clearActions: () => void;
 }
 
-type MockedStore<S, Ext, A extends Action> = Store<S, A> & Ext & Extra<A>;
-
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default function createStore<S, A extends Action, Ext = {}, StateExt = never>(
   reducer: Reducer<S, A>,
   preloadedState?: Partial<S>,
   enhancer?: StoreEnhancer<Ext, StateExt>,
-): MockedStore<S, Ext, A> {
+): Store<S, A> & Ext & Extra<A> {
   if (
     (typeof preloadedState === 'function' && typeof enhancer === 'function') ||
     // eslint-disable-next-line prefer-rest-params
@@ -117,5 +115,5 @@ export default function createStore<S, A extends Action, Ext = {}, StateExt = ne
     clearActions,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     replaceReducer: () => {},
-  } as unknown as MockedStore<S, Ext, A>;
+  } as unknown as Store<S, A> & Ext & Extra<A>;
 }

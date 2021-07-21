@@ -7,7 +7,7 @@ import {
 } from '@reduxjs/toolkit';
 import {HttpResponse} from 'redux/api/bitmex';
 import {API} from 'redux/api/api';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 
 import {ACTIONS_cross} from 'redux/modules/cross/types';
 import {ACTIONS_orders} from 'redux/modules/orders/types';

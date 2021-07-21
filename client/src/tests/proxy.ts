@@ -5,6 +5,7 @@ export const networkProxy = createNetworkProxy();
 
 networkProxy.setTracker((key, mocks, logger, methodName) => {
   return async (...args: unknown[]) => {
+    // eslint-disable-next-line no-console
     if (!mocks.length) console.error('No mocks found');
 
     const matchedMock = mocks.find(({id, params}) => id === methodName && isEqual(params, args));

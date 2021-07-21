@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from 'react-redux';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 import {
   trailingOrderStatusSelector,
   websocketBidAskPrices,

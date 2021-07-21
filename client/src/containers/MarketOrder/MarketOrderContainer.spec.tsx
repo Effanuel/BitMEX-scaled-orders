@@ -2,9 +2,10 @@ import MarketOrderContainer from './MarketOrderContainer';
 import {COMPONENTS, MARKET_CONTAINER} from 'data-test-ids';
 import {forgeMarketOrder} from 'tests/responses';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
-import {createRenderer, storeActions} from 'tests/influnt';
+import {createRenderer} from 'tests/influnt';
 import {createMockedStore} from 'tests/mockStore';
 import {isDisabled, respond, exists} from 'influnt';
+import {storeActions} from 'tests/helpers';
 
 const render = createRenderer(MarketOrderContainer, {extraArgs: () => createMockedStore({})});
 

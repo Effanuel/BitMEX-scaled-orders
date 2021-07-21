@@ -11,21 +11,6 @@ jest.mock('react-toastify', () => {
   return actual;
 });
 
-function mockComponent(name: string, real: {[key: string]: unknown} = {}) {
-  const React = require('React');
-  const MockedComponent = class extends React.Component {
-    render() {
-      return React.createElement(name, this.props, this.props.children);
-    }
-  };
-  for (const prop in real) {
-    if (real.hasOwnProperty(prop)) {
-      MockedComponent[prop] = real[prop];
-    }
-  }
-  return MockedComponent;
-}
-
 //@ts-ignore
 global.flushPromises = flushPromises;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Modal} from 'components';
 import {cancelOrder} from 'redux/modules/orders/ordersModule';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 import {groupedOrdersSelector, orderSelector} from 'redux/selectors';
 
 interface Props {

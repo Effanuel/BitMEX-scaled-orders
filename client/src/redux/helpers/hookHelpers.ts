@@ -13,7 +13,7 @@ import {
   hasCrossedSecondTimeSelector,
   groupedOrdersSelector,
 } from 'redux/selectors';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 
 type States = UnionToIntersection<ValueOf<AppState>>;
 

@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Modal, InputField} from 'components';
 import {addProfitTarget} from 'redux/modules/orders/ordersModule';
 import {SIDE} from 'redux/api/bitmex/types';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 import {orderSelector} from 'redux/selectors';
 import {ADD_ORDER_MODAL} from 'data-test-ids';
 

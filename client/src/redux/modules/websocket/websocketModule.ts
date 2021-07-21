@@ -14,7 +14,7 @@ import {
   TableData,
 } from './types';
 import {connect, disconnect, send} from '@giantmachines/redux-websocket';
-import {Thunk} from '../../models/state';
+import {Thunk} from '../state';
 import {Reducer} from 'redux';
 import {authKeyExpires} from 'utils/auth';
 import {SUBSCRIPTION_TOPICS, SYMBOL} from 'redux/api/bitmex/types';

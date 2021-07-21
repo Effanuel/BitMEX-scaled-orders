@@ -1,9 +1,16 @@
+import {AnyAction, Dispatch, Middleware} from '@reduxjs/toolkit';
+import {AppState} from 'redux/modules/state';
 import {AsyncThunk} from '@reduxjs/toolkit';
 import {showToast, ToastPreset} from 'components';
 import {postMarketOrder, postOrderBulk} from 'redux/modules/preview/previewModule';
 import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
 import {postMarketCrossOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
 import {addProfitTarget, cancelOrder} from 'redux/modules/orders/ordersModule';
+
+const middleware: Middleware<JsObj, AppState, Dispatch<AnyAction>> = (store) => (next) => (action: Action) => {
+  registeredToasts[action.type]?.(action);
+  next(action);
+};
 
 type RequestFunction = (action: Action) => void;
 type ThunkToasts = {[key: string]: RequestFunction};
@@ -39,7 +46,7 @@ const PostTrailingOrderSuccess = (action: Action) => {
   showToast(toastDisplay.message, toastDisplay.preset);
 };
 
-export const registeredToasts: ThunkToasts = {
+const registeredToasts: ThunkToasts = {
   ...buildThunkToasts(crossPostMarketOrder, {
     SUCCESS: () => showToast('Submitted Market Order'),
     FAILURE: (action) => showToast(`Market order: ${action.payload}`, 'error'),
@@ -76,3 +83,5 @@ export const registeredToasts: ThunkToasts = {
     FAILURE: () => showToast(`Failed to add profit target order.`, 'warning'),
   }),
 };
+
+export default middleware;

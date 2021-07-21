@@ -9,8 +9,8 @@ import {
 } from './mockData/orders';
 import {rootReducer} from 'redux/store';
 import createStore from './configStore';
-import {AppState} from 'redux/models/state';
-import notificationMiddleware from '../redux/middlewares/notification';
+import {AppState} from 'redux/modules/state';
+import notificationMiddleware from '../redux/middlewares/toast-notification';
 import {API} from 'redux/api/api';
 
 const mockedDefaultState: AppState = {
