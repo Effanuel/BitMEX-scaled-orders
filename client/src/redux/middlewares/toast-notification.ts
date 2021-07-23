@@ -6,6 +6,7 @@ import {postMarketOrder, postOrderBulk} from 'redux/modules/preview/previewModul
 import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
 import {postMarketCrossOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
 import {addProfitTarget, cancelOrder} from 'redux/modules/orders/ordersModule';
+import {SIDE} from 'redux/api/bitmex/types';
 
 const middleware: Middleware<JsObj, AppState, Dispatch<AnyAction>> = (store) => (next) => (action: Action) => {
   registeredToasts[action.type]?.(action);
@@ -68,10 +69,11 @@ const registeredToasts: ThunkToasts = {
     FAILURE: () => showToast('Failed to Cancel Trailing Order', 'error'),
   }),
   ...buildThunkToasts(postMarketOrder, {
-    SUCCESS: () => showToast('Submitted Market Order'),
+    SUCCESS: (action) => showToast(`Submitted Market ${action.payload.data.side === SIDE.SELL ? 'Sell' : 'Buy'} Order`),
     FAILURE: (action) => showToast(`Market order: ${action.payload}`, 'error'),
   }),
   ...buildThunkToasts(ammendTrailingOrder, {
+    SUCCESS: (action) => showToast(`Trailing Order Ammended to ${action.payload.data.price}`, 'success'),
     FAILURE: () => showToast('Order ammending error.', 'error'),
   }),
   ...buildThunkToasts(cancelOrder, {
