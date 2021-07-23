@@ -2,7 +2,7 @@ import {INSTRUMENT_PARAMS} from 'utils';
 import {SYMBOL} from '../redux/api/bitmex/types';
 
 // @TODO: parse price as string
-export function formatPrice(price: number | undefined | null): string {
+export function formatPrice(price: number | undefined | null, symbol?: SYMBOL): string {
   if (!price) {
     return '';
   }
@@ -10,7 +10,9 @@ export function formatPrice(price: number | undefined | null): string {
   // const priceWithDecimal = priceString.indexOf('.') > -1 ? priceString : priceString + '.00';
   // return priceWithDecimal.replace(/\B(?=(?=\d*\.)(\d{3})+(?!\d))/g, ',');
 
-  return format(price, {decimal: {len: 2, delim: '.'}, whole: {len: 3, delim: ','}});
+  const decimalLength = symbol ? INSTRUMENT_PARAMS[symbol].decimal_rounding : 2;
+
+  return format(price, {decimal: {len: decimalLength, delim: '.'}, whole: {len: 3, delim: ','}});
 }
 
 export const tickerRound = (number: number, symbol: SYMBOL): number => {

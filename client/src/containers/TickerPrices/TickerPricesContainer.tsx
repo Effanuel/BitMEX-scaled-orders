@@ -1,19 +1,25 @@
 import React from 'react';
 import {Stat, StatHelpText, StatLabel, Text, StatNumber} from '@chakra-ui/react';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
+import {useSelector} from 'react-redux';
+import isEqual from 'lodash/fp/isEqual';
 import {SYMBOL} from 'redux/api/bitmex/types';
-import {SymbolPrices} from 'redux/selectors';
+import {allWebsocketBidAskPrices, SymbolPrices} from 'redux/selectors';
 import {MainContainer, Row} from 'components';
 import styles from './TickerPricesContainer.module.scss';
+import {AppState} from 'redux/modules/state';
+import {formatPrice} from 'general/formatting';
 
-const defaultData = [
-  {askPrice: '---', bidPrice: '---', symbol: SYMBOL.XBTUSD},
-  {askPrice: '---', bidPrice: '---', symbol: SYMBOL.ETHUSD},
-  {askPrice: '---', bidPrice: '---', symbol: SYMBOL.XRPUSD},
-] as unknown as SymbolPrices[];
+const none = '---' as unknown as number;
+
+const defaultData: SymbolPrices[] = [
+  {askPrice: none, bidPrice: none, symbol: SYMBOL.XBTUSD},
+  {askPrice: none, bidPrice: none, symbol: SYMBOL.ETHUSD},
+  {askPrice: none, bidPrice: none, symbol: SYMBOL.XRPUSD},
+];
 
 export default React.memo(function TickerPricesContainer() {
-  const {allPrices, wsMessage} = useReduxSelector('allPrices', 'wsMessage');
+  const wsMessage = useSelector((state: AppState) => state.websocket.message);
+  const allPrices = useSelector(allWebsocketBidAskPrices, isEqual);
 
   const data = allPrices?.length ? allPrices : defaultData;
   return (
@@ -28,7 +34,7 @@ export default React.memo(function TickerPricesContainer() {
               return (
                 <Stat key={symbol} margin={15} marginBottom={5} color="white">
                   <StatLabel>{symbol}</StatLabel>
-                  <StatNumber>{askPrice}</StatNumber>
+                  <StatNumber>{askPrice === none ? none : formatPrice(askPrice, symbol)}</StatNumber>
                   <StatHelpText>BitMEX</StatHelpText>
                 </Stat>
               );
