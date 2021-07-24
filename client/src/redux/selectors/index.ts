@@ -52,8 +52,6 @@ export const trailingOrderStatusSelector = createSelector(
   },
 );
 
-export const trailingOrderStatus = createSelector([getTrailingOrderStatus], (status) => status);
-
 export const websocketBidAskPrices = createSelector(
   [table_instrument, getTrailingOrderSymbol],
   (data, symbol): CurrentPrice | undefined => {

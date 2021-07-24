@@ -50,7 +50,7 @@ describe('TrailingLimitContainer', () => {
     expect(result).toEqual({
       actions: ['REDUX_WEBSOCKET::OPEN', 'REDUX_WEBSOCKET::MESSAGE'],
       isDisabled: true,
-      submitButtonLabel: 'Place a trailing limit order at 10,322.00',
+      submitButtonLabel: 'Place a trailing limit order at 10,322.0',
     });
   });
 
@@ -162,7 +162,10 @@ describe('TrailingLimitContainer', () => {
         {limitOrder: [{orderQty: 200, price: 10322, side: 'Sell', symbol: 'XBTUSD', text: 'best_order'}]},
         {orderAmend: [{orderID: 'OrderId', price: 10321}]},
       ],
-      toast: [{message: 'Trailing Order placed at 10322', toastPreset: 'success'}],
+      toast: [
+        {message: 'Trailing Order placed at 10322', toastPreset: 'success'},
+        {message: 'Trailing Order Ammended to 10321', toastPreset: 'success'},
+      ],
       trailing: {
         trailLoading: false,
         trailOrderId: 'OrderId',

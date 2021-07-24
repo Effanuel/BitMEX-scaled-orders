@@ -5,6 +5,7 @@ import DetailsTable from './details-table';
 import styles from './OrdersPreviewTable.module.scss';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
+import {SYMBOL} from 'redux/api/bitmex/types';
 
 export default function OrdersPreviewTable() {
   const {orders} = useReduxSelector('orders');
@@ -22,7 +23,7 @@ export default function OrdersPreviewTable() {
         <OrdersTable orders={orders} />
       </Box>
       <Box className={styles.container} p={0} w={3 / 10}>
-        <DetailsTable />
+        <DetailsTable symbol={orders?.[0]?.symbol ?? SYMBOL.XBTUSD} />
       </Box>
     </Container>
   );

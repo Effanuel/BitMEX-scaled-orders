@@ -3,8 +3,13 @@ import {Table, Tbody, Td, Th, Thead, Tr} from '@chakra-ui/react';
 import {formatPrice} from 'general/formatting';
 import {PREVIEW_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
+import {SYMBOL} from 'redux/api/bitmex/types';
 
-export default function DetailsTable() {
+interface Props {
+  symbol: SYMBOL;
+}
+
+export default function DetailsTable({symbol}: Props) {
   const {averagePrice, riskBTC, riskPerc} = useReduxSelector('averagePrice', 'riskBTC', 'riskPerc');
 
   const renderPriceSection = React.useMemo(() => {
@@ -12,12 +17,12 @@ export default function DetailsTable() {
       <Tr>
         <Td>Average entry</Td>
         <Td isNumeric>
-          {formatPrice(averagePrice || null)}
+          {formatPrice(averagePrice || null, symbol)}
           <span style={{color: '#4caf50'}}> USD</span>
         </Td>
       </Tr>
     );
-  }, [averagePrice]);
+  }, [averagePrice, symbol]);
 
   const renderRiskSection = React.useMemo(() => {
     return riskBTC ? (

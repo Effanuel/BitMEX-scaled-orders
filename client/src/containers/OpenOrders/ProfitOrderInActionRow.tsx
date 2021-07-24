@@ -33,7 +33,7 @@ function ProfitOrderInActionRow({order}: Props) {
         Profit Order In Action
       </Td>
       <Td isNumeric>{orderQty}</Td>
-      <Td isNumeric>{formatPrice(price)}</Td>
+      <Td isNumeric>{formatPrice(price, order.symbol)}</Td>
       <Td whiteSpace="pre">{new Date(timestamp).toISOString().split('T')[0]}</Td>
       <Td>PROFIT</Td>
       <Td

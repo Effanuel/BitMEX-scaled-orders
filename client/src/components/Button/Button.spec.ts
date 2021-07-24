@@ -1,6 +1,7 @@
 import {Button, ButtonVariants} from './Button';
 import {SIDE} from 'redux/api/bitmex/types';
-import {classNameOf, createComponentRenderer} from 'tests/influnt';
+import {createComponentRenderer} from 'tests/influnt';
+import {classNameOf} from 'tests/helpers';
 
 const props = {
   id: 'default:id',

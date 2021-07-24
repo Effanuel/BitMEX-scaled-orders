@@ -28,8 +28,8 @@ export default React.memo(function CrossOrderContainer() {
   const cancelCrossOrder = React.useCallback(() => void dispatch(clearCrossOrder()), [dispatch]);
 
   const buttonLabel = React.useMemo(
-    () => buildOrderPresenter(connected, side, wsCrossPrice, crossOrderPrice),
-    [connected, crossOrderPrice, side, wsCrossPrice],
+    () => buildOrderPresenter(connected, side, wsCrossPrice, crossOrderPrice, symbol),
+    [connected, crossOrderPrice, side, wsCrossPrice, symbol],
   );
 
   const renderFirstRow = React.useMemo(() => {

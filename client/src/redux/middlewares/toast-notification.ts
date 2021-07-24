@@ -62,7 +62,7 @@ const registeredToasts: ThunkToasts = {
   }),
   ...buildThunkToasts(postTrailingOrder, {
     SUCCESS: PostTrailingOrderSuccess,
-    FAILURE: () => showToast('Order posting error.', 'error'),
+    FAILURE: (action) => showToast(`Trailing order: ${action.payload}`, 'error'),
   }),
   ...buildThunkToasts(cancelTrailingOrder, {
     SUCCESS: () => showToast('Trailing Order Canceled', 'success'),

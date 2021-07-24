@@ -1,16 +1,11 @@
 import {INSTRUMENT_PARAMS} from 'utils';
 import {SYMBOL} from '../redux/api/bitmex/types';
 
-// @TODO: parse price as string
-export function formatPrice(price: number | undefined | null, symbol?: SYMBOL): string {
+export function formatPrice(price: number | undefined | null, symbol: SYMBOL): string {
   if (!price) {
     return '';
   }
-  // const priceString = price.toString();
-  // const priceWithDecimal = priceString.indexOf('.') > -1 ? priceString : priceString + '.00';
-  // return priceWithDecimal.replace(/\B(?=(?=\d*\.)(\d{3})+(?!\d))/g, ',');
-
-  const decimalLength = symbol ? INSTRUMENT_PARAMS[symbol].decimal_rounding : 2;
+  const decimalLength = INSTRUMENT_PARAMS?.[symbol]?.decimal_rounding ?? 2;
 
   return format(price, {decimal: {len: decimalLength, delim: '.'}, whole: {len: 3, delim: ','}});
 }

@@ -3,9 +3,10 @@ import {COMPONENTS, SCALED_CONTAINER} from 'data-test-ids';
 import {createScaledOrders, DISTRIBUTION} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {forgeResult} from 'tests/responses';
-import {createRenderer, storeActions} from 'tests/influnt';
+import {createRenderer} from 'tests/influnt';
 import {createMockedStore} from 'tests/mockStore';
 import {InfluntEngine, respond, isDisabled, exists, countOf} from 'influnt';
+import {storeActions} from 'tests/helpers';
 
 interface ScaledInputs {
   orderQty: number;
@@ -108,7 +109,7 @@ describe('ScaledOrders', () => {
 
   it('should open preview table', async () => {
     const result = await render()
-      .apply(fillInputs({orderQty: 1000, n_tp: 5, start: 1000, end: 2000, stop: 3000}))
+      .apply(fillInputs({symbol: SYMBOL.XBTUSD, orderQty: 1000, n_tp: 5, start: 1000, end: 2000, stop: 3000}))
       .inspect({previewTableVisibleBefore: exists(SCALED_CONTAINER.PREVIEW_TABLE)})
       .press(SCALED_CONTAINER.PREVIEW_BUTTON)
       .inspect({

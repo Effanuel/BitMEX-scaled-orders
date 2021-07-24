@@ -23,7 +23,7 @@ export default React.memo(function TickerPricesContainer() {
 
   const data = allPrices?.length ? allPrices : defaultData;
   return (
-    <MainContainer label="TickerPrices" description="Displays current prices of subscribed symbols">
+    <MainContainer label="TickerPrices" description="Displays current ask prices of subscribed symbols">
       <Row>
         <div className={styles.container}>
           <Text color="white" textStyle="bold">

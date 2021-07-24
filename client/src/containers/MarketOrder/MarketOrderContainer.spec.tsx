@@ -20,9 +20,8 @@ describe('MarketOrder', () => {
   });
 
   it('should submit a market buy order', async () => {
-    const mock = respond('marketOrder', [{orderQty: 1113, symbol: SYMBOL.XBTUSD, side: SIDE.BUY}]).with(
-      forgeMarketOrder({orderQty: 1113}),
-    );
+    const marketOrder = {orderQty: 1113, symbol: SYMBOL.XBTUSD, side: SIDE.BUY};
+    const mock = respond('marketOrder', [marketOrder]).with(forgeMarketOrder(marketOrder));
 
     const result = await render()
       .inputText(MARKET_CONTAINER.INPUT, 1113)
@@ -35,14 +34,13 @@ describe('MarketOrder', () => {
       actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
       network: [{marketOrder: [{orderQty: 1113, symbol: SYMBOL.XBTUSD, side: SIDE.BUY}]}],
       spinnerIsVisible: true,
-      toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
+      toast: [{message: 'Submitted Market Buy Order', toastPreset: 'success'}],
     });
   });
 
   it('should submit a market sell order', async () => {
-    const mock = respond('marketOrder', [{symbol: SYMBOL.XBTUSD, side: SIDE.SELL, orderQty: 111}]).with(
-      forgeMarketOrder({orderQty: 111}),
-    );
+    const marketOrder = {symbol: SYMBOL.XBTUSD, side: SIDE.SELL, orderQty: 111};
+    const mock = respond('marketOrder', [marketOrder]).with(forgeMarketOrder(marketOrder));
 
     const result = await render()
       .inputText(MARKET_CONTAINER.INPUT, 111)
@@ -55,14 +53,13 @@ describe('MarketOrder', () => {
       actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
       network: [{marketOrder: [{orderQty: 111, side: 'Sell', symbol: 'XBTUSD'}]}],
       spinnerIsVisible: true,
-      toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
+      toast: [{message: 'Submitted Market Sell Order', toastPreset: 'success'}],
     });
   });
 
   it('should submit an order with a selected ticker', async () => {
-    const mock = respond('marketOrder', [{symbol: SYMBOL.ETHUSD, side: SIDE.SELL, orderQty: 111}]).with(
-      forgeMarketOrder({orderQty: 111}),
-    );
+    const marketOrder = {symbol: SYMBOL.ETHUSD, side: SIDE.SELL, orderQty: 111};
+    const mock = respond('marketOrder', [marketOrder]).with(forgeMarketOrder(marketOrder));
 
     const result = await render()
       .selectOption(COMPONENTS.SELECT_DROPDOWN, SYMBOL.ETHUSD)
@@ -76,7 +73,7 @@ describe('MarketOrder', () => {
       actions: ['preview/PREVIEW_POST_MARKET_ORDER/pending', 'preview/PREVIEW_POST_MARKET_ORDER/fulfilled'],
       spinnerIsVisible: true,
       network: [{marketOrder: [{orderQty: 111, side: 'Sell', symbol: 'ETHUSD'}]}],
-      toast: [{message: 'Submitted Market Order', toastPreset: 'success'}],
+      toast: [{message: 'Submitted Market Sell Order', toastPreset: 'success'}],
     });
   });
 });

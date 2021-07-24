@@ -7,6 +7,7 @@ import {SelectDropdown, InputField, Button, SideRadioButtons, Row, MainContainer
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import {useHooks} from './useHooks';
+import {INSTRUMENT_PARAMS} from 'utils';
 
 export default React.memo(function TrailingLimitOrderContainer() {
   const dispatch = useDispatch();
@@ -18,7 +19,9 @@ export default React.memo(function TrailingLimitOrderContainer() {
   const {wsCurrentPrice, wsBidAskPrices, trailOrderId, trailOrderStatus, trailOrderPrice, status, connected} =
     useHooks();
 
-  const trailingOrderPrice = side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice;
+  const spread = 1 / INSTRUMENT_PARAMS[symbol].ticksize;
+  const trailingOrderPrice =
+    side === SIDE.SELL ? (wsBidAskPrices?.bidPrice ?? 0) + spread : (wsBidAskPrices?.askPrice ?? 0) - spread;
 
   const submitTrailingOrder = React.useCallback(() => {
     if (trailingOrderPrice && quantity) {
@@ -39,8 +42,8 @@ export default React.memo(function TrailingLimitOrderContainer() {
   );
 
   const buttonLabel = React.useMemo(
-    () => buildOrderPresenter(connected, trailingOrderPrice, status || '', trailOrderStatus),
-    [connected, trailingOrderPrice, status, trailOrderStatus],
+    () => buildOrderPresenter(connected, trailingOrderPrice, status || '', trailOrderStatus, symbol),
+    [connected, trailingOrderPrice, status, trailOrderStatus, symbol],
   );
 
   const renderFirstRow = React.useMemo(() => {

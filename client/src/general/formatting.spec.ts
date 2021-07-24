@@ -6,14 +6,14 @@ describe('formatPrice()', () => {
   const {formatPrice} = formatting;
 
   it('should format price', () => {
-    expect(formatPrice(100_000.5555555)).toEqual('100,000.55');
-    expect(formatPrice(100_000.1)).toEqual('100,000.10');
-    expect(formatPrice(0.6789)).toEqual('0.67');
-    expect(formatPrice(0.67896)).toEqual('0.67');
+    expect(formatPrice(100_000.5555555, SYMBOL.XBTUSD)).toEqual('100,000.5');
+    expect(formatPrice(100_000.1, SYMBOL.XBTUSD)).toEqual('100,000.1');
+    expect(formatPrice(0.6789, SYMBOL.XRPUSD)).toEqual('0.6789');
+    expect(formatPrice(0.67896, SYMBOL.XRPUSD)).toEqual('0.6789');
   });
 
-  it('should add 2 decimal zeroes, if the number is natural', () => {
-    expect(formatPrice(100_000)).toEqual('100,000.00');
+  it('should add 1 decimal zero, if the number is natural', () => {
+    expect(formatPrice(100_000, SYMBOL.XBTUSD)).toEqual('100,000.0');
   });
 });
 

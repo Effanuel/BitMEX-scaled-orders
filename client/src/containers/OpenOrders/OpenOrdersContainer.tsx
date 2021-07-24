@@ -29,18 +29,18 @@ function Text({children}: {children: React.ReactNode}) {
 export const presentOrderPrice = (order: Order) => {
   switch (order.ordType) {
     case ORD_TYPE.Limit:
-      return formatPrice(order.price);
+      return formatPrice(order.price, order.symbol);
     case ORD_TYPE.LimitIfTouched:
     case ORD_TYPE.StopLimit:
       return (
         <>
-          <Box fontSize={12}>WHEN {formatPrice(order.stopPx)}</Box>
-          <Box fontSize={12}>WHAT {formatPrice(order.price)}</Box>
+          <Box fontSize={12}>WHEN {formatPrice(order.stopPx, order.symbol)}</Box>
+          <Box fontSize={12}>WHAT {formatPrice(order.price, order.symbol)}</Box>
         </>
       );
     case ORD_TYPE.Stop:
     case ORD_TYPE.MarketIfTouched:
-      return formatPrice(order.stopPx);
+      return formatPrice(order.stopPx, order.symbol);
     default:
       return null;
   }
