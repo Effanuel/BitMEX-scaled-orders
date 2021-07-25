@@ -9,6 +9,9 @@ import {createScaledOrders, DISTRIBUTION} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
+import {WarningTwoIcon} from '@chakra-ui/icons';
+
+const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
 interface ScaledContainerState {
   orderQty: null | number;
@@ -163,7 +166,12 @@ export default React.memo(function ScaledContainer() {
   const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
 
   return (
-    <MainContainer label="Scaled Orders" description="Place limit orders in a range" renderOutside={renderOutside}>
+    <MainContainer
+      label="Scaled Orders"
+      description="Place limit orders in a range"
+      renderOutside={renderOutside}
+      icons={state.symbol === SYMBOL.XBTUSD ? icons : undefined}
+    >
       {renderFirstRow}
       {renderSecondRow}
       {renderThirdRow}

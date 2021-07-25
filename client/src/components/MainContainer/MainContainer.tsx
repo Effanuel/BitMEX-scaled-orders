@@ -1,8 +1,15 @@
 import React from 'react';
-import {Flex, Container, Box, Collapse, Tooltip} from '@chakra-ui/react';
+import {Flex, Container, Box, Collapse, Tooltip, ComponentWithAs, IconProps} from '@chakra-ui/react';
 import {InfoOutlineIcon, WarningTwoIcon} from '@chakra-ui/icons';
 import styles from './styles.module.scss';
 import {MAIN_CONTAINER} from '../../data-test-ids';
+
+interface Icon {
+  element: ComponentWithAs<'svg', IconProps>;
+  color: string;
+  onClick?: () => void;
+  onHoverMessage?: string;
+}
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
@@ -11,6 +18,7 @@ interface Props {
   renderOutside?: React.ReactNode;
   connected?: boolean;
   secondaryState?: React.ReactNode;
+  icons?: Icon[];
 }
 
 export const MainContainer = React.memo((props: Props) => {
@@ -34,12 +42,28 @@ export const MainContainer = React.memo((props: Props) => {
           <div className={styles.container_minimized_text}>
             <span>{label}</span>
             <Box>
+              {props.icons?.map((icon, index) => {
+                const Icon = React.createElement(icon.element, {
+                  key: index,
+                  marginRight: 2,
+                  color: icon.color,
+                  _hover: {cursor: 'pointer'},
+                  onClick: icon.onClick,
+                });
+                return icon.onHoverMessage ? (
+                  <Tooltip key={index} hasArrow label={icon.onHoverMessage} bg="gray.300" color="black">
+                    {Icon}
+                  </Tooltip>
+                ) : (
+                  Icon
+                );
+              })}
               {!connected && (
-                <Tooltip marginRight={2} hasArrow label="Not connected to a websocket" bg="gray.300" color="black">
+                <Tooltip hasArrow label="Not connected to a websocket" bg="gray.300" color="black">
                   <WarningTwoIcon color="grey" marginRight={2} />
                 </Tooltip>
               )}
-              <Tooltip marginRight={2} hasArrow label={description} bg="gray.300" color="black">
+              <Tooltip hasArrow label={description} bg="gray.300" color="black">
                 <InfoOutlineIcon color="grey" marginRight={2} />
               </Tooltip>
             </Box>

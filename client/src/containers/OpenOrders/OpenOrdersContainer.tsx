@@ -1,5 +1,6 @@
 import React from 'react';
 import {Tbody, Th, Thead, Tr, Table, Box} from '@chakra-ui/react';
+import {RepeatIcon} from '@chakra-ui/icons';
 import {useDispatch} from 'react-redux';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
@@ -59,9 +60,11 @@ export default function OpenOrdersContainer() {
     'ordersError',
   );
 
+  const fetchOpenOrders = React.useCallback(() => void dispatch(getOpenOrders()), [dispatch]);
+
   React.useEffect(() => {
-    dispatch(getOpenOrders());
-  }, [dispatch]);
+    fetchOpenOrders();
+  }, [fetchOpenOrders]);
 
   const showCancelAllOrdersModal = React.useCallback(() => {
     const totalOrders = openOrders.length + profitOrders.length + profitOrdersInAction.length;
@@ -72,7 +75,7 @@ export default function OpenOrdersContainer() {
     const text =
       ordersError !== ''
         ? `Failed to fetch open orders: ${ordersError}`
-        : ordersLoading
+        : ordersLoading && openOrders.length === 0
         ? 'Loading...'
         : openOrders.length === 0 && profitOrdersInAction.length === 0
         ? 'No Open Orders'
@@ -81,8 +84,18 @@ export default function OpenOrdersContainer() {
     return text ? <Text>{text}</Text> : undefined;
   }, [ordersError, ordersLoading, openOrders, profitOrdersInAction]);
 
+  const icons = React.useMemo(
+    () => [{element: RepeatIcon, onClick: !ordersLoading ? fetchOpenOrders : undefined, color: 'green'}],
+    [fetchOpenOrders, ordersLoading],
+  );
+
   return (
-    <MainContainer label="Open orders" description="Shows current open orders" secondaryState={secondaryState}>
+    <MainContainer
+      label="Open orders"
+      description="Shows current open orders"
+      secondaryState={secondaryState}
+      icons={icons}
+    >
       <Table>
         <Thead>
           <Tr>
