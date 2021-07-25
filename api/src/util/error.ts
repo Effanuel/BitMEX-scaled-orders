@@ -5,7 +5,7 @@ const error_400_handler = (error: any): string => {
   const responseErrormMessage = responseError ? responseError.message.toLowerCase() : '';
   console.warn('Error handler response message: ', responseErrormMessage);
   const error_messages: Record<string, string> = {
-    'invalid leavesqty for lotsize': 'Lotsize quantity would be invalid',
+    'invalid leavesqty for lotsize': 'XBT lotsize is of 100 contracts increment',
     'duplicate clordid': 'Duplicate order.',
     'insufficient available balance': 'Insufficient funds.',
     'missing api key': 'Missing API key.',
