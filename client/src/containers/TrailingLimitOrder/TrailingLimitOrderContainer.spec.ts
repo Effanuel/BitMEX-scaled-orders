@@ -50,7 +50,7 @@ describe('TrailingLimitContainer', () => {
     expect(result).toEqual({
       actions: ['REDUX_WEBSOCKET::OPEN', 'REDUX_WEBSOCKET::MESSAGE'],
       isDisabled: true,
-      submitButtonLabel: 'Place a trailing limit order at 10,322.0',
+      submitButtonLabel: 'Submit order at 10,322.0',
     });
   });
 

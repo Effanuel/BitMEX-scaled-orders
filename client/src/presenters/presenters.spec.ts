@@ -18,7 +18,7 @@ describe('Trailing Label presenter', () => {
 
   it('should match label when - connected but order is not placed', () => {
     const test1 = buildTrailingLabel(true, 3333, '', '123123635', SYMBOL.XBTUSD);
-    expect(test1).toEqual({label: 'Place a trailing limit order at 3,333.0', disabled: false});
+    expect(test1).toEqual({label: 'Submit order at 3,333.0', disabled: false});
   });
 });
 
