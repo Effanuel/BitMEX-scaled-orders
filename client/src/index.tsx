@@ -96,10 +96,6 @@ const theme = extendTheme({
     //@ts-ignore
     Popover: {
       baseStyle: {
-        popper: {
-          width: 'fit-content',
-          maxWidth: 'fit-content',
-        },
         content: {
           _focus: {
             boxShadow: 'none',

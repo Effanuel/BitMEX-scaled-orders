@@ -78,6 +78,7 @@ export default function ProfitOrders({orderID, orders, quantityToCover}: Props) 
       <PopoverContent
         borderWidth={1}
         borderColor="green"
+        width="fit-content"
         maxWidth={720}
         display="flex"
         backgroundColor="#121212"
