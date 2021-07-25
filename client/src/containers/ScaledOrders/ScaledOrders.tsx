@@ -5,7 +5,7 @@ import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
 import {previewOrders, previewToggle, postOrderBulk} from 'redux/modules/preview/previewModule';
 import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons, Row} from 'components';
 import DistributionsRadioGroup from './DistributionsRadioGroup';
-import {createScaledOrders, DISTRIBUTION} from 'utils';
+import {createScaledOrders, DISTRIBUTION, INSTRUMENT_PARAMS} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
@@ -47,8 +47,8 @@ export default React.memo(function ScaledContainer() {
     setDirty(true);
   }, []);
 
-  const onChangeNumber = React.useCallback((value: string, id: string): void => {
-    setState((prevState) => ({...prevState, [id]: +value}));
+  const onChangeNumber = React.useCallback((value: string | number, id: string): void => {
+    setState((prevState) => ({...prevState, [id]: value}));
     setDirty(true);
   }, []);
 
@@ -63,7 +63,8 @@ export default React.memo(function ScaledContainer() {
   }, []);
 
   const onOrderSubmit = React.useCallback((): void => {
-    const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
+    const {distribution, ...rest} = state as RequiredProperty<ScaledContainerState>;
+    const ordersProps = {...rest, start: +rest.start, end: +rest.end, stop: rest.stop != undefined ? +rest.stop : 0};
     dispatch(postOrderBulk(createScaledOrders({ordersProps, distribution})));
     setState(initialState);
     setDirty(true);
@@ -74,10 +75,13 @@ export default React.memo(function ScaledContainer() {
       dispatch(previewToggle());
     } else {
       setDirty(false);
-      const {distribution, ...ordersProps} = state as RequiredProperty<ScaledContainerState>;
+      const {distribution, ...rest} = state as RequiredProperty<ScaledContainerState>;
+      const ordersProps = {...rest, start: +rest.start, end: +rest.end, stop: rest.stop != undefined ? +rest.stop : 0};
       dispatch(previewOrders(ordersProps, distribution));
     }
   }, [dispatch, state, isDirty]);
+
+  const step = 1 / INSTRUMENT_PARAMS[state.symbol].ticksize;
 
   const renderFirstRow = React.useMemo(() => {
     return (
@@ -94,10 +98,11 @@ export default React.memo(function ScaledContainer() {
           stop={true}
           t_placement="bottom"
           tooltip="(Optional) Price at which to market exit placed contracts."
+          step={step}
         />
       </Row>
     );
-  }, [onChangeNumber, onChangeDropdown, toggleSide, state.side, state.stop]);
+  }, [onChangeNumber, onChangeDropdown, toggleSide, state.side, state.stop, step]);
 
   const renderSecondRow = React.useMemo(() => {
     return (
@@ -125,6 +130,7 @@ export default React.memo(function ScaledContainer() {
           value={state.start}
           label="Range start"
           tooltip="First placed order's price"
+          step={step}
         />
         <InputField
           testID={SCALED_CONTAINER.RANGE_END_INPUT}
@@ -133,10 +139,11 @@ export default React.memo(function ScaledContainer() {
           value={state.end}
           label="Range end"
           tooltip="Last placed order's price"
+          step={step}
         />
       </Row>
     );
-  }, [onChangeNumber, state]);
+  }, [onChangeNumber, state, step]);
 
   const renderThirdRow = React.useMemo(() => {
     return (
@@ -187,5 +194,12 @@ function isDisabled(state: ScaledContainerState): boolean {
   const validLimits = orderQty > 20e6 || n_tp > 50;
   const validOrdersWithBuyStop = !!stop && (side === 'Buy' ? stop > start && stop > end : false);
   const validOrdersWithSellStop = !!stop && (side === 'Sell' ? stop < start && stop < end : false);
-  return validInputs || validLimits || orderQty < n_tp || validOrdersWithBuyStop || validOrdersWithSellStop;
+  return (
+    validInputs ||
+    validLimits ||
+    orderQty < n_tp ||
+    validOrdersWithBuyStop ||
+    validOrdersWithSellStop ||
+    (state.symbol === SYMBOL.XBTUSD && orderQty % 100 !== 0)
+  );
 }

@@ -6,6 +6,7 @@ import {SIDE} from 'redux/api/bitmex/types';
 import {AppState} from 'redux/modules/state';
 import {orderSelector} from 'redux/selectors';
 import {ADD_ORDER_MODAL} from 'data-test-ids';
+import {INSTRUMENT_PARAMS} from 'utils';
 
 interface Props {
   orderID: string;
@@ -17,19 +18,19 @@ export function AddProfitOrderModal({orderID}: Props) {
   const order = useSelector((state: AppState) => orderSelector(state, {orderID}));
   const {symbol, side, price: stopPx} = order!;
 
-  const [price, setPrice] = React.useState('');
-  const [quantity, setQuantity] = React.useState('');
+  const [price, setPrice] = React.useState<string>('');
+  const [quantity, setQuantity] = React.useState<any>('');
 
   const addTarget = React.useCallback(() => {
-    dispatch(
-      addProfitTarget({orderID, side, symbol, stop: stopPx, price: parseInt(price), orderQty: parseInt(quantity)}),
-    );
+    dispatch(addProfitTarget({orderID, side, symbol, stop: stopPx, price: parseInt(price), orderQty: quantity}));
   }, [dispatch, orderID, side, quantity, price, stopPx, symbol]);
 
   const isConfirmButtonDisabled =
     !parseInt(price) ||
     !parseInt(quantity) ||
     !(side === SIDE.SELL ? parseInt(price) < stopPx : parseInt(price) > stopPx);
+
+  const step = 1 / INSTRUMENT_PARAMS[symbol].ticksize;
 
   return (
     <Modal title="Add profit target" onConfirm={addTarget} isConfirmButtonDisabled={isConfirmButtonDisabled}>
@@ -39,6 +40,7 @@ export function AddProfitOrderModal({orderID}: Props) {
         value={price || ''}
         placeholder={`Limit ${side === SIDE.BUY ? 'Sell' : 'Buy'} order price`}
         onChange={setPrice}
+        step={step}
       />
       <InputField
         testID={ADD_ORDER_MODAL.QUANTITY}

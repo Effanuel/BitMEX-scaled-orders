@@ -11,20 +11,31 @@ interface Props {
   placeholder?: string;
   t_placement?: string;
   tooltip?: string;
-  onChange: (value: string, id: string) => void;
+  onChange: (value: any, id: string) => void;
+  step?: number;
 }
 
 export function InputField(props: Props) {
-  const {id, label, value, stop = false, placeholder, onChange, testID} = props;
+  const {id, label, value, stop = false, placeholder, onChange, testID, step} = props;
 
-  const invokeValueChange = React.useCallback((value: string) => onChange(value, id as string), [onChange, id]);
+  const invokeValueChange = React.useCallback(
+    (value: string) => onChange(step == undefined ? +value : value, id as string),
+    [onChange, id, step],
+  );
 
   return (
     <Box>
       <Box color="rgba(255, 255, 255, 0.6)" fontSize="14px" paddingBottom={1}>
         {label}
       </Box>
-      <NumberInput max={20e6} size="sm" placeholder={placeholder} onChange={invokeValueChange} value={value || ''}>
+      <NumberInput
+        step={props.step}
+        max={20e6}
+        size="sm"
+        placeholder={placeholder}
+        onChange={invokeValueChange}
+        value={value || ''}
+      >
         <NumberInputField
           data-testid={testID}
           id={id}

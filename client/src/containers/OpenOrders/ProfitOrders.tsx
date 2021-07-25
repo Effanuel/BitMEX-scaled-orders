@@ -70,7 +70,7 @@ export default function ProfitOrders({orderID, orders, quantityToCover}: Props) 
       onOpen={showPopover}
     >
       <PopoverTrigger>
-        <Box data-testid={OPEN_ORDERS_CONTAINER.SHOW_PROFIT_ORDERS}>
+        <Box data-testid={OPEN_ORDERS_CONTAINER.SHOW_PROFIT_ORDERS} _hover={{cursor: 'pointer'}}>
           {toCover}%
           <Progress colorScheme="green" hasStripe value={toCover} min={0} max={100} />
         </Box>

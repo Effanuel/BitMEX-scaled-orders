@@ -14,7 +14,7 @@ export default React.memo(function TrailingLimitOrderContainer() {
 
   const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
   const [side, setSide] = React.useState<SIDE>(SIDE.SELL);
-  const [quantity, setQuantity] = React.useState<string>('');
+  const [quantity, setQuantity] = React.useState<string | number>('');
 
   const {wsCurrentPrice, wsBidAskPrices, trailOrderId, trailOrderStatus, trailOrderPrice, status, connected} =
     useHooks();

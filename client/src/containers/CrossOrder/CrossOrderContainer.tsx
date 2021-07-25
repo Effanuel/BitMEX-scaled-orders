@@ -6,6 +6,7 @@ import {CROSS_ORDER_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/cross-label-presenter';
 import {clearCrossOrder, createCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
+import {INSTRUMENT_PARAMS} from 'utils';
 
 export default React.memo(function CrossOrderContainer() {
   const dispatch = useDispatch();
@@ -31,6 +32,8 @@ export default React.memo(function CrossOrderContainer() {
     () => buildOrderPresenter(connected, side, wsCrossPrice, crossOrderPrice, symbol),
     [connected, crossOrderPrice, side, wsCrossPrice, symbol],
   );
+
+  const step = 1 / INSTRUMENT_PARAMS[symbol].ticksize;
 
   const renderFirstRow = React.useMemo(() => {
     const isSubmitButtonDisabled = !quantity || +quantity > 20e6 || !price || !wsCrossPrice || buttonLabel.disabled;
@@ -59,7 +62,13 @@ export default React.memo(function CrossOrderContainer() {
   const renderSecondRow = React.useMemo(() => {
     return (
       <Row>
-        <InputField testID={CROSS_ORDER_CONTAINER.PRICE_INPUT} onChange={setPrice} value={price} label="Price" />
+        <InputField
+          testID={CROSS_ORDER_CONTAINER.PRICE_INPUT}
+          onChange={setPrice}
+          value={price}
+          label="Price"
+          step={step}
+        />
         <div style={{flexDirection: 'column', display: 'flex'}}>
           <span style={{color: 'white'}}>Cross order status: </span>
           <span style={{color: 'green'}}>{crossOrderPrice ? 'Order is placed' : 'Order not placed.'}</span>
@@ -80,7 +89,7 @@ export default React.memo(function CrossOrderContainer() {
         ) : null}
       </Row>
     );
-  }, [cancelCrossOrder, connected, crossOrderPrice, price]);
+  }, [cancelCrossOrder, connected, crossOrderPrice, price, step]);
 
   return (
     <MainContainer
