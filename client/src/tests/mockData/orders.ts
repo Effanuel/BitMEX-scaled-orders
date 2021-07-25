@@ -19,7 +19,7 @@ export const mockCrossState = (overrides?: Partial<CrossState>) => ({...crossDef
 export const mockOrdersState = (overrides?: Partial<OrdersState>) => ({...ordersDefaultState, ...overrides});
 
 export const mockCreateOrder = (overrides?: Partial<RegularOrder>): RegularOrder => ({
-  symbol: SYMBOL.XBTUSD,
+  symbol: SYMBOL.ETHUSD,
   price: 8000,
   orderQty: 500,
   side: SIDE.SELL,
@@ -50,14 +50,14 @@ const orderStop = {
   orderQty: 500,
   side: 'Buy',
   stopPx: 8000,
-  symbol: 'XBTUSD',
+  symbol: SYMBOL.ETHUSD,
   text: 'stop',
 };
 
 export default function mockDistributionOrders(stop: Partial<typeof orderStop> | null = orderStop) {
   const orderData = (uniqueFields: Partial<RegularOrder> = {}) => {
     const execInst = 'ParticipateDoNotInitiate';
-    const commonFields = {execInst, ordType: ORD_TYPE.Limit, side: SIDE.SELL, symbol: SYMBOL.XBTUSD};
+    const commonFields = {execInst, ordType: ORD_TYPE.Limit, side: SIDE.SELL, symbol: SYMBOL.ETHUSD};
     return mockCreateOrder({...commonFields, ...uniqueFields});
   };
 

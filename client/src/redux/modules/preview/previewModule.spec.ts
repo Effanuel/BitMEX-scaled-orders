@@ -6,7 +6,7 @@ import mockDistributionOrders from 'tests/mockData/orders';
 
 describe('Preview actions', () => {
   const distributionParams = (stop = 8000) => {
-    return {orderQty: 500, n_tp: 3, start: 7500, end: 7700, stop: stop, side: SIDE.SELL, symbol: SYMBOL.XBTUSD};
+    return {orderQty: 500, n_tp: 3, start: 7500, end: 7700, stop: stop, side: SIDE.SELL, symbol: SYMBOL.ETHUSD};
   };
 
   const store = createStore();

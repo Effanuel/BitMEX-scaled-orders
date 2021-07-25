@@ -85,11 +85,15 @@ const skewedDistribution = (
   const totalOrders: RegularOrder[] = [];
 
   for (let i = 0; i < n_tp; i++) {
+    const partQuantity = (probabilityDistribution[i] / totalProbability) * orderQty;
+    const quantityX = partQuantity / 100;
+    const lotSizedQuantity = quantityX > 1 ? Math.round(quantityX) * 100 : 100;
+    const quantity = symbol === SYMBOL.XBTUSD ? lotSizedQuantity : Math.floor(partQuantity);
     totalOrders.push(
       createOrder({
         symbol: symbol,
         side: side,
-        orderQty: Math.floor((probabilityDistribution[i] / totalProbability) * orderQty),
+        orderQty: quantity,
         price: parseNumber(start_ + i * incrPrice, decimal_rounding),
         ordType: ORD_TYPE.Limit,
         text: `order_${i + 1}`,
