@@ -94,7 +94,7 @@ describe('Selectors', () => {
 
     it('should calculate with buy side', () => {
       expect(validateTrailingPrice(SYMBOL.XBTUSD, SIDE.BUY)).toEqual(8010.5);
-      expect(validateTrailingPrice(SYMBOL.ETHUSD, SIDE.BUY)).toEqual(221.9);
+      expect(validateTrailingPrice(SYMBOL.ETHUSD, SIDE.BUY)).toEqual(221.95);
       expect(validateTrailingPrice(SYMBOL.XRPUSD, SIDE.BUY)).toEqual(0.237);
     });
   });
