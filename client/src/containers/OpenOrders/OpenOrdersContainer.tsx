@@ -92,7 +92,7 @@ export default function OpenOrdersContainer() {
   return (
     <MainContainer
       label="Open orders"
-      description="Shows current open orders"
+      description="Shows current open orders that are not yet filled"
       secondaryState={secondaryState}
       icons={icons}
     >
