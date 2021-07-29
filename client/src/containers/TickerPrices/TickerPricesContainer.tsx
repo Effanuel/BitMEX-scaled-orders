@@ -22,8 +22,11 @@ export default React.memo(function TickerPricesContainer() {
   const allPrices = useSelector(allWebsocketBidAskPrices, isEqual);
 
   const data = allPrices?.length ? allPrices : defaultData;
+
+  const copyPriceToClipboard = React.useCallback((event) => navigator.clipboard.writeText(event.target.innerText), []);
+
   return (
-    <MainContainer label="TickerPrices" description="Displays current ask prices of subscribed symbols">
+    <MainContainer label="TickerPrices" description="Displays current ask prices of subscribed tickers">
       <Row>
         <div className={styles.container}>
           <Text color="white" textStyle="bold">
@@ -34,7 +37,9 @@ export default React.memo(function TickerPricesContainer() {
               return (
                 <Stat key={symbol} margin={15} marginBottom={5} color="white">
                   <StatLabel>{symbol}</StatLabel>
-                  <StatNumber>{askPrice === none ? none : formatPrice(askPrice, symbol)}</StatNumber>
+                  <StatNumber onClick={copyPriceToClipboard} _hover={{cursor: 'copy'}}>
+                    {askPrice === none ? none : formatPrice(askPrice, symbol)}
+                  </StatNumber>
                   <StatHelpText>BitMEX</StatHelpText>
                 </Stat>
               );
