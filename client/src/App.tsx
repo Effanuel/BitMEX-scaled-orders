@@ -6,7 +6,7 @@ import {
   MarketOrderContainer,
   TrailingLimitOrder,
   TickerPricesContainer,
-  CrossOrderContainer,
+  //   CrossOrderContainer,
   OpenOrdersContainer,
 } from 'containers';
 import {Spinner, ToastContainer} from 'components';
@@ -46,7 +46,7 @@ const App = React.memo(() => {
       <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />
       <OpenOrdersContainer />
-      <CrossOrderContainer />
+      {/* <CrossOrderContainer /> TODO: disabling for now */}
       <MarketOrderContainer />
       <TrailingLimitOrder />
       <ScaledOrders />

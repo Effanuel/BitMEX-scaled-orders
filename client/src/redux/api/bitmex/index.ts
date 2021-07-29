@@ -211,7 +211,7 @@ class MyHTTPClient {
     return _.pick([...args, 'text'], dataElement);
   }
 
-  async request<P = any, E = any>(
+  async request<P = any, _E = any>(
     path: string,
     method: string,
     {secure, ...params}: RequestParams = {},
@@ -290,7 +290,7 @@ class MyHTTPClient {
  *
  * Click to expand a section.
  */
-export class Api<SecurityDataType = any> extends MyHTTPClient {
+export class Api<_SecurityDataType = any> extends MyHTTPClient {
   constructor() {
     super('bitmex');
   }
