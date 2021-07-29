@@ -30,7 +30,6 @@ export function InputField(props: Props) {
       </Box>
       <NumberInput
         step={props.step}
-        max={20e6}
         size="sm"
         placeholder={placeholder}
         onChange={invokeValueChange}
@@ -40,6 +39,7 @@ export function InputField(props: Props) {
           data-testid={testID}
           id={id}
           fontSize={16}
+          maxLength={9}
           padding="5px"
           borderRadius={2}
           borderColor={stop ? 'red' : 'rgba(255, 255, 255, 0.6)'}
