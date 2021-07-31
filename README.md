@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="assets/app_4.png">
-</p>
-
 ## Table of Contents
 
 - [Current Features](#current-features)
@@ -174,9 +170,9 @@ npm run prod
 
 These are the available distributions to choose from:
 
-  <p align="center">
-  <img src="assets/distributions.png">
-  </p>
+<p align="center">
+ <img src="assets/distributions.png">
+</p>
 
 Probability density function is used to calculate distributions:
 
