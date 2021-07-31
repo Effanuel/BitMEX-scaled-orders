@@ -2,7 +2,7 @@
 
 # BitMEX trading tool
 
-This project is a trading tool based on **BitMEX API**. This project has a long way to go before becoming an actual usable tool. If you notice any bugs, open an issue.
+This project is a trading tool based on **BitMEX API** *(Binance coming next)*. This project has a long way to go before becoming an actual usable tool. If you notice any bugs, open an issue.
 
 ## Table of Contents
 
