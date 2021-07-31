@@ -1,6 +1,7 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import {Text} from '@chakra-ui/react';
+import {WarningTwoIcon} from '@chakra-ui/icons';
 import {postTrailingOrder, cancelTrailingOrder, changeTrailingOrderSymbol} from 'redux/modules/trailing/trailingModule';
 import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
 import {SelectDropdown, InputField, Button, SideRadioButtons, Row, MainContainer} from 'components';
@@ -8,6 +9,8 @@ import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import {useHooks} from './useHooks';
 import {INSTRUMENT_PARAMS} from 'utils';
+
+const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
 export default React.memo(function TrailingLimitOrderContainer() {
   const dispatch = useDispatch();
@@ -101,6 +104,7 @@ export default React.memo(function TrailingLimitOrderContainer() {
       connected={connected}
       label="Trailing Limit Order"
       description="Place a limit order to trail market price"
+      icons={symbol === SYMBOL.XBTUSD ? icons : undefined}
     >
       {renderFirstRow}
       {renderSecondRow}

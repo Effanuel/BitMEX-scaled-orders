@@ -1,6 +1,7 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
-import {Box, Text} from '@chakra-ui/react';
+import {Box, Text, Tooltip} from '@chakra-ui/react';
+import {WarningTwoIcon, WarningIcon} from '@chakra-ui/icons';
 import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
 import {previewOrders, previewToggle, postOrderBulk} from 'redux/modules/preview/previewModule';
 import {InputField, SelectDropdown, MainContainer, Button, SideRadioButtons, Row} from 'components';
@@ -9,7 +10,6 @@ import {createScaledOrders, DISTRIBUTION, INSTRUMENT_PARAMS} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {WarningTwoIcon} from '@chakra-ui/icons';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
@@ -146,10 +146,24 @@ export default React.memo(function ScaledContainer() {
   }, [onChangeNumber, state, step]);
 
   const renderThirdRow = React.useMemo(() => {
+    const isLotsizeWrong =
+      state.symbol === SYMBOL.XBTUSD &&
+      state.orderQty &&
+      state.n_tp &&
+      (+(state.orderQty ?? 0) / +(state.n_tp ?? 0)) % 100 !== 0;
     return (
-      <Row>
+      <Row alignItems="center">
         <DistributionsRadioGroup onChange={onChangeDistribution} distribution={state.distribution} />
         <Box width="50%">{error}</Box>
+
+        <Box display="flex" width="15%" justifyContent="flex-end" alignItems="center">
+          {isLotsizeWrong ? (
+            <Tooltip hasArrow label={'Order quantity will be rounded by 100 min lotsize'} bg="gray.300" color="black">
+              <WarningIcon color="red" />
+            </Tooltip>
+          ) : null}
+        </Box>
+
         <Text
           data-testid={SCALED_CONTAINER.PREVIEW_BUTTON}
           textStyle="regular"
