@@ -102,13 +102,15 @@ const skewedDistribution = (
   }
 
   // Price never goes above "Range end"
-  if (totalOrders[totalOrders.length - 1].price > end) {
+  if (totalOrders[totalOrders.length - 1].price !== end) {
     totalOrders[totalOrders.length - 1].price = end;
   }
 
   const totalQuantity = _.sumBy('orderQty', totalOrders);
   // Quantity always stays the same
-  if (totalQuantity < orderQty) totalOrders[totalOrders.length - 1].orderQty += orderQty - totalQuantity;
+  if (totalQuantity !== orderQty) {
+    totalOrders[totalOrders.length - 1].orderQty += orderQty - totalQuantity;
+  }
 
   if (stop > 0) totalOrders.push(createStopLoss({orderQty, stop, symbol, side}) as Order);
 
