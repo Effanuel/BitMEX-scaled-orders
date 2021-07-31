@@ -1,3 +1,9 @@
+
+
+# BitMEX trading tool
+
+This project is a trading tool based on **BitMEX API**. This project has a long way to go before becoming an actual usable tool. If you notice any bugs, open an issue.
+
 ## Table of Contents
 
 - [Current Features](#current-features)
@@ -10,10 +16,6 @@
 - [Roadmap](#roadmap)
 - [License](#license)
 - [Useful material](#useful-material)
-
-# BitMEX trading tool
-
-This project is a trading tool based on **BitMEX API**. This project has a long way to go before becoming an actual usable tool. If you notice any bugs, open an issue.
 
 ### Current Features
 
@@ -176,7 +178,9 @@ These are the available distributions to choose from:
 
 Probability density function is used to calculate distributions:
 
-![formula](https://i.stack.imgur.com/bBIbn.png)
+<p align="center">
+ <img src="https://i.stack.imgur.com/bBIbn.png">
+</p>
 
 </br>
 
