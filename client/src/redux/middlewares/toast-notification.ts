@@ -2,7 +2,7 @@ import {AnyAction, Dispatch, Middleware} from '@reduxjs/toolkit';
 import {AppState} from 'redux/modules/state';
 import {AsyncThunk} from '@reduxjs/toolkit';
 import {showToast, ToastPreset} from 'components';
-import {postMarketOrder, postOrderBulk} from 'redux/modules/preview/previewModule';
+import {getBalance, postMarketOrder, postOrderBulk} from 'redux/modules/preview/previewModule';
 import {cancelTrailingOrder, ammendTrailingOrder, postTrailingOrder} from 'redux/modules/trailing/trailingModule';
 import {postMarketCrossOrder as crossPostMarketOrder} from 'redux/modules/cross/crossModule';
 import {addProfitTarget, cancelOrder} from 'redux/modules/orders/ordersModule';
@@ -59,6 +59,9 @@ const registeredToasts: ThunkToasts = {
   ...buildThunkToasts(postOrderBulk, {
     SUCCESS: () => showToast('Submitted Scaled Orders'),
     FAILURE: (action) => showToast(`Scaled orders: ${action.payload}`, 'error'),
+  }),
+  ...buildThunkToasts(getBalance, {
+    FAILURE: (action) => showToast(`Balance: ${action.payload}`, 'error'),
   }),
   ...buildThunkToasts(postTrailingOrder, {
     SUCCESS: PostTrailingOrderSuccess,

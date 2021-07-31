@@ -19,6 +19,7 @@ export default function DistributionsRadioGroup({onChange, distribution}: Props)
       name="distribution"
       value={distribution}
       onChange={onChange}
+      width="30%"
     >
       {availableDistributions.map((item) => (
         <CustomRadioButton key={item} label={item} value={item} />

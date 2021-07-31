@@ -9,7 +9,7 @@ export function Spinner({loading}: Props) {
   return (
     <>
       {loading ? (
-        <Progress maxWidth="720px" size="xs" colorScheme="green" isIndeterminate margin="auto" />
+        <Progress maxWidth="720px" size="xs" colorScheme="green" isIndeterminate margin="auto" height="5px" />
       ) : (
         <Box height="5px" />
       )}

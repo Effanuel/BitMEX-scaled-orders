@@ -1,6 +1,6 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
-import {Box, Text, Tooltip} from '@chakra-ui/react';
+import {Box, Tooltip} from '@chakra-ui/react';
 import {WarningTwoIcon, WarningIcon} from '@chakra-ui/icons';
 import OrdersPreviewTable from './OrdersPreviewTable/OrdersPreviewTable';
 import {previewOrders, previewToggle, postOrderBulk} from 'redux/modules/preview/previewModule';
@@ -37,7 +37,7 @@ const initialState: Readonly<ScaledContainerState> = {
 
 export default React.memo(function ScaledContainer() {
   const dispatch = useDispatch();
-  const {error, showPreview, previewLoading} = useReduxSelector('error', 'showPreview', 'previewLoading');
+  const {showPreview, previewLoading} = useReduxSelector('showPreview', 'previewLoading');
 
   const [state, setState] = React.useState(initialState);
   const [isDirty, setDirty] = React.useState(false);
@@ -154,35 +154,33 @@ export default React.memo(function ScaledContainer() {
     return (
       <Row alignItems="center">
         <DistributionsRadioGroup onChange={onChangeDistribution} distribution={state.distribution} />
-        <Box width="50%">{error}</Box>
-
-        <Box display="flex" width="15%" justifyContent="flex-end" alignItems="center">
+        <Box display="flex" flexDirection="row" alignItems="center">
           {isLotsizeWrong ? (
-            <Tooltip hasArrow label={'Order quantity will be rounded by 100 min lotsize'} bg="gray.300" color="black">
-              <WarningIcon color="red" />
+            <Tooltip hasArrow label="Order quantity will be rounded by 100 min lotsize" bg="gray.300" color="black">
+              <WarningIcon marginRight={5} color="red" />
             </Tooltip>
           ) : null}
+          <Box marginRight={5}>
+            <Button
+              data-testid={SCALED_CONTAINER.PREVIEW_BUTTON}
+              variant="text"
+              label="Preview"
+              onClick={onPreviewOrders}
+              disabled={isDisabled(state)}
+            />
+          </Box>
+          <Button
+            testID={SCALED_CONTAINER.SUBMIT_BUTTON}
+            label="Submit"
+            isLoading={previewLoading}
+            variant={SIDE.BUY}
+            onClick={onOrderSubmit}
+            disabled={isDisabled(state)}
+          />
         </Box>
-
-        <Text
-          data-testid={SCALED_CONTAINER.PREVIEW_BUTTON}
-          textStyle="regular"
-          onClick={onPreviewOrders}
-          aria-disabled={isDisabled(state)}
-        >
-          Preview
-        </Text>
-        <Button
-          testID={SCALED_CONTAINER.SUBMIT_BUTTON}
-          label="Submit"
-          isLoading={previewLoading}
-          variant={SIDE.BUY}
-          onClick={onOrderSubmit}
-          disabled={isDisabled(state)}
-        />
       </Row>
     );
-  }, [onOrderSubmit, onPreviewOrders, error, state, previewLoading, onChangeDistribution]);
+  }, [onOrderSubmit, onPreviewOrders, state, previewLoading, onChangeDistribution]);
 
   const renderOutside = React.useMemo(() => showPreview && <OrdersPreviewTable />, [showPreview]);
 
