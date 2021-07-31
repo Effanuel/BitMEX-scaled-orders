@@ -162,7 +162,7 @@ export default React.memo(function ScaledContainer() {
           ) : null}
           <Box marginRight={5}>
             <Button
-              data-testid={SCALED_CONTAINER.PREVIEW_BUTTON}
+              testID={SCALED_CONTAINER.PREVIEW_BUTTON}
               variant="text"
               label="Preview"
               onClick={onPreviewOrders}
