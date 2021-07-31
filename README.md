@@ -77,6 +77,16 @@ This project is a trading tool based on **BitMEX API**. This project has a long 
     - if you set a sell cross order price above current price, it will trigger a market sell order when the current price crosses up and then down of the set cross price;
     - if you set a buy cross order price below current price, it will trigger a market buy order when the current price crosses down and then up of the set cross price.
 
+- **Open Orders:**
+
+  - See currently open orders;
+  - Add profit targets for open orders (uses limit stop-loss orders to achieve that);
+  - Cancel any open/profit order(s);
+
+<p align="center">
+  <img src="assets/open-orders.png">
+</p>
+
 ### Built With
 
 The Backend was built using **Node + Express** and the Frontend, **React + Redux**. Styled components were taken from **Chakra UI**
