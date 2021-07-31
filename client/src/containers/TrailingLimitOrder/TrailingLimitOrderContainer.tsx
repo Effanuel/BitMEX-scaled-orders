@@ -1,179 +1,113 @@
-import React, {useState} from 'react';
-import Grid from '@material-ui/core/Grid';
+import React from 'react';
 import {useDispatch} from 'react-redux';
-import {
-  postTrailingOrder,
-  __clearTrailingOrder,
-  cancelTrailingOrder,
-  changeTrailingOrderSymbol,
-} from 'redux/modules/trailing/trailingModule';
-import {MainContainer, SelectDropdown, InputField, Button, SideRadioButtons} from 'components';
-import {SYMBOLS, ORD_TYPE, SIDE} from 'util/BitMEX-types';
-import buildOrderPresenter from '../../presenters/trailing-label-presenter';
-import styles from './TrailingLimitOrderContainer.module.scss';
+import {Text} from '@chakra-ui/react';
+import {WarningTwoIcon} from '@chakra-ui/icons';
+import {postTrailingOrder, cancelTrailingOrder, changeTrailingOrderSymbol} from 'redux/modules/trailing/trailingModule';
+import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
+import {SelectDropdown, InputField, Button, SideRadioButtons, Row, MainContainer} from 'components';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
+import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import {useHooks} from './useHooks';
+import {INSTRUMENT_PARAMS} from 'utils';
 
-interface State {
-  symbol: SYMBOLS;
-  orderQty: number | null;
-  side: SIDE;
-}
+const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
-const initialState = {
-  symbol: SYMBOLS.XBTUSD,
-  orderQty: null,
-  side: SIDE.SELL,
-};
-
-const TrailingLimitOrderContainer = React.memo(() => {
+export default React.memo(function TrailingLimitOrderContainer() {
   const dispatch = useDispatch();
 
-  const [state, setState] = useState<Readonly<State>>(initialState);
+  const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
+  const [side, setSide] = React.useState<SIDE>(SIDE.SELL);
+  const [quantity, setQuantity] = React.useState<string | number>('');
 
-  const {
-    wsCurrentPrice,
-    wsBidAskPrices,
-    trailOrderId,
-    trailOrderStatus,
-    trailOrderPrice,
-    status,
-    connected,
-  } = useHooks();
+  const {wsCurrentPrice, wsBidAskPrices, trailOrderId, trailOrderStatus, trailOrderPrice, status, connected} =
+    useHooks();
 
-  const trailingOrderPrice = React.useMemo(
-    () => (state.side === SIDE.SELL ? wsBidAskPrices?.askPrice : wsBidAskPrices?.bidPrice),
-    [state.side, wsBidAskPrices],
-  );
+  const spread = 1 / INSTRUMENT_PARAMS[symbol].ticksize;
+  const trailingOrderPrice =
+    side === SIDE.SELL ? (wsBidAskPrices?.bidPrice ?? 0) + spread : (wsBidAskPrices?.askPrice ?? 0) - spread;
 
   const submitTrailingOrder = React.useCallback(() => {
-    if (trailingOrderPrice && state.orderQty) {
-      const payload = {
-        ...state,
-        orderQty: state.orderQty,
-        price: trailingOrderPrice,
-        side: state.side,
-        ordType: ORD_TYPE.Limit,
-        text: 'best_order',
-      };
+    if (trailingOrderPrice && quantity) {
+      const payload = {symbol, side, orderQty: +quantity, price: trailingOrderPrice, text: 'best_order'};
       dispatch(postTrailingOrder(payload));
+      setQuantity('');
     }
-  }, [dispatch, state, trailingOrderPrice]);
+  }, [dispatch, trailingOrderPrice, quantity, side, symbol]);
 
-  const cancelOrder = React.useCallback(() => {
-    if (trailOrderId) {
-      dispatch(cancelTrailingOrder({orderID: trailOrderId}));
-    }
-  }, [dispatch, trailOrderId]);
-
-  const onChangeNumber = React.useCallback(({target: {id, value}}: InputChange): void => {
-    setState((prevState) => ({...prevState, [id]: +value}));
-  }, []);
+  const cancelOrder = React.useCallback(() => void dispatch(cancelTrailingOrder({} as any)), [dispatch]);
 
   const toggleInstrument = React.useCallback(
-    ({target: {id, value}}: InputChange) => {
-      dispatch(changeTrailingOrderSymbol(value as SYMBOLS));
-      setState((prevState) => ({...prevState, [id]: value}));
+    (symbol: SYMBOL) => {
+      dispatch(changeTrailingOrderSymbol(symbol));
+      setSymbol(symbol);
     },
     [dispatch],
   );
 
-  const toggleSide = React.useCallback(({target: {name, value}}: InputChange) => {
-    setState((prevState) => ({...prevState, [name]: value}));
-  }, []);
-
   const buttonLabel = React.useMemo(
-    () => buildOrderPresenter(connected, trailingOrderPrice, status, trailOrderStatus),
-    [connected, trailingOrderPrice, status, trailOrderStatus],
+    () => buildOrderPresenter(connected, trailingOrderPrice, status || '', trailOrderStatus, symbol),
+    [connected, trailingOrderPrice, status, trailOrderStatus, symbol],
   );
 
   const renderFirstRow = React.useMemo(() => {
     return (
-      <>
-        <Grid item xs={3}>
-          <SelectDropdown
-            id="symbol"
-            onChange={toggleInstrument}
-            label="Instrument"
-            disabled={!connected || trailOrderStatus === 'Order placed.'}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <InputField
-            data-test-id={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
-            id="orderQty"
-            onChange={onChangeNumber}
-            value={state.orderQty}
-            label="Quantity"
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <SideRadioButtons
-            testID={TRAILING_LIMIT_CONTAINER.SIDE_BUTTONS}
-            onChangeRadio={toggleSide}
-            side={state.side}
-          />
-        </Grid>
-        <Grid item xs={4} className={styles.top_row}>
-          <Button
-            testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
-            label={buttonLabel.label}
-            variant={state.side}
-            style={{width: '170px'}}
-            onClick={submitTrailingOrder}
-            disabled={!state.orderQty || state.orderQty > 20e6 || !wsCurrentPrice || buttonLabel.disabled}
-          />
-        </Grid>
-      </>
+      <Row>
+        <SelectDropdown
+          id="symbol"
+          onChange={toggleInstrument}
+          label="Instrument"
+          disabled={!connected || trailOrderStatus === 'Order placed.'}
+        />
+        <InputField
+          testID={TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT}
+          onChange={setQuantity}
+          value={quantity}
+          label="Quantity"
+        />
+        <SideRadioButtons testID={TRAILING_LIMIT_CONTAINER.SIDE_BUTTONS} onChangeRadio={setSide} side={side} />
+        <Button
+          testID={TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER}
+          label={buttonLabel.label}
+          variant={side}
+          style={{width: '170px'}}
+          onClick={submitTrailingOrder}
+          disabled={!quantity || +quantity > 20e6 || !wsCurrentPrice || buttonLabel.disabled}
+        />
+      </Row>
     );
-  }, [
-    onChangeNumber,
-    connected,
-    submitTrailingOrder,
-    state,
-    trailOrderStatus,
-    wsCurrentPrice,
-    toggleSide,
-    toggleInstrument,
-    buttonLabel,
-  ]);
+  }, [connected, submitTrailingOrder, trailOrderStatus, wsCurrentPrice, toggleInstrument, buttonLabel, quantity, side]);
 
   const renderSecondRow = React.useMemo(() => {
     return (
-      <>
-        <Grid item xs={4}>
+      <Row>
+        <div style={{flexDirection: 'column', display: 'flex'}}>
+          <span style={{color: 'white'}}>Trail order status: </span>
+          <span style={{color: 'green'}}>{trailOrderStatus}</span>
+        </div>
+        {trailOrderPrice ? (
           <div style={{flexDirection: 'column', display: 'flex'}}>
-            <span style={{color: 'white'}}>Trail order status: </span>
-            <span style={{color: 'green'}}>{trailOrderStatus}</span>
+            <div style={{color: 'white'}}>Trail order price: </div>
+            <div style={{color: 'green'}}>{trailOrderPrice}</div>
           </div>
-        </Grid>
-        <Grid item xs={4}>
-          {trailOrderPrice ? (
-            <div style={{flexDirection: 'column', display: 'flex'}}>
-              <div style={{color: 'white'}}>Trail order price: </div>
-              <div style={{color: 'green'}}>{trailOrderPrice}</div>
-            </div>
-          ) : null}
-        </Grid>
-        <Grid item xs={4}>
-          {connected && wsCurrentPrice && trailOrderStatus === 'Order placed.' ? (
-            <Button variant="textSell" onClick={cancelOrder} label={'Cancel Trailing Order'} />
-          ) : null}
-        </Grid>
-      </>
+        ) : null}
+        {connected && wsCurrentPrice && trailOrderStatus === 'Order placed.' && trailOrderId ? (
+          <Text textStyle="red" onClick={cancelOrder}>
+            Cancel Trailing Order
+          </Text>
+        ) : null}
+      </Row>
     );
-  }, [connected, cancelOrder, trailOrderPrice, trailOrderStatus, wsCurrentPrice]);
+  }, [connected, cancelOrder, trailOrderPrice, trailOrderStatus, wsCurrentPrice, trailOrderId]);
 
   return (
     <MainContainer
       connected={connected}
       label="Trailing Limit Order"
       description="Place a limit order to trail market price"
+      icons={symbol === SYMBOL.XBTUSD ? icons : undefined}
     >
       {renderFirstRow}
       {renderSecondRow}
     </MainContainer>
   );
 });
-
-export default TrailingLimitOrderContainer;

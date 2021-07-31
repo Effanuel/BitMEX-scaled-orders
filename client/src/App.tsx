@@ -1,13 +1,15 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
+import {Box} from '@chakra-ui/react';
 import {
   ScaledOrders,
   MarketOrderContainer,
   TrailingLimitOrder,
   TickerPricesContainer,
-  CrossOrderContainer,
+  //   CrossOrderContainer,
+  OpenOrdersContainer,
 } from 'containers';
-import {Spinner, ToastContainer} from './components';
+import {Spinner, ToastContainer} from 'components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
 import {getBalance} from 'redux/modules/preview/previewModule';
@@ -32,23 +34,23 @@ const App = React.memo(() => {
 
   React.useEffect(() => {
     if (connected) {
-      //TODO: fix argument
-      dispatch(getBalance(''));
+      dispatch(getBalance());
       dispatch(wsAuthenticate());
       dispatch(wsSubscribeTo('order'));
     }
   }, [dispatch, connected]);
 
   return (
-    <div style={{marginTop: '35px'}}>
+    <Box marginTop="35px">
       <ToastContainer />
       <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />
-      <CrossOrderContainer />
+      <OpenOrdersContainer />
+      {/* <CrossOrderContainer /> TODO: disabling for now */}
       <MarketOrderContainer />
       <TrailingLimitOrder />
       <ScaledOrders />
-    </div>
+    </Box>
   );
 });
 

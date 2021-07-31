@@ -1,22 +1,35 @@
 import React from 'react';
+import {Spinner} from '@chakra-ui/react';
 import cx from 'classnames';
+import {SIDE} from '../../redux/api/bitmex/types';
+import {COMPONENTS} from 'data-test-ids';
 import styles from './Button.module.scss';
-import {SIDE} from 'util/BitMEX-types';
 
 export type ButtonVariants = 'submit' | 'text' | 'custom' | 'textSell' | SIDE;
 
-export interface ButtonProps {
+interface Props<T> {
   testID?: string;
-  id?: string;
+  id?: T;
+  isLoading?: boolean;
   label: string;
   variant?: ButtonVariants;
   disabled?: boolean;
-  onClick: (event: MouseChange) => void;
+  onClick: (id: T) => void;
   style?: React.CSSProperties;
   className?: string;
 }
 
-function Button({id, label, testID, variant = 'submit', disabled, onClick, style, className = ''}: ButtonProps) {
+export function Button<T extends string>({
+  id,
+  label,
+  isLoading,
+  testID,
+  variant = 'submit',
+  disabled,
+  onClick,
+  style,
+  className = '',
+}: Props<T>) {
   const buttonStyle = cx({
     [styles.button]: variant === 'submit',
     [styles.text_button]: variant === 'text',
@@ -26,11 +39,30 @@ function Button({id, label, testID, variant = 'submit', disabled, onClick, style
     [className]: variant === 'custom',
   });
 
+  const invokeClick = React.useCallback(() => onClick(id as T), [onClick, id]);
+
   return (
-    <button id={id} data-test-id={testID} className={buttonStyle} style={style} disabled={disabled} onClick={onClick}>
-      {label}
+    <button
+      id={id}
+      data-testid={testID}
+      className={buttonStyle}
+      style={style}
+      disabled={disabled}
+      onClick={invokeClick}
+    >
+      {isLoading ? (
+        <Spinner
+          data-testid={COMPONENTS.SPINNER}
+          padding={0}
+          speed="0.6s"
+          color="green.500"
+          size="sm"
+          justifyContent="center"
+          verticalAlign="center"
+        />
+      ) : (
+        label
+      )}
     </button>
   );
 }
-
-export {Button};

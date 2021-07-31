@@ -1,57 +1,86 @@
-import {createScaledOrders, DistributionProps, DISTRIBUTIONS, MarketOrderProps} from 'util/index';
-import {withPayloadType, createThunk} from 'redux/helpers/actionHelpers';
+import {createReducer} from '@reduxjs/toolkit';
+import {createScaledOrders, DistributionProps, DISTRIBUTION} from 'utils';
+import {createAction, createThunkV2} from 'redux/helpers/actionHelpers';
 import {
   SHOW_PREVIEW,
   TOGGLE_PREVIEW,
   PreviewState,
   PREVIEW_POST_ORDER,
   GET_BALANCE,
-  PreviewActions,
+  PreviewActions as actionTypes,
   PREVIEW_POST_MARKET_ORDER,
 } from './types';
-import {createAction, createReducer} from '@reduxjs/toolkit';
+
+export const postMarketOrder = createThunkV2({
+  actionName: PREVIEW_POST_MARKET_ORDER,
+  apiMethod: 'marketOrder',
+  parseResponse: (data) => data,
+});
+
+export const postOrderBulk = createThunkV2({
+  actionName: PREVIEW_POST_ORDER,
+  apiMethod: 'orderBulk',
+  parseResponse: (data) => data,
+});
+
+export const getBalance = createThunkV2({
+  actionName: GET_BALANCE,
+  apiMethod: 'getBalance',
+  parseResponse: (data) => ({walletBalance: data.walletBalance}),
+});
+
+export const previewToggle = createAction(TOGGLE_PREVIEW);
+
+const previewShow = createAction<actionTypes.SHOW_PREVIEW>(SHOW_PREVIEW);
+
+export const previewOrders = (ordersProps: DistributionProps, distribution: DISTRIBUTION): Action =>
+  previewShow(createScaledOrders({ordersProps, distribution}));
 
 export const defaultState: PreviewState = {
-  orders: {orders: [], stop: {}},
+  orders: [],
   balance: 0,
   showPreview: false,
   previewLoading: false,
   error: '',
 };
 
-export const postMarketOrder = createThunk<MarketOrderProps>(PREVIEW_POST_MARKET_ORDER, 'postMarketOrder');
-
-type PostScaledOrdersProps = {ordersProps: DistributionProps; distribution: DISTRIBUTIONS};
-export const postScaledOrders = createThunk<PostScaledOrdersProps>(PREVIEW_POST_ORDER, 'postBulkOrders');
-
-export const getBalance = createThunk<string, {walletBalance: number}>(GET_BALANCE, 'getBalance');
-
-export const previewToggle = createAction(TOGGLE_PREVIEW);
-
-const previewShow = createAction(SHOW_PREVIEW, withPayloadType<PreviewActions.SHOW_PREVIEW>());
-
-export const previewOrders = (ordersProps: DistributionProps, distribution: DISTRIBUTIONS): Action =>
-  previewShow(createScaledOrders({ordersProps, distribution}));
-
 export const previewReducer = createReducer<PreviewState>(defaultState, (builder) =>
   builder
-    .addCase(postScaledOrders.pending, (state) => {
+    .addCase(postOrderBulk.pending, (state) => {
+      return {...state, previewLoading: true, showPreview: false, error: ''};
+    })
+    .addCase(postOrderBulk.fulfilled, (state) => {
+      return {
+        ...state,
+        orders: [],
+        showPreview: false,
+        previewLoading: false,
+        error: '',
+      };
+    })
+    .addCase(postOrderBulk.rejected, (state, {payload}) => {
+      return {
+        ...state,
+        orders: [],
+        showPreview: false,
+        previewLoading: false,
+        error: payload ?? '',
+      };
+    })
+    .addCase(postMarketOrder.pending, (state) => {
       return {...state, previewLoading: true, error: ''};
-    })
-    .addCase(postScaledOrders.fulfilled, (state) => {
-      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: ''};
-    })
-    .addCase(postScaledOrders.rejected, (state, {payload}) => {
-      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: payload ?? ''};
     })
     .addCase(postMarketOrder.fulfilled, (state) => {
       return {...state, previewLoading: false, error: ''};
     })
+    .addCase(postMarketOrder.rejected, (state) => {
+      return {...state, previewLoading: false, error: ''};
+    })
     .addCase(getBalance.fulfilled, (state, {payload}) => {
-      return {...state, balance: payload.walletBalance};
+      return {...state, balance: payload.data.walletBalance};
     })
     .addCase(getBalance.rejected, (state, {payload}) => {
-      return {...state, orders: defaultState.orders, showPreview: false, previewLoading: false, error: payload ?? ''};
+      return {...state, orders: [], showPreview: false, previewLoading: false, error: payload ?? ''};
     })
     .addCase(previewShow, (state, {payload}) => {
       return {...state, orders: payload, showPreview: true, error: ''};

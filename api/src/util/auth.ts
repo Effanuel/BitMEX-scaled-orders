@@ -1,19 +1,26 @@
 import crypto from 'crypto';
 import rq from 'request-promise';
 import {logger} from './logger';
-
 import {ErrorHandler} from './error';
 
-export const generate_requestOptions = (data: any = '', path: string, method: string, url: string): any => {
-  //path_leverage = '/api/v1/position/leverage', //POST /position/leverage
+type Method = 'GET' | 'POST';
+
+interface RequestOptions {
+  headers: Record<string, string | number>;
+  url: string;
+  method: Method;
+  body: any;
+}
+
+export const generate_requestOptions = (data: any, path: string, method: Method, url: string): RequestOptions => {
   const api = process.env.REACT_APP___API_KEY || '';
   const secret = process.env.REACT_APP___API_SECRET || '';
 
   const expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
-  const postBody = data ? JSON.stringify(data) : '';
+  const body = data ? JSON.stringify(data) : '';
   const signature = crypto
     .createHmac('sha256', secret)
-    .update(method + `/api/v1/${path}` + expires + postBody)
+    .update(method + `/api/v1/${path}` + expires + body)
     .digest('hex');
 
   const headers = {
@@ -24,25 +31,12 @@ export const generate_requestOptions = (data: any = '', path: string, method: st
     'api-key': api,
     'api-signature': signature,
   };
-  return {
-    headers: headers,
-    url: url,
-    method: method,
-    body: postBody,
-  };
+  return {headers, url, method, body};
 };
 
-export const _curl_bitmex = async (path: any, verb?: any, postdict?: any, max_retries: any = null): Promise<any> => {
+export const fetchBitmexExchange = async (path: string, method?: Method, postdict?: Record<string, unknown>) => {
   const url = `https://${process.env.REACT_APP___TESTNET == 'true' ? 'testnet' : 'www'}.bitmex.com/api/v1/${path}`;
-
-  if (!verb) verb = postdict ? 'POST' : 'GET';
-
-  if (max_retries) {
-    max_retries = ['POST', 'PUT'].includes(verb) ? 0 : 3;
-  }
-
-  // let response = null;
-  const requestOptions = generate_requestOptions(postdict, path, verb, url);
+  const requestOptions = generate_requestOptions(postdict, path, method || (postdict ? 'POST' : 'GET'), url);
   try {
     logger.log('debug', `Sending request from _curl_bitmex(${path})...`);
     const response = await rq(requestOptions);

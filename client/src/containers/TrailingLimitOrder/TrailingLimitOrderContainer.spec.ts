@@ -1,152 +1,120 @@
 import TrailingLimitOrderContainer from './TrailingLimitOrderContainer';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import {mockWebsocketState} from 'tests/mockData/orders';
-import {SYMBOLS} from 'util/BitMEX-types';
-import {Instrument} from 'redux/modules/websocket/types';
-import {partialInstrument} from 'tests/websocketData/instrument';
+import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
+import {partialInstrument, updateInstrument} from 'tests/websocketData/instrument';
 import {partialOrder} from 'tests/websocketData/order';
-import {createEngine} from 'tests/fuel/app-driver';
-import {toastSpyModule} from 'tests/spies';
-import {ResponseBuilder} from 'tests/responses';
-import {isDisabled, textOf} from 'tests/fuel/inspectors';
-import {openWebsocket, sendWebsocketMessage} from 'tests/fuel/helpers';
+import {forgeAmendOrder, forgeLimitOrder} from 'tests/responses';
+import {getState, openWebsocket, sendWebsocketMessage, storeActions} from 'tests/helpers';
+import {createRenderer} from 'tests/influnt';
+import {textOf, isDisabled, respond} from 'influnt';
+import {createMockedStore} from 'tests/mockStore';
 
 const orderID = 'OrderId';
 
-const mocks = new ResponseBuilder().postTrailingOrder(orderID, 10322).build();
-const engine = createEngine(TrailingLimitOrderContainer, {}, mocks);
+const render = createRenderer(TrailingLimitOrderContainer, {extraArgs: () => createMockedStore()});
 
 describe('TrailingLimitContainer', () => {
+  const commonOrder = ({orderQty, price}: {orderQty: number; price: number}) => ({
+    symbol: SYMBOL.XBTUSD,
+    side: SIDE.SELL,
+    orderQty,
+    price,
+    text: 'best_order',
+  });
+
   it('should render submit button as disabled when not subscribed to ws', async () => {
-    const result = await engine()
-      .inspect({submitButtonLabel: textOf(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)})
-      .inspect({isDisabled: isDisabled(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)})
-      .halt();
+    const result = await render().inspect({
+      submitButtonLabel: textOf(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER),
+      isDisabled: isDisabled(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER),
+    });
 
     expect(result).toEqual({
-      actions: [],
       submitButtonLabel: 'Not subscribed to order',
       isDisabled: true,
     });
   });
 
   it('should render submit button as disabled when inputs are empty', async () => {
-    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOLS.XBTUSD});
+    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOL.XBTUSD});
 
-    const result = await engine()
-      .applyWithAct(openWebsocket())
-      .applyWithAct(sendWebsocketMessage(currentOrderBook))
-      .inspect({submitButtonLabel: textOf(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)})
-      .inspect({isDisabled: isDisabled(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)})
-      .halt();
+    const result = await render()
+      .execute(openWebsocket())
+      .execute(sendWebsocketMessage(currentOrderBook))
+      .inspect({
+        submitButtonLabel: textOf(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER),
+        isDisabled: isDisabled(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER),
+        actions: storeActions(),
+      });
 
     expect(result).toEqual({
       actions: ['REDUX_WEBSOCKET::OPEN', 'REDUX_WEBSOCKET::MESSAGE'],
       isDisabled: true,
-      submitButtonLabel: 'Place a trailing limit order at 10,322.00',
+      submitButtonLabel: 'Submit order at 10,322.0',
     });
   });
 
-  it('should submit a trailing order without placing it', async () => {
+  it('should submit a trailing order without filling it', async () => {
+    const mock = respond('limitOrder', [commonOrder({orderQty: 200, price: 501})]).with(
+      forgeLimitOrder({orderID, text: 'best_order', price: 501}),
+    );
+
     const websocket = mockWebsocketState({
       connected: true,
-      instrument: [{symbol: SYMBOLS.XBTUSD, askPrice: 501, bidPrice: 500}] as Instrument[],
+      instrument: [{symbol: SYMBOL.XBTUSD, askPrice: 501, bidPrice: 500.5}],
     });
 
-    const result = await engine({store: {websocket}})
-      .addFuel(toastSpyModule()) // spy on api is missing here
+    const result = await render({extraArgs: createMockedStore({websocket})})
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
       .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
-      .burnFuel()
-      .halt();
+      .resolve(mock)
+      .execute(sendWebsocketMessage(partialOrder({orderID, symbol: SYMBOL.XBTUSD, price: 501, ordStatus: 'New'})))
+      .inspect({actions: storeActions(), trailing: getState('trailing')});
 
     expect(result).toEqual({
       actions: [
         'trailing/POST_TRAILING_ORDER/pending',
         'trailing/POST_TRAILING_ORDER/fulfilled',
-        'trailing/__CLEAR_TRAILING_ORDER',
-      ],
-      toast: [{message: 'Trailing Order placed at 10322', toastPreset: 'success'}],
-    });
-  });
-
-  // @TODO: fix spy on api
-  it('should place a trailing sell order', async () => {
-    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOLS.XBTUSD});
-    const result = await engine()
-      .addFuel(toastSpyModule())
-      .applyWithAct(openWebsocket())
-      .applyWithAct(sendWebsocketMessage(currentOrderBook))
-      .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
-      .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
-      .applyWithAct(
-        sendWebsocketMessage(partialOrder({orderID, symbol: SYMBOLS.XBTUSD, price: 9000, ordStatus: 'New'})),
-      )
-      .burnFuel()
-      .withStore('trailing')
-      .halt();
-
-    expect(result).toEqual({
-      actions: [
-        'REDUX_WEBSOCKET::OPEN',
         'REDUX_WEBSOCKET::MESSAGE',
-        'trailing/POST_TRAILING_ORDER/pending',
-        'REDUX_WEBSOCKET::MESSAGE',
-        'trailing/POST_TRAILING_ORDER/fulfilled',
       ],
-      toast: [{message: 'Trailing Order placed at 10322', toastPreset: 'success'}],
+      network: [{limitOrder: [{orderQty: 200, price: 501, side: 'Sell', symbol: 'XBTUSD', text: 'best_order'}]}],
+      toast: [{message: 'Trailing Order placed at 501', toastPreset: 'success'}],
       trailing: {
         trailLoading: false,
         trailOrderId: orderID,
-        trailOrderPrice: 10322,
+        trailOrderPrice: 501,
         trailOrderSide: 'Sell',
         trailOrderStatus: 'Order placed.',
         trailOrderSymbol: 'XBTUSD',
       },
     });
-
-    // expect(sendRequestSpy).toHaveBeenCalledWith(
-    //   'order',
-    //   {
-    //     method: 'POST',
-    //     order: {
-    //       execInst: 'ParticipateDoNotInitiate',
-    //       ordType: 'Limit',
-    //       orderQty: 200,
-    //       price: 10322,
-    //       side: 'Sell',
-    //       symbol: 'XBTUSD',
-    //       text: 'best_order',
-    //     },
-    //   },
-    //   ['orderID', 'price'],
-    // );
   });
 
   it('should place and fill a trailing sell order', async () => {
-    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOLS.XBTUSD});
-    const result = await engine()
-      .addFuel(toastSpyModule())
-      .applyWithAct(openWebsocket())
-      .applyWithAct(sendWebsocketMessage(currentOrderBook))
-      .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
+    const mock = respond('limitOrder', [commonOrder({orderQty: 200, price: 10322})]).with(
+      forgeLimitOrder({orderID, text: 'best_order', price: 10322}),
+    );
+
+    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOL.XBTUSD});
+    const result = await render()
+      .execute(openWebsocket())
+      .execute(sendWebsocketMessage(currentOrderBook))
+      .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, 200)
       .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
-      .applyWithAct(
-        sendWebsocketMessage(partialOrder({orderID, symbol: SYMBOLS.XBTUSD, price: 9000, ordStatus: 'Filled'})),
-      )
-      .burnFuel()
-      .withStore('trailing')
-      .halt();
+      .resolve(mock)
+      .execute(sendWebsocketMessage(partialOrder({orderID, symbol: SYMBOL.XBTUSD, price: 9000, ordStatus: 'Filled'})))
+      .inspect({actions: storeActions(), trailing: getState('trailing')});
 
     expect(result).toEqual({
       actions: [
         'REDUX_WEBSOCKET::OPEN',
         'REDUX_WEBSOCKET::MESSAGE',
         'trailing/POST_TRAILING_ORDER/pending',
-        'REDUX_WEBSOCKET::MESSAGE',
         'trailing/POST_TRAILING_ORDER/fulfilled',
+        'REDUX_WEBSOCKET::MESSAGE',
         'trailing/__CLEAR_TRAILING_ORDER',
       ],
+      network: [{limitOrder: [{orderQty: 200, price: 10322, side: 'Sell', symbol: 'XBTUSD', text: 'best_order'}]}],
       toast: [{message: 'Trailing Order placed at 10322', toastPreset: 'success'}],
       trailing: {
         trailLoading: false,
@@ -159,38 +127,49 @@ describe('TrailingLimitContainer', () => {
     });
   });
 
-  it.skip('should place and trail the order', async () => {
-    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOLS.XBTUSD});
-    const newOrderBook = partialInstrument({askPrice: 10321, bidPrice: 10320.5, symbol: SYMBOLS.XBTUSD});
-    const result = await engine()
-      .addFuel(toastSpyModule())
-      .applyWithAct(openWebsocket())
-      .applyWithAct(sendWebsocketMessage(currentOrderBook))
-      .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
+  it('should place and trail the order', async () => {
+    const limitOrder = commonOrder({orderQty: 200, price: 10322});
+    const [limitOrderPromise, amendOrderPromise] = [
+      respond('limitOrder', [limitOrder]).with(forgeLimitOrder({...limitOrder, orderID})),
+      respond('orderAmend', [{orderID, price: 10321}]).with(forgeAmendOrder({orderID, price: 10321})),
+    ];
+
+    const currentOrderBook = partialInstrument({askPrice: 10322, bidPrice: 10321.5, symbol: SYMBOL.XBTUSD});
+    const newOrderBook = updateInstrument({askPrice: 10321, bidPrice: 10320.5, symbol: SYMBOL.XBTUSD});
+    const result = await render()
+      .execute(openWebsocket())
+      .execute(sendWebsocketMessage(currentOrderBook))
+      .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, 200)
       .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
-      .applyWithAct(
-        sendWebsocketMessage(partialOrder({orderID, symbol: SYMBOLS.XBTUSD, price: 12000, ordStatus: 'New'})),
-      )
-      .burnFuel()
-      .applyWithAct(sendWebsocketMessage(newOrderBook))
-      // .burnFuel()s
-      .withStore('trailing')
-      .halt();
+      .resolve(limitOrderPromise)
+      .execute(sendWebsocketMessage(partialOrder({orderID, symbol: SYMBOL.XBTUSD, price: 10322, ordStatus: 'New'})))
+      .execute(sendWebsocketMessage(newOrderBook))
+      .resolve(amendOrderPromise)
+      .inspect({actions: storeActions(), trailing: getState('trailing')});
 
     expect(result).toEqual({
       actions: [
         'REDUX_WEBSOCKET::OPEN',
         'REDUX_WEBSOCKET::MESSAGE',
         'trailing/POST_TRAILING_ORDER/pending',
-        'REDUX_WEBSOCKET::MESSAGE',
         'trailing/POST_TRAILING_ORDER/fulfilled',
         'REDUX_WEBSOCKET::MESSAGE',
+        'REDUX_WEBSOCKET::MESSAGE',
+        'trailing/PUT_TRAILING_ORDER/pending',
+        'trailing/PUT_TRAILING_ORDER/fulfilled',
       ],
-      toast: [{message: 'Trailing Order placed at 10322', toastPreset: 'success'}],
+      network: [
+        {limitOrder: [{orderQty: 200, price: 10322, side: 'Sell', symbol: 'XBTUSD', text: 'best_order'}]},
+        {orderAmend: [{orderID: 'OrderId', price: 10321}]},
+      ],
+      toast: [
+        {message: 'Trailing Order placed at 10322', toastPreset: 'success'},
+        {message: 'Trailing Order Ammended to 10321', toastPreset: 'success'},
+      ],
       trailing: {
         trailLoading: false,
         trailOrderId: 'OrderId',
-        trailOrderPrice: 10322,
+        trailOrderPrice: 10321,
         trailOrderSide: 'Sell',
         trailOrderStatus: 'Order placed.',
         trailOrderSymbol: 'XBTUSD',

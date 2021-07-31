@@ -1,36 +1,39 @@
-import {SIDE} from 'util/BitMEX-types';
-import {ButtonVariants} from './Button';
-import {ButtonDriver} from './Button.driver';
+import {Button, ButtonVariants} from './Button';
+import {SIDE} from 'redux/api/bitmex/types';
+import {createComponentRenderer} from 'tests/influnt';
+import {classNameOf} from 'tests/helpers';
+
+const props = {
+  id: 'default:id',
+  label: 'default:label',
+  testID: 'default:testID',
+  variant: 'submit' as ButtonVariants,
+  disabled: false,
+  onClick: jest.fn(),
+  style: undefined,
+  className: 'ClassName',
+};
+
+const render = createComponentRenderer(Button, {passProps: props});
 
 describe('ButtonDriver', () => {
-  let driver: ButtonDriver;
-
-  beforeEach(() => {
-    driver = new ButtonDriver();
-  });
-
   it.each([
     ['submit', 'button'],
     ['text', 'text_button'],
     [SIDE.BUY, 'button_buy'],
     [SIDE.SELL, 'button_sell'],
     ['textSell', 'text_sell'],
-  ])('should return %s className for %s variant', (variant, expectedClassName) => {
-    const drv = driver.withDefaultProps({variant: variant as ButtonVariants}).render();
-    expect(drv.getButtonClassName()).toEqual(expectedClassName);
+  ])('should return %s className for %s variant', async (variant, expectedClassName) => {
+    const result = await render({passProps: {variant: variant as ButtonVariants}}) //
+      .inspect({className: classNameOf('default:testID')});
+
+    expect(result).toEqual({className: expectedClassName});
   });
 
-  it('should use `className` prop for `custom` variant button', () => {
-    const drv = driver.withDefaultProps({variant: 'custom', className: 'abc'}).render();
+  it('should use `className` prop for `custom` variant button', async () => {
+    const result = await render({passProps: {variant: 'custom'}}) //
+      .inspect({className: classNameOf('default:testID')});
 
-    expect(drv.getButtonClassName()).toEqual('abc');
-  });
-
-  it('should pass id on button click', () => {
-    const onClick = jest.fn();
-    const drv = driver.withDefaultProps({onClick}).render();
-
-    drv.pressButton();
-    expect(onClick).toHaveBeenCalledWith({target: {id: 'default:id'}});
+    expect(result).toEqual({className: 'ClassName'});
   });
 });

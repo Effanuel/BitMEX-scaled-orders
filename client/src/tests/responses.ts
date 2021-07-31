@@ -1,54 +1,21 @@
-import {Methods, Routes} from 'redux/helpers/apiHelpers';
+import {AvailableMethods} from 'redux/api/api';
 
-export type Response = {
-  [key in Routes]?: {
-    [key in Methods]?: {
-      data: {data: any & {text: string}; success: number};
-    };
-  };
-};
+export type ForgedResponse = {
+  [K in keyof AvailableMethods]: {apiMethod: K; props: Parameters<AvailableMethods[K]>[number]; result: any};
+}[keyof AvailableMethods];
 
-export class ResponseBuilder {
-  private responses: Response[] = [];
+export const forgeResult = <R>(data: R) => ({data: {data: JSON.stringify(data), statusCode: 200}});
 
-  private add<T extends Response>(data: T) {
-    this.responses.push(data);
-    return this;
-  }
+export const forgeMarketOrder = (data: any) => forgeResult(data);
 
-  getBalance(walletBalance: number) {
-    return this.add({
-      getBalance: {
-        GET: {data: {data: {walletBalance}, success: 200}},
-      },
-    });
-  }
+export const forgeLimitOrder = (data: any) => forgeResult(data);
 
-  postMarketOrder(orderID: string, price: number) {
-    return this.add({
-      order: {
-        POST: {data: {data: {orderID, price}, success: 200}},
-      },
-    });
-  }
+export const forgeAmendOrder = (data: any) => forgeResult(data);
 
-  putTrailingOrder(price: number) {
-    return this.add({
-      order: {
-        PUT: {data: {data: {price}, success: 200}},
-      },
-    });
-  }
+export const forgeOpenOrders = (data: any) => forgeResult(data);
 
-  postTrailingOrder(orderID: string, price: number) {
-    return this.add({
-      order: {
-        POST: {data: {data: {orderID, price, text: 'best_order'}, success: 200}},
-      },
-    });
-  }
+export const forgeOrderCancel = (data: any) => forgeResult(data);
 
-  build(): Response {
-    return Object.assign({}, ...this.responses);
-  }
-}
+export const forgeOrderCancelAll = (data: any) => forgeResult(data);
+
+export const forgeProfitTargetOrder = (data: any) => forgeResult(data);

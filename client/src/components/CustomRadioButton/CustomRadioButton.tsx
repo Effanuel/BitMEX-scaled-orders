@@ -1,54 +1,31 @@
 import React from 'react';
-import {Radio, FormControlLabel, RadioGroup} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
-import {SIDE} from 'util/BitMEX-types';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiFormControlLabel-label': {color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px', margin: '0px'},
-    '& .MuiIconButton-root': {color: '#4caf50', padding: '2px'},
-    margin: '0px',
-  },
-  radioGroup: {
-    marginTop: '15px',
-  },
-}));
+import {Radio, RadioGroup} from '@chakra-ui/react';
+import {SIDE} from 'redux/api/bitmex/types';
 
 interface CustomRadioButtonProps {
-  id: string;
   value: string;
-  label: React.ReactNode;
-  checked?: boolean;
-  labelPlacement?: 'end' | 'start' | 'top' | 'bottom';
+  label: string;
 }
 
-const controlButton = <Radio size="small" />;
-
-export function CustomRadioButton(props: CustomRadioButtonProps) {
-  const {root} = useStyles();
-
-  return <FormControlLabel labelPlacement={'end'} className={root} control={controlButton} {...props} />;
+export function CustomRadioButton({label, value}: CustomRadioButtonProps) {
+  return (
+    <Radio value={value} size="md" colorScheme="green" margin={0} marginRight={4}>
+      {label}
+    </Radio>
+  );
 }
 
-export interface SideRadioButtonsProps {
+interface SideRadioButtonsProps {
   testID?: string;
-  onChangeRadio: (event: InputChange, value: string) => void;
+  onChangeRadio: (value: SIDE) => void;
   side: SIDE;
 }
 
 export function SideRadioButtons({onChangeRadio, side, testID}: SideRadioButtonsProps) {
-  const {radioGroup} = useStyles();
   return (
-    <RadioGroup
-      data-test-id={testID}
-      aria-label="position"
-      name="side"
-      value={side}
-      onChange={onChangeRadio}
-      className={radioGroup}
-    >
-      <CustomRadioButton id="scaled_side_sell" label="Sell" value="Sell" />
-      <CustomRadioButton id="scaled_side_buy" label="Buy" value="Buy" />
+    <RadioGroup display="flex" flexDir="column" data-testid={testID} name="side" onChange={onChangeRadio} value={side}>
+      <CustomRadioButton label="Sell" value={SIDE.SELL} />
+      <CustomRadioButton label="Buy" value={SIDE.BUY} />
     </RadioGroup>
   );
 }

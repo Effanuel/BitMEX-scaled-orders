@@ -1,7 +1,10 @@
 {
   "name": "client",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
+  "description": "front side of the application(reactjs)",
+  "author": "Juozas Rimantas <etajuozas@gmail.com>",
+  "license": "MIT",
   "proxy": "http://localhost:3001",
   "scripts": {
     "start": "react-scripts start",
@@ -13,60 +16,66 @@
     "build": "cd ../api && cd ../client && react-scripts build",
     "prod": "cd ../api && npm run start",
     "lint": "eslint . -c .eslintrc --ignore-path .eslintignore --ext .ts,.tsx --max-warnings 200 -f stylish",
-    "cypress:open": "cypress open",
-    "tsc": "tsc"
+    "tsc": "tsc --project tsconfig.json"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.13",
+    "@chakra-ui/react": "^1.6.3",
+    "@emotion/react": "^11.4.0",
+    "@emotion/styled": "^11.3.0",
     "@giantmachines/redux-websocket": "1.1.6",
-    "@material-ui/core": "^4.11.0",
-    "@reduxjs/toolkit": "^1.4.0",
-    "axios": "0.19.0",
+    "@reduxjs/toolkit": "1.5.1",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
-    "classnames": "^2.2.6",
+    "classnames": "^2.3.1",
     "crypto": "^1.0.1",
+    "framer-motion": "^3.10.6",
     "lodash": "^4.17.15",
     "numeral": "^2.0.6",
-    "react": "16.13.0",
-    "react-dom": "16.13.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
     "react-redux": "7.1.0",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "4.0.3",
     "react-toastify": "^6.0.8",
     "redux": "4.0.4",
-    "redux-thunk": "2.3.0",
-    "reselect": "4.0.0"
+    "redux-thunk": "2.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@types/classnames": "^2.2.10",
-    "@types/jest": "24.0.25",
-    "@types/lodash": "^4.14.157",
+    "@babel/core": "^7.14.3",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.7",
+    "@types/chance": "^1.1.2",
+    "@types/classnames": "^2.3.1",
+    "@types/lodash": "^4.14.170",
     "@types/node": "12.12.22",
     "@types/numeral": "0.0.28",
-    "@types/react": "16.9.7",
-    "@types/react-dom": "16.9.4",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
     "@types/react-redux": "7.1.4",
     "@types/react-test-renderer": "^16.9.3",
     "@types/redux-mock-store": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^3.5.0",
-    "@typescript-eslint/parser": "^3.5.0",
-    "react-test-renderer": "16.9.0",
+    "@typescript-eslint/eslint-plugin": "4.28.x",
+    "@typescript-eslint/parser": "4.28.x",
+    "chance": "^1.1.7",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jest": "^23.17.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.1.0",
     "hoist-non-react-statics": "^3.3.2",
-    "husky": "^4.2.5",
-    "jest": "^24.9.0",
-    "lint-staged": "^10.2.11",
+    "influnt": "^1.2.0",
     "node-sass": "^4.14.1",
-    "prettier": "^2.0.5",
-    "react-component-driver": "^0.10.0",
-    "ts-jest": "^26.1.1",
-    "typescript": "3.9.6"
+    "prettier": "^2.3.0",
+    "react-test-renderer": "16.9.0",
+    "ts-jest": "^26.5.6",
+    "ts-unused-exports": "^7.0.1",
+    "typescript": "4.3.5"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -80,22 +89,12 @@
       "last 1 safari version"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint . -c .eslintrc --ignore-path .eslintignore --ext .ts,.tsx --max-warnings 200 -f stylish"
-    ],
-    "*.{js,md,ts,tsx}": [
-      "prettier --write --single-quote --print-width=120 --arrow-parens=always --trailing-comma=all",
-      "git add"
-    ]
-  },
   "wallaby": {
     "autoDetect": true,
     "trace": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "Effanuel/BitMEX-scaled-orders"
   }
 }

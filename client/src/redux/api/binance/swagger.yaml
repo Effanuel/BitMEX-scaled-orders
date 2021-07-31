@@ -1,0 +1,4440 @@
+openapi: '3.0.2'
+info:
+  title: Binance SPOT Public API
+  description: |-
+    The swagger file of Binance Public API
+
+    API documents:
+      - [https://github.com/binance-exchange/binance-official-api-docs](https://github.com/binance-exchange/binance-official-api-docs)
+      - [https://binance-docs.github.io/apidocs/spot/en](https://binance-docs.github.io/apidocs/spot/en)
+  version: '1.0'
+  license:
+    name: MIT
+servers:
+  - url: https://api.binance.com
+  - url: https://testnet.binance.vision
+tags:
+  - name: Market Data
+    description: Market Data
+  - name: Trade
+    description: Account and Trade
+  - name: Margin
+    description: Margin Account/Trade
+  - name: Wallet
+    description: Wallet Endpoints
+  - name: Stream
+    description: User data stream
+  - name: Margin Stream
+    description: Margin user data stream
+paths:
+  /api/v3/ping:
+    get:
+      summary: Test Connectivity
+      description: |-
+        Test connectivity to the Rest API.
+
+        Weight 1
+      tags:
+        - Market Data
+      responses:
+        '200':
+          description: ping result
+          content:
+            application/json:
+              example: {}
+  /api/v3/time:
+    get:
+      summary: Check Server Time
+      description: |-
+        Test connectivity to the Rest API and get the current server time.
+
+        Weight 1
+      tags:
+        - Market Data
+      responses:
+        '200':
+          description: Binance server UTC timestamp
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serverTime:
+                    type: integer
+                    example: 1499827319559
+  /api/v3/exchangeInfo:
+    get:
+      summary: Exchange Information
+      description: |-
+        Current exchange trading rules and symbol information
+
+        Weight 1
+      tags:
+        - Market Data
+      responses:
+        '200':
+          description: Current exchange trading rules and symbol information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timezone:
+                    type: string
+                    example: UTC
+                  serverTime:
+                    type: integer
+                    example: 1592882214236
+                  rateLimits:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rateLimitType:
+                          type: string
+                          example: 'REQUEST_WEIGHT'
+                        interval:
+                          type: string
+                          example: 'MINUTE'
+                        intervalNum:
+                          type: integer
+                          example: 1
+                        limit:
+                          type: integer
+                          example: 1200
+                  exchangeFilters:
+                    type: array
+                    items:
+                      type: object
+                  symbols:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        symbol:
+                          type: string
+                          example: 'ETHBTC'
+                        status:
+                          type: string
+                          example: 'TRADING'
+                        baseAsset:
+                          type: string
+                          example: 'ETH'
+                        baseAssetPrecision:
+                          type: integer
+                          example: 8
+                        quoteAsset:
+                          type: string
+                          example: 'BTC'
+                        quoteAssetPrecision:
+                          type: integer
+                          example: 8
+                        baseCommissionPrecision:
+                          type: integer
+                          example: 8
+                        quoteCommissionPrecision:
+                          type: integer
+                          example: 8
+                        orderTypes:
+                          type: array
+                          items:
+                            type: string
+                            example: 'LIMIT'
+                        icebergAllowed:
+                          type: boolean
+                          example: true
+                        ocoAllowed:
+                          type: boolean
+                          example: true
+                        quoteOrderQtyMarketAllowed:
+                          type: boolean
+                          example: true
+                        isSpotTradingAllowed:
+                          type: boolean
+                          example: true
+                        isMarginTradingAllowed:
+                          type: boolean
+                          example: true
+                        filters:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              filterType:
+                                type: string
+                                example: 'PRICE_FILTER'
+                              minPrice:
+                                type: string
+                                example: '0.00000100'
+                              maxPrice:
+                                type: string
+                                example: '100000.00000000'
+                              tickSize:
+                                type: string
+                                example: '0.00000100'
+                        permissions:
+                          type: array
+                          items:
+                            type: string
+                            example: 'SPOT'
+  /api/v3/depth:
+    get:
+      summary: Order Book
+      description: |-
+
+        | Limit               | Weight  | 
+        | -------------       |---------| 
+        | 5, 10, 20, 50, 100  | 1       | 
+        | 500                 | 5       | 
+        | 1000                | 10      | 
+        | 5000                | 50      |
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 5000
+            enum: [5, 10, 20, 50, 100, 500, 1000, 5000]
+          example: 100
+      responses:
+        '200':
+          description: order books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastUpdateId:
+                    type: integer
+                    example: 1060776800
+                  bids:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: string
+                  asks:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: array
+                        items:
+                          type: string
+
+              example:
+                lastUpdateId: 1060776800
+                bids:
+                  - - '16.39580000'
+                    - '19.41000000'
+                  - - '16.39450000'
+                    - '1.00000000'
+                asks:
+                  - - '16.39790000'
+                    - '25.48000000'
+                  - - '16.39800000'
+                    - '5.57000000'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/trades:
+    get:
+      summary: Recent Trades List
+      description: |-
+        Get recent trades (up to last 500).
+
+        Weight 1
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 500
+            maximum: 1000
+          example: 100
+      responses:
+        '200':
+          description: trade list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/trade'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/historicalTrades:
+    get:
+      summary: Old Trade Lookup
+      description: |-
+        Get older market trades.
+
+        `X-MBX-APIKEY` required in header
+
+        Weight 5
+      tags:
+        - Market Data
+      security:
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/fromId'
+      responses:
+        '200':
+          description: trade list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/trade'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/aggTrades:
+    get:
+      summary: Compressed/Aggregate Trades List
+      description: |-
+        Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+
+        Weight 1
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/fromId'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: trade list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/aggTrade'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/klines:
+    get:
+      summary: Kline/Candlestick Data
+      description: |-
+        Kline/candlestick bars for a symbol.\
+        Klines are uniquely identified by their open time.
+
+        Weight 1
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - name: interval
+          in: query
+          required: true
+          description: kline intervals
+          schema:
+            type: string
+            enum: [1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M]
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: kline data
+          content:
+            application/json:
+              schema:
+                type: array
+              example:
+                - - 1592864100000
+                  - '9668.28000000'
+                  - '9668.28000000'
+                  - '9662.90000000'
+                  - '9663.80000000'
+                  - '46.46543700'
+                  - 1592864159999,
+                  - '449098.94232016'
+                  - 401
+                  - '10.46540600'
+                  - '101138.68313192'
+                  - '0'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/avgPrice:
+    get:
+      summary: Current Average Price
+      description: |-
+        Current average price for a symbol.
+
+        Weight 1
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+      responses:
+        '200':
+          description: average price
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mins:
+                    type: integer
+                    example: 5
+                  price:
+                    type: string
+                    example: '9.35751834'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/ticker/24hr:
+    get:
+      summary: 24hr Ticker Price Change Statistics
+      description: |-
+        24 hour rolling window price change statistics. Careful when accessing this with no symbol.
+
+        Weight:\
+        `1` for a single symbol;\
+        `40` when the symbol parameter is omitted
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/optionalSymbol'
+      responses:
+        '200':
+          description: 24hr ticker
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ticker'
+                  - $ref: '#/components/schemas/tickerList'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/ticker/price:
+    get:
+      summary: Symbol Price Ticker
+      description: |-
+        Latest price for a symbol or symbols.
+
+        Weight:\
+        `1` for a single symbol;\
+        `2` when the symbol parameter is omitted
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/optionalSymbol'
+      responses:
+        '200':
+          description: Price ticker
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/priceTicker'
+                  - $ref: '#/components/schemas/priceTickerList'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/ticker/bookTicker:
+    get:
+      summary: Symbol Order Book Ticker
+      description: |-
+        Best price/qty on the order book for a symbol or symbols.
+
+        Weight:\
+        1 for a single symbol;\
+        40 when the symbol parameter is omitted
+      tags:
+        - Market Data
+      parameters:
+        - $ref: '#/components/parameters/optionalSymbol'
+      responses:
+        '200':
+          description: orderbook ticker
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/bookTicker'
+                  - $ref: '#/components/schemas/bookTickerList'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/order/test:
+    post:
+      summary: Test New Order (TRADE)
+      description: |-
+        Test new order creation and signature/recvWindow long. 
+        Creates and validates a new order but does not send it into the matching engine.
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/side'
+        - $ref: '#/components/parameters/orderType'
+        - $ref: '#/components/parameters/timeInForce'
+        - name: quantity
+          in: query
+          description: order quantity
+          schema:
+            type: number
+            format: float
+        - name: quoteOrderQty
+          in: query
+          description: quote quantity
+          schema:
+            type: number
+            format: float
+        - $ref: '#/components/parameters/price'
+        - $ref: '#/components/parameters/newClientOrderId'
+        - $ref: '#/components/parameters/stopPrice'
+        - name: icebergQty
+          in: query
+          description: Used with LIMIT, STOP_LOSS_LIMIT, and TAKE_PROFIT_LIMIT to create an iceberg order.
+          schema:
+            type: number
+            format: float
+        - $ref: '#/components/parameters/newOrderRespType'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: test order result
+          content: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/order:
+    get:
+      summary: Query Order (USER_DATA)
+      description: |-
+        Check an order's status.
+
+        - Either `orderId` or `origClientOrderId` must be sent.
+        - For some historical orders `cummulativeQuoteQty` will be < 0, meaning the data is not available at this time.
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderId'
+        - $ref: '#/components/parameters/origClientOrderId'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      summary: New Order (TRADE)
+      description: |-
+        Send in a new order.
+
+
+        - `LIMIT_MAKER` are `LIMIT` orders that will be rejected if they would immediately match and trade as a taker.
+        - `STOP_LOSS` and `TAKE_PROFIT` will execute a `MARKET` order when the `stopPrice` is reached.
+        - Any `LIMIT` or `LIMIT_MAKER` type order can be made an iceberg order by sending an `icebergQty`.
+        - Any order with an `icebergQty` MUST have `timeInForce` set to `GTC`.
+        - `MARKET` orders using `quantity` specifies how much a user wants to buy or sell based on the market price.
+        - `MARKET` orders using `quoteOrderQty` specifies the amount the user wants to spend (when buying) or receive (when selling) of the quote asset; the correct quantity will be determined based on the market liquidity and `quoteOrderQty`.
+        - `MARKET` orders using `quoteOrderQty` will not break `LOT_SIZE` filter rules; the order will execute a quantity that will have the notional value as close as possible to `quoteOrderQty`.
+        - same `newClientOrderId` can be accepted only when the previous one is filled, otherwise the order will be rejected.
+
+        Trigger order price rules against market price for both `MARKET` and `LIMIT` versions:
+
+        - Price above market price: STOP_LOSS BUY, TAKE_PROFIT SELL
+        - Price below market price: STOP_LOSS SELL, TAKE_PROFIT BUY
+
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/side'
+        - $ref: '#/components/parameters/orderType'
+        - $ref: '#/components/parameters/timeInForce'
+        - name: quantity
+          in: query
+          description: order quantity
+          schema:
+            type: number
+            format: float
+        - name: quoteOrderQty
+          in: query
+          description: quote quantity
+          schema:
+            type: number
+            format: float
+        - $ref: '#/components/parameters/price'
+        - $ref: '#/components/parameters/newClientOrderId'
+        - $ref: '#/components/parameters/stopPrice'
+        - name: icebergQty
+          in: query
+          description: Used with LIMIT, STOP_LOSS_LIMIT, and TAKE_PROFIT_LIMIT to create an iceberg order.
+          schema:
+            type: number
+            format: float
+        - $ref: '#/components/parameters/newOrderRespType'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: order result
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/orderResponseAck'
+                  - $ref: '#/components/schemas/orderResponseResult'
+                  - $ref: '#/components/schemas/orderResponseFull'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      summary: Cancel Order (TRADE)
+      description: |-
+        Cancel an active order.
+
+        Either `orderId` or `origClientOrderId` must be sent.
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderId'
+        - $ref: '#/components/parameters/origClientOrderId'
+        - $ref: '#/components/parameters/newClientOrderId'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: cancelled order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/openOrders:
+    get:
+      summary: Current Open Orders (USER_DATA)
+      description: |-
+        Get all open orders on a symbol. Careful when accessing this with no symbol.\
+
+        Weight:\
+        `1` for a single symbol;\
+        `40` when the symbol parameter is omitted
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/optionalSymbol'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: current open orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/orderDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      summary: Cancel all Open Orders on a Symbol (TRADE)
+      description: |-
+        Cancels all active orders on a symbol.\
+        This includes OCO orders.
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: cancelled orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/order'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/allOrders:
+    get:
+      summary: All Orders (USER_DATA)
+      description: |-
+        Get all account orders; active, canceled, or filled..
+
+        - If orderId is set, it will get orders >= that orderId. Otherwise most recent orders are returned.
+        - For some historical orders cummulativeQuoteQty will be < 0, meaning the data is not available at this time.
+
+        Weight: 5
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderId'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: current open orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/orderDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/order/oco:
+    post:
+      summary: New OCO (TRADE)
+      description: |-
+        Send in a new OCO
+
+        - Price Restrictions:
+          - SELL: Limit Price > Last Price > Stop Price
+          - BUY: Limit Price < Last Price < Stop Price
+        - Quantity Restrictions:
+            - Both legs must have the same quantity
+            - ICEBERG quantities however do not have to be the same
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/listClientOrderId'
+        - $ref: '#/components/parameters/side'
+        - $ref: '#/components/parameters/quantity'
+        - name: limitClientOrderId
+          in: query
+          description: A unique Id for the limit order
+          schema:
+            type: number
+            format: float
+        - name: price
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: limitIcebergQty
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: stopClientOrderId
+          in: query
+          schema:
+            type: string
+        - name: stopPrice
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: stopLimitPrice
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: stopIcebergQty
+          in: query
+          schema:
+            type: number
+            format: float
+        - name: stopLimitTimeInForce
+          in: query
+          schema:
+            type: string
+            enum: [GTC, FOK, IOC]
+        - $ref: '#/components/parameters/newOrderRespType'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: new oco details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderListId:
+                    type: integer
+                    example: 0
+                  contingencyType:
+                    type: string
+                    example: 'OCO'
+                  listStatusType:
+                    type: string
+                    example: 'EXEC_STARTED'
+                  listOrderStatus:
+                    type: string
+                    example: 'EXECUTING'
+                  listClientOrderId:
+                    type: string
+                    example: 'JYVpp3F0f5CAG15DhtrqLp'
+                  transactionTime:
+                    type: integer
+                    example: 1563417480525
+                  symbol:
+                    type: string
+                    example: 'LTCBTC'
+                  orders:
+                    type: array
+                    items:
+                      properties:
+                        symbol:
+                          type: string
+                          example: 'LTCBTC'
+                        orderId:
+                          type: integer
+                          example: 2
+                        clientOrderId:
+                          type: string
+                          example: 'Kk7sqHb9J6mJWTMDVW7Vos'
+                  orderReports:
+                    type: array
+                    items:
+                      properties:
+                        symbol:
+                          type: string
+                          example: 'LTCBTC'
+                        orderId:
+                          type: integer
+                          example: 2
+                        orderListId:
+                          type: integer
+                          example: 0
+                        clientOrderId:
+                          type: string
+                          example: 'Kk7sqHb9J6mJWTMDVW7Vos'
+                        transactTime:
+                          type: integer
+                          example: 1563417480525
+                        price:
+                          type: string
+                          example: '0.000000'
+                        origQty:
+                          type: string
+                          example: '0.624363'
+                        executedQty:
+                          type: string
+                          example: '0.000000'
+                        cummulativeQuoteQty:
+                          type: string
+                          example: '0.000000'
+                        status:
+                          type: string
+                          example: 'NEW'
+                        timeInForce:
+                          type: string
+                          example: 'GTC'
+                        type:
+                          type: string
+                          example: 'STOP_LOSS'
+                        side:
+                          type: string
+                          example: 'BUY'
+                        stopPrice:
+                          type: string
+                          example: '0.960664'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/orderList:
+    get:
+      summary: Query OCO (USER_DATA)
+      description: |-
+        Retrieves a specific OCO based on provided optional parameters
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/orderListId'
+        - $ref: '#/components/parameters/origClientOrderId'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: oco details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OCOOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      summary: Cancel OCO (TRADE)
+      description: |-
+        Cancel an entire Order List
+
+        Canceling an individual leg will cancel the entire OCO
+
+        Weight: 1
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderListId'
+        - $ref: '#/components/parameters/listClientOrderId'
+        - $ref: '#/components/parameters/newClientOrderId'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: oco order delete report
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/OCOOrderReport'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/allOrderList:
+    get:
+      summary: Query all OCO (USER_DATA)
+      description: |-
+        Retrieves all OCO based on provided optional parameters
+
+        Weight: 10
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/fromId'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: oco order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OCOOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/openOrderList:
+    get:
+      summary: Query Open OCO (USER_DATA)
+      description: |-
+        Weight: 2
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: oco order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OCOOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/account:
+    get:
+      summary: Account Information (USER_DATA)
+      description: |-
+        Get current account information.
+
+        Weight: 5
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/account'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/myTrades:
+    get:
+      summary: Account Trade List (USER_DATA)
+      description: |-
+        Get trades for a specific account and symbol.
+
+        If fromId is set, it will get id >= that fromId. Otherwise most recent orders are returned.
+
+        Weight: 5
+      tags:
+        - Trade
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/fromId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/myTrade'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/transfer:
+    post:
+      summary: Margin Account Transfer (MARGIN)
+      description: |-
+        Execute transfer between spot account and margin account.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/asset'
+        - $ref: '#/components/parameters/amount'
+        - name: type
+          in: query
+          description: |-
+            1 -> transfer from main account to margin account \
+            2 -> transfer from margin account to main account
+          schema:
+            type: integer
+            enum: [1, 2]
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: transfer Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    get:
+      summary: Get Transfer History (USER_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/optionalAsset'
+        - name: type
+          in: query
+          description: Tranfer Type
+          schema:
+            type: string
+            enum: [ROLL_IN, ROLL_OUT]
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/current'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: margin account transfer history, response in descending order
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  rows:
+                    - amount: '0.10000000'
+                      asset: 'BNB'
+                      status: 'CONFIRMED'
+                      timestamp: 1566898617
+                      txId: 5240372201
+                      type: 'ROLL_IN'
+                  total: 1
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/loan:
+    post:
+      summary: Margin Account Borrow (MARGIN)
+      description: |-
+        Apply for a loan.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/asset'
+        - $ref: '#/components/parameters/amount'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    get:
+      summary: Query Load Record (USER_DATA)
+      description: |-
+        `txId` or `startTime` must be sent. txId takes precedence.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/asset'
+        - name: txId
+          in: query
+          description: the tranId in  `POST /sapi/v1/margin/loan`
+          schema:
+            type: integer
+            example: 123456789
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/current'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: Load records
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  rows:
+                    - asset: 'BNB'
+                      principal: '0.84624403'
+                      timestamp: 1566898617
+                      status: 'CONFIRMED'
+                  total: 1
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/repay:
+    post:
+      summary: Margin Account Repay (MARGIN)
+      description: |-
+        Repay loan for margin account.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/asset'
+        - $ref: '#/components/parameters/amount'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transaction'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    get:
+      summary: Query Repay Record (USER_DATA)
+      description: |-
+        `txId` or `startTime` must be sent. txId takes precedence.
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/asset'
+        - name: txId
+          in: query
+          description: the tranId in  `POST /sapi/v1/margin/repay`
+          schema:
+            type: integer
+            example: 2970933056
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/current'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: Load records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                          example: '14.00000000'
+                        asset:
+                          type: string
+                          example: 'BNB'
+                        interest:
+                          type: string
+                          example: '0.01866667'
+                        principal:
+                          type: string
+                          example: '13.98133333'
+                        status:
+                          type: string
+                          example: 'CONFIRMED'
+                        timestamp:
+                          type: integer
+                          example: 1563438204000
+                        txId:
+                          type: integer
+                          example: 2970933056
+                  total:
+                    type: integer
+                    example: 1
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/asset:
+    get:
+      summary: Query Margin Asset (MARKET_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/asset'
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: asset details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  assetFullName:
+                    type: string
+                    example: 'Binance Coin'
+                  assetName:
+                    type: string
+                    example: 'BNB'
+                  isBorrowable:
+                    type: boolean
+                    example: false
+                  isMortgageable:
+                    type: boolean
+                    example: true
+                  userMinBorrow:
+                    type: string
+                    example: '0.00000000'
+                  userMinRepay:
+                    type: string
+                    example: '0.00000000'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/pair:
+    get:
+      summary: Query Margin Pair (MARKET_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+      responses:
+        '200':
+          description: margin pair details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 323355778339572400
+                  symbol:
+                    type: string
+                    example: 'BNBUSDT'
+                  base:
+                    type: string
+                    example: 'BTC'
+                  quote:
+                    type: string
+                    example: 'USDT'
+                  isMarginTrade:
+                    type: boolean
+                    example: true
+                  isBuyAllowed:
+                    type: boolean
+                    example: true
+                  isSellAllowed:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/allAssets:
+    get:
+      summary: Get All Margin Assets (MARKET_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: assets details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    assetFullName:
+                      type: string
+                      example: 'Binance coin'
+                    assetName:
+                      type: string
+                      example: 'BNB'
+                    isBorrowable:
+                      type: boolean
+                      example: true
+                    isMortgageable:
+                      type: boolean
+                      example: true
+                    userMinBorrow:
+                      type: string
+                      example: '0.00000000'
+                    userMinRepay:
+                      type: string
+                      example: '0.00000000'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/allPairs:
+    get:
+      summary: Get All Margin Pairs (MARKET_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: margin pairs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    base:
+                      type: string
+                      example: 'BNB'
+                    id:
+                      type: integer
+                      example: 351637150141315861
+                    isBuyAllowed:
+                      type: boolean
+                      example: true
+                    isMarginTrade:
+                      type: boolean
+                      example: true
+                    isSellAllowed:
+                      type: boolean
+                      example: true
+                    quote:
+                      type: string
+                      example: 'BTC'
+                    symbol:
+                      type: string
+                      example: 'BNBBTC'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/priceIndex:
+    get:
+      summary: Query Margin PriceIndex (MARKET_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: Price index
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calcTime:
+                    type: integer
+                    example: 1562046418000
+                  price:
+                    type: string
+                    example: '0.00333930'
+                  symbol:
+                    type: string
+                    example: 'BNBBTC'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/order:
+    get:
+      summary: Query Margin Account's Order (MARKET_DATA)
+      description: |-
+        - Either `orderId` or `origClientOrderId` must be sent.
+        - For some historical orders `cummulativeQuoteQty` will be < 0, meaning the data is not available at this time.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderId'
+        - $ref: '#/components/parameters/origClientOrderId'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: Interest History, response in descending order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/marginOrderDetail'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      summary: Margin Account New Order (TRADE)
+      description: |-
+        Post a new order for margin account.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/side'
+        - $ref: '#/components/parameters/orderType'
+        - $ref: '#/components/parameters/quantity'
+        - $ref: '#/components/parameters/price'
+        - $ref: '#/components/parameters/stopPrice'
+        - $ref: '#/components/parameters/newClientOrderId'
+        - name: icebergQty
+          in: query
+          description: Used with LIMIT, STOP_LOSS_LIMIT, and TAKE_PROFIT_LIMIT to create an iceberg order.
+          schema:
+            type: number
+            format: float
+        - $ref: '#/components/parameters/newOrderRespType'
+        - name: sideEffectType
+          in: query
+          description: default NO_SIDE_EFFECT
+          schema:
+            type: string
+            enum: [NO_SIDE_EFFECT, MARGIN_BUY, AUTO_REPAY]
+        - $ref: '#/components/parameters/timeInForce'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: margin pairs
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/marginOrderResponseAck'
+                  - $ref: '#/components/schemas/marginOrderResponseResult'
+                  - $ref: '#/components/schemas/marginOrderResponseFull'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      summary: Margin Account Cancel Order (TRADE)
+      description: |-
+        Cancel an active order for margin account.
+
+        Either orderId or origClientOrderId must be sent.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderId'
+        - $ref: '#/components/parameters/origClientOrderId'
+        - $ref: '#/components/parameters/newClientOrderId'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: cancelled margin order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/marginOrder'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/interestHistory:
+    get:
+      summary: Query Interest History (MARKET_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/optionalAsset'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/current'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: Interest History, response in descending order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        asset:
+                          type: string
+                          example: 'BNB'
+                        interest:
+                          type: string
+                          example: '0.01866667'
+                        interestAccuredTime:
+                          type: integer
+                          example: 1566813600
+                        interestRate:
+                          type: string
+                          example: '0.01600000'
+                        principal:
+                          type: string
+                          example: '36.22000000'
+                        type:
+                          type: string
+                          example: 'ON_BORROW'
+                  total:
+                    type: integer
+                    example: 1
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/forceLiquidationRec:
+    get:
+      summary: Get Force Liquidation Record (USER_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/current'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: Force Liquidation History, response in descending order
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                rows:
+                  - avgPrice: '0.00388359'
+                    executedQty: '31.39000000'
+                    orderId: 180015097
+                    price: '0.00388110'
+                    qty: '31.39000000'
+                    side: 'SELL'
+                    symbol: 'BNBBTC'
+                    timeInForce: 'GTC'
+                    updatedTime: 1558941374745
+                total: 1
+  /sapi/v1/margin/account:
+    get:
+      summary: Query Margin Account Details (USER_DATA)
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: Margin account details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  borrowEnabled:
+                    type: boolean
+                    example: true
+                  marginLevel:
+                    type: string
+                    example: '11.64405625'
+                  totalAssetOfBtc:
+                    type: string
+                    example: '6.82728457'
+                  totalLiabilityOfBtc:
+                    type: string
+                    example: '0.58633215'
+                  totalNetAssetOfBtc:
+                    type: string
+                    example: '6.24095242'
+                  tradeEnabled:
+                    type: boolean
+                    example: true
+                  transferEnabled:
+                    type: boolean
+                    example: true
+                  userAssets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        asset:
+                          type: string
+                          example: 'BTC'
+                        borrowed:
+                          type: string
+                          example: '0.00000000'
+                        free:
+                          type: string
+                          example: '0.00499500'
+                        interest:
+                          type: string
+                          example: '0.00000000'
+                        locked:
+                          type: string
+                          example: '0.00000000'
+                        netAsset:
+                          type: string
+                          example: '0.00499500'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/openOrders:
+    get:
+      summary: Query Margin Account's Open Order (USER_DATA)
+      description: |-
+        - If the symbol is not sent, orders for all symbols will be returned in an array.
+        - When all symbols are returned, the number of requests counted against the rate limiter is equal to the number of symbols currently trading on the exchange
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/optionalSymbol'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: margin open orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/marginOrderDetail'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/allOrders:
+    get:
+      summary: Query Margin Account's All Order (USER_DATA)
+      description: |-
+        - If `orderId` is set, it will get orders >= that orderId. Otherwise most recent orders are returned.
+        - For some historical orders `cummulativeQuoteQty` will be < 0, meaning the data is not available at this time.
+
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/orderId'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: margin order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/marginOrderDetail'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/myTrades:
+    get:
+      summary: If fromId is set, it will get orders >= that fromId. Otherwise most recent orders are returned.
+      description: |-
+        Weight: 1
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/fromId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: margin order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/marginTrade'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/maxBorrowable:
+    get:
+      summary: Query Max Borrow (USER_DATA)
+      description: |-
+        Weight: 5
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: max borrow amount
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  amount: '1.69248805'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/margin/maxTransferable:
+    get:
+      summary: Query Max Transfer-Out Amount (USER_DATA)
+      description: |-
+        Weight: 5
+      tags:
+        - Margin
+      parameters:
+        - $ref: '#/components/parameters/symbol'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: max transferable amount
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  amount: '1.69248805'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /wapi/v3/systemStatus.html:
+    get:
+      summary: System Status (System)
+      description: |-
+        Weight: 1
+      tags:
+        - Wallet
+      responses:
+        '200':
+          description: system status
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: 0
+                  msg: 'normal'
+  /sapi/v1/capital/config/getall:
+    get:
+      summary: All Coins' Information (USER_DATA)
+      description: |-
+        Get information of coins (available for deposit and withdraw) for user.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: All coins details information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coin:
+                    type: string
+                    example: 'BTC'
+                  depositAllEnable:
+                    type: boolean
+                    example: true
+                  free:
+                    type: string
+                    example: '0.00000000'
+                  freeze:
+                    type: string
+                    example: '0.00000000'
+                  ipoable:
+                    type: string
+                    example: '0.00000000'
+                  ipoing:
+                    type: string
+                    example: '0.00000000'
+                  isLegalMoney:
+                    type: integer
+                    example: false
+                  locked:
+                    type: string
+                    example: '0.00000000'
+                  name:
+                    type: string
+                    example: 'Bitcoin'
+                  networkList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        addressRegex:
+                          type: string
+                          example: '^(bnb1)[0-9a-z]{38}$'
+                        coin:
+                          type: string
+                          example: 'BTC'
+                        depositDesc:
+                          type: string
+                          example: 'Wallet Maintenance, Deposit Suspended'
+                        depositEnable:
+                          type: boolean
+                          example: false
+                        isDefault:
+                          type: boolean
+                          example: false
+                        memoRegex:
+                          type: string
+                          example: "^[0-9A-Za-z\\-_]{1,120}$"
+                        minConfirm:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: 'BEP2'
+                        resetAddressStatus:
+                          type: boolean
+                          example: false
+                        specialTips:
+                          type: string
+                          example: 'Both a MEMO and an Address are required to successfully deposit your BEP2-BTCB tokens to Binance.'
+                        unLockConfirm:
+                          type: integer
+                          example: 0
+                        withdrawDesc:
+                          type: string
+                          example: 'Wallet Maintenance, Withdrawal Suspended'
+                        withdrawEnable:
+                          type: boolean
+                          example: false
+                        withdrawFee:
+                          type: string
+                          example: '0.00000220'
+                        withdrawMin:
+                          type: string
+                          example: '0.00000440'
+                  storage:
+                    type: string
+                    example: '0.00000000'
+                  trading:
+                    type: boolean
+                    example: true
+                  withdrawAllEnable:
+                    type: boolean
+                    example: true
+                  withdrawing:
+                    type: string
+                    example: '0.00000000'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/accountSnapshot:
+    get:
+      summary: Daily Account Snapshot (USER_DATA)
+      description: |-
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [SPOT, MARGIN, FUTURES]
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 5
+            minimum: 5
+            maximum: 30
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: account Snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  msg:
+                    type: string
+                    example: ''
+                  snapshotVos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        data:
+                          type: object
+                          properties:
+                            balances:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  asset:
+                                    type: string
+                                    example: 'BTC'
+                                  free:
+                                    type: string
+                                    example: '0.2'
+                                  locked:
+                                    type: string
+                                    example: '0.001'
+                            totalAssetOfBtc:
+                              type: string
+                              example: '0.09905021'
+                        type:
+                          type: string
+                          example: 'spot'
+                        updateTime:
+                          type: integer
+                          example: 1576281599000
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/account/disableFastWithdrawSwitch:
+    post:
+      summary: Disable Fast Withdraw Switch (USER_DATA)
+      description: |-
+        This request will disable fastwithdraw switch under your account.
+        You need to enable "trade" option for the api key which requests this endpoint.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: return empty
+          content: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/account/enableFastWithdrawSwitch:
+    post:
+      summary: Enable Fast Withdraw Switch (USER_DATA)
+      description: |-
+
+        - This request will enable fastwithdraw switch under your account. You need to enable "trade" option for the api key which requests this endpoint.
+        - When Fast Withdraw Switch is on, transferring funds to a Binance account will be done instantly. There is no on-chain transaction, no transaction ID and no withdrawal fee.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: return empty
+          content: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/capital/withdraw/apply:
+    post:
+      summary: Withdraw
+      description: |-
+        Submit a withdraw request.
+
+        - If network not send, return with default network of the coin.
+        - You can get network and isDefault in networkList of a coin in the response of `Get /sapi/v1/capital/config/getall (HMAC SHA256)`.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/coin'
+        - name: withdrawOrderId
+          in: query
+          description: client id for withdraw
+          schema:
+            type: string
+        - name: network
+          in: query
+          description: getting value from `GET /sapi/v1/capital/config/getall`
+          schema:
+            type: string
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: addressTag
+          in: query
+          description: Secondary address identifier for coins like XRP,XMR etc.
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+        - name: transactionFeeFlag
+          in: query
+          description: |-
+            When making internal transfer
+            - `true` ->  returning the fee to the destination account; 
+            - `false` -> returning the fee back to the departure account.
+          schema:
+            type: boolean
+            default: false
+        - name: name
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: '7213fea8e94b4a5593d507237e5a555b'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/capital/deposit/hisrec:
+    get:
+      summary: Deposit History（supporting network） (USER_DATA)
+      description: |-
+        Fetch deposit history.
+
+        - Please notice the default startTime and endTime to make sure that time interval is within 0-90 days.
+        - If both startTime and endTime are sent, time between startTime and endTime must be less than 90 days.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - name: coin
+          in: query
+          schema:
+            type: string
+            example: 'BNB'
+        - name: status
+          in: query
+          description: |-
+            0 -> pending\
+            6 -> credited but cannot withdraw\
+            1 -> success
+          schema:
+            type: integer
+            enum: [0, 6, 1]
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      example: '0xddc66e4313fd6c737b6cae67cad90bb4e0ac7092'
+                    addressTag:
+                      type: string
+                      example: ''
+                    amount:
+                      type: string
+                      example: '139.04370000'
+                    coin:
+                      type: string
+                      example: 'USDT'
+                    insertTime:
+                      type: integer
+                      example: 1566791463000
+                    network:
+                      type: string
+                      example: 'ETH'
+                    status:
+                      type: integer
+                      example: 1
+                    txId:
+                      type: string
+                      example: '0x5759dfe9983a4c7619bce9bc736bb6c26f804091753bf66fa91e7cd5cfeebafd'
+  /sapi/v1/capital/withdraw/history:
+    get:
+      summary: Withdraw History (supporting network) (USER_DATA)
+      description: |-
+        Fetch withdraw history.
+
+        - network may not be in the response for old withdraw.
+        - Please notice the default startTime and endTime to make sure that time interval is within 0-90 days.
+        - If both startTime and endTime are sent, time between startTime and endTime must be less than 90 days
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - name: coin
+          in: query
+          schema:
+            type: string
+            example: 'BNB'
+        - name: status
+          in: query
+          description: |-
+            0:Email Sent
+            1:Cancelled
+            2:Awaiting Approval 
+            3:Rejected 
+            4:Processing 
+            5:Failure 
+            6:Completed
+          schema:
+            type: integer
+            enum: [0, 1, 2, 3, 4, 5, 6]
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      example: '1FZdVHtiBqMrWdjPyRPULCUceZPJ2WLCsB'
+                    amount:
+                      type: string
+                      example: '0.00150000'
+                    applyTime:
+                      type: string
+                      example: '2019-09-24 12:43:45'
+                    coin:
+                      type: string
+                      example: 'BTC'
+                    id:
+                      type: string
+                      example: '156ec387f49b41df8724fa744fa82719'
+                    network:
+                      type: string
+                      example: 'BTC'
+                    status:
+                      type: integer
+                      example: 6
+                    txId:
+                      type: string
+                      example: '60fd9007ebfddc753455f95fafa808c4302c836e4d1eebc5a132c36c1d8ac354'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/capital/deposit/address:
+    get:
+      summary: Withdraw History (supporting network) (USER_DATA)
+      description: |-
+        Fetch withdraw history.
+
+        - network may not be in the response for old withdraw.
+        - Please notice the default startTime and endTime to make sure that time interval is within 0-90 days.
+        - If both startTime and endTime are sent, time between startTime and endTime must be less than 90 days
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/coin'
+        - name: network
+          in: query
+          schema:
+            type: string
+            example: 'ETH'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'deposit address'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                    example: '1FZdVHtiBqMrWdjPyRPULCUceZPJ2WLCsB'
+                  coin:
+                    type: string
+                    example: 'BTC'
+                  tag:
+                    type: string
+                    example: ''
+                  url:
+                    type: string
+                    example: 'https://btc.com/1HPn8Rx2y6nNSfagQBKy27GB99Vbzg89wv'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /wapi/v3/accountStatus.html:
+    get:
+      summary: Account Status (USER_DATA)
+      description: |-
+        Fetch account status detail.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'account status'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: 'Normal'
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /wapi/v3/apiTradingStatus.html:
+    get:
+      summary: Account API Trading Status (USER_DATA)
+      description: |-
+        Fetch account api trading status detail.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'API trading staus details'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  status:
+                    type: object
+                    properties:
+                      isLocked:
+                        type: boolean
+                        example: false
+                      plannedRecoverTime:
+                        type: integer
+                        example: 0
+                      triggerCondition:
+                        type: object
+                        properties:
+                          gcr:
+                            type: integer
+                            example: 150
+                          ifer:
+                            type: integer
+                            example: 150
+                          ufr:
+                            type: integer
+                            example: 150
+                      indicators:
+                        type: object
+                        properties:
+                          BTCUSDT:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                i:
+                                  type: string
+                                  example: 'UFR'
+                                c:
+                                  type: integer
+                                  example: 20
+                                v:
+                                  type: number
+                                  format: float
+                                  example: 20
+                                t:
+                                  type: number
+                                  format: float
+                                  example: 20
+                      updateTime:
+                        type: integer
+                        example: 1593500803840
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /wapi/v3/userAssetDribbletLog.html:
+    get:
+      summary: DustLog (USER_DATA)
+      description: |-
+        Fetch small amounts of assets exchanged BNB records.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'Dust log records'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  results:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 2
+                      rows:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            transfered_total:
+                              type: string
+                              example: '0.00132256'
+                            service_charge_total:
+                              type: string
+                              example: '0.00002699'
+                            tran_id:
+                              type: integer
+                              example: 4359321
+                            logs:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  tranId:
+                                    type: integer
+                                    example: 4359321
+                                  serviceChargeAmount:
+                                    type: string
+                                    example: '0.000009'
+                                  uid:
+                                    type: string
+                                    example: '10000015'
+                                  amount:
+                                    type: string
+                                    example: '0.0009'
+                                  operateTime:
+                                    type: string
+                                    example: '2018-05-03 17:07:04'
+                                  transferedAmount:
+                                    type: string
+                                    example: '0.000441'
+                                  fromAsset:
+                                    type: string
+                                    example: 'USDT'
+                            operate_item:
+                              type: string
+                              example: '2018-05-03 17:07:04'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/asset/dust:
+    post:
+      summary: Dust Transfer
+      description: |-
+        Convert dust assets to BNB.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - name: asset
+          in: query
+          required: true
+          description: The asset being converted. For example, asset=BTC&asset=USDT
+          schema:
+            type: string
+            example: asset=BTC&asset=USDT
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'Dust log records'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalServiceCharge:
+                    type: string
+                    example: '0.02102542'
+                  totalTransfered:
+                    type: string
+                    example: '1.05127099'
+                  transferResult:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                          example: '0.03000000'
+                        fromAsset:
+                          type: string
+                          example: 'ETH'
+                        operateTime:
+                          type: integer
+                          example: 1563368549307
+                        serviceChargeAmount:
+                          type: string
+                          example: '0.00500000'
+                        tranId:
+                          type: integer
+                          example: 2970932918
+                        transferedAmount:
+                          type: string
+                          example: '0.25000000'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/asset/assetDividend:
+    get:
+      summary: Dust Transfer
+      description: |-
+        Query asset Dividend Record 
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/optionalAsset'
+        - $ref: '#/components/parameters/startTime'
+        - $ref: '#/components/parameters/endTime'
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: string
+            default: 20
+            maximum: 50
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'records of asset devidend'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rows:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        amount:
+                          type: string
+                          example: '10.00000000'
+                        asset:
+                          type: string
+                          example: 'BHFT'
+                        divTime:
+                          type: integer
+                          example: 1563189166000
+                        enInfo:
+                          type: string
+                          example: 'BHFT distribution'
+                        tranId:
+                          type: integer
+                          example: 2968885920
+                  total:
+                    type: integer
+                    example: 1
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /wapi/v3/assetDetail.html:
+    get:
+      summary: Asset Detail (USER_DATA)
+      description: |-
+        Fetch details of assets supported on Binance.
+
+        Please get network and other deposit or withdraw details from `GET /sapi/v1/capital/config/getall`.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'asset details'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  assetDetail:
+                    type: object
+                    properties:
+                      CTR:
+                        type: object
+                        properties:
+                          minWithdrawAmount:
+                            type: string
+                            example: '0.02000000'
+                          depositStatus:
+                            type: boolean
+                            example: true
+                          withdrawFee:
+                            type: string
+                            example: 0.01
+                          withdrawStatus:
+                            type: boolean
+                            example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /wapi/v3/tradeFee.html:
+    get:
+      summary: Trade Fee (USER_DATA)
+      description: |-
+        Fetch trade fee, values in percentage.
+
+        Weight: 1
+      tags:
+        - Wallet
+      parameters:
+        - $ref: '#/components/parameters/optionalSymbol'
+        - $ref: '#/components/parameters/timestamp'
+        - $ref: '#/components/parameters/recvWindow'
+        - $ref: '#/components/parameters/signature'
+      responses:
+        '200':
+          description: 'Trading fee'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  tradeFee:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        symbol:
+                          type: string
+                          example: 'ADABNB'
+                        maker:
+                          type: integer
+                          example: 0.9000
+                        taker:
+                          type: integer
+                          example: 1.0000
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /api/v3/userDataStream:
+    post:
+      summary: Create a ListenKey (USER_STREAM)
+      description: |-
+        Start a new user data stream. 
+        The stream will close after 60 minutes unless a keepalive is sent. If the account has an active listenKey, that listenKey will be returned and its validity will be extended for 60 minutes.
+        Weight: 1
+      tags:
+        - Stream
+      responses:
+        '200':
+          description: listen key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listenKey:
+                    type: string
+                    example: 'pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      summary: Ping/Keep-alive a ListenKey (USER_STREAM)
+      description: |-
+        Keepalive a user data stream to prevent a time out. User data streams will close after 60 minutes. It's recommended to send a ping about every 30 minutes.
+        Weight: 1
+      tags:
+        - Stream
+      parameters:
+        - $ref: '#/components/parameters/listenKey'
+      responses:
+        '200':
+          description: empty object
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      summary: Close a ListenKey (USER_STREAM)
+      description: |-
+        Close out a user data stream.
+        Weight: 1
+      tags:
+        - Stream
+      parameters:
+        - $ref: '#/components/parameters/listenKey'
+      responses:
+        '200':
+          description: empty object
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /sapi/v1/userDataStream:
+    post:
+      summary: Create a ListenKey (USER_STREAM)
+      description: |-
+        Start a new user data stream. 
+        The stream will close after 60 minutes unless a keepalive is sent. If the account has an active listenKey, that listenKey will be returned and its validity will be extended for 60 minutes.
+        Weight: 1
+      tags:
+        - Margin Stream
+      responses:
+        '200':
+          description: listen key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  listenKey:
+                    type: string
+                    example: 'pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      summary: Ping/Keep-alive a ListenKey (USER_STREAM)
+      description: |-
+        Keepalive a user data stream to prevent a time out. User data streams will close after 60 minutes. It's recommended to send a ping about every 30 minutes.
+        Weight: 1
+      tags:
+        - Margin Stream
+      parameters:
+        - $ref: '#/components/parameters/listenKey'
+      responses:
+        '200':
+          description: empty object
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      summary: Close a ListenKey (USER_STREAM)
+      description: |-
+        Close out a user data stream.
+        Weight: 1
+      tags:
+        - Margin Stream
+      parameters:
+        - $ref: '#/components/parameters/listenKey'
+      responses:
+        '200':
+          description: empty object
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+components:
+  parameters:
+    asset:
+      name: asset
+      in: query
+      description: The asset being transferred, e.g., BTC
+      required: true
+      schema:
+        type: string
+      example: 'BTC'
+    amount:
+      name: amount
+      in: query
+      required: true
+      schema:
+        type: number
+        format: float
+      example: '1.01'
+    current:
+      name: current
+      in: query
+      description: Currently querying page. Start from 1. Default:1
+      schema:
+        type: number
+        format: int32
+      example: 1
+    coin:
+      name: coin
+      in: query
+      required: true
+      description: coin name
+      schema:
+        type: string
+      example: 'BNB'
+    side:
+      name: side
+      in: query
+      required: true
+      description: SELL or BUY
+      schema:
+        type: string
+        enum: ['SELL', 'BUY']
+      example: 'BNBUSDT'
+    size:
+      name: size
+      in: query
+      description: Default:10 Max:100
+      schema:
+        type: number
+        format: int32
+      example: 100
+    symbol:
+      name: symbol
+      in: query
+      required: true
+      description: trading symbol, e.g. BNBUSDT
+      schema:
+        type: string
+      example: 'BNBUSDT'
+    optionalSymbol:
+      name: symbol
+      in: query
+      description: trading symbol, e.g. BNBUSDT
+      schema:
+        type: string
+      example: 'BNBUSDT'
+    optionalAsset:
+      name: asset
+      in: query
+      description: The asset being transferred, e.g., BTC
+      schema:
+        type: string
+      example: 'BNB'
+    limit:
+      name: limit
+      in: query
+      description: Default 500; max 1000.
+      schema:
+        type: integer
+      example: 500
+    listenKey:
+      name: listenKey
+      in: query
+      description: User websocket listen key
+      schema:
+        type: string
+      example: 'pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1'
+    fromId:
+      name: fromId
+      in: query
+      description: Trade id to fetch from. Default gets most recent trades.
+      schema:
+        type: integer
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+    orderId:
+      name: orderId
+      in: query
+      description: order id
+      schema:
+        type: integer
+    orderListId:
+      name: orderListId
+      in: query
+      description: order list id
+      schema:
+        type: integer
+    origClientOrderId:
+      name: origClientOrderId
+      in: query
+      description: order id from client
+      schema:
+        type: string
+    listClientOrderId:
+      name: listClientOrderId
+      in: query
+      description: A unique Id for the entire orderList
+      schema:
+        type: string
+    newClientOrderId:
+      name: newClientOrderId
+      in: query
+      description: Used to uniquely identify this cancel. Automatically generated by default
+      schema:
+        type: string
+    newOrderRespType:
+      name: newOrderRespType
+      in: query
+      description: Set the response JSON. ACK, RESULT, or FULL; MARKET and LIMIT order types default to FULL, all other orders default to ACK.
+      schema:
+        type: string
+        enum: [ACK, RESULT, FULL]
+    startTime:
+      name: startTime
+      in: query
+      description: Timestamp in ms
+      schema:
+        type: integer
+    endTime:
+      name: endTime
+      in: query
+      description: Timestamp in ms
+      schema:
+        type: integer
+    price:
+      name: price
+      in: query
+      description: order price
+      schema:
+        type: number
+        format: float
+      example: 20.01
+    quantity:
+      name: quantity
+      in: query
+      description: order quantity
+      required: true
+      schema:
+        type: number
+        format: float
+      example: 10.01
+    recvWindow:
+      name: recvWindow
+      in: query
+      description: The value cannot be greater than 60000
+      schema:
+        type: integer
+      example: 5000
+    timestamp:
+      name: timestamp
+      in: query
+      required: true
+      description: UTC timestamp
+      schema:
+        type: integer
+    timeInForce:
+      name: timeInForce
+      in: query
+      description: order time in force
+      schema:
+        type: string
+        enum: [GTC, IOC, FOK]
+    type:
+      name: type
+      in: query
+      required: true
+      schema:
+        type: integer
+    orderType:
+      name: type
+      in: query
+      required: true
+      description: the order type
+      schema:
+        type: string
+        enum: [LIMIT, MARKET, STOP_LOSS, STOP_LOSS_LIMIT, TAKE_PROFIT, TAKE_PROFIT_LIMIT, LIMIT_MAKER]
+    signature:
+      name: signature
+      in: query
+      required: true
+      description: signature
+      schema:
+        type: string
+    stopPrice:
+      name: stopPrice
+      in: query
+      description: Used with STOP_LOSS, STOP_LOSS_LIMIT, TAKE_PROFIT, and TAKE_PROFIT_LIMIT orders.
+      schema:
+        type: number
+        format: float
+      example: 20.01
+    APIKey:
+      name: X-MBX-APIKEY
+      in: header
+      description: API Key
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    account:
+      type: object
+      properties:
+        makerCommission:
+          type: integer
+          example: 15
+        takerCommission:
+          type: integer
+          example: 15
+        buyerCommission:
+          type: integer
+          example: 0
+        sellerCommission:
+          type: integer
+          example: 0
+        canTrade:
+          type: boolean
+          example: true
+        canWithdraw:
+          type: boolean
+          example: true
+        canDeposit:
+          type: boolean
+          example: true
+        updateTime:
+          type: integer
+          example: 123456789
+        accountType:
+          type: string
+          example: 'SPOT'
+        balances:
+          type: array
+          items:
+            type: object
+            properties:
+              asset:
+                type: string
+                example: 'BTC'
+              free:
+                type: string
+                example: '4723846.89208129'
+              locked:
+                type: string
+                example: '0.00000000'
+    order:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        origClientOrderId:
+          type: string
+          example: 'msXkySR3u5uYwpvRMFsi3u'
+        orderId:
+          type: integer
+          example: 28
+        orderListId:
+          type: integer
+          description: Unless OCO, value will be -1
+          example: -1
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        price:
+          type: number
+          format: float
+          example: '1.00000000'
+        origQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        executedQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'FILLED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'LIMIT'
+        side:
+          type: string
+          example: 'SELL'
+    orderDetails:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        origClientOrderId:
+          type: string
+          example: 'msXkySR3u5uYwpvRMFsi3u'
+        orderId:
+          type: integer
+          example: 28
+        orderListId:
+          type: integer
+          description: Unless OCO, value will be -1
+          example: -1
+        price:
+          type: number
+          format: float
+          example: '1.00000000'
+        origQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        executedQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'FILLED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'LIMIT'
+        side:
+          type: string
+          example: 'SELL'
+        stopPrice:
+          type: number
+          format: float
+          example: '10.00000000'
+        icebergQty:
+          type: number
+          format: float
+          example: '0.00000000'
+        time:
+          type: integer
+          example: 1507725176595
+        updateTime:
+          type: integer
+          example: 1507725176595
+        isWorking:
+          type: boolean
+          example: true
+        origQuoteOrderQty:
+          type: number
+          format: float
+          example: '0.00000000'
+    marginOrder:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        origClientOrderId:
+          type: string
+          example: 'msXkySR3u5uYwpvRMFsi3u'
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        price:
+          type: string
+          example: '1.00000000'
+        origQty:
+          type: string
+          example: '10.00000000'
+        executedQty:
+          type: string
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: string
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'CANCELED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'LIMIT'
+        side:
+          type: string
+          example: 'SELL'
+    marginOrderDetail:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        price:
+          type: string
+          example: '1.00000000'
+        origQty:
+          type: string
+          example: '10.00000000'
+        executedQty:
+          type: string
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: string
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'CANCELED'
+        stopPrice:
+          type: string
+          example: '1.00000000'
+        time:
+          type: integer
+          example: 1562133008725
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'LIMIT'
+        side:
+          type: string
+          example: 'SELL'
+        icebergQty:
+          type: string
+          example: '0.00000000'
+        isWorking:
+          type: boolean
+          example: true
+        updateTime:
+          type: integer
+          example: 1562133008725
+    marginOrderResponseAck:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        transactTime:
+          type: integer
+          example: 1507725176595
+    marginOrderResponseResult:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        transactTime:
+          type: integer
+          example: 1507725176595
+        price:
+          type: number
+          format: float
+          example: '1.00000000'
+        origQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        executedQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'FILLED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'MARKET'
+        side:
+          type: string
+          example: 'SELL'
+    marginOrderResponseFull:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        transactTime:
+          type: integer
+          example: 1507725176595
+        price:
+          type: number
+          format: float
+          example: '1.00000000'
+        origQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        executedQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'FILLED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'MARKET'
+        side:
+          type: string
+          example: 'SELL'
+        marginBuyBorrowAmount:
+          type: number
+          format: float
+          example: 5
+        marginBuyBorrowAsset:
+          type: string
+          example: 'BTC'
+        fills:
+          type: array
+          items:
+            type: string
+            properties:
+              price:
+                type: string
+                example: '4000.00000000'
+              qty:
+                type: string
+                example: '1.00000000'
+              commission:
+                type: string
+                example: '4.00000000'
+              commissionAsset:
+                type: string
+                example: 'USDT'
+    marginTrade:
+      type: object
+      properties:
+        commission:
+          type: string
+          example: '0.00006000'
+        commissionAsset:
+          type: string
+          example: 'BTC'
+        id:
+          type: integer
+          example: 28
+        isBestMatch:
+          type: boolean
+          example: true
+        isBuyer:
+          type: boolean
+          example: true
+        isMaker:
+          type: boolean
+          example: true
+        orderId:
+          type: integer
+          example: 28
+        price:
+          type: string
+          example: '0.02000000'
+        qty:
+          type: string
+          example: '1.02000000'
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        time:
+          type: integer
+          example: 1507725176595
+    orderResponseAck:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        orderListId:
+          type: integer
+          description: Unless OCO, value will be -1
+          example: -1
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        transactTime:
+          type: integer
+          example: 1507725176595
+    orderResponseResult:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        orderListId:
+          type: integer
+          description: Unless OCO, value will be -1
+          example: -1
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        transactTime:
+          type: integer
+          example: 1507725176595
+        price:
+          type: number
+          format: float
+          example: '1.00000000'
+        origQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        executedQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'FILLED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'MARKET'
+        side:
+          type: string
+          example: 'SELL'
+    orderResponseFull:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        orderId:
+          type: integer
+          example: 28
+        orderListId:
+          type: integer
+          description: Unless OCO, value will be -1
+          example: -1
+        clientOrderId:
+          type: string
+          example: '6gCrw2kRUAF9CvJDGP16IP'
+        transactTime:
+          type: integer
+          example: 1507725176595
+        price:
+          type: number
+          format: float
+          example: '1.00000000'
+        origQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        executedQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        cummulativeQuoteQty:
+          type: number
+          format: float
+          example: '10.00000000'
+        status:
+          type: string
+          example: 'FILLED'
+        timeInForce:
+          type: string
+          example: 'GTC'
+        type:
+          type: string
+          example: 'MARKET'
+        side:
+          type: string
+          example: 'SELL'
+        fills:
+          type: array
+          items:
+            type: string
+            properties:
+              price:
+                type: string
+                example: '4000.00000000'
+              qty:
+                type: string
+                example: '1.00000000'
+              commission:
+                type: string
+                example: '4.00000000'
+              commissionAsset:
+                type: string
+                example: 'USDT'
+    OCOOrder:
+      type: object
+      properties:
+        orderListId:
+          type: integer
+          example: 3159531
+        contingencyType:
+          type: string
+          example: 'OCO'
+        listStatusType:
+          type: string
+          example: 'ALL_DONE'
+        listOrderStatus:
+          type: string
+          example: 'ALL_DONE'
+        listClientOrderId:
+          type: string
+          example: 'jhaxNE9gi6rItxyh8pZsoM'
+        transactionTime:
+          type: integer
+          example: 1585261352335
+        symbol:
+          type: string
+          example: 'BNBUSDT'
+        orders:
+          type: array
+          items:
+            properties:
+              symbol:
+                type: string
+                example: 'BNBUSDT'
+              orderId:
+                type: integer
+                example: 392119712
+              clientOrderId:
+                type: string
+                example: 'rmBDik7yMPo1YXtIIrpDGf'
+    OCOOrderReport:
+      type: object
+      properties:
+        orderListId:
+          type: integer
+          example: 3159531
+        contingencyType:
+          type: string
+          example: 'OCO'
+        listStatusType:
+          type: string
+          example: 'ALL_DONE'
+        listOrderStatus:
+          type: string
+          example: 'ALL_DONE'
+        listClientOrderId:
+          type: string
+          example: 'jhaxNE9gi6rItxyh8pZsoM'
+        transactionTime:
+          type: integer
+          example: 1585261352335
+        symbol:
+          type: string
+          example: 'BNBUSDT'
+        orders:
+          type: array
+          items:
+            properties:
+              symbol:
+                type: string
+                example: 'BNBUSDT'
+              orderId:
+                type: integer
+                example: 392119712
+              clientOrderId:
+                type: string
+                example: 'rmBDik7yMPo1YXtIIrpDGf'
+        orderReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/order'
+    bookTickerList:
+      type: array
+      items:
+        $ref: '#/components/schemas/bookTicker'
+    bookTicker:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        bidPrice:
+          type: string
+          example: '16.36240000'
+        bidQty:
+          type: string
+          example: '256.78000000'
+        askPrice:
+          type: string
+          example: '16.36450000'
+        askQty:
+          type: string
+          example: '12.56000000'
+    priceTickerList:
+      type: array
+      items:
+        $ref: '#/components/schemas/priceTicker'
+    priceTicker:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        price:
+          type: string
+          example: '0.17160000'
+    tickerList:
+      type: array
+      items:
+        $ref: '#/components/schemas/ticker'
+    ticker:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBBTC'
+        priceChange:
+          type: string
+          example: '0.17160000'
+        priceChangePercent:
+          type: string
+          example: '1.060'
+        prevClosePrice:
+          type: string
+          example: '16.35920000'
+        lastPrice:
+          type: string
+          example: '27.84000000'
+        bidPrice:
+          type: string
+          example: '16.34488284'
+        bidQty:
+          type: string
+          example: '16.34488284'
+        askPrice:
+          type: string
+          example: '16.35920000'
+        askQty:
+          type: string
+          example: '25.06000000'
+        openPrice:
+          type: string
+          example: '16.18760000'
+        highPrice:
+          type: string
+          example: '16.55000000'
+        lowPrice:
+          type: string
+          example: '16.16940000'
+        volume:
+          type: string
+          example: '1678279.95000000'
+        quoteVolume:
+          type: string
+          example: '27431289.14792300'
+        openTime:
+          type: integer
+          example: 1592808788637
+        closeTime:
+          type: integer
+          example: 1592895188637
+        firstId:
+          type: integer
+          example: 62683296
+        lastId:
+          type: integer
+          example: 62739253
+        count:
+          type: integer
+          example: 55958
+
+    myTrade:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: 'BNBUSDT'
+        id:
+          type: integer
+          description: trade id
+          example: 345196462
+        orderId:
+          type: integer
+          example: 345196462
+        orderListId:
+          type: integer
+          example: 345196462
+        price:
+          type: string
+          description: price
+          example: '9638.99000000'
+        qty:
+          type: string
+          description: amount of base asset
+          example: '0.02077200'
+        quoteQty:
+          type: string
+          description: amount of quote asset
+          example: '0.02077200'
+        commission:
+          type: string
+          example: '0.02077200'
+        commissionAsset:
+          type: string
+          example: 'BNB'
+        time:
+          type: integer
+          description: trade timestamp
+          example: 1592887772684
+        isBuyer:
+          type: boolean
+          example: true
+        isMaker:
+          type: boolean
+          example: true
+        isBestMatch:
+          type: boolean
+          example: true
+    transaction:
+      type: object
+      properties:
+        tranId:
+          type: integer
+          description: transaction id
+          example: 345196462
+    trade:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: trade id
+          example: 345196462
+        price:
+          type: string
+          description: price
+          example: '9638.99000000'
+        qty:
+          type: string
+          description: amount of base asset
+          example: '0.02077200'
+        quoteQty:
+          type: string
+          description: amount of quote asset
+          example: '0.02077200'
+        time:
+          type: integer
+          description: trade timestamp
+          example: 1592887772684
+        isBuyerMaker:
+          type: boolean
+          example: true
+        isBestMatch:
+          type: boolean
+          example: true
+    aggTrade:
+      type: object
+      properties:
+        a:
+          type: integer
+          description: trade id
+          example: 345196462
+        p:
+          type: string
+          description: price
+          example: '9638.99000000'
+        q:
+          type: string
+          description: amount of base asset
+          example: '0.02077200'
+        f:
+          type: integer
+          description: First tradeId
+          example: 345212431
+        l:
+          type: integer
+          description: Last tradeId
+          example: 345212431
+        T:
+          type: boolean
+          description: Timestamp
+          example: 1592892011154
+        m:
+          type: boolean
+          description: Was the buyer the maker?
+          example: true
+        M:
+          type: boolean
+          description: Was the trade the best price match?
+          example: true
+
+    error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: error code
+        msg:
+          type: string
+          description: error message
+          example: 'error message'
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      description: Binance Public API Key
+      name: X-MBX-APIKEY
+      in: header

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "target": "es2016",
+    "target": "esnext",
     "module": "esnext",
     "noEmit": true,
     "sourceMap": true,
@@ -22,7 +22,8 @@
     "removeComments": true,
     "types": ["jest", "node"],
     "typeRoots": ["./src/@types", "node_modules/@types"],
-    "jsx": "react"
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["./src/**/*.tsx", "./src/**/*.ts"],
   "exclude": ["node_modules", "src/build", "public", "src/css"]

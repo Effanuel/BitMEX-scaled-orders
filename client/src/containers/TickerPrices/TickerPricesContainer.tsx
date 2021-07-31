@@ -1,60 +1,52 @@
 import React from 'react';
-import {MainContainer} from 'components';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {SYMBOLS} from 'util/BitMEX-types';
+import {Stat, StatHelpText, StatLabel, Text, StatNumber} from '@chakra-ui/react';
+import {useSelector} from 'react-redux';
+import isEqual from 'lodash/fp/isEqual';
+import {SYMBOL} from 'redux/api/bitmex/types';
+import {allWebsocketBidAskPrices, SymbolPrices} from 'redux/selectors';
+import {MainContainer, Row} from 'components';
 import styles from './TickerPricesContainer.module.scss';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import {makeStyles} from '@material-ui/core/styles';
+import {AppState} from 'redux/modules/state';
+import {formatPrice} from 'general/formatting';
 
-const useStyles = makeStyles(() => ({
-  root: {backgroundColor: 'white'},
-  itemRoot: {justifyContent: 'center', padding: 0},
-  primary: {color: 'white'},
-  secondary: {color: 'grey'},
-}));
+const none = '---' as unknown as number;
 
-interface ItemProps {
-  price: string | number;
-  symbol: SYMBOLS;
-  shouldShowDivider: boolean;
-}
-
-function Item({price, symbol, shouldShowDivider}: ItemProps) {
-  const {root, itemRoot, primary, secondary} = useStyles();
-  return (
-    <>
-      <ListItem key={symbol}>
-        <ListItemText inset={true} classes={{root: itemRoot, primary, secondary}} primary={price} secondary={symbol} />
-      </ListItem>
-      {shouldShowDivider && <Divider orientation="vertical" flexItem classes={{root}} />}
-    </>
-  );
-}
-
-const defaultData: any = [
-  {askPrice: '---', bidPrice: '---', symbol: SYMBOLS.XBTUSD},
-  {askPrice: '---', bidPrice: '---', symbol: SYMBOLS.ETHUSD},
-  {askPrice: '---', bidPrice: '---', symbol: SYMBOLS.XRPUSD},
+const defaultData: SymbolPrices[] = [
+  {askPrice: none, bidPrice: none, symbol: SYMBOL.XBTUSD},
+  {askPrice: none, bidPrice: none, symbol: SYMBOL.ETHUSD},
+  {askPrice: none, bidPrice: none, symbol: SYMBOL.XRPUSD},
 ];
 
-const TickerPricesContainer = React.memo(() => {
-  const {allPrices, wsMessage} = useReduxSelector('allPrices', 'wsMessage');
-  const data: any = allPrices?.length ? allPrices : defaultData;
+export default React.memo(function TickerPricesContainer() {
+  const wsMessage = useSelector((state: AppState) => state.websocket.message);
+  const allPrices = useSelector(allWebsocketBidAskPrices, isEqual);
+
+  const data = allPrices?.length ? allPrices : defaultData;
+
+  const copyPriceToClipboard = React.useCallback((event) => navigator.clipboard.writeText(event.target.innerText), []);
+
   return (
-    <MainContainer label="TickerPrices" description="Displays current prices of subscribed symbols">
-      <div className={styles.container}>
-        <div className={styles.message}>{wsMessage}</div>
-        <div className={styles.allPricesContainer}>
-          {data.map(({askPrice, symbol}: any, index: number) => {
-            const shouldShowDivider = data.length - 1 !== index;
-            return <Item key={symbol} price={askPrice} symbol={symbol} shouldShowDivider={shouldShowDivider} />;
-          })}
+    <MainContainer label="TickerPrices" description="Displays current ask prices of subscribed tickers">
+      <Row>
+        <div className={styles.container}>
+          <Text color="white" textStyle="bold">
+            {wsMessage}
+          </Text>
+          <div className={styles.allPricesContainer}>
+            {data.map(({askPrice, symbol}) => {
+              return (
+                <Stat key={symbol} margin={15} marginBottom={5} color="white">
+                  <StatLabel>{symbol}</StatLabel>
+                  <StatNumber onClick={copyPriceToClipboard} _hover={{cursor: 'copy'}}>
+                    {askPrice === none ? none : formatPrice(askPrice, symbol)}
+                  </StatNumber>
+                  <StatHelpText>BitMEX</StatHelpText>
+                </Stat>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </Row>
     </MainContainer>
   );
 });
-
-export default TickerPricesContainer;

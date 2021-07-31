@@ -1,19 +1,9 @@
 //@ts-ignore
-jest.mock('axios');
-
 async function flushPromises(ms?: number) {
-  await new Promise((resolve) => {
-    setTimeout(resolve);
-    //@ts-ignore
-    if (setTimeout.mock) {
-      if (ms !== undefined) {
-        jest.runTimersToTime(ms);
-      } else {
-        jest.runAllTimers();
-      }
-    }
-  });
+  await new Promise(setImmediate);
 }
+
+jest.mock('axios');
 
 jest.mock('react-toastify', () => {
   const actual = jest.requireActual('react-toastify');
@@ -23,3 +13,9 @@ jest.mock('react-toastify', () => {
 
 //@ts-ignore
 global.flushPromises = flushPromises;
+
+jest.mock('./redux/api/api', () => {
+  return {
+    API: require('./tests/proxy').networkProxy.setNetworkTarget(jest.requireActual('./redux/api/api').API),
+  };
+});

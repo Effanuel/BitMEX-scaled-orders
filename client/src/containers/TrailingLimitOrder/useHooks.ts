@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from 'react-redux';
-import {AppState} from 'redux/models/state';
+import {AppState} from 'redux/modules/state';
 import {
   trailingOrderStatusSelector,
   websocketBidAskPrices,
@@ -52,7 +52,11 @@ export function useHooks() {
     if (statuses.includes(status) && trailOrderStatus !== 'Order not placed.') {
       dispatch(__clearTrailingOrder());
     }
-  }, [dispatch, trailOrderStatus, status]);
+    // TODO: handle ammending error in some way
+    // Trailing order ammending error trailing order status change is ignored because of a missing dep,
+    // but right now it wont matter, cause nothing depends on that error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, status]);
 
   return {
     wsCurrentPrice,

@@ -27,5 +27,3 @@ const styles = {
   svg: {verticalAlign: 'middle'},
   root: {display: 'inline', justify: 'middle', padding: '7px 0', marginRight: '12px'},
 };
-
-//Thanks to nishanbajracharya for this code
