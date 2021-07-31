@@ -7,6 +7,7 @@ const ignorePaths: string[] = [
   'components',
   'tests/mockData',
   'redux/selectors',
+  'containers/index.ts',
 ];
 
 describe('unused exports', () => {
