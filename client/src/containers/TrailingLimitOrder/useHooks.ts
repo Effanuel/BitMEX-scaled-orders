@@ -7,9 +7,11 @@ import {
   websocketCurrentPrice,
   websocketTrailingPriceSelector,
 } from 'redux/selectors';
-import {ammendTrailingOrder, __clearTrailingOrder} from 'redux/modules/trailing/trailingModule';
+import {__clearTrailingOrder} from 'redux/modules/trailing/trailingModule';
+import {useApi} from 'general/hooks';
 
 export function useHooks() {
+  const {ammendTrailingOrder} = useApi();
   const {
     wsTrailingPrice,
     wsCurrentPrice,
@@ -42,10 +44,10 @@ export function useHooks() {
     if (wsTrailingPrice && trailOrderPrice && !statuses.includes(status)) {
       const toAmmend = wsTrailingPrice !== trailOrderPrice;
       if (toAmmend) {
-        dispatch(ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice}));
+        ammendTrailingOrder({orderID: trailOrderId, price: wsTrailingPrice});
       }
     }
-  }, [dispatch, trailOrderPrice, trailOrderId, trailOrderSide, status, wsTrailingPrice]);
+  }, [ammendTrailingOrder, trailOrderPrice, trailOrderId, trailOrderSide, status, wsTrailingPrice]);
 
   useEffect(() => {
     const statuses = ['Filled', 'Canceled', 'Order not placed.'];

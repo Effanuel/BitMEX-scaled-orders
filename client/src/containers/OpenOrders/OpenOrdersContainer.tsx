@@ -1,13 +1,11 @@
 import React from 'react';
 import {Tbody, Th, Thead, Tr, Table, Box} from '@chakra-ui/react';
 import {RepeatIcon} from '@chakra-ui/icons';
-import {useDispatch} from 'react-redux';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
 import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
 import {MainContainer} from 'components';
-import {getOpenOrders} from 'redux/modules/orders/ordersModule';
-import {useModal} from 'general/hooks';
+import {useApi, useModal} from 'general/hooks';
 import {OPEN_ORDERS_CONTAINER} from 'data-test-ids';
 import OpenOrderRow from './OpenOrderRow';
 import ProfitOrderInActionRow from './ProfitOrderInActionRow';
@@ -48,7 +46,7 @@ export const presentOrderPrice = (order: Order) => {
 };
 
 export default function OpenOrdersContainer() {
-  const dispatch = useDispatch();
+  const {getOpenOrders} = useApi();
   const {modals} = useModal();
 
   const {openOrders, profitOrders, profitOrdersInAction, groupedOrders, ordersLoading, ordersError} = useReduxSelector(
@@ -60,11 +58,9 @@ export default function OpenOrdersContainer() {
     'ordersError',
   );
 
-  const fetchOpenOrders = React.useCallback(() => void dispatch(getOpenOrders()), [dispatch]);
-
   React.useEffect(() => {
-    fetchOpenOrders();
-  }, [fetchOpenOrders]);
+    getOpenOrders();
+  }, [getOpenOrders]);
 
   const showCancelAllOrdersModal = React.useCallback(() => {
     const totalOrders = openOrders.length + profitOrders.length + profitOrdersInAction.length;
@@ -85,8 +81,8 @@ export default function OpenOrdersContainer() {
   }, [ordersError, ordersLoading, openOrders, profitOrdersInAction]);
 
   const icons = React.useMemo(
-    () => [{element: RepeatIcon, onClick: !ordersLoading ? fetchOpenOrders : undefined, color: 'green'}],
-    [fetchOpenOrders, ordersLoading],
+    () => [{element: RepeatIcon, onClick: !ordersLoading ? getOpenOrders : undefined, color: 'green'}],
+    [getOpenOrders, ordersLoading],
   );
 
   return (

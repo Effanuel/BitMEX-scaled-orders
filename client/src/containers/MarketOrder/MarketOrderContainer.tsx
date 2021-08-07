@@ -1,16 +1,15 @@
 import React from 'react';
 import {WarningTwoIcon} from '@chakra-ui/icons';
-import {useDispatch} from 'react-redux';
-import {postMarketOrder} from 'redux/modules/preview/previewModule';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
 import {MARKET_CONTAINER} from 'data-test-ids';
 import {SelectDropdown, InputField, Button, Row, MainContainer} from 'components';
+import {useApi} from 'general/hooks';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
 export default React.memo(function MarketOrderContainer() {
-  const dispatch = useDispatch();
+  const {postMarketOrder} = useApi();
 
   const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
   const [quantity, setQuantity] = React.useState<string>('');
@@ -20,11 +19,11 @@ export default React.memo(function MarketOrderContainer() {
   const submitMarketOrder = React.useCallback(
     (id: SIDE) => {
       if (quantity) {
-        dispatch(postMarketOrder({symbol, orderQty: +quantity, side: id}));
+        postMarketOrder({symbol, orderQty: +quantity, side: id});
       }
       setQuantity('');
     },
-    [dispatch, symbol, quantity],
+    [symbol, quantity, postMarketOrder],
   );
 
   return (

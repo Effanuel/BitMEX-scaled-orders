@@ -5,6 +5,8 @@ import {
   CancelProfitOrderModal,
   CancelAllProfitOrdersModal,
   AddProfitOrderModal,
+  GeneralModal,
+  AddApiKeysModal,
 } from 'components/modals';
 
 export type ShowModalArgs = {
@@ -23,6 +25,8 @@ const registeredModals = {
   showCancelAllOrders: CancelAllOrdersModal,
   showCancelAllProfitOrders: CancelAllProfitOrdersModal,
   showAddProfitTarget: AddProfitOrderModal,
+  showGeneralModal: GeneralModal,
+  showAddApiKeys: AddApiKeysModal,
 };
 
 export function showRegisteredModal<P>(type: keyof RegisteredModals, modalProps: P) {

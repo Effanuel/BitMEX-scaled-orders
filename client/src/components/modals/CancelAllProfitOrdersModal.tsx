@@ -1,7 +1,6 @@
 import React from 'react';
-import {useDispatch} from 'react-redux';
 import {Modal} from 'components';
-import {cancelAllProfitOrders} from 'redux/modules/orders/ordersModule';
+import {useApi} from 'general/hooks';
 
 interface Props {
   totalOrders: number;
@@ -9,11 +8,12 @@ interface Props {
 }
 
 export function CancelAllProfitOrdersModal({totalOrders, profitOrderIds}: Props) {
-  const dispatch = useDispatch();
+  const {cancelAllProfitOrders} = useApi();
 
-  const emitConfirm = React.useCallback(() => {
-    dispatch(cancelAllProfitOrders({orderID: profitOrderIds}));
-  }, [dispatch, profitOrderIds]);
+  const emitConfirm = React.useCallback(
+    () => cancelAllProfitOrders({orderID: profitOrderIds}),
+    [cancelAllProfitOrders, profitOrderIds],
+  );
 
   return (
     <Modal title="Cancel All Profit Orders" onConfirm={emitConfirm}>

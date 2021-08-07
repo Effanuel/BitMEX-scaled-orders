@@ -1,10 +1,12 @@
 import {useEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from 'react-redux';
 import {AppState} from 'redux/modules/state';
-import {orderCrossedOnce, postMarketCrossOrder} from 'redux/modules/cross/crossModule';
+import {orderCrossedOnce} from 'redux/modules/cross/crossModule';
 import {hasCrossedOnceSelector, hasCrossedSecondTimeSelector, websocketCrossPriceSelector} from 'redux/selectors';
+import {useApi} from 'general/hooks';
 
 export function useHooks() {
+  const {postMarketCrossOrder} = useApi();
   const {hasCrossedOnce, hasCrossedSecondTime, wsCrossPrice, connected, crossOrderPrice, hasPriceCrossedOnce} =
     useSelector((state: AppState) => {
       const {websocket, cross} = state;
@@ -30,9 +32,9 @@ export function useHooks() {
   useEffect(() => {
     if (hasCrossedSecondTime) {
       //@ts-expect-error
-      dispatch(postMarketCrossOrder());
+      postMarketCrossOrder();
     }
-  }, [dispatch, hasCrossedSecondTime]);
+  }, [postMarketCrossOrder, hasCrossedSecondTime]);
 
   return {
     wsCrossPrice,

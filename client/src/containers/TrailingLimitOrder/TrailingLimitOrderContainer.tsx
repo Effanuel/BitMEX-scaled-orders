@@ -2,18 +2,20 @@ import React from 'react';
 import {useDispatch} from 'react-redux';
 import {Text} from '@chakra-ui/react';
 import {WarningTwoIcon} from '@chakra-ui/icons';
-import {postTrailingOrder, cancelTrailingOrder, changeTrailingOrderSymbol} from 'redux/modules/trailing/trailingModule';
+import {changeTrailingOrderSymbol} from 'redux/modules/trailing/trailingModule';
 import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
 import {SelectDropdown, InputField, Button, SideRadioButtons, Row, MainContainer} from 'components';
 import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import {useHooks} from './useHooks';
 import {INSTRUMENT_PARAMS} from 'utils';
+import {useApi} from 'general/hooks';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
 export default React.memo(function TrailingLimitOrderContainer() {
   const dispatch = useDispatch();
+  const {postTrailingOrder, cancelTrailingOrder} = useApi();
 
   const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
   const [side, setSide] = React.useState<SIDE>(SIDE.SELL);
@@ -28,13 +30,12 @@ export default React.memo(function TrailingLimitOrderContainer() {
 
   const submitTrailingOrder = React.useCallback(() => {
     if (trailingOrderPrice && quantity) {
-      const payload = {symbol, side, orderQty: +quantity, price: trailingOrderPrice, text: 'best_order'};
-      dispatch(postTrailingOrder(payload));
+      postTrailingOrder({symbol, side, orderQty: +quantity, price: trailingOrderPrice, text: 'best_order'});
       setQuantity('');
     }
-  }, [dispatch, trailingOrderPrice, quantity, side, symbol]);
+  }, [postTrailingOrder, trailingOrderPrice, quantity, side, symbol]);
 
-  const cancelOrder = React.useCallback(() => void dispatch(cancelTrailingOrder({} as any)), [dispatch]);
+  const cancelOrder = React.useCallback(() => void cancelTrailingOrder({} as any), [cancelTrailingOrder]);
 
   const toggleInstrument = React.useCallback(
     (symbol: SYMBOL) => {

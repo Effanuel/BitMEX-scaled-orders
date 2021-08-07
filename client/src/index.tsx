@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {BrowserRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {ChakraProvider, extendTheme} from '@chakra-ui/react';
 import {createStore} from 'redux/store';
@@ -108,11 +109,13 @@ const theme = extendTheme({
 
 ReactDOM.render(
   <Provider store={createStore()}>
-    <ChakraProvider theme={theme}>
-      <ModalProvider>
-        <App />
-      </ModalProvider>
-    </ChakraProvider>
+    <BrowserRouter>
+      <ChakraProvider theme={theme}>
+        <ModalProvider>
+          <App />
+        </ModalProvider>
+      </ChakraProvider>
+    </BrowserRouter>
   </Provider>,
   document.getElementById('root') as HTMLElement,
 );
