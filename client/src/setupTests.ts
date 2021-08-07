@@ -16,6 +16,6 @@ global.flushPromises = flushPromises;
 
 jest.mock('./redux/api/api', () => {
   return {
-    API: require('./tests/proxy').networkProxy.setNetworkTarget(jest.requireActual('./redux/api/api').API),
+    APIFacade: require('./tests/proxy').networkProxy.setNetworkTarget(jest.requireActual('./redux/api/api').APIFacade),
   };
 });

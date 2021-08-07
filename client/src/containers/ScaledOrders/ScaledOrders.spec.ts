@@ -42,7 +42,7 @@ describe('ScaledOrders', () => {
   it('should submit sell scaled orders without stoploss', async () => {
     const input = {orderQty: 1000, n_tp: 2, start: 1000, end: 2000, side: SIDE.SELL, symbol: SYMBOL.XBTUSD, stop: 0};
     const orders = createScaledOrders({ordersProps: input, distribution: DISTRIBUTION.Uniform});
-    const promise = respond('orderBulk', [orders]).with(forgeResult(orders));
+    const promise = respond('orderBulk', [{orders}]).with(forgeResult(orders));
 
     const result = await render()
       .apply(fillInputs(input))
@@ -53,7 +53,7 @@ describe('ScaledOrders', () => {
 
     expect(result).toEqual({
       actions: ['preview/PREVIEW_POST_ORDER/pending', 'preview/PREVIEW_POST_ORDER/fulfilled'],
-      network: [{orderBulk: [orders]}],
+      network: [{orderBulk: [{orders}]}],
       spinnerVisible: true,
       toast: [{message: 'Submitted Scaled Orders', toastPreset: 'success'}],
     });
@@ -62,7 +62,7 @@ describe('ScaledOrders', () => {
   it('should submit buy scaled orders without stoploss', async () => {
     const input = {orderQty: 1000, n_tp: 2, start: 1000, end: 2000, side: SIDE.BUY, symbol: SYMBOL.XBTUSD, stop: 0};
     const orders = createScaledOrders({ordersProps: input, distribution: DISTRIBUTION.Uniform});
-    const promise = respond('orderBulk', [orders]).with(forgeResult(orders));
+    const promise = respond('orderBulk', [{orders}]).with(forgeResult(orders));
 
     const result = await render()
       .apply(fillInputs(input))
@@ -73,7 +73,7 @@ describe('ScaledOrders', () => {
 
     expect(result).toEqual({
       actions: ['preview/PREVIEW_POST_ORDER/pending', 'preview/PREVIEW_POST_ORDER/fulfilled'],
-      network: [{orderBulk: [orders]}],
+      network: [{orderBulk: [{orders}]}],
       spinnerVisible: true,
       toast: [{message: 'Submitted Scaled Orders', toastPreset: 'success'}],
     });
@@ -90,7 +90,7 @@ describe('ScaledOrders', () => {
       stop: 3000,
     };
     const orders = createScaledOrders({ordersProps: input, distribution: DISTRIBUTION.Uniform});
-    const promise = respond('orderBulk', [orders]).with(forgeResult(orders));
+    const promise = respond('orderBulk', [{orders}]).with(forgeResult(orders));
 
     const result = await render()
       .apply(fillInputs({orderQty: 1000, n_tp: 2, start: 1000, end: 20, stop: 3000}))
@@ -101,7 +101,7 @@ describe('ScaledOrders', () => {
 
     expect(result).toEqual({
       actions: ['preview/PREVIEW_POST_ORDER/pending', 'preview/PREVIEW_POST_ORDER/fulfilled'],
-      network: [{orderBulk: [orders]}],
+      network: [{orderBulk: [{orders}]}],
       spinnerVisible: true,
       toast: [{message: 'Submitted Scaled Orders', toastPreset: 'success'}],
     });

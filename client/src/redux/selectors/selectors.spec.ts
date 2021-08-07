@@ -22,6 +22,7 @@ import {
   mockTrailingState,
   mockCrossState,
   mockOrdersState,
+  mockSettingsState,
 } from 'tests/mockData/orders';
 import {AppState} from 'redux/modules/state';
 
@@ -32,6 +33,7 @@ describe('Selectors', () => {
     trailing: mockTrailingState({trailOrderSide: SIDE.SELL, trailOrderSymbol: SYMBOL.XBTUSD}),
     cross: mockCrossState(),
     orders: mockOrdersState(),
+    settings: mockSettingsState(),
   };
 
   let result: unknown;
