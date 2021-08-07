@@ -5,14 +5,16 @@ import {
   createAction as createAction_toolkit,
   ActionCreatorWithPreparedPayload,
 } from '@reduxjs/toolkit';
+import axios, {Method} from 'axios';
 import {HttpResponse} from 'redux/api/bitmex';
-import {API} from 'redux/api/api';
+import {APIFacade, AvailableMethods} from 'redux/api/api';
 import {AppState} from 'redux/modules/state';
 
 import {ACTIONS_cross} from 'redux/modules/cross/types';
 import {ACTIONS_orders} from 'redux/modules/orders/types';
 import {ACTIONS_preview} from 'redux/modules/preview/types';
 import {ACTIONS_trailing} from 'redux/modules/trailing/types';
+import {ACTIONS_settings, Exchange} from 'redux/modules/settings/types';
 
 export const createAction = <P = void>(actionName: string) =>
   createAction_toolkit(actionName, (payload: P) => ({payload}));
@@ -22,19 +24,25 @@ export type CreateAction = {
   error: ActionCreatorWithPreparedPayload<[string], string, string, never, never>;
 };
 
-const reducerActions = [...ACTIONS_preview, ...ACTIONS_trailing, ...ACTIONS_cross, ...ACTIONS_orders];
+const reducerActions = [
+  ...ACTIONS_preview,
+  ...ACTIONS_trailing,
+  ...ACTIONS_cross,
+  ...ACTIONS_orders,
+  ...ACTIONS_settings,
+];
 
 type ThunkActionNames = typeof reducerActions[number];
 
 export interface ThunkApiConfig {
   rejected: string;
-  extra: API;
+  extra: APIFacade;
   dispatch: Dispatch;
   rejectValue: string;
   state: AppState;
 }
 
-type BitmexMethods = API['availableMethods']['bitmex'];
+type BitmexMethods = AvailableMethods;
 
 type Raw<P extends Promise<HttpResponse<any, unknown>>> = P extends Promise<HttpResponse<infer U, unknown>> ? U : never;
 
@@ -48,7 +56,7 @@ interface AAA<P, K extends keyof BitmexMethods, R> {
   payloadToReturn?: keyof P;
 }
 
-export function createThunkV2<K extends keyof BitmexMethods, P extends Parameters<BitmexMethods[K]>[number], R>({
+export function createApiThunk<K extends keyof BitmexMethods, P extends Parameters<BitmexMethods[K]>[number], R>({
   actionName,
   apiMethod,
   parseResponse,
@@ -56,20 +64,41 @@ export function createThunkV2<K extends keyof BitmexMethods, P extends Parameter
   payloadToReturn,
 }: AAA<P, K, R>): AsyncThunk<
   {data: any},
-  Parameters<BitmexMethods[K]>[number] extends never ? void : P,
+  Parameters<BitmexMethods[K]>[number] extends never ? {exchange?: Exchange} : P & {exchange?: Exchange},
   ThunkApiConfig
 > {
   //@ts-expect-error
-  return createAsyncThunk(actionName, async (payload: P, {extra: API, rejectWithValue, getState}) => {
+  return createAsyncThunk(
+    actionName,
+    async (payload: P & {exchange?: Exchange}, {extra: API, rejectWithValue, getState}) => {
+      try {
+        const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
+        // TODO: add a proper type, there may not fix a fix for this tho
+        //@ts-expect-error
+        const {data} = await API.getQuery(payload?.exchange)(apiMethod)(adaptedPayload);
+        //@ts-expect-error
+        const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
+        const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
+        return {...responseData, ...extraData};
+      } catch (err) {
+        console.log(err, 'errr');
+        return rejectWithValue(formatErrorMessage(err));
+      }
+    },
+  );
+}
+
+interface BasicThunkConfig {
+  actionName: ThunkActionNames;
+  method: Method;
+  url: string;
+}
+
+export function createBasicThunk<P, R>({actionName, method, url}: BasicThunkConfig): AsyncThunk<R, P, ThunkApiConfig> {
+  return createAsyncThunk(actionName, async (payload: P, {rejectWithValue}) => {
     try {
-      const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
-      // TODO: add a proper type, there may not fix a fix for this tho
-      //@ts-expect-error
-      const {data} = await API.getQuery(apiMethod)(adaptedPayload);
-      //@ts-expect-error
-      const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
-      const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
-      return {...responseData, ...extraData};
+      const response = await axios({url, method, data: payload, params: payload});
+      return response.data.data;
     } catch (err) {
       return rejectWithValue(formatErrorMessage(err));
     }

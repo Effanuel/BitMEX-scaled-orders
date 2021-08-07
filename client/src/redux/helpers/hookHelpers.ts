@@ -35,7 +35,7 @@ interface Selectors extends States {
 }
 
 const buildSelectors = (state: AppState): Selectors => {
-  const {trailing, preview, websocket, cross, orders} = state;
+  const {trailing, preview, websocket, cross, orders, settings} = state;
   return {
     wsCurrentPrice: websocketCurrentPrice(state),
     wsTrailingPrice: websocketTrailingPriceSelector(state),
@@ -81,6 +81,10 @@ const buildSelectors = (state: AppState): Selectors => {
     ordersLoading: orders.ordersLoading,
     profitOrders: orders.profitOrders,
     profitOrdersInAction: orders.profitOrdersInAction,
+
+    activeApiKeys: settings.activeApiKeys,
+    settingsError: settings.settingsError,
+    settingsLoading: settings.settingsLoading,
   };
 };
 
