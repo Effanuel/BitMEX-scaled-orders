@@ -7,6 +7,7 @@ import {Exchange} from 'redux/modules/settings/types';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppState} from 'redux/modules/state';
 import {getAllApiKeys} from 'redux/modules/settings/settingsModule';
+import {HOME} from 'data-test-ids';
 
 interface ExchangeRowProps {
   exchange: Exchange;
@@ -27,7 +28,11 @@ function ExchangeRow({exchange, isActive}: ExchangeRowProps) {
       marginBottom={2}
     >
       <Box display="flex" flex={1}>
-        <Link to={`/${exchange}`} style={{display: 'flex', flex: 1, textDecoration: 'none', color: 'white'}}>
+        <Link
+          data-testid={HOME.ROW}
+          to={`/${exchange}`}
+          style={{display: 'flex', flex: 1, textDecoration: 'none', color: 'white'}}
+        >
           <Text color="white" fontWeight="bold" fontSize="2xl">
             {ExchangePresenter[exchange]}
           </Text>
@@ -35,7 +40,7 @@ function ExchangeRow({exchange, isActive}: ExchangeRowProps) {
       </Box>
 
       <Box display="flex">
-        <Link to={`/${isActive ? exchange : 'settings'}`}>
+        <Link data-testid={HOME.ICON} to={`/${isActive ? exchange : 'settings'}`}>
           {isActive ? (
             <Tooltip hasArrow label="API Key is active" bg="gray.300" color="black">
               <CheckIcon color="green" />
@@ -61,7 +66,7 @@ const Home = React.memo(() => {
 
   return (
     <Box marginTop="25px" display="flex" justifyContent="center">
-      <Box display="flex" flexDirection="column" width="50%" maxWidth={720}>
+      <Box display="flex" flexDirection="column" minWidth="720px">
         <Heading color="white">Available Exchanges</Heading>
         <Divider display="flex" orientation="horizontal" marginBottom={4} marginTop={4} />
         {Object.entries(activeApiKeys).map(([exchange, isActive]) => (

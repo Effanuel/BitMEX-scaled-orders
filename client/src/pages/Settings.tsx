@@ -7,6 +7,7 @@ import {Exchange} from 'redux/modules/settings/types';
 import {useModal} from 'general/hooks';
 import {deleteAllApiKeys, deleteApiKey, getAllApiKeys} from 'redux/modules/settings/settingsModule';
 import {ExchangePresenter} from 'presenters/general-presenters';
+import {SETTINGS} from 'data-test-ids';
 
 interface ItemProps {
   title: string;
@@ -19,6 +20,7 @@ const ApiKeySettingRow = React.memo(({title, isActive, exchange, onClick}: ItemP
   const color = isActive ? '#4caf50' : 'grey';
   return (
     <Box
+      data-testid={SETTINGS.API_KEY_ROW}
       display="flex"
       bg="#1e1e1e"
       width="100%"
@@ -39,7 +41,9 @@ const ApiKeySettingRow = React.memo(({title, isActive, exchange, onClick}: ItemP
         </Text>
         <Text color="white">Add api keys for authenticated requests</Text>
       </Box>
-      {isActive ? <Badge colorScheme="green">Active</Badge> : <Badge>Empty</Badge>}
+      <Box data-testid={SETTINGS.API_KEY_ROW_STATUS}>
+        {isActive ? <Badge colorScheme="green">Active</Badge> : <Badge>Empty</Badge>}
+      </Box>
     </Box>
   );
 });

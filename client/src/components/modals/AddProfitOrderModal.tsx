@@ -12,6 +12,9 @@ interface Props {
   orderID: string;
 }
 
+// TODO: add splash screen 404
+// TODO: fix websocket based on exchange
+
 export function AddProfitOrderModal({orderID}: Props) {
   const {addProfitTarget} = useApi();
 

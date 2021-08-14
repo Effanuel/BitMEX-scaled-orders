@@ -5,9 +5,8 @@ import {
   createAction as createAction_toolkit,
   ActionCreatorWithPreparedPayload,
 } from '@reduxjs/toolkit';
-import axios, {Method} from 'axios';
 import {HttpResponse} from 'redux/api/bitmex';
-import {APIFacade, AvailableMethods} from 'redux/api/api';
+import {ExchangeAPIFacade, AvailableMethods, BasicAPIType, basicApi} from 'redux/api/api';
 import {AppState} from 'redux/modules/state';
 
 import {ACTIONS_cross} from 'redux/modules/cross/types';
@@ -36,7 +35,7 @@ type ThunkActionNames = typeof reducerActions[number];
 
 export interface ThunkApiConfig {
   rejected: string;
-  extra: APIFacade;
+  extra: ExchangeAPIFacade;
   dispatch: Dispatch;
   rejectValue: string;
   state: AppState;
@@ -88,16 +87,24 @@ export function createApiThunk<K extends keyof BitmexMethods, P extends Paramete
   );
 }
 
-interface BasicThunkConfig {
+interface BasicThunkConfig<K extends keyof BasicAPIType> {
   actionName: ThunkActionNames;
-  method: Method;
-  url: string;
+  method: K;
 }
 
-export function createBasicThunk<P, R>({actionName, method, url}: BasicThunkConfig): AsyncThunk<R, P, ThunkApiConfig> {
+export function createBasicThunk<K extends keyof BasicAPIType, P extends Parameters<BasicAPIType[K]>[number]>({
+  actionName,
+  method,
+}: BasicThunkConfig<K>): AsyncThunk<
+  RawType<ReturnType<BasicAPIType[K]>>['data']['data'],
+  Parameters<BasicAPIType[K]>[number] extends never ? void : P,
+  ThunkApiConfig
+> {
+  //@ts-ignore
   return createAsyncThunk(actionName, async (payload: P, {rejectWithValue}) => {
     try {
-      const response = await axios({url, method, data: payload, params: payload});
+      //@ts-ignore
+      const response = await basicApi[method](payload);
       return response.data.data;
     } catch (err) {
       return rejectWithValue(formatErrorMessage(err));

@@ -2,7 +2,7 @@ import {combineReducers} from 'redux';
 import {configureStore, getDefaultMiddleware} from '@reduxjs/toolkit';
 import reduxWebsocket from '@giantmachines/redux-websocket';
 import notificationMiddleware from '../middlewares/toast-notification';
-import {APIFacade, APIType} from 'redux/api/api';
+import {ExchangeAPIFacade, ExchangeAPIFacadeType} from 'redux/api/api';
 import {AppState} from 'redux/modules/state';
 
 import {previewReducer as preview} from '../modules/preview/previewModule';
@@ -16,7 +16,7 @@ const rootReducer = combineReducers({preview, websocket, trailing, cross, orders
 
 const reduxWebsocketMiddleware = reduxWebsocket();
 
-function createStore(preloadedState: Partial<AppState> = {}, api: APIType = new APIFacade()) {
+function createStore(preloadedState: Partial<AppState> = {}, api: ExchangeAPIFacadeType = new ExchangeAPIFacade()) {
   return configureStore({
     reducer: rootReducer,
     middleware: getDefaultMiddleware({

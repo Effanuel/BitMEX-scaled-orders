@@ -4,6 +4,7 @@ import {Modal, InputField} from 'components';
 import {saveApiKey} from 'redux/modules/settings/settingsModule';
 import {Exchange} from 'redux/modules/settings/types';
 import {ExchangePresenter} from 'presenters/general-presenters';
+import {ADD_API_KEYS_MODAL} from 'data-test-ids';
 
 interface Props {
   exchange: Exchange;
@@ -27,8 +28,14 @@ export function AddApiKeysModal({exchange}: Props) {
       onConfirm={addTarget}
       isConfirmButtonDisabled={isConfirmButtonDisabled}
     >
-      <InputField label="API Key" value={key || ''} onChange={setKey} type="text" />
-      <InputField label="API Secret" value={secret || ''} onChange={setSecret} type="text" />
+      <InputField testID={ADD_API_KEYS_MODAL.API_KEY} label="API Key" value={key || ''} onChange={setKey} type="text" />
+      <InputField
+        testID={ADD_API_KEYS_MODAL.API_SECRET}
+        label="API Secret"
+        value={secret || ''}
+        onChange={setSecret}
+        type="text"
+      />
     </Modal>
   );
 }

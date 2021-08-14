@@ -2,11 +2,12 @@ import React from 'react';
 import {ModalContext} from 'context/modal-context';
 import {useLocation} from 'react-router-dom';
 import {Exchange} from 'redux/modules/settings/types';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as ordersModule from 'redux/modules/orders/ordersModule';
 import * as previewModule from 'redux/modules/preview/previewModule';
 import * as trailingModule from 'redux/modules/trailing/trailingModule';
 import * as crossModule from 'redux/modules/cross/crossModule';
+import {AppState} from 'redux/modules/state';
 
 export function useModal() {
   const context = React.useContext(ModalContext);
@@ -52,4 +53,10 @@ export function useApi(): ApiActions {
       }),
     [dispatch, exchange],
   );
+}
+
+export function useIsApiKeyActive(): boolean {
+  const exchange = useExchange();
+  const activeApiKeys = useSelector((state: AppState) => state.settings.activeApiKeys);
+  return activeApiKeys?.[exchange] ?? false;
 }

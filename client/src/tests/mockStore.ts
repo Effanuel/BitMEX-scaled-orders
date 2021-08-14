@@ -12,7 +12,7 @@ import {rootReducer} from 'redux/store';
 import createStore from './configStore';
 import {AppState} from 'redux/modules/state';
 import notificationMiddleware from '../redux/middlewares/toast-notification';
-import {APIFacade} from 'redux/api/api';
+import {ExchangeAPIFacade} from 'redux/api/api';
 
 const mockedDefaultState: AppState = {
   websocket: mockWebsocketState({}),
@@ -25,7 +25,7 @@ const mockedDefaultState: AppState = {
 
 export function createMockedStore(overrideState: Partial<AppState> = {}) {
   const preloadedState = {...mockedDefaultState, ...overrideState};
-  const middlewares = [thunk.withExtraArgument(new APIFacade()), notificationMiddleware];
+  const middlewares = [thunk.withExtraArgument(new ExchangeAPIFacade()), notificationMiddleware];
   const enhancer = compose(applyMiddleware(...middlewares));
 
   return createStore(rootReducer, preloadedState, enhancer);

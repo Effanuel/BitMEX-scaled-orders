@@ -1,15 +1,16 @@
 import {hocFacade} from 'influnt';
 import {Provider} from 'react-redux';
-import {MemoryRouter} from 'react-router-dom';
+import {Router} from 'react-router-dom';
 import {ChakraProvider} from '@chakra-ui/react';
-import {ModalProvider} from 'context/modal-context';
+import {MemoryHistory} from 'history';
 import {MockedStore} from './mockStore';
+import {ModalProvider} from 'context/modal-context';
 
-export const withStore = (store: MockedStore) =>
+export const withStore = (params: {store: MockedStore; history: MemoryHistory}) =>
   hocFacade({
     providers: [
-      [Provider, {props: {store}}], //
-      MemoryRouter,
+      [Provider, {props: {store: params.store}}], //
+      [Router, {props: {history: params.history}}],
       ChakraProvider,
       ModalProvider,
     ],

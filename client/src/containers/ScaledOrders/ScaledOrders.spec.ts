@@ -3,8 +3,7 @@ import {COMPONENTS, SCALED_CONTAINER} from 'data-test-ids';
 import {createScaledOrders, DISTRIBUTION} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {forgeResult} from 'tests/responses';
-import {createRenderer} from 'tests/influnt';
-import {createMockedStore} from 'tests/mockStore';
+import {createMainRenderer} from 'tests/influnt';
 import {InfluntEngine, respond, isDisabled, exists, countOf} from 'influnt';
 import {storeActions} from 'tests/helpers';
 
@@ -30,7 +29,7 @@ function fillInputs({orderQty, n_tp, start, end, stop, symbol, side}: ScaledInpu
   };
 }
 
-const render = createRenderer(ScaledContainer, {extraArgs: () => createMockedStore()});
+const render = createMainRenderer(ScaledContainer);
 
 describe('ScaledOrders', () => {
   it('should render submit button as disabled', async () => {

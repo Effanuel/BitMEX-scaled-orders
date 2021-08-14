@@ -58,6 +58,7 @@ export function InputField(props: Props) {
         </NumberInput>
       ) : (
         <Input
+          data-testid={testID}
           borderColor="rgba(255, 255, 255, 0.6)"
           backgroundColor="#121212"
           _focus={{borderColor: 'green'}}

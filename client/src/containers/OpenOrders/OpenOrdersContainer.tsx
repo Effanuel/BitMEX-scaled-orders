@@ -45,8 +45,8 @@ export const presentOrderPrice = (order: Order) => {
   }
 };
 
-export default function OpenOrdersContainer() {
-  const {getOpenOrders} = useApi();
+export default React.memo(function OpenOrdersContainer() {
+  const api = useApi();
   const {modals} = useModal();
 
   const {openOrders, profitOrders, profitOrdersInAction, groupedOrders, ordersLoading, ordersError} = useReduxSelector(
@@ -59,8 +59,8 @@ export default function OpenOrdersContainer() {
   );
 
   React.useEffect(() => {
-    getOpenOrders();
-  }, [getOpenOrders]);
+    api.getOpenOrders();
+  }, [api]);
 
   const showCancelAllOrdersModal = React.useCallback(() => {
     const totalOrders = openOrders.length + profitOrders.length + profitOrdersInAction.length;
@@ -81,8 +81,8 @@ export default function OpenOrdersContainer() {
   }, [ordersError, ordersLoading, openOrders, profitOrdersInAction]);
 
   const icons = React.useMemo(
-    () => [{element: RepeatIcon, onClick: !ordersLoading ? getOpenOrders : undefined, color: 'green'}],
-    [getOpenOrders, ordersLoading],
+    () => [{element: RepeatIcon, onClick: !ordersLoading ? api.getOpenOrders : undefined, color: 'green'}],
+    [api, ordersLoading],
   );
 
   return (
@@ -122,4 +122,4 @@ export default function OpenOrdersContainer() {
       </Table>
     </MainContainer>
   );
-}
+});

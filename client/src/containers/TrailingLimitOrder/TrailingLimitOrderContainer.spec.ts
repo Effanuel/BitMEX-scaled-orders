@@ -6,13 +6,14 @@ import {partialInstrument, updateInstrument} from 'tests/websocketData/instrumen
 import {partialOrder} from 'tests/websocketData/order';
 import {forgeAmendOrder, forgeLimitOrder} from 'tests/responses';
 import {getState, openWebsocket, sendWebsocketMessage, storeActions} from 'tests/helpers';
-import {createRenderer} from 'tests/influnt';
+import {createMainRenderer} from 'tests/influnt';
 import {textOf, isDisabled, respond} from 'influnt';
 import {createMockedStore} from 'tests/mockStore';
+import {createMemoryHistory} from 'history';
 
 const orderID = 'OrderId';
 
-const render = createRenderer(TrailingLimitOrderContainer, {extraArgs: () => createMockedStore()});
+const render = createMainRenderer(TrailingLimitOrderContainer);
 
 describe('TrailingLimitContainer', () => {
   const commonOrder = ({orderQty, price}: {orderQty: number; price: number}) => ({
@@ -64,7 +65,7 @@ describe('TrailingLimitContainer', () => {
       instrument: [{symbol: SYMBOL.XBTUSD, askPrice: 501, bidPrice: 500.5}],
     });
 
-    const result = await render({extraArgs: createMockedStore({websocket})})
+    const result = await render({extraArgs: {store: createMockedStore({websocket}), history: createMemoryHistory()}})
       .inputText(TRAILING_LIMIT_CONTAINER.QUANTITY_INPUT, '200')
       .press(TRAILING_LIMIT_CONTAINER.SUBMIT_TRAILING_ORDER)
       .resolve(mock)

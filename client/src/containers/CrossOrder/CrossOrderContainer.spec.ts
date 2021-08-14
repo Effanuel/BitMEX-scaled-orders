@@ -2,16 +2,15 @@ import {CROSS_ORDER_CONTAINER} from 'data-test-ids';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {partialInstrument, updateInstrument} from 'tests/websocketData/instrument';
 import CrossOrderContainer from './CrossOrderContainer';
-import {createRenderer} from 'tests/influnt';
+import {createMainRenderer} from 'tests/influnt';
 import {getState, openWebsocket, sendWebsocketMessage, storeActions} from 'tests/helpers';
-import {createMockedStore} from 'tests/mockStore';
 import {textOf, isDisabled, respond} from 'influnt';
 import {forgeMarketOrder} from 'tests/responses';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const forceRerender = () => {};
 
-const render = createRenderer(CrossOrderContainer, {extraArgs: () => createMockedStore({})});
+const render = createMainRenderer(CrossOrderContainer);
 
 describe('CrossOrderContainer', () => {
   it('should render submit button as disabled when not subscribed to ws', async () => {
