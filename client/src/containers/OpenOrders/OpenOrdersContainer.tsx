@@ -5,7 +5,7 @@ import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
 import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
 import {MainContainer} from 'components';
-import {useApi, useModal} from 'general/hooks';
+import {useAppContext, useModal} from 'general/hooks';
 import {OPEN_ORDERS_CONTAINER} from 'data-test-ids';
 import OpenOrderRow from './OpenOrderRow';
 import ProfitOrderInActionRow from './ProfitOrderInActionRow';
@@ -46,7 +46,7 @@ export const presentOrderPrice = (order: Order) => {
 };
 
 export default React.memo(function OpenOrdersContainer() {
-  const api = useApi();
+  const {api} = useAppContext();
   const {modals} = useModal();
 
   const {openOrders, profitOrders, profitOrdersInAction, groupedOrders, ordersLoading, ordersError} = useReduxSelector(

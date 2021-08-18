@@ -10,7 +10,7 @@ import {createScaledOrders, DISTRIBUTION, INSTRUMENT_PARAMS} from 'utils';
 import {SIDE, SYMBOL} from 'redux/api/bitmex/types';
 import {SCALED_CONTAINER} from 'data-test-ids';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
@@ -37,7 +37,7 @@ const initialState: Readonly<ScaledContainerState> = {
 };
 
 export default React.memo(function ScaledContainer() {
-  const {postOrderBulk} = useApi();
+  const {api} = useAppContext();
   const dispatch = useDispatch();
   const {showPreview, previewLoading} = useReduxSelector('showPreview', 'previewLoading');
 
@@ -67,10 +67,10 @@ export default React.memo(function ScaledContainer() {
   const onOrderSubmit = React.useCallback((): void => {
     const {distribution, ...rest} = state as RequiredProperty<ScaledContainerState>;
     const ordersProps = {...rest, start: +rest.start, end: +rest.end, stop: rest.stop != undefined ? +rest.stop : 0};
-    postOrderBulk({orders: createScaledOrders({ordersProps, distribution})});
+    api.postOrderBulk({orders: createScaledOrders({ordersProps, distribution})});
     setState(initialState);
     setDirty(true);
-  }, [postOrderBulk, state]);
+  }, [api, state]);
 
   const onPreviewOrders = React.useCallback((): void => {
     if (!isDirty) {

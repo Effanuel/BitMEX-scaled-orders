@@ -20,6 +20,7 @@ import {authKeyExpires} from 'utils/auth';
 import {SUBSCRIPTION_TOPICS, SYMBOL} from 'redux/api/bitmex/types';
 import {websocketBaseUrl, instrumentTopics} from './constants';
 import {Instrument, Order} from '../../api/bitmex/types';
+import {Exchange} from '../settings/types';
 
 export const defaultState: WebsocketState = {
   __keys: {},
@@ -108,16 +109,18 @@ const reduxWeboscketMessage: Reducer<WebsocketState, any> = (state = defaultStat
   return state;
 };
 
-export const wsConnect = (): Thunk => async (dispatch) => {
-  try {
-    const url = websocketBaseUrl();
-    const subscribe = instrumentTopics(SYMBOL.XBTUSD, SYMBOL.ETHUSD, SYMBOL.XRPUSD);
-    dispatch(connect(`${url}${subscribe}`));
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err.response.data, 'wsConnect Error');
-  }
-};
+export const wsConnect =
+  (exchange: Exchange): Thunk =>
+  async (dispatch) => {
+    try {
+      const url = websocketBaseUrl(exchange);
+      const subscribe = instrumentTopics(SYMBOL.XBTUSD, SYMBOL.ETHUSD, SYMBOL.XRPUSD);
+      dispatch(connect(`${url}${subscribe}`));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err.response.data, 'wsConnect Error');
+    }
+  };
 
 export const wsDisconnect = (): Thunk => async (dispatch) => {
   try {

@@ -1,6 +1,17 @@
 import {createReducer} from '@reduxjs/toolkit';
-import {createBasicThunk} from 'redux/helpers/actionHelpers';
-import {DELETE_ALL_API_KEYS, DELETE_API_KEY, GET_ALL_API_KEYS, GET_API_KEY, SAVE_API_KEY, SettingsState} from './types';
+import {createAction, createBasicThunk} from 'redux/helpers/actionHelpers';
+import {
+  ACTIVATE_EXCHANGE,
+  Exchange,
+  DELETE_ALL_API_KEYS,
+  DELETE_API_KEY,
+  GET_ALL_API_KEYS,
+  GET_API_KEY,
+  SAVE_API_KEY,
+  SettingsState,
+} from './types';
+
+export const activateExchange = createAction<Exchange>(ACTIVATE_EXCHANGE);
 
 export const saveApiKey = createBasicThunk({actionName: SAVE_API_KEY, method: 'saveApiKey'});
 
@@ -16,10 +27,14 @@ export const defaultState: SettingsState = {
   activeApiKeys: {bitmex: false, bitmexTEST: false},
   settingsLoading: false,
   settingsError: '',
+  activeExchange: undefined,
 };
 
 export const settingsReducer = createReducer<SettingsState>(defaultState, (builder) =>
   builder
+    .addCase(activateExchange, (state, {payload}) => {
+      state.activeExchange = payload;
+    })
     .addCase(saveApiKey.pending, (state) => {
       state.settingsError = '';
       state.settingsLoading = true;

@@ -63,28 +63,26 @@ export function createApiThunk<K extends keyof BitmexMethods, P extends Paramete
   payloadToReturn,
 }: AAA<P, K, R>): AsyncThunk<
   {data: any},
-  Parameters<BitmexMethods[K]>[number] extends never ? {exchange?: Exchange} : P & {exchange?: Exchange},
+  Parameters<BitmexMethods[K]>[number] extends never ? void : P,
   ThunkApiConfig
 > {
   //@ts-expect-error
-  return createAsyncThunk(
-    actionName,
-    async (payload: P & {exchange?: Exchange}, {extra: API, rejectWithValue, getState}) => {
-      try {
-        const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
-        // TODO: add a proper type, there may not fix a fix for this tho
-        //@ts-expect-error
-        const {data} = await API.getQuery(payload?.exchange)(apiMethod)(adaptedPayload);
-        //@ts-expect-error
-        const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
-        const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
-        return {...responseData, ...extraData};
-      } catch (err) {
-        console.log(err, 'errr');
-        return rejectWithValue(formatErrorMessage(err));
-      }
-    },
-  );
+  return createAsyncThunk(actionName, async (payload: P, {extra: API, rejectWithValue, getState}) => {
+    try {
+      const {activeExchange} = getState().settings;
+      const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
+      // TODO: add a proper type, there may not fix a fix for this tho
+      //@ts-expect-error
+      const {data} = await API.getQuery(activeExchange)(apiMethod)(adaptedPayload);
+      //@ts-expect-error
+      const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
+      const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
+      return {...responseData, ...extraData};
+    } catch (err) {
+      console.log(err, 'errr');
+      return rejectWithValue(formatErrorMessage(err));
+    }
+  });
 }
 
 interface BasicThunkConfig<K extends keyof BasicAPIType> {

@@ -1,3 +1,4 @@
+import 'scss/root.module.scss';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import {Box} from '@chakra-ui/react';
@@ -12,13 +13,16 @@ import {
 import {Spinner, ToastContainer} from 'components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
-import {useApi} from 'general/hooks';
+import {useAppContext, useIsApiKeyActive} from 'general/hooks';
+import {Banner} from 'components/Banner/Banner';
+import {Exchange} from 'redux/modules/settings/types';
 
-import 'scss/root.module.scss';
+const exchange = Exchange.BitMeX;
 
 const BitmexExchange = React.memo(() => {
+  const {api} = useAppContext();
+  const isApiKeyActive = useIsApiKeyActive();
   const dispatch = useDispatch();
-  const {getBalance} = useApi();
   const {previewLoading, trailLoading, wsLoading, connected} = useReduxSelector(
     'previewLoading',
     'trailLoading',
@@ -27,7 +31,7 @@ const BitmexExchange = React.memo(() => {
   );
 
   React.useEffect(() => {
-    dispatch(wsConnect());
+    dispatch(wsConnect(exchange));
 
     return () => {
       dispatch(wsDisconnect());
@@ -36,14 +40,15 @@ const BitmexExchange = React.memo(() => {
 
   React.useEffect(() => {
     if (connected) {
-      getBalance();
+      api.getBalance();
       dispatch(wsAuthenticate());
       dispatch(wsSubscribeTo('order'));
     }
-  }, [dispatch, getBalance, connected]);
+  }, [dispatch, api, connected]);
 
   return (
     <Box marginTop="25px">
+      {!isApiKeyActive && <Banner />}
       <ToastContainer />
       <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />

@@ -1,16 +1,16 @@
 import React from 'react';
 import {Modal} from 'components';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 interface Props {
   totalOrders: number;
 }
 
 export function CancelAllOrdersModal({totalOrders}: Props) {
-  const {cancelAllOrders} = useApi();
+  const {api} = useAppContext();
 
   return (
-    <Modal title="Cancel All Orders" onConfirm={cancelAllOrders}>
+    <Modal title="Cancel All Orders" onConfirm={api.cancelAllOrders}>
       {`This will cancel ${totalOrders} order${totalOrders > 1 ? 's' : ''}`}
     </Modal>
   );

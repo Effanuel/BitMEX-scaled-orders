@@ -4,12 +4,12 @@ import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {SYMBOL, SIDE} from 'redux/api/bitmex/types';
 import {MARKET_CONTAINER} from 'data-test-ids';
 import {SelectDropdown, InputField, Button, Row, MainContainer} from 'components';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
 export default React.memo(function MarketOrderContainer() {
-  const {postMarketOrder} = useApi();
+  const {api} = useAppContext();
 
   const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
   const [quantity, setQuantity] = React.useState<string>('');
@@ -19,11 +19,11 @@ export default React.memo(function MarketOrderContainer() {
   const submitMarketOrder = React.useCallback(
     (id: SIDE) => {
       if (quantity) {
-        postMarketOrder({symbol, orderQty: +quantity, side: id});
+        api.postMarketOrder({symbol, orderQty: +quantity, side: id});
       }
       setQuantity('');
     },
-    [symbol, quantity, postMarketOrder],
+    [symbol, quantity, api],
   );
 
   return (

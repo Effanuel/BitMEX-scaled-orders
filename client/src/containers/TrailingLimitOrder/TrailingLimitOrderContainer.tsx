@@ -9,13 +9,13 @@ import {TRAILING_LIMIT_CONTAINER} from 'data-test-ids';
 import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import {useHooks} from './useHooks';
 import {INSTRUMENT_PARAMS} from 'utils';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
 export default React.memo(function TrailingLimitOrderContainer() {
   const dispatch = useDispatch();
-  const {postTrailingOrder, cancelTrailingOrder} = useApi();
+  const {api} = useAppContext();
 
   const [symbol, setSymbol] = React.useState<SYMBOL>(SYMBOL.XBTUSD);
   const [side, setSide] = React.useState<SIDE>(SIDE.SELL);
@@ -30,12 +30,12 @@ export default React.memo(function TrailingLimitOrderContainer() {
 
   const submitTrailingOrder = React.useCallback(() => {
     if (trailingOrderPrice && quantity) {
-      postTrailingOrder({symbol, side, orderQty: +quantity, price: trailingOrderPrice, text: 'best_order'});
+      api.postTrailingOrder({symbol, side, orderQty: +quantity, price: trailingOrderPrice, text: 'best_order'});
       setQuantity('');
     }
-  }, [postTrailingOrder, trailingOrderPrice, quantity, side, symbol]);
+  }, [api, trailingOrderPrice, quantity, side, symbol]);
 
-  const cancelOrder = React.useCallback(() => void cancelTrailingOrder({} as any), [cancelTrailingOrder]);
+  const cancelOrder = React.useCallback(() => void api.cancelTrailingOrder({} as any), [api]);
 
   const toggleInstrument = React.useCallback(
     (symbol: SYMBOL) => {

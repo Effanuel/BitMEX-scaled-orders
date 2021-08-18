@@ -6,7 +6,7 @@ import {ChakraProvider, extendTheme} from '@chakra-ui/react';
 import {createStore} from 'redux/store';
 import App from './App';
 import {ModalProvider} from 'context/modal-context';
-
+import {AppProvider} from 'context/app-context';
 import * as serviceWorker from './serviceWorker';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
@@ -110,11 +110,13 @@ const theme = extendTheme({
 ReactDOM.render(
   <Provider store={createStore()}>
     <BrowserRouter>
-      <ChakraProvider theme={theme}>
-        <ModalProvider>
-          <App />
-        </ModalProvider>
-      </ChakraProvider>
+      <AppProvider>
+        <ChakraProvider theme={theme}>
+          <ModalProvider>
+            <App />
+          </ModalProvider>
+        </ChakraProvider>
+      </AppProvider>
     </BrowserRouter>
   </Provider>,
   document.getElementById('root') as HTMLElement,

@@ -3,7 +3,8 @@ import {Box} from '@chakra-ui/react';
 import {Route, Switch} from 'react-router-dom';
 import Home from 'pages/Home';
 import Settings from 'pages/Settings';
-import {Header} from 'components';
+import {ExchangeRoute, Header} from 'components';
+import {Exchange} from 'redux/modules/settings/types';
 import BitmexExchange from 'pages/Bitmex';
 import {RoutePath} from 'pages/paths';
 
@@ -18,12 +19,12 @@ export default React.memo(function App() {
           <Route path={RoutePath.Home} exact>
             <Home />
           </Route>
-          <Route path={RoutePath.BitMex}>
+          <ExchangeRoute path={RoutePath.BitMex} exchange={Exchange.BitMeX}>
             <BitmexExchange />
-          </Route>
-          <Route path={RoutePath.BitmexTest}>
+          </ExchangeRoute>
+          <ExchangeRoute path={RoutePath.BitmexTest} exchange={Exchange.BitMeXTEST}>
             <BitmexExchange />
-          </Route>
+          </ExchangeRoute>
           <Route path={RoutePath.Settings}>
             <Settings />
           </Route>

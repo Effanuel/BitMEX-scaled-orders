@@ -7,10 +7,10 @@ import buildOrderPresenter from '../../presenters/cross-label-presenter';
 import {clearCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
 import {INSTRUMENT_PARAMS} from 'utils';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 export default React.memo(function CrossOrderContainer() {
-  const {createCrossOrder} = useApi();
+  const {api} = useAppContext();
   const dispatch = useDispatch();
 
   const [symbol, setSymbol] = React.useState(SYMBOL.XBTUSD);
@@ -22,11 +22,11 @@ export default React.memo(function CrossOrderContainer() {
 
   const createOrder = React.useCallback(() => {
     if (price && +price > 0 && quantity && +quantity > 0) {
-      createCrossOrder({price: +price, symbol, side, orderQty: +quantity});
+      api.createCrossOrder({price: +price, symbol, side, orderQty: +quantity});
       setPrice('');
       setQuantity('');
     }
-  }, [createCrossOrder, price, quantity, side, symbol]);
+  }, [api, price, quantity, side, symbol]);
 
   const cancelCrossOrder = React.useCallback(() => void dispatch(clearCrossOrder()), [dispatch]);
 

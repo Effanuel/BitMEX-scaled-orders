@@ -6,7 +6,7 @@ import {AppState} from 'redux/modules/state';
 import {orderSelector} from 'redux/selectors';
 import {ADD_ORDER_MODAL} from 'data-test-ids';
 import {INSTRUMENT_PARAMS} from 'utils';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 interface Props {
   orderID: string;
@@ -16,7 +16,7 @@ interface Props {
 // TODO: fix websocket based on exchange
 
 export function AddProfitOrderModal({orderID}: Props) {
-  const {addProfitTarget} = useApi();
+  const {api} = useAppContext();
 
   const order = useSelector((state: AppState) => orderSelector(state, {orderID}));
   const {symbol, side, price: stopPx} = order!;
@@ -25,8 +25,8 @@ export function AddProfitOrderModal({orderID}: Props) {
   const [quantity, setQuantity] = React.useState<any>('');
 
   const addTarget = React.useCallback(() => {
-    addProfitTarget({orderID, side, symbol, stop: stopPx, price: parseInt(price), orderQty: quantity});
-  }, [addProfitTarget, orderID, side, quantity, price, stopPx, symbol]);
+    api.addProfitTarget({orderID, side, symbol, stop: stopPx, price: parseInt(price), orderQty: quantity});
+  }, [api, orderID, side, quantity, price, stopPx, symbol]);
 
   const isConfirmButtonDisabled =
     !parseInt(price) ||

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Modal} from 'components';
-import {useApi} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 
 interface Props {
   totalOrders: number;
@@ -8,11 +8,11 @@ interface Props {
 }
 
 export function CancelAllProfitOrdersModal({totalOrders, profitOrderIds}: Props) {
-  const {cancelAllProfitOrders} = useApi();
+  const {api} = useAppContext();
 
   const emitConfirm = React.useCallback(
-    () => cancelAllProfitOrders({orderID: profitOrderIds}),
-    [cancelAllProfitOrders, profitOrderIds],
+    () => api.cancelAllProfitOrders({orderID: profitOrderIds}),
+    [api, profitOrderIds],
   );
 
   return (
