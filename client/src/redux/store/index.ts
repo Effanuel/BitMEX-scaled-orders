@@ -15,7 +15,7 @@ import {settingsReducer as settings, activateExchange} from '../modules/settings
 
 const appReducer = combineReducers({preview, websocket, trailing, cross, orders, settings});
 
-const rootReducer = (state: ReturnType<typeof appReducer>, action: AnyAction) => {
+const rootReducer = (state: any, action: AnyAction) => {
   if (action.type === activateExchange.type) {
     return appReducer(undefined, action);
   }
@@ -26,7 +26,7 @@ const reduxWebsocketMiddleware = reduxWebsocket();
 
 function createStore(preloadedState: Partial<AppState> = {}, api: ExchangeAPIFacadeType = new ExchangeAPIFacade()) {
   return configureStore({
-    reducer: rootReducer as any,
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         thunk: {extraArgument: api},

@@ -30,13 +30,13 @@ export const crossReducer = createReducer<CrossState>(defaultState, (builder) =>
   builder
     .addCase(postMarketCrossOrder.fulfilled, () => defaultState)
     .addCase(postMarketCrossOrder.rejected, () => defaultState)
+    .addCase(clearCrossOrder, () => defaultState)
     .addCase(createCrossOrder, (state, {payload}) => {
       state.crossOrderSymbol = payload.symbol;
       state.crossOrderSide = payload.side;
       state.crossOrderPrice = payload.price;
       state.crossOrderQuantity = payload.orderQty;
     })
-    .addCase(clearCrossOrder, () => defaultState)
     .addCase(orderCrossedOnce, (state) => {
       state.hasPriceCrossedOnce = true;
     }),

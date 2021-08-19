@@ -13,7 +13,7 @@ import {ACTIONS_cross} from 'redux/modules/cross/types';
 import {ACTIONS_orders} from 'redux/modules/orders/types';
 import {ACTIONS_preview} from 'redux/modules/preview/types';
 import {ACTIONS_trailing} from 'redux/modules/trailing/types';
-import {ACTIONS_settings, Exchange} from 'redux/modules/settings/types';
+import {ACTIONS_settings} from 'redux/modules/settings/types';
 
 export const createAction = <P = void>(actionName: string) =>
   createAction_toolkit(actionName, (payload: P) => ({payload}));
@@ -67,22 +67,32 @@ export function createApiThunk<K extends keyof BitmexMethods, P extends Paramete
   ThunkApiConfig
 > {
   //@ts-expect-error
-  return createAsyncThunk(actionName, async (payload: P, {extra: API, rejectWithValue, getState}) => {
-    try {
-      const {activeExchange} = getState().settings;
-      const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
-      // TODO: add a proper type, there may not fix a fix for this tho
-      //@ts-expect-error
-      const {data} = await API.getQuery(activeExchange)(apiMethod)(adaptedPayload);
-      //@ts-expect-error
-      const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
-      const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
-      return {...responseData, ...extraData};
-    } catch (err) {
-      console.log(err, 'errr');
-      return rejectWithValue(formatErrorMessage(err));
-    }
-  });
+  return createAsyncThunk(
+    actionName,
+    async (payload: P, {extra: API, rejectWithValue, getState}) => {
+      try {
+        const {activeExchange} = getState().settings;
+        const adaptedPayload = adaptPayload?.(payload, getState) ?? payload;
+        // TODO: add a proper type, there may not fix a fix for this tho
+        //@ts-expect-error
+        const {data} = await API.getQuery(activeExchange)(apiMethod)(adaptedPayload);
+        //@ts-expect-error
+        const responseData = {data: parseResponse(JSON.parse(data.data)), statusCode: data.statusCode};
+        const extraData = payloadToReturn ? {[payloadToReturn]: payload[payloadToReturn]} : {};
+        return {...responseData, ...extraData};
+      } catch (err) {
+        console.log(err, 'errr');
+        return rejectWithValue(formatErrorMessage(err));
+      }
+    },
+    {
+      condition: (_, {getState}) => {
+        const {activeExchange, activeApiKeys} = getState().settings;
+        return Boolean(activeExchange && (activeApiKeys?.[activeExchange] ?? false));
+      },
+      dispatchConditionRejection: true,
+    },
+  );
 }
 
 interface BasicThunkConfig<K extends keyof BasicAPIType> {

@@ -85,6 +85,8 @@ const buildSelectors = (state: AppState): Selectors => {
     activeApiKeys: settings.activeApiKeys,
     settingsError: settings.settingsError,
     settingsLoading: settings.settingsLoading,
+    activeExchange: settings.activeExchange,
+    getAllApiKeysLoading: settings.getAllApiKeysLoading,
   };
 };
 

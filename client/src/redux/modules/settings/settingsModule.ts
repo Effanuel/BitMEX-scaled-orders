@@ -28,6 +28,7 @@ export const defaultState: SettingsState = {
   settingsLoading: false,
   settingsError: '',
   activeExchange: undefined,
+  getAllApiKeysLoading: false,
 };
 
 export const settingsReducer = createReducer<SettingsState>(defaultState, (builder) =>
@@ -40,16 +41,18 @@ export const settingsReducer = createReducer<SettingsState>(defaultState, (build
       state.settingsLoading = true;
     })
     .addCase(saveApiKey.fulfilled, (state, {payload}) => {
-      console.log('FULL; FILLED', payload);
       state.settingsError = '';
       state.settingsLoading = false;
       state.activeApiKeys[payload.exchange] = true;
     })
-    .addCase(getApiKey.fulfilled, (state, {payload}) => {
-      console.log(payload);
+    .addCase(getApiKey.fulfilled, (state) => {
       return state;
     })
+    .addCase(getAllApiKeys.pending, (state) => {
+      state.getAllApiKeysLoading = true;
+    })
     .addCase(getAllApiKeys.fulfilled, (state, {payload}) => {
+      state.getAllApiKeysLoading = false;
       payload.exchanges.forEach((exchange) => void (state.activeApiKeys[exchange] = true));
     })
     .addCase(deleteAllApiKeys.fulfilled, () => defaultState)

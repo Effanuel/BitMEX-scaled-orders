@@ -1,14 +1,19 @@
 import React from 'react';
 import {Flex, Heading, Box} from '@chakra-ui/react';
 import {SettingsIcon} from '@chakra-ui/icons';
-import {Link} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import {RoutePath} from 'pages/paths';
 
 const MenuItem = ({children, to}: any) => (
   <Heading marginRight={3} marginLeft={3}>
-    <Link to={to} style={{textDecoration: 'none', color: 'white'}}>
+    <NavLink
+      exact
+      to={to}
+      activeStyle={{color: '#4caf50'}}
+      style={{textDecoration: 'none', color: 'white', textShadow: '2px 2px 3px black'}}
+    >
       {children}
-    </Link>
+    </NavLink>
   </Heading>
 );
 
@@ -32,9 +37,13 @@ export function Header() {
       </Box>
 
       <Box display="flex">
-        <Link to={RoutePath.Settings} style={{textDecoration: 'none', color: 'white'}}>
+        <NavLink
+          to={RoutePath.Settings}
+          activeStyle={{color: '#4caf50'}}
+          style={{textDecoration: 'none', color: 'white'}}
+        >
           <SettingsIcon width={25} height={25} _hover={{cursor: 'pointer', color: 'green'}} />
-        </Link>
+        </NavLink>
       </Box>
     </Flex>
   );

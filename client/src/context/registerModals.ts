@@ -37,7 +37,7 @@ export function createModals(showModal: ({type, props}: ShowModalArgs) => void):
   return Object.assign(
     {},
     ...Object.keys(registeredModals).map((modalName) => ({
-      [modalName]: (props: any) => showModal({type: modalName as any, props}),
+      [modalName]: (props: any) => showModal({type: modalName as keyof typeof registeredModals, props}),
     })),
   );
 }

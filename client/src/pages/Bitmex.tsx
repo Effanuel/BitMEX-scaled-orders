@@ -39,12 +39,12 @@ const BitmexExchange = React.memo(() => {
   }, [dispatch]);
 
   React.useEffect(() => {
-    if (connected) {
+    if (connected && isApiKeyActive) {
       api.getBalance();
       dispatch(wsAuthenticate());
       dispatch(wsSubscribeTo('order'));
     }
-  }, [dispatch, api, connected]);
+  }, [dispatch, api, connected, isApiKeyActive]);
 
   return (
     <Box marginTop="25px">

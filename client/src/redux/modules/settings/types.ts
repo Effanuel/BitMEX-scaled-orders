@@ -15,6 +15,7 @@ export interface SettingsState {
   settingsLoading: boolean;
   settingsError: string;
   activeExchange: Exchange | undefined;
+  getAllApiKeysLoading: boolean; // TODO remove
 }
 
 export const ACTIONS_settings = [
