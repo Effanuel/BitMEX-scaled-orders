@@ -1,7 +1,6 @@
 import React from 'react';
 import {Tbody, Th, Thead, Tr, Table, Box} from '@chakra-ui/react';
 import {RepeatIcon} from '@chakra-ui/icons';
-import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {formatPrice} from 'general/formatting';
 import {Order, ORD_TYPE} from 'redux/api/bitmex/types';
 import {MainContainer} from 'components';
@@ -9,6 +8,9 @@ import {useAppContext, useModal} from 'general/hooks';
 import {OPEN_ORDERS_CONTAINER} from 'data-test-ids';
 import OpenOrderRow from './OpenOrderRow';
 import ProfitOrderInActionRow from './ProfitOrderInActionRow';
+import {useSelector} from 'react-redux';
+import {AppState} from 'redux/modules/state';
+import {groupedOrdersSelector} from 'redux/selectors';
 
 function Text({children}: {children: React.ReactNode}) {
   return (
@@ -49,14 +51,12 @@ export default React.memo(function OpenOrdersContainer() {
   const {api} = useAppContext();
   const {modals} = useModal();
 
-  const {openOrders, profitOrders, profitOrdersInAction, groupedOrders, ordersLoading, ordersError} = useReduxSelector(
-    'openOrders',
-    'profitOrders',
-    'profitOrdersInAction',
-    'groupedOrders',
-    'ordersLoading',
-    'ordersError',
-  );
+  const openOrders = useSelector((state: AppState) => state.orders.openOrders);
+  const profitOrders = useSelector((state: AppState) => state.orders.profitOrders);
+  const profitOrdersInAction = useSelector((state: AppState) => state.orders.profitOrdersInAction);
+  const ordersLoading = useSelector((state: AppState) => state.orders.ordersLoading);
+  const ordersError = useSelector((state: AppState) => state.orders.ordersError);
+  const groupedOrders = useSelector(groupedOrdersSelector);
 
   React.useEffect(() => {
     api.getOpenOrders();

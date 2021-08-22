@@ -1,19 +1,20 @@
-import {REDUX_WEBSOCKET_MESSAGE, REDUX_WEBSOCKET_OPEN} from 'redux/modules/websocket/types';
 import {ForgedResponse, Inspector, Step} from 'influnt/dist/types';
 import {AppState} from 'redux/modules/state';
 import {BasicAPIType} from 'redux/api/api';
 import {InfluntExtraArgs} from './influnt';
+import {Exchange} from 'redux/modules/settings/types';
+import {WEBSOCKET_MESSAGE, WEBSOCKET_OPEN} from '@giantmachines/redux-websocket';
 
 export function openWebsocket(): Step<InfluntExtraArgs> {
   return ({extraArgs}) => {
-    extraArgs.store.dispatch({type: REDUX_WEBSOCKET_OPEN});
+    extraArgs.store.dispatch({type: `${Exchange.BitMeX}::${WEBSOCKET_OPEN}`});
   };
 }
 
 export function sendWebsocketMessage<D>(data: D): Step<InfluntExtraArgs> {
   return ({extraArgs}) => {
     const message = JSON.stringify(data);
-    extraArgs.store.dispatch({type: REDUX_WEBSOCKET_MESSAGE, payload: {message}});
+    extraArgs.store.dispatch({type: `${Exchange.BitMeX}::${WEBSOCKET_MESSAGE}`, payload: {message}});
   };
 }
 

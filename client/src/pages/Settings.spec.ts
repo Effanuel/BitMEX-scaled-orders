@@ -1,13 +1,17 @@
 import {ADD_API_KEYS_MODAL, GLOBAL, SETTINGS} from 'data-test-ids';
+import {createMemoryHistory} from 'history';
 import {textOfAll} from 'influnt';
 import {Exchange} from 'redux/modules/settings/types';
 import {respondBasic} from 'tests/helpers';
 import {createMainRenderer} from 'tests/influnt';
+import {createMockedStore} from 'tests/mockStore';
 import Settings from './Settings';
 
 const forgeResult = <R>(data: R) => ({data: {data: data, statusCode: 200}});
 
-const render = createMainRenderer(Settings);
+const render = createMainRenderer(Settings, {
+  extraArgs: () => ({store: createMockedStore(), history: createMemoryHistory()}),
+});
 
 describe('Settings page', () => {
   it('should display all api keys as inactive', async () => {

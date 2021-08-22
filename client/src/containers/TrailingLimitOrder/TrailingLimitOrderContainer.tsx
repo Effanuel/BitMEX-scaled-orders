@@ -10,10 +10,15 @@ import buildOrderPresenter from '../../presenters/trailing-label-presenter';
 import {useHooks} from './useHooks';
 import {INSTRUMENT_PARAMS} from 'utils';
 import {useAppContext} from 'general/hooks';
+import {Exchange} from 'redux/modules/settings/types';
 
 const icons = [{element: WarningTwoIcon, color: 'red', onHoverMessage: 'Minimum lotsize for XBT is 100'}];
 
-export default React.memo(function TrailingLimitOrderContainer() {
+interface Props {
+  exchange: Exchange;
+}
+
+export default React.memo(function TrailingLimitOrderContainer({exchange}: Props) {
   const dispatch = useDispatch();
   const {api} = useAppContext();
 
@@ -22,7 +27,7 @@ export default React.memo(function TrailingLimitOrderContainer() {
   const [quantity, setQuantity] = React.useState<string | number>('');
 
   const {wsCurrentPrice, wsBidAskPrices, trailOrderId, trailOrderStatus, trailOrderPrice, status, connected} =
-    useHooks();
+    useHooks(exchange);
 
   const spread = 1 / INSTRUMENT_PARAMS[symbol].ticksize;
   const trailingOrderPrice =

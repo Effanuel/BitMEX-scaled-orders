@@ -4,10 +4,14 @@ import {respondBasic, history} from 'tests/helpers';
 import {createMainRenderer} from 'tests/influnt';
 import {RoutePath} from './paths';
 import Home from './Home';
+import {createMockedStore} from 'tests/mockStore';
+import {createMemoryHistory} from 'history';
 
 const forgeResult = <R,>(data: R) => ({data: {data: data, statusCode: 200}});
 
-const render = createMainRenderer(Home);
+const render = createMainRenderer(Home, {
+  extraArgs: () => ({store: createMockedStore(), history: createMemoryHistory()}),
+});
 
 describe('Home page', () => {
   it('should navigate to exchange on row press even if the api key is not active', async () => {

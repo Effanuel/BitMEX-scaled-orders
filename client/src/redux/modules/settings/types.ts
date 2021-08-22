@@ -12,9 +12,9 @@ export enum Exchange {
 
 export interface SettingsState {
   activeApiKeys: Record<Exchange, boolean>;
+  activeExchange: Exchange | undefined;
   settingsLoading: boolean;
   settingsError: string;
-  activeExchange: Exchange | undefined;
   getAllApiKeysLoading: boolean; // TODO remove
 }
 

@@ -6,6 +6,7 @@ import {networkProxy} from './proxy';
 import {ComponentSettings} from 'influnt/dist/types';
 import {createMockedStore} from './mockStore';
 import {createMemoryHistory} from 'history';
+import {Exchange} from 'redux/modules/settings/types';
 
 export type InfluntExtraArgs = Parameters<typeof withStore>[number];
 
@@ -41,6 +42,17 @@ export const createMainRenderer = <C extends React.ComponentType<InferProps<C>>>
   component: C,
   componentSettings: ComponentSettings<InferProps<C>, Parameters<typeof withStore>[number]> = {},
 ) => {
-  const mainExtraArgs = () => ({store: createMockedStore(), history: createMemoryHistory()});
+  const mainExtraArgs = () => ({
+    store: createMockedStore({
+      settings: {
+        activeExchange: Exchange.BitMeX,
+        activeApiKeys: {bitmex: true, bitmexTEST: false},
+        settingsLoading: false,
+        settingsError: '',
+        getAllApiKeysLoading: false,
+      },
+    }),
+    history: createMemoryHistory(),
+  });
   return createRenderer(component, {extraArgs: mainExtraArgs, ...componentSettings});
 };

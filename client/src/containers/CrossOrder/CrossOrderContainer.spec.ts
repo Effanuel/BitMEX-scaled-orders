@@ -6,11 +6,12 @@ import {createMainRenderer} from 'tests/influnt';
 import {getState, openWebsocket, sendWebsocketMessage, storeActions} from 'tests/helpers';
 import {textOf, isDisabled, respond} from 'influnt';
 import {forgeMarketOrder} from 'tests/responses';
+import {Exchange} from 'redux/modules/settings/types';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const forceRerender = () => {};
 
-const render = createMainRenderer(CrossOrderContainer);
+const render = createMainRenderer(CrossOrderContainer, {passProps: {exchange: Exchange.BitMeX}});
 
 describe('CrossOrderContainer', () => {
   it('should render submit button as disabled when not subscribed to ws', async () => {
@@ -38,7 +39,7 @@ describe('CrossOrderContainer', () => {
       });
 
     expect(result).toEqual({
-      actions: ['REDUX_WEBSOCKET::OPEN', 'REDUX_WEBSOCKET::MESSAGE'],
+      actions: ['bitmex::OPEN', 'bitmex::MESSAGE'],
       isDisabled: true,
       submitButtonLabel: 'Place a crossunder-market sell order',
     });
@@ -58,12 +59,7 @@ describe('CrossOrderContainer', () => {
       .inspect({actions: storeActions(), cross: getState('cross')});
 
     expect(result).toEqual({
-      actions: [
-        'REDUX_WEBSOCKET::OPEN',
-        'REDUX_WEBSOCKET::MESSAGE',
-        'cross/CREATE_CROSS_ORDER',
-        'cross/ORDER_CROSSED_ONCE',
-      ],
+      actions: ['bitmex::OPEN', 'bitmex::MESSAGE', 'cross/CREATE_CROSS_ORDER', 'cross/ORDER_CROSSED_ONCE'],
       cross: {
         crossOrderPrice: 10000,
         crossOrderQuantity: 200,
@@ -94,10 +90,10 @@ describe('CrossOrderContainer', () => {
 
     expect(result).toEqual({
       actions: [
-        'REDUX_WEBSOCKET::OPEN',
-        'REDUX_WEBSOCKET::MESSAGE',
+        'bitmex::OPEN',
+        'bitmex::MESSAGE',
         'cross/CREATE_CROSS_ORDER',
-        'REDUX_WEBSOCKET::MESSAGE',
+        'bitmex::MESSAGE',
         'cross/ORDER_CROSSED_ONCE',
         'cross/CROSS_POST_MARKET_ORDER/pending',
         'cross/CROSS_POST_MARKET_ORDER/fulfilled',
@@ -127,8 +123,8 @@ describe('CrossOrderContainer', () => {
 
     expect(result).toEqual({
       actions: [
-        'REDUX_WEBSOCKET::OPEN',
-        'REDUX_WEBSOCKET::MESSAGE',
+        'bitmex::OPEN',
+        'bitmex::MESSAGE',
         'cross/CREATE_CROSS_ORDER',
         'cross/ORDER_CROSSED_ONCE',
         'cross/CLEAR_CROSS_ORDER',
@@ -169,12 +165,12 @@ describe('CrossOrderContainer', () => {
 
     expect(result).toEqual({
       actions: [
-        'REDUX_WEBSOCKET::OPEN',
-        'REDUX_WEBSOCKET::MESSAGE',
+        'bitmex::OPEN',
+        'bitmex::MESSAGE',
         'cross/CREATE_CROSS_ORDER',
-        'REDUX_WEBSOCKET::MESSAGE',
+        'bitmex::MESSAGE',
         'cross/ORDER_CROSSED_ONCE',
-        'REDUX_WEBSOCKET::MESSAGE',
+        'bitmex::MESSAGE',
         'cross/CROSS_POST_MARKET_ORDER/pending',
         'cross/CROSS_POST_MARKET_ORDER/fulfilled',
       ],

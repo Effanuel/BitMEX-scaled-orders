@@ -8,8 +8,13 @@ import {clearCrossOrder} from 'redux/modules/cross/crossModule';
 import {useHooks} from './useHooks';
 import {INSTRUMENT_PARAMS} from 'utils';
 import {useAppContext} from 'general/hooks';
+import {Exchange} from 'redux/modules/settings/types';
 
-export default React.memo(function CrossOrderContainer() {
+interface Props {
+  exchange: Exchange;
+}
+
+export default React.memo(function CrossOrderContainer({exchange}: Props) {
   const {api} = useAppContext();
   const dispatch = useDispatch();
 
@@ -18,7 +23,7 @@ export default React.memo(function CrossOrderContainer() {
   const [quantity, setQuantity] = React.useState<string>('');
   const [side, setSide] = React.useState<SIDE>(SIDE.SELL);
 
-  const {wsCrossPrice, connected, crossOrderPrice} = useHooks();
+  const {wsCrossPrice, connected, crossOrderPrice} = useHooks(exchange);
 
   const createOrder = React.useCallback(() => {
     if (price && +price > 0 && quantity && +quantity > 0) {

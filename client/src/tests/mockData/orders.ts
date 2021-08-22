@@ -12,9 +12,12 @@ import {RegularOrder, ScaledOrder} from 'utils';
 import {CrossState} from 'redux/modules/cross/types';
 import {Instrument} from 'redux/api/bitmex/types';
 import {OrdersState} from 'redux/modules/orders/types';
-import {SettingsState} from 'redux/modules/settings/types';
+import {Exchange, SettingsState} from 'redux/modules/settings/types';
 
-export const mockWebsocketState = (overrides?: Partial<WebsocketState>) => ({...websocketDefaultState, ...overrides});
+export const mockWebsocketState = (overrides?: Partial<WebsocketState['bitmex']>) => ({
+  ...websocketDefaultState,
+  [Exchange.BitMeX]: {...websocketDefaultState['bitmex'], ...overrides},
+});
 export const mockPreviewState = (overrides?: Partial<PreviewState>) => ({...previewDefaultState, ...overrides});
 export const mockTrailingState = (overrides?: Partial<TrailingState>) => ({...trailingDefaultState, ...overrides});
 export const mockCrossState = (overrides?: Partial<CrossState>) => ({...crossDefaultState, ...overrides});

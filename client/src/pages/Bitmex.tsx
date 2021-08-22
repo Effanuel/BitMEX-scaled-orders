@@ -24,6 +24,7 @@ const BitmexExchange = React.memo(() => {
   const isApiKeyActive = useIsApiKeyActive();
   const dispatch = useDispatch();
   const {previewLoading, trailLoading, wsLoading, connected} = useReduxSelector(
+    exchange,
     'previewLoading',
     'trailLoading',
     'wsLoading',
@@ -34,7 +35,7 @@ const BitmexExchange = React.memo(() => {
     dispatch(wsConnect(exchange));
 
     return () => {
-      dispatch(wsDisconnect());
+      dispatch(wsDisconnect(exchange));
     };
   }, [dispatch]);
 
@@ -53,9 +54,9 @@ const BitmexExchange = React.memo(() => {
       <Spinner loading={previewLoading || trailLoading || wsLoading} />
       <TickerPricesContainer />
       <OpenOrdersContainer />
-      {/* <CrossOrderContainer /> TODO: disabling for now */}
+      {/* <CrossOrderContainer exchange={exchange} /> TODO: disabling for now */}
       <MarketOrderContainer />
-      <TrailingLimitOrder />
+      <TrailingLimitOrder exchange={exchange} />
       <ScaledOrders />
     </Box>
   );
