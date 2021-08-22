@@ -1,6 +1,6 @@
 import 'scss/root.module.scss';
 import React from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Box} from '@chakra-ui/react';
 import {
   ScaledOrders,
@@ -13,15 +13,16 @@ import {
 import {Spinner, ToastContainer} from 'components';
 import {useReduxSelector} from 'redux/helpers/hookHelpers';
 import {wsConnect, wsDisconnect, wsSubscribeTo, wsAuthenticate} from 'redux/modules/websocket/websocketModule';
-import {useAppContext, useIsApiKeyActive} from 'general/hooks';
+import {useAppContext} from 'general/hooks';
 import {Banner} from 'components/Banner/Banner';
 import {Exchange} from 'redux/modules/settings/types';
+import {activeApiKeySelector} from 'redux/selectors';
 
 const exchange = Exchange.BitMeX;
 
 const BitmexExchange = React.memo(() => {
   const {api} = useAppContext();
-  const isApiKeyActive = useIsApiKeyActive();
+  const isApiKeyActive = useSelector(activeApiKeySelector);
   const dispatch = useDispatch();
   const {previewLoading, trailLoading, wsLoading, connected} = useReduxSelector(
     exchange,

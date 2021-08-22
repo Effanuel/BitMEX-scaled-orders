@@ -63,6 +63,7 @@ describe('Settings page', () => {
     const secret = '12312314141414144414';
     const [getAllApiKeysResponse, saveApiKeyResponse] = [
       respondBasic('getAllApiKeys', [undefined]).with(forgeResult({exchanges: []})),
+      //@ts-expect-error
       respondBasic('saveApiKey', [{key, secret}]).with(forgeResult({exchange: Exchange.BitMeX})),
     ];
 

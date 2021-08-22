@@ -41,7 +41,7 @@ export function classNameOf(testID: string): Inspector<string | undefined> {
 }
 
 function createDeferredPromise<T>(): [Promise<T>, (value: T) => void] {
-  let resolver: (value: T) => void = () => {};
+  let resolver: (value: T) => void = () => undefined;
   return [new Promise<T>((resolve) => void (resolver = resolve)), resolver];
 }
 

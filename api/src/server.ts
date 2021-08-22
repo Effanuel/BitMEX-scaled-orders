@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config({path: path.join(__dirname, '../../client/.env')});
 
 import {logger} from './util/logger';
-import app from './app';
+import {expressApp} from './app';
+
+const app = expressApp();
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const server = app.listen(app.get('port'), () => {});

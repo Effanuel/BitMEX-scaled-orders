@@ -187,3 +187,8 @@ export const groupedOrdersSelector = createSelector([getProfitOrders], (orders):
   });
   return groupedOrders;
 });
+
+export const activeApiKeySelector = createSelector(
+  [(state: AppState) => state.settings.activeApiKeys, (state: AppState) => state.settings.activeExchange],
+  (activeApiKeys, activeExchange) => Boolean(activeExchange && (activeApiKeys?.[activeExchange] ?? false)),
+);
