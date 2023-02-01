@@ -1,6 +1,6 @@
 
 
-Currently not being maintained. I plan to hopefully continue in Q3 of 2022
+Currently not being maintained
 # BitMEX trading tool
 
 This project is a trading tool based on **BitMEX API** *(Binance coming next)*. This project has a long way to go before becoming an actual usable tool. If you notice any bugs, open an issue.
